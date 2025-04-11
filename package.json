@@ -1,0 +1,21 @@
+{
+  "name": "calmppuccin-vscode",
+  "displayName": "Calmppuccin",
+  "description": "Calmppuccin is a visually refined theme for Visual Studio Code, designed to offer a harmonious coding experience. Inspired by the popular Catppuccin theme, Calmppuccin takes the beloved pastel palette and transforms it into a gentler, less intense version, perfect for long coding sessions without eye strain.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.99.0"
+  },
+  "categories": [
+    "Themes"
+  ],
+  "contributes": {
+    "themes": [
+      {
+        "label": "Calmppuccin Mocha Sapphire",
+        "uiTheme": "vs-dark",
+        "path": "./themes/calmppuccin-mocha-sapphire-color-theme.json"
+      }
+    ]
+  }
+}
