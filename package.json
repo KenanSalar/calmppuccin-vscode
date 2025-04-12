@@ -3,11 +3,44 @@
   "displayName": "Calmppuccin",
   "description": "Calmppuccin is a visually refined theme for Visual Studio Code, designed to offer a harmonious coding experience. Inspired by the popular Catppuccin theme, Calmppuccin takes the beloved pastel palette and transforms it into a gentler, less intense version, perfect for long coding sessions without eye strain.",
   "version": "0.0.1",
+  "publisher": "kenan-salar",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KenanSalar/calmppuccin-vscode.git"
+  },
   "engines": {
     "vscode": "^1.99.0"
   },
   "categories": [
     "Themes"
+  ],
+  "keywords": [
+    "calmppuccin",
+    "catppuccin",
+    "mocha",
+    "mocha theme",
+    "macchiato",
+    "macchiato theme",
+    "frappé",
+    "frappé theme",
+    "latte",
+    "latte theme",
+    "theme",
+    "dark",
+    "light",
+    "color",
+    "color theme",
+    "syntax",
+    "highlighting",
+    "syntax highlighting",
+    "syntax highlighting theme",
+    "dark theme",
+    "light theme",
+    "beautiful",
+    "readable",
+    "relaxing",
+    "relaxing theme"
   ],
   "contributes": {
     "themes": [
