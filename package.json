@@ -26,6 +26,20 @@
     "frappé theme",
     "latte",
     "latte theme",
+    "rosewater",
+    "flamingo",
+    "pink",
+    "mauve",
+    "red",
+    "maroon",
+    "peach",
+    "yellow",
+    "green",
+    "teal",
+    "sky",
+    "sapphire",
+    "blue",
+    "lavender",
     "theme",
     "dark",
     "light",
@@ -45,9 +59,74 @@
   "contributes": {
     "themes": [
       {
+        "label": "Calmppuccin Mocha Rosewater",
+        "uiTheme": "vs-dark",
+        "path": "./themes/mocha/calmppuccin-mocha-rosewater-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Mocha Flamingo",
+        "uiTheme": "vs-dark",
+        "path": "./themes/mocha/calmppuccin-mocha-flamingo-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Mocha Pink",
+        "uiTheme": "vs-dark",
+        "path": "./themes/mocha/calmppuccin-mocha-pink-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Mocha Mauve",
+        "uiTheme": "vs-dark",
+        "path": "./themes/mocha/calmppuccin-mocha-mauve-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Mocha Red",
+        "uiTheme": "vs-dark",
+        "path": "./themes/mocha/calmppuccin-mocha-red-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Mocha Maroon",
+        "uiTheme": "vs-dark",
+        "path": "./themes/mocha/calmppuccin-mocha-maroon-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Mocha Peach",
+        "uiTheme": "vs-dark",
+        "path": "./themes/mocha/calmppuccin-mocha-peach-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Mocha Yellow",
+        "uiTheme": "vs-dark",
+        "path": "./themes/mocha/calmppuccin-mocha-yellow-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Mocha Green",
+        "uiTheme": "vs-dark",
+        "path": "./themes/mocha/calmppuccin-mocha-green-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Mocha Teal",
+        "uiTheme": "vs-dark",
+        "path": "./themes/mocha/calmppuccin-mocha-teal-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Mocha Sky",
+        "uiTheme": "vs-dark",
+        "path": "./themes/mocha/calmppuccin-mocha-sky-color-theme.json"
+      },
+      {
         "label": "Calmppuccin Mocha Sapphire",
         "uiTheme": "vs-dark",
-        "path": "./themes/calmppuccin-mocha-sapphire-color-theme.json"
+        "path": "./themes/mocha/calmppuccin-mocha-sapphire-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Mocha Blue",
+        "uiTheme": "vs-dark",
+        "path": "./themes/mocha/calmppuccin-mocha-blue-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Mocha Lavender",
+        "uiTheme": "vs-dark",
+        "path": "./themes/mocha/calmppuccin-mocha-lavender-color-theme.json"
       }
     ]
   }
