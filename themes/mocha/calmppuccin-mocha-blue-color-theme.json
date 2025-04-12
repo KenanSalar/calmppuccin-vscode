@@ -413,7 +413,7 @@
 
     "quickInputTitle.background": "#181825",
     "quickInputList.focusForeground": "#aeb6cf",
-    "quickInput.foreground": "#9996aa",
+    "quickInput.foreground": "#aeb6cf",
     "quickInputList.focusBackground": "#413f4d73",
     "quickInput.background": "#181825",
 
