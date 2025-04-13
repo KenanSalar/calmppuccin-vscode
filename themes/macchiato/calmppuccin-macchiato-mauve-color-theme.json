@@ -530,7 +530,7 @@
     "tab.inactiveForeground": "#c2cae991",
     "tab.inactiveModifiedBorder": "#d6c08f4d",
     "tab.lastPinnedBorder": "#bb97e7",
-    "tab.unfocusedActiveBackground": "#1e2030",
+    "tab.unfocusedActiveBackground": "#232638",
     "tab.unfocusedActiveBorder": "#00000000",
     "tab.unfocusedActiveBorderTop": "#bb97e74d",
     "tab.unfocusedHoverBorder": "#00000000",
@@ -538,7 +538,7 @@
     "tab.dragAndDropBorder": "#bb97e7af",
     "tab.unfocusedHoverBackground": "#24273a",
     "tab.unfocusedInactiveForeground": "#c2cae970",
-    "tab.unfocusedInactiveBackground": "#0e0e16",
+    "tab.unfocusedInactiveBackground": "#1d1f2f",
 
     "terminal.background": "#24273a",
     "terminal.foreground": "#c2cae9",
@@ -1160,6 +1160,9 @@
         "punctuation.definition.typeparameters.begin",
         "punctuation.definition.typeparameters.end",
         "punctuation.separator.key-value",
+        "punctuation.separator.array",
+        "punctuation.separator",
+        "meta.structure.dictionary.value",
         "punctuation.accessor"
       ],
       "settings": {
