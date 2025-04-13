@@ -1160,7 +1160,11 @@
         "punctuation.definition.typeparameters.begin",
         "punctuation.definition.typeparameters.end",
         "punctuation.separator.key-value",
+        "punctuation.separator.array",
+        "punctuation.separator",
+        "meta.structure.dictionary.value",
         "punctuation.accessor"
+        
       ],
       "settings": {
         "foreground": "#c3c1da",
