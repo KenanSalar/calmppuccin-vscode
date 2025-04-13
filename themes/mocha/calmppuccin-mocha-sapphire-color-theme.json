@@ -530,7 +530,7 @@
     "tab.inactiveForeground": "#aeb6cf91",
     "tab.inactiveModifiedBorder": "#d6c08f4d",
     "tab.lastPinnedBorder": "#70b7d8",
-    "tab.unfocusedActiveBackground": "#171724",
+    "tab.unfocusedActiveBackground": "#1d1d2c",
     "tab.unfocusedActiveBorder": "#00000000",
     "tab.unfocusedActiveBorderTop": "#70b7d84d",
     "tab.unfocusedHoverBorder": "#00000000",
@@ -538,7 +538,7 @@
     "tab.dragAndDropBorder": "#70b7d8af",
     "tab.unfocusedHoverBackground": "#1d1d2c",
     "tab.unfocusedInactiveForeground": "#aeb6cf70",
-    "tab.unfocusedInactiveBackground": "#0e0e16",
+    "tab.unfocusedInactiveBackground": "#171724",
 
     "terminal.background": "#1d1d2c",
     "terminal.foreground": "#aeb6cf",
