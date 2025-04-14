@@ -1,6 +1,6 @@
 {
   "name": "Calmppuccin Latte Pink",
-  "type": "dark",
+  "type": "light",
   "colors": {
     "contrastBorder": "#00000000",
     "contrastActiveBorder": "#00000000",
@@ -1084,7 +1084,7 @@
       "name": "property readonly",
       "scope": ["variable.other.constant.property"],
       "settings": {
-        "foreground": "#b87dbe",
+        "foreground": "#b265bbe0",
         "fontStyle": "italic"
       }
     },
@@ -1857,7 +1857,7 @@
       "fontStyle": ""
     },
     "property.readonly": {
-      "foreground": "#b265bbef",
+      "foreground": "#b265bbe0",
       "fontStyle": "italic"
     },
     "recordComponent": {

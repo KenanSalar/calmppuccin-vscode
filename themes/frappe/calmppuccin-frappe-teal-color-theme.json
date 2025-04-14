@@ -418,9 +418,9 @@
     "quickInput.background": "#282b3a",
 
     "scrollbar.shadow": "#222532",
-    "scrollbarSlider.activeBackground": "#585b7094",
-    "scrollbarSlider.background": "#585b7044",
-    "scrollbarSlider.hoverBackground": "#585b7070",
+    "scrollbarSlider.background": "#81c8be31",
+    "scrollbarSlider.hoverBackground": "#81c8be48",
+    "scrollbarSlider.activeBackground": "#81c8be5b",
 
     "settings.checkboxBackground": "#282b3a",
     "settings.checkboxBorder": "#585b70c4",
@@ -571,7 +571,7 @@
     "terminal.findMatchBorder": "#d47b9683",
     "terminal.findMatchHighlightBackground": "#81c8be49",
     "terminal.findMatchHighlightBorder": "#81c8bea9",
-    "terminalCommandDecoration.defaultBackground": "#585b70",
+    "terminalCommandDecoration.defaultBackground": "#9ea1b4",
     "terminalCommandDecoration.successBackground": "#95ce8f",
     "terminalCommandDecoration.errorBackground": "#d47b95",
 
@@ -1084,7 +1084,7 @@
       "name": "property readonly",
       "scope": ["variable.other.constant.property"],
       "settings": {
-        "foreground": "#b87dbe",
+        "foreground": "#e295ebe0",
         "fontStyle": "italic"
       }
     },
@@ -1857,7 +1857,7 @@
       "fontStyle": ""
     },
     "property.readonly": {
-      "foreground": "#e295ebef",
+      "foreground": "#e295ebe0",
       "fontStyle": "italic"
     },
     "recordComponent": {
