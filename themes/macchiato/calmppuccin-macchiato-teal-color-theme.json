@@ -1084,7 +1084,7 @@
       "name": "property readonly",
       "scope": ["variable.other.constant.property"],
       "settings": {
-        "foreground": "#b87dbe",
+        "foreground": "#da95e2e0",
         "fontStyle": "italic"
       }
     },
@@ -1857,7 +1857,7 @@
       "fontStyle": ""
     },
     "property.readonly": {
-      "foreground": "#da95e2ef",
+      "foreground": "#da95e2e0",
       "fontStyle": "italic"
     },
     "recordComponent": {
