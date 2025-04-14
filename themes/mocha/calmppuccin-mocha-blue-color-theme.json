@@ -1258,7 +1258,7 @@
         "keyword.language.gherkin.feature.scenario",
         "source.nim keyword.other.common.function",
         "entity.name.scope-resolution.function.call",
-        "support.variable.js"
+        "support.variable",
       ],
       "settings": {
         "foreground": "#d39fbd",
