@@ -418,9 +418,9 @@
     "quickInput.background": "#171724",
 
     "scrollbar.shadow": "#11111a",
-    "scrollbarSlider.activeBackground": "#585b7094",
-    "scrollbarSlider.background": "#585b7044",
-    "scrollbarSlider.hoverBackground": "#585b7070",
+    "scrollbarSlider.background": "#d8939f31",
+    "scrollbarSlider.hoverBackground": "#d8939f48",
+    "scrollbarSlider.activeBackground": "#d8939f5b",
 
     "settings.checkboxBackground": "#171724",
     "settings.checkboxBorder": "#585b70b6",
@@ -571,7 +571,7 @@
     "terminal.findMatchBorder": "#d47b9683",
     "terminal.findMatchHighlightBackground": "#d8939f49",
     "terminal.findMatchHighlightBorder": "#d8939fa9",
-    "terminalCommandDecoration.defaultBackground": "#585b70",
+    "terminalCommandDecoration.defaultBackground": "#878999",
     "terminalCommandDecoration.successBackground": "#95ce8f",
     "terminalCommandDecoration.errorBackground": "#d47b95",
 
