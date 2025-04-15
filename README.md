@@ -1,33 +1,33 @@
 <div align="center">
-    <img src="./assets/images/logo/icon.png" alt="Logo" width="250" height="250">
+    <img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/logo/icon.png" alt="Logo" width="250" height="250">
     <h3>Calmppuccin for <a href="https://code.visualstudio.com/">VSCode</a> </h3>
 </div>
 <hr/>
 <br/>
 <div align="center">
-    <img src="./assets/images/preview/preview.png" alt="Preview" width="750" height="550">
+    <img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/preview/preview.png" alt="Preview" width="750" height="550">
 </div>
 
 ## Previews
 
 <details>
 <summary>🌻 Latte</summary>
-<img src="./assets/images/screenshots/latte-yellow.png" alt="Latte" width="800" height="´250">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/latte-yellow.png" alt="Latte" width="800" height="´250">
 </details>
 
 <details>
 <summary>🪴 Frappé</summary>
-<img src="./assets/images/screenshots/frappe-green.png" alt="Latte" width="800" height="´250">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/frappe-green.png" alt="Latte" width="800" height="´250">
 </details>
 
 <details>
 <summary>🌺 Macchiato</summary>
-<img src="./assets/images/screenshots/macchiato-mauve.png" alt="Latte" width="800" height="´250">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/macchiato-mauve.png" alt="Latte" width="800" height="´250">
 </details>
 
 <details>
 <summary>🌿 Mocha</summary>
-<img src="./assets/images/screenshots/mocha-blue.png" alt="Latte" width="800" height="´250">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/macchiato-mauve.png" alt="Latte" width="800" height="´250">
 </details>
 
 <br/>
