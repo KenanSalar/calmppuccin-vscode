@@ -27,7 +27,7 @@
 
 <details>
 <summary>🌿 Mocha</summary>
-<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/macchiato-mauve.png" alt="Latte" width="800" height="´250">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/mocha-blue.png" alt="Latte" width="800" height="´250">
 </details>
 
 <br/>
