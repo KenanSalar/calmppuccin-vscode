@@ -57,7 +57,7 @@ blending soothing colors with practical design.
 - **Customizable:** Offers flexibility to tweak background colors, text shades, and <br/>
 accents to suit individual preferences.
 
-### Accents
+### 🎨 Accents
 *   `Blue`
 *   `Flamingo`
 *   `Green`
