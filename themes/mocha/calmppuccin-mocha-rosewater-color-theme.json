@@ -1071,6 +1071,7 @@
       "name": "property",
       "scope": [
         "variable.other.object.property",
+        "variable.object.property",
         "variable.other.object.property.cs",
         "variable.other.property",
         "entity.name.variable.property",
