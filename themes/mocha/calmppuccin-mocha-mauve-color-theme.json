@@ -941,6 +941,7 @@
         "keyword.control.conditional",
         "keyword.type.char",
         "keyword.type.character",
+        "keyword.type",
         "support.type.primitive"
       ],
       "settings": {
@@ -1066,7 +1067,6 @@
         "fontStyle": ""
       }
     },
-
     {
       "name": "property",
       "scope": [
@@ -1182,7 +1182,6 @@
         "meta.type.annotation entity.name.type",
         "punctuation.definition.typeparameters",
         "comment.block.documentation.phpdoc.php keyword.other.type.php",
-        "keyword.type",
         "punctuation.definition.storage.type.objc",
         "markup punctuation.definition",
         "storage.type.powershell",
