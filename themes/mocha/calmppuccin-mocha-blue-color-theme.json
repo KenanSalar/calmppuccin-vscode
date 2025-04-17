@@ -940,7 +940,8 @@
         "keyword.operator.expression",
         "keyword.control.conditional",
         "keyword.type.char",
-        "keyword.type.character"
+        "keyword.type.character",
+        "support.type.primitive"
       ],
       "settings": {
         "foreground": "#b5a4dd",
@@ -1073,7 +1074,8 @@
         "variable.other.object.property.cs",
         "variable.other.property",
         "entity.name.variable.property",
-        "meta.object-literal.key"
+        "meta.object-literal.key",
+        "support.variable.property"
       ],
       "settings": {
         "foreground": "#d18fd8",
@@ -1164,7 +1166,6 @@
         "punctuation.separator",
         "meta.structure.dictionary.value",
         "punctuation.accessor"
-        
       ],
       "settings": {
         "foreground": "#c3c1da",
@@ -1174,11 +1175,9 @@
     {
       "name": "annotation",
       "scope": [
-        "support.variable.property",
         "constant.other.symbol.hashkey.ruby",
         "constant.other.symbol.hashkey.ruby punctuation.definition.constant.ruby",
         "entity.name.type.annotation.kotlin",
-        "support.type.primitive",
         "meta.type.parameters entity.name.type",
         "meta.type.annotation entity.name.type",
         "punctuation.definition.typeparameters",
@@ -1258,7 +1257,7 @@
         "keyword.language.gherkin.feature.scenario",
         "source.nim keyword.other.common.function",
         "entity.name.scope-resolution.function.call",
-        "support.variable",
+        "support.variable"
       ],
       "settings": {
         "foreground": "#d39fbd",
