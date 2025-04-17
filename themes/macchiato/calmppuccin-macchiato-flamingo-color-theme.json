@@ -940,7 +940,9 @@
         "keyword.operator.expression",
         "keyword.control.conditional",
         "keyword.type.char",
-        "keyword.type.character"
+        "keyword.type.character",
+        "keyword.type",
+        "support.type.primitive"
       ],
       "settings": {
         "foreground": "#bba8e6",
@@ -1065,7 +1067,6 @@
         "fontStyle": ""
       }
     },
-
     {
       "name": "property",
       "scope": [
@@ -1073,7 +1074,8 @@
         "variable.other.object.property.cs",
         "variable.other.property",
         "entity.name.variable.property",
-        "meta.object-literal.key"
+        "meta.object-literal.key",
+        "support.variable.property"
       ],
       "settings": {
         "foreground": "#da95e2",
@@ -1173,16 +1175,13 @@
     {
       "name": "annotation",
       "scope": [
-        "support.variable.property",
         "constant.other.symbol.hashkey.ruby",
         "constant.other.symbol.hashkey.ruby punctuation.definition.constant.ruby",
         "entity.name.type.annotation.kotlin",
-        "support.type.primitive",
         "meta.type.parameters entity.name.type",
         "meta.type.annotation entity.name.type",
         "punctuation.definition.typeparameters",
         "comment.block.documentation.phpdoc.php keyword.other.type.php",
-        "keyword.type",
         "punctuation.definition.storage.type.objc",
         "markup punctuation.definition",
         "storage.type.powershell",
@@ -1257,7 +1256,7 @@
         "keyword.language.gherkin.feature.scenario",
         "source.nim keyword.other.common.function",
         "entity.name.scope-resolution.function.call",
-        "support.variable",
+        "support.variable"
       ],
       "settings": {
         "foreground": "#daa4c3",
