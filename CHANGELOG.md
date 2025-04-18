@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.4] - 2025-04-18
+
+- Fixed token colors for certain keywords and constants
+
 ## [1.0.3] - 2025-04-18
 
 - Updated the README file to add a command to the settings.json to enable semantic highlighting.
