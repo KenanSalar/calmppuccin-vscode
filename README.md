@@ -78,3 +78,10 @@ accents to suit individual preferences.
 Calmppuccin is more than just a theme—it's an invitation to code in comfort and style. <br/>
 Whether you're debugging complex codebases or crafting new projects, Calmppuccin <br/>
 ensures your workspace remains a serene and productive environment.
+
+Ensure you have semantic highlighting enabled in your `settings.json` by adding or <br/>
+verifying this line:
+
+```json
+"editor.semanticHighlighting.enabled": true
+```
