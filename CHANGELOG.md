@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.5] - 2025-04-19
+
+- Changed editor hover widget colors to match the theme better.
+
 ## [1.0.4] - 2025-04-18
 
 - Fixed token colors for certain keywords and constants
