@@ -189,9 +189,11 @@
     "editorGutter.commentGlyphForeground": "#eebebe",
     "editorGutter.foldingControlForeground": "#949cbb",
 
-    "editorHoverWidget.background": "#222532",
-    "editorHoverWidget.border": "#585b70",
+    "editorHoverWidget.background": "#2f3344",
+    "editorHoverWidget.statusBarBackground": "#2f3344",
+    "editorHoverWidget.border": "#585b70b6",
     "editorHoverWidget.foreground": "#c6d0f5",
+    "editorHoverWidget.highlightForeground": "#eebebe",
 
     "editorIndentGuide.activeBackground1": "#585b70",
     "editorIndentGuide.background1": "#45475a",
