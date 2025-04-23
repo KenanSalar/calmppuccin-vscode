@@ -942,6 +942,7 @@
         "keyword.type.byte",
         "keyword.type.char",
         "keyword.type.void",
+        "entity.name.type",
         "keyword.operator.expression.new",
         "variable.language.base",
         "variable.language.this",
@@ -1260,8 +1261,7 @@
         "source.tf meta.keyword.number",
         "source.scala entity.name.class",
         "markup.raw.monospace",
-        "markup.mark",
-        "entity.name.type"
+        "markup.mark"
       ],
       "settings": {
         "foreground": "#6daf96"
@@ -1811,6 +1811,10 @@
   "semanticHighlighting": true,
   "semanticTokenColors": {
     "selfKeyword": {
+      "foreground": "#b5a4dd",
+      "fontStyle": ""
+    },
+    "type": {
       "foreground": "#b5a4dd",
       "fontStyle": ""
     },
