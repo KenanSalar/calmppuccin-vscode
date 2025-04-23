@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.1] - 2025-04-24
+
+- Added trycatch keyword
+
 ## [1.1.0] - 2025-04-23
 
 - Added semantic highlighting for types
