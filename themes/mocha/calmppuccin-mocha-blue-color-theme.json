@@ -1001,6 +1001,7 @@
         "fontStyle": ""
       }
     },
+    
     {
       "name": "type parameter",
       "scope": ["entity.name.type.type-parameter", "variable.type.type-parameter"],
