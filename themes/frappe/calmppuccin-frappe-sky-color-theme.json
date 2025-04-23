@@ -33,14 +33,14 @@
     "breadcrumb.focusForeground": "#99d1db",
     "breadcrumbPicker.background": "#2f3344",
 
-    "button.background": "#99d1db",
+    "button.background": "#99d1dbd3",
     "button.foreground": "#222532",
     "button.border": "#1d1d2700",
     "button.separator": "#1d1d2700",
-    "button.hoverBackground": "#7ecddb",
+    "button.hoverBackground": "#99d1db",
     "button.secondaryForeground": "#c6d0f5",
-    "button.secondaryBackground": "#585b70",
-    "button.secondaryHoverBackground": "#686b84",
+    "button.secondaryBackground": "#222532",
+    "button.secondaryHoverBackground": "#99d1db33",
 
     "charts.foreground": "#c6d0f5",
     "charts.lines": "#bac2de",
@@ -264,14 +264,14 @@
     "editorUnnecessaryCode.opacity": "#000000aa",
 
     "extensionButton.foreground": "#222532",
-    "extensionButton.background": "#99d1db",
+    "extensionButton.background": "#99d1dbd3",
     "extensionButton.separator": "#222532",
-    "extensionButton.hoverBackground": "#7ecddb",
-    "extensionButton.prominentBackground": "#99d1db",
+    "extensionButton.hoverBackground": "#99d1db",
+    "extensionButton.prominentBackground": "#99d1dbd3",
     "extensionButton.prominentForeground": "#222532",
-    "extensionButton.prominentHoverBackground": "#7ecddb",
+    "extensionButton.prominentHoverBackground": "#99d1db",
 
-    "extensionBadge.remoteBackground": "#789cd6",
+    "extensionBadge.remoteBackground": "#99d1db",
     "extensionBadge.remoteForeground": "#222532",
 
     "extensionIcon.starForeground": "#d6c08f",
@@ -375,7 +375,7 @@
     "notificationsInfoIcon.foreground": "#789cd6",
 
     "panel.background": "#282b3a",
-    "panel.border": "#585b706c",
+    "panel.border": "#99d1dba6",
     "panel.dropBorder": "#585b70a2",
     "panelSection.border": "#585b70a2",
     "panelSection.dropBackground": "#99d1db1f",
@@ -454,7 +454,7 @@
     "sideBar.foreground": "#c6d0f5",
     "sideBarSectionHeader.background": "#282b3a",
     "sideBarSectionHeader.foreground": "#c6d0f5",
-    "sideBarSectionHeader.border": "#585b706c",
+    "sideBarSectionHeader.border": "#585b7077",
     "sideBarTitle.background": "#282b3a",
     "sideBarTitle.foreground": "#99d1db",
 
@@ -630,7 +630,7 @@
     "welcomePage.background": "#2f3344",
     "welcomePage.tileBackground": "#222532",
     "welcomePage.tileBorder": "#52525e",
-    "welcomePage.tileHoverBackground": "#35343d",
+    "welcomePage.tileHoverBackground": "#222532",
     "welcomePage.progress.background": "#222532",
     "welcomePage.progress.foreground": "#99d1db",
 
