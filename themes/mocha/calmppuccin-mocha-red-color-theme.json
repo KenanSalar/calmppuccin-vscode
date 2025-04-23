@@ -963,6 +963,7 @@
         "source.apex storage.type",
         "source.nim storage.type",
         "source.elm storage.type",
+        "keyword.control.flow",
         "keyword.control.loop",
         "keyword.control.conditional",
         "keyword.control.fun",
@@ -1061,6 +1062,18 @@
       "scope": ["constant.character.escape"],
       "settings": {
         "foreground": "#99a1f0",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "string template expression",
+      "scope": [
+        "punctuation.definition.template-expression",
+        "punctuation.definition.template-expression.begin",
+        "punctuation.definition.template-expression.end"
+      ],
+      "settings": {
+        "foreground": "#89b177",
         "fontStyle": ""
       }
     },

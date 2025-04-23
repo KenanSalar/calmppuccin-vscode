@@ -115,19 +115,19 @@
     "editorGhostText.border": "#00000000",
     "editorGhostText.foreground": "#c2cae970",
 
-    "editorBracketHighlight.foreground1": "#6aafbb",
-    "editorBracketHighlight.foreground2": "#76b6d4",
-    "editorBracketHighlight.foreground3": "#90c08b",
-    "editorBracketHighlight.foreground4": "#d1bc8e",
-    "editorBracketHighlight.foreground5": "#d8a382",
-    "editorBracketHighlight.foreground6": "#bd6e84",
+    "editorBracketHighlight.foreground1": "#6cb3c0",
+    "editorBracketHighlight.foreground2": "#78b9d8",
+    "editorBracketHighlight.foreground3": "#93c48d",
+    "editorBracketHighlight.foreground4": "#d4bf90",
+    "editorBracketHighlight.foreground5": "#dba583",
+    "editorBracketHighlight.foreground6": "#be6e85",
 
-    "editorBracketPairGuide.activeBackground1": "#6aafbbb0",
-    "editorBracketPairGuide.activeBackground2": "#76b6d4b0",
-    "editorBracketPairGuide.activeBackground3": "#90c08bb0",
-    "editorBracketPairGuide.activeBackground4": "#d1bc8eb0",
-    "editorBracketPairGuide.activeBackground5": "#d8a382b0",
-    "editorBracketPairGuide.activeBackground6": "#bd6e84b0",
+    "editorBracketPairGuide.activeBackground1": "#6cb3c0b0",
+    "editorBracketPairGuide.activeBackground2": "#78b9d8b0",
+    "editorBracketPairGuide.activeBackground3": "#93c48db0",
+    "editorBracketPairGuide.activeBackground4": "#d4bf90b0",
+    "editorBracketPairGuide.activeBackground5": "#dba583b0",
+    "editorBracketPairGuide.activeBackground6": "#be6e85b0",
 
     "editorBracketHighlight.unexpectedBracket.foreground": "#da98a3",
 
@@ -963,6 +963,7 @@
         "source.apex storage.type",
         "source.nim storage.type",
         "source.elm storage.type",
+        "keyword.control.flow",
         "keyword.control.loop",
         "keyword.control.conditional",
         "keyword.control.fun",
@@ -1061,6 +1062,18 @@
       "scope": ["constant.character.escape"],
       "settings": {
         "foreground": "#a5adf1",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "string template expression",
+      "scope": [
+        "punctuation.definition.template-expression",
+        "punctuation.definition.template-expression.begin",
+        "punctuation.definition.template-expression.end"
+      ],
+      "settings": {
+        "foreground": "#8bb677",
         "fontStyle": ""
       }
     },
