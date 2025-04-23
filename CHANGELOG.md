@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.8] - 2025-04-23
+
+- Changed button hover color
+- Changed secondary button background and hover color
+- Sidebar section header border is now more visible
+- Panel border is now matching the theme accents
+- Welcomepage title hover is now matching the theme
+
 ## [1.0.7] - 2025-04-23
 
 - Added keywords for control, flow and type
