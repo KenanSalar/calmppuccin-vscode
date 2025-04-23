@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.9] - 2025-04-23
+
+- Added string template expression highligghting
+- Improved bracket and bracket pair highlighting
+- Added control flow keyword for correct syntax highlighting
+
 ## [1.0.8] - 2025-04-23
 
 - Changed button hover color
