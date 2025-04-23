@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.0] - 2025-04-23
+
+- Added semantic highlighting for types
+- Changed entitiy.name.type from annotation to keywords
+
 ## [1.0.9] - 2025-04-23
 
 - Added string template expression highligghting
