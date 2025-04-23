@@ -940,6 +940,7 @@
         "keyword.type.char",
         "keyword.type.void",
         "entity.name.type",
+        "meta.type.annotation entity.name.type",
         "keyword.operator.expression.new",
         "variable.language.base",
         "variable.language.this",
@@ -1003,7 +1004,7 @@
     },
     {
       "name": "type parameter",
-      "scope": ["entity.name.type.type-parameter", "variable.type.type-parameter"],
+      "scope": ["entity.name.type.type-parameter", "variable.type.type-parameter", "meta.type.parameters entity.name.type"],
       "settings": {
         "foreground": "#e9bcaa",
         "fontStyle": "italic"
@@ -1229,13 +1230,10 @@
         "constant.other.symbol.hashkey.ruby",
         "constant.other.symbol.hashkey.ruby punctuation.definition.constant.ruby",
         "entity.name.type.annotation.kotlin",
-        "meta.type.parameters entity.name.type",
-        "meta.type.annotation entity.name.type",
         "punctuation.definition.typeparameters",
         "comment.block.documentation.phpdoc.php keyword.other.type.php",
         "punctuation.definition.storage.type.objc",
         "markup punctuation.definition",
-        "storage.type.powershell",
         "comment.block.documentation entity.name.type",
         "source.java storage.type",
         "source.groovy storage.type",
