@@ -985,6 +985,7 @@
         "keyword.control.catch",
         "keyword.control.finally",
         "keyword.control.try",
+        "keyword.control.trycatch",
         "keyword.control.throw",
         "keyword.control.else",
         "keyword.control.if",
