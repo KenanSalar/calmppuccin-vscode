@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.2] - 2025-04-24
+
+- More granular highlighting for types (meta.type.parameters entity.name.type; meta.type.annotation entity.name.type)
+
 ## [1.1.1] - 2025-04-24
 
 - Added trycatch keyword
