@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.7] - 2025-04-23
+
+- Added keywords for control, flow and type
+- Booleans are now highlighted as constants
+
 ## [1.0.6] - 2025-04-23
 
 - Changed syntax highlightinh for variables, parameters, typeparameters, comments, punctuation, regexcharacterclass, operators and text
