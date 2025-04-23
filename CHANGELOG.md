@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.6] - 2025-04-23
+
+- Changed syntax highlightinh for variables, parameters, typeparameters, comments, punctuation, regexcharacterclass, operators and text
+- Fixed boolean syntax highlighting
+- Changed bracked highlighting, inlay hints and symbol icon colors
+
 ## [1.0.5] - 2025-04-19
 
 - Changed editor hover widget colors to match the theme better.
