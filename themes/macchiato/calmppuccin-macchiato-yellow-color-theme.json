@@ -498,11 +498,11 @@
     "symbolIcon.fieldForeground": "#daa4c3",
     "symbolIcon.fileForeground": "#8bd5ca",
     "symbolIcon.folderForeground": "#8bd5ca",
-    "symbolIcon.functionForeground": "#8fc4ec",
+    "symbolIcon.functionForeground": "#81bdeb",
     "symbolIcon.interfaceForeground": "#e7d2a5",
     "symbolIcon.keyForeground": "#8bd5ca",
     "symbolIcon.keywordForeground": "#bba8e6",
-    "symbolIcon.methodForeground": "#8fc4ec",
+    "symbolIcon.methodForeground": "#81bdeb",
     "symbolIcon.moduleForeground": "#8bd5ca",
     "symbolIcon.namespaceForeground": "#8bd5ca",
     "symbolIcon.nullForeground": "#bba8e6",
@@ -515,7 +515,7 @@
     "symbolIcon.snippetForeground": "#f2cdcd",
     "symbolIcon.stringForeground": "#a8e2bf",
     "symbolIcon.structForeground": "#e4948e",
-    "symbolIcon.typeParameterForeground": "#e2b8a8",
+    "symbolIcon.typeParameterForeground": "#acb4e0",
     "symbolIcon.unitForeground": "#98dfc4",
     "symbolIcon.variableForeground": "#bbc4e0",
 
@@ -855,7 +855,7 @@
         "support.function.construct."
       ],
       "settings": {
-        "foreground": "#8fc4ec",
+        "foreground": "#81bdeb",
         "fontStyle": ""
       }
     },
@@ -1006,7 +1006,7 @@
       "name": "type parameter",
       "scope": ["entity.name.type.type-parameter", "variable.type.type-parameter", "meta.type.parameters entity.name.type"],
       "settings": {
-        "foreground": "#e2b8a8",
+        "foreground": "#acb4e0",
         "fontStyle": "italic"
       }
     },
@@ -1487,7 +1487,7 @@
         "source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json"
       ],
       "settings": {
-        "foreground": "#8fc4ec"
+        "foreground": "#81bdeb"
       }
     },
     {
@@ -1891,23 +1891,23 @@
       "fontStyle": ""
     },
     "function": {
-      "foreground": "#8fc4ec",
+      "foreground": "#81bdeb",
       "fontStyle": ""
     },
     "function.defaultLibrary": {
-      "foreground": "#8fc4ec",
+      "foreground": "#81bdeb",
       "fontStyle": ""
     },
     "method": {
-      "foreground": "#8fc4ec",
+      "foreground": "#81bdeb",
       "fontStyle": ""
     },
     "extensionMethod": {
-      "foreground": "#8fc4ec",
+      "foreground": "#81bdeb",
       "fontStyle": "italic"
     },
     "*.async": {
-      "foreground": "#8fc4ec",
+      "foreground": "#81bdeb",
       "fontStyle": ""
     },
     "delegate": {
@@ -1919,7 +1919,7 @@
       "fontStyle": "italic"
     },
     "typeParameter": {
-      "foreground": "#e2b8a8",
+      "foreground": "#acb4e0",
       "fontStyle": "italic"
     },
     "event": {
@@ -1935,7 +1935,7 @@
       "fontStyle": ""
     },
     "operatorOverload": {
-      "foreground": "#8fc4ec",
+      "foreground": "#81bdeb",
       "fontStyle": "bold"
     },
     "punctuation": {
