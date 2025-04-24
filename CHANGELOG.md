@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.3] - 2025-04-24
+
+- Updated the highlighting for type parameters. The new color now sits precisely between the keyword color and the parameter color
+- The function and method color has been made more prominent for dark themes to enhance visibility
+
 ## [1.1.2] - 2025-04-24
 
 - More granular highlighting for types (meta.type.parameters entity.name.type; meta.type.annotation entity.name.type)
