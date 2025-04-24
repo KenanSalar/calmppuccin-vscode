@@ -515,7 +515,7 @@
     "symbolIcon.snippetForeground": "#f2cdcd",
     "symbolIcon.stringForeground": "#4a996a",
     "symbolIcon.structForeground": "#d35950",
-    "symbolIcon.typeParameterForeground": "#c7926f",
+    "symbolIcon.typeParameterForeground": "#8270d2",
     "symbolIcon.unitForeground": "#33a177",
     "symbolIcon.variableForeground": "#4c4f69",
 
@@ -1006,7 +1006,7 @@
       "name": "type parameter",
       "scope": ["entity.name.type.type-parameter", "variable.type.type-parameter", "meta.type.parameters entity.name.type"],
       "settings": {
-        "foreground": "#c7926f",
+        "foreground": "#8270d2",
         "fontStyle": "italic"
       }
     },
@@ -1919,7 +1919,7 @@
       "fontStyle": "italic"
     },
     "typeParameter": {
-      "foreground": "#c7926f",
+      "foreground": "#8270d2",
       "fontStyle": "italic"
     },
     "event": {
