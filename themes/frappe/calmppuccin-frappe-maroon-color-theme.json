@@ -74,6 +74,7 @@
     "debugExceptionWidget.background": "#222532",
     "debugExceptionWidget.border": "#ea999c",
     "debugTokenExpression.number": "#a2abf8",
+    "debugTokenExpression.type": "#bba6eb",
     "debugTokenExpression.boolean": "#a2abf8",
     "debugTokenExpression.string": "#a6e7c0",
     "debugTokenExpression.error": "#d47b95",
