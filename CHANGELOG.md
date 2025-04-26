@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.4] - 2025-04-26
+
+- Fixed boolean and null symbol colors in all themes
+
 ## [1.1.3] - 2025-04-24
 
 - Updated the highlighting for type parameters. The new color now sits precisely between the keyword color and the parameter color
