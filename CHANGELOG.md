@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.6] - 2025-04-26
+
+- Changed event and delegage highlighting
+
 ## [1.1.5] - 2025-04-26
 
 - Added debugTokenExpression.type to all themes
