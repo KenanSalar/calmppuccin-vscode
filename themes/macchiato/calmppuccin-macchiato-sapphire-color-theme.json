@@ -495,7 +495,7 @@
     "symbolIcon.constructorForeground": "#ecb998",
     "symbolIcon.enumeratorForeground": "#a5adf1",
     "symbolIcon.enumeratorMemberForeground": "#a5adf1",
-    "symbolIcon.eventForeground": "#a5adf1",
+    "symbolIcon.eventForeground": "#a8dda1",
     "symbolIcon.fieldForeground": "#daa4c3",
     "symbolIcon.fileForeground": "#8bd5ca",
     "symbolIcon.folderForeground": "#8bd5ca",
@@ -1015,7 +1015,7 @@
       "name": "event",
       "scope": ["variable.other.event"],
       "settings": {
-        "foreground": "#a5adf1",
+        "foreground": "#a8dda1",
         "fontStyle": ""
       }
     },
@@ -1912,7 +1912,11 @@
       "fontStyle": ""
     },
     "delegate": {
-      "foreground": "#a5adf1",
+      "foreground": "#a4e0c4",
+      "fontStyle": ""
+    },
+    "event": {
+      "foreground": "#a8dda1",
       "fontStyle": ""
     },
     "parameter": {
@@ -1922,10 +1926,6 @@
     "typeParameter": {
       "foreground": "#acb4e0",
       "fontStyle": "italic"
-    },
-    "event": {
-      "foreground": "#a5adf1",
-      "fontStyle": ""
     },
     "number": {
       "foreground": "#a5adf1",
