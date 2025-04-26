@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.5] - 2025-04-26
+
+- Added debugTokenExpression.type to all themes
+
 ## [1.1.4] - 2025-04-26
 
 - Fixed boolean and null symbol colors in all themes
