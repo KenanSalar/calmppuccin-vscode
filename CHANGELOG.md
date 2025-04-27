@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.8] - 2025-04-27
+
+- Fixed event color for macchiato themes
+- Incresed brighness for enums, classes, structs and interfaces on all dark themes
+
 ## [1.1.7] - 2025-04-27
 
 - Changed event and delegage highlighting (delegates are now dark blue)
