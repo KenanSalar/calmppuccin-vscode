@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.7] - 2025-04-27
+
+- Changed event and delegage highlighting (delegates are now dark blue)
+- Adjusted interface, class, enum and struct colors
+  
 ## [1.1.6] - 2025-04-26
 
 - Changed event and delegage highlighting
