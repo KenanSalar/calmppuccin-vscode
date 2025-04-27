@@ -489,18 +489,18 @@
     "symbolIcon.textForeground": "#c6d0f5",
     "symbolIcon.arrayForeground": "#e2a47d",
     "symbolIcon.booleanForeground": "#a2abf8",
-    "symbolIcon.classForeground": "#f1bc98",
+    "symbolIcon.classForeground": "#e6be90",
     "symbolIcon.colorForeground": "#cfa0c2",
     "symbolIcon.constantForeground": "#a2abf8",
-    "symbolIcon.constructorForeground": "#f1bc98",
-    "symbolIcon.enumeratorForeground": "#a2abf8",
-    "symbolIcon.enumeratorMemberForeground": "#a2abf8",
-    "symbolIcon.eventForeground": "#a8e0a0",
+    "symbolIcon.constructorForeground": "#e6be90",
+    "symbolIcon.enumeratorForeground": "#e5a48a",
+    "symbolIcon.enumeratorMemberForeground": "#e5a48a",
+    "symbolIcon.eventForeground": "#a2e7c7",
     "symbolIcon.fieldForeground": "#e7abcd",
     "symbolIcon.fileForeground": "#8dddd1",
     "symbolIcon.folderForeground": "#8dddd1",
     "symbolIcon.functionForeground": "#7dbdee",
-    "symbolIcon.interfaceForeground": "#ebd4a2",
+    "symbolIcon.interfaceForeground": "#e0cfa6",
     "symbolIcon.keyForeground": "#8dddd1",
     "symbolIcon.keywordForeground": "#bba6eb",
     "symbolIcon.methodForeground": "#7dbdee",
@@ -508,14 +508,14 @@
     "symbolIcon.namespaceForeground": "#8dddd1",
     "symbolIcon.nullForeground": "#a2abf8",
     "symbolIcon.numberForeground": "#a2abf8",
-    "symbolIcon.objectForeground": "#f1bc98",
+    "symbolIcon.objectForeground": "#e6be90",
     "symbolIcon.operatorForeground": "#98e6c8",
     "symbolIcon.packageForeground": "#f2cdcd",
     "symbolIcon.propertyForeground": "#e295eb",
     "symbolIcon.referenceForeground": "#d6c08f",
     "symbolIcon.snippetForeground": "#f2cdcd",
     "symbolIcon.stringForeground": "#a6e7c0",
-    "symbolIcon.structForeground": "#ee968f",
+    "symbolIcon.structForeground": "#e4988c",
     "symbolIcon.typeParameterForeground": "#b0b4ef",
     "symbolIcon.unitForeground": "#98e6c8",
     "symbolIcon.variableForeground": "#bcc7e6",
@@ -792,7 +792,7 @@
       "name": "class",
       "scope": ["variable.other.class", "entity.name.type.class", "entity.name.type.cs"],
       "settings": {
-        "foreground": "#f1bc98",
+        "foreground": "#e6be90",
         "fontStyle": ""
       }
     },
@@ -800,7 +800,7 @@
       "name": "struct",
       "scope": ["variable.other.struct", "entity.name.type.struct"],
       "settings": {
-        "foreground": "#ee968f",
+        "foreground": "#e4988c",
         "fontStyle": ""
       }
     },
@@ -808,7 +808,7 @@
       "name": "enum",
       "scope": ["variable.other.enum", "entity.name.type.enum"],
       "settings": {
-        "foreground": "#a2abf8",
+        "foreground": "#e5a48a",
         "fontStyle": ""
       }
     },
@@ -816,15 +816,15 @@
       "name": "enum member",
       "scope": ["variable.other.enummember", "entity.name.type.enummember", "entity.name.variable.enum-member"],
       "settings": {
-        "foreground": "#a2abf8",
-        "fontStyle": "bold"
+        "foreground": "#e5a48a",
+        "fontStyle": "italic"
       }
     },
     {
       "name": "interface",
       "scope": ["variable.other.interface", "entity.name.type.interface"],
       "settings": {
-        "foreground": "#ebd4a2",
+        "foreground": "#e0cfa6",
         "fontStyle": ""
       }
     },
@@ -1015,7 +1015,7 @@
       "name": "event",
       "scope": ["variable.other.event"],
       "settings": {
-        "foreground": "#a8e0a0",
+        "foreground": "#a2e7c7",
         "fontStyle": ""
       }
     },
@@ -1479,7 +1479,7 @@
       "name": "JSON Key - Level 0",
       "scope": ["source.json meta.structure.dictionary.json support.type.property-name.json"],
       "settings": {
-        "foreground": "#f1bc98"
+        "foreground": "#e6be90"
       }
     },
     {
@@ -1524,7 +1524,7 @@
         "source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json"
       ],
       "settings": {
-        "foreground": "#ee968f"
+        "foreground": "#e4988c"
       }
     },
     {
@@ -1542,7 +1542,7 @@
         "source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json"
       ],
       "settings": {
-        "foreground": "#ebd4a2"
+        "foreground": "#e0cfa6"
       }
     },
     {
@@ -1590,7 +1590,7 @@
       "name": "Markdown - Section",
       "scope": ["entity.name.section.markdown"],
       "settings": {
-        "foreground": "#f1bc98"
+        "foreground": "#e6be90"
       }
     },
     {
@@ -1724,7 +1724,7 @@
         "entity.other.attribute-name.class.css punctuation.definition.entity.css"
       ],
       "settings": {
-        "foreground": "#f1bc98",
+        "foreground": "#e6be90",
         "fontStyle": ""
       }
     },
@@ -1840,40 +1840,40 @@
       "fontStyle": ""
     },
     "class": {
-      "foreground": "#f1bc98",
+      "foreground": "#e6be90",
       "fontStyle": ""
     },
     "class.defaultLibrary": {
-      "foreground": "#f1bc98",
+      "foreground": "#e6be90",
       "fontStyle": ""
     },
     "recordClass": {
-      "foreground": "#f1bc98",
+      "foreground": "#e6be90",
       "fontStyle": ""
     },
     "record": {
-      "foreground": "#f1bc98",
+      "foreground": "#e6be90",
       "fontStyle": ""
     },
     "struct": {
-      "foreground": "#ee968f",
+      "foreground": "#e4988c",
       "fontStyle": ""
     },
     "recordStruct": {
-      "foreground": "#ee968f",
+      "foreground": "#e4988c",
       "fontStyle": ""
     },
     "interface": {
-      "foreground": "#ebd4a2",
+      "foreground": "#e0cfa6",
       "fontStyle": ""
     },
     "enum": {
-      "foreground": "#a2abf8",
+      "foreground": "#e5a48a",
       "fontStyle": ""
     },
     "enumMember": {
-      "foreground": "#a2abf8",
-      "fontStyle": "bold"
+      "foreground": "#e5a48a",
+      "fontStyle": "italic"
     },
     "field": {
       "foreground": "#e7abcd",
@@ -1912,11 +1912,11 @@
       "fontStyle": ""
     },
     "delegate": {
-      "foreground": "#a4e6c7",
+      "foreground": "#6fa3e7",
       "fontStyle": ""
     },
     "event": {
-      "foreground": "#a8e0a0",
+      "foreground": "#a2e7c7",
       "fontStyle": ""
     },
     "parameter": {
@@ -1976,7 +1976,7 @@
       "fontStyle": ""
     },
     "regexCharacterClass": {
-      "foreground": "#f1bc98",
+      "foreground": "#e6be90",
       "fontStyle": "italic"
     },
     "markupComment": {
