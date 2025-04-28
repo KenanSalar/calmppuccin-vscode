@@ -793,7 +793,7 @@
     },
     {
       "name": "class",
-      "scope": ["variable.other.class", "entity.name.type.class", "entity.name.type.cs"],
+      "scope": ["variable.other.class", "entity.name.type.class", "variable.other.object"],
       "settings": {
         "foreground": "#e4bf96",
         "fontStyle": ""
@@ -1099,14 +1099,6 @@
       ],
       "settings": {
         "foreground": "#99a1f0",
-        "fontStyle": ""
-      }
-    },
-    {
-      "name": "variable object",
-      "scope": ["variable.other.object"],
-      "settings": {
-        "foreground": "#d39fbd",
         "fontStyle": ""
       }
     },
