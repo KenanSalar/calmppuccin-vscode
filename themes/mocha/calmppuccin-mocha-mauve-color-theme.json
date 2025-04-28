@@ -999,7 +999,8 @@
         "keyword.control.case",
         "keyword.control.default",
         "keyword.control.async",
-        "keyword.control.await"
+        "keyword.control.await",
+        "keyword.control.context"
       ],
       "settings": {
         "foreground": "#b5a4dd",
