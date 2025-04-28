@@ -718,7 +718,8 @@
         "source.tf meta.template.expression",
         "source.scala entity.name.import",
         "markup.code",
-        "markup.fenced_code.block"
+        "markup.fenced_code.block",
+        "variable.other.object"
       ],
       "settings": {
         "foreground": "#bbc4df",
@@ -793,7 +794,7 @@
     },
     {
       "name": "class",
-      "scope": ["variable.other.class", "entity.name.type.class", "variable.other.object"],
+      "scope": ["variable.other.class", "entity.name.type.class"],
       "settings": {
         "foreground": "#e4bf96",
         "fontStyle": ""
