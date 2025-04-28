@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.1] - 2025-04-28
+
+- Switched "variable.other.object" to the variable scope because it makes more sense
+
 ## [1.2.0] - 2025-04-28
 
 - Deleted entity.name.type.cs from the class scope and added variable.other.object to the class scope
