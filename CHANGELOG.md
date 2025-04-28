@@ -1,6 +1,10 @@
 # Changelog
 
-## [1.1.8] - 2025-04-28
+## [1.2.0] - 2025-04-28
+
+- Deleted entity.name.type.cs from the class scope and added variable.other.object to the class scope
+
+## [1.1.9] - 2025-04-28
 
 - Added keyword.control.context in the keyword section of all themes (for example it affects the color of the keyword 'using')
 
