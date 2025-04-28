@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.8] - 2025-04-28
+
+- Added keyword.control.context in the keyword section of all themes (for example it affects the color of the keyword 'using')
+
 ## [1.1.8] - 2025-04-27
 
 - Fixed event color for macchiato themes
