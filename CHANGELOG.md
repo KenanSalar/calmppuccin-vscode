@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2] - 2025-04-29
+
+- Removed unnecessary ".cs" scopes
+- entity.name.type.namespace is now working for any language
+- Updated screenshots
+- Increased the size of the cat in the logo
+
 ## [1.2.1] - 2025-04-28
 
 - Switched "variable.other.object" to the variable scope because it makes more sense
