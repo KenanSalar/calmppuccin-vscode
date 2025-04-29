@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.3] - 2025-04-29
+
+- Added keyword.other.directive to the keyword scope
+
 ## [1.2.2] - 2025-04-29
 
 - Removed unnecessary ".cs" scopes
