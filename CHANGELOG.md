@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.4] - 2025-04-29
+
+- Consolidated class-related scopes under a single "class" name, including variable.other.object, variable.other.class, entity.name.type, entity.name.type.class, and support.class
+- Removed entity.name.type from the keyword scope to avoid conflicts
+- Added several scopes to the keyword control scope for better highlighting of control flow elements, including support.type.sys-types, support.type, support.other.namespace, and support.other.namespace.use
+- Now even with this command set to false:
+
+    ```json
+    "editor.semanticHighlighting.enabled": false
+    ```
+
+    you can code with ease (but I highly recommend setting it to true in your settings.json, as instructed in the README)
+
 ## [1.2.3] - 2025-04-29
 
 - Added keyword.other.directive to the keyword scope
