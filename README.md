@@ -5,7 +5,7 @@
 <hr/>
 <br/>
 <div align="center">
-    <img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/preview/preview.png" alt="Preview" width="750" height="550">
+    <img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/preview/preview.png" alt="Preview" width="775" height="550">
 </div>
 
 ## Previews
@@ -17,17 +17,17 @@
 
 <details>
 <summary>🪴 Frappé</summary>
-<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/frappe-green.png" alt="Latte" width="800" height="´250">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/frappe-green.png" alt="Frappé" width="800" height="´250">
 </details>
 
 <details>
 <summary>🌺 Macchiato</summary>
-<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/macchiato-mauve.png" alt="Latte" width="800" height="´250">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/macchiato-sapphire.png" alt="Macchiato" width="800" height="´250">
 </details>
 
 <details>
 <summary>🌿 Mocha</summary>
-<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/mocha-blue.png" alt="Latte" width="800" height="´250">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/mocha-maroon.png" alt="Mocha" width="800" height="´250">
 </details>
 
 <br/>
