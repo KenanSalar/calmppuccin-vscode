@@ -969,6 +969,7 @@
         "source.apex storage.type",
         "source.nim storage.type",
         "source.elm storage.type",
+        "keyword.other.directive",
         "keyword.control.flow",
         "keyword.control.loop",
         "keyword.control.conditional",
