@@ -714,12 +714,11 @@
         "meta.embedded.block variable punctuation.definition.variable.php",
         "string.quoted.double.class.other",
         "source.toml keyword",
-        "support.type.nim",
         "source.tf meta.template.expression",
         "source.scala entity.name.import",
         "markup.code",
         "markup.fenced_code.block",
-        "variable.other.object"
+        "entity.name"
       ],
       "settings": {
         "foreground": "#bbc4df",
@@ -793,8 +792,14 @@
       }
     },
     {
-      "name": "namespace",
-      "scope": ["entity.name.namespace", "entity.name.type.namespace"],
+      "name": "class",
+      "scope": [
+        "variable.other.object",
+        "variable.other.class",
+        "entity.name.type",
+        "entity.name.type.class",
+        "support.class"
+      ],
       "settings": {
         "foreground": "#e4bf96",
         "fontStyle": ""
@@ -943,7 +948,6 @@
         "keyword.type.byte",
         "keyword.type.char",
         "keyword.type.void",
-        "entity.name.type",
         "meta.type.annotation entity.name.type",
         "keyword.operator.expression.new",
         "variable.language.base",
@@ -1001,7 +1005,11 @@
         "keyword.control.default",
         "keyword.control.async",
         "keyword.control.await",
-        "keyword.control.context"
+        "keyword.control.context",
+        "support.type.sys-types",
+        "support.type",
+        "support.other.namespace",
+        "support.other.namespace.use"
       ],
       "settings": {
         "foreground": "#b5a4dd",
@@ -1346,17 +1354,8 @@
       }
     },
     {
-      "name": "Class, Support",
-      "scope": [
-        "entity.name",
-        "support.type",
-        "support.class",
-        "support.other.namespace.use.php",
-        "meta.use.php",
-        "support.other.namespace.php",
-        "markup.changed.git_gutter",
-        "support.type.sys-types"
-      ],
+      "name": "git-changed-gutter",
+      "scope": ["markup.changed.git_gutter"],
       "settings": {
         "foreground": "#c7a058"
       }

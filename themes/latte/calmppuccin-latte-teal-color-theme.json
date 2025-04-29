@@ -714,12 +714,11 @@
         "meta.embedded.block variable punctuation.definition.variable.php",
         "string.quoted.double.class.other",
         "source.toml keyword",
-        "support.type.nim",
         "source.tf meta.template.expression",
         "source.scala entity.name.import",
         "markup.code",
         "markup.fenced_code.block",
-        "variable.other.object"
+        "entity.name"
       ],
       "settings": {
         "foreground": "#4c4f69",
@@ -772,7 +771,10 @@
         "constant.language.empty-list.haskell",
         "constant.language.unit.fsharp",
         "source.reason constant.language.unit",
+        "constant.others",
+        "constant.numeric",
         "constant.language",
+        "constant.language.boolean",
         "onstant.language.undefined",
         "constant.language.null"
       ],
@@ -790,8 +792,14 @@
       }
     },
     {
-      "name": "namespace",
-      "scope": ["entity.name.namespace", "entity.name.type.namespace"],
+      "name": "class",
+      "scope": [
+        "variable.other.object",
+        "variable.other.class",
+        "entity.name.type",
+        "entity.name.type.class",
+        "support.class"
+      ],
       "settings": {
         "foreground": "#be7c3f",
         "fontStyle": ""
@@ -940,7 +948,6 @@
         "keyword.type.byte",
         "keyword.type.char",
         "keyword.type.void",
-        "entity.name.type",
         "meta.type.annotation entity.name.type",
         "keyword.operator.expression.new",
         "variable.language.base",
@@ -998,7 +1005,11 @@
         "keyword.control.default",
         "keyword.control.async",
         "keyword.control.await",
-        "keyword.control.context"
+        "keyword.control.context",
+        "support.type.sys-types",
+        "support.type",
+        "support.other.namespace",
+        "support.other.namespace.use"
       ],
       "settings": {
         "foreground": "#8f4fe4",
@@ -1343,19 +1354,10 @@
       }
     },
     {
-      "name": "Class, Support",
-      "scope": [
-        "entity.name",
-        "support.type",
-        "support.class",
-        "support.other.namespace.use.php",
-        "meta.use.php",
-        "support.other.namespace.php",
-        "markup.changed.git_gutter",
-        "support.type.sys-types"
-      ],
+      "name": "git-changed-gutter",
+      "scope": ["markup.changed.git_gutter"],
       "settings": {
-        "foreground": "#c7a058"
+        "foreground": "#c79333"
       }
     },
     {
