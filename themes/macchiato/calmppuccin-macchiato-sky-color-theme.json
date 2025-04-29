@@ -783,7 +783,7 @@
     },
     {
       "name": "namespace",
-      "scope": ["entity.name.namespace", "entity.name.type.namespace.cs"],
+      "scope": ["entity.name.namespace", "entity.name.type.namespace"],
       "settings": {
         "foreground": "#8bd5ca",
         "fontStyle": ""
@@ -791,7 +791,7 @@
     },
     {
       "name": "namespace",
-      "scope": ["entity.name.namespace", "entity.name.type.namespace.cs"],
+      "scope": ["entity.name.namespace", "entity.name.type.namespace"],
       "settings": {
         "foreground": "#e6bf94",
         "fontStyle": ""
@@ -836,7 +836,6 @@
         "support.type.property-name",
         "support.type.vendored.property-name",
         "entity.name.function",
-        "entity.name.function.cs",
         "string.other.link",
         "markup.link",
         "support.type.vendored",
@@ -1104,7 +1103,6 @@
       "name": "field",
       "scope": [
         "entity.name.variable.field",
-        "entity.name.variable.field.cs",
         "variable.other.field",
         "variable.other.object.field",
         "text.xml entity.other.attribute-name"
@@ -1119,7 +1117,6 @@
       "scope": [
         "variable.other.object.property",
         "variable.object.property",
-        "variable.other.object.property.cs",
         "variable.other.property",
         "entity.name.variable.property",
         "meta.object-literal.key",
