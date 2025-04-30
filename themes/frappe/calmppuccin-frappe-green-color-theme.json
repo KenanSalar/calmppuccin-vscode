@@ -515,7 +515,7 @@
     "symbolIcon.referenceForeground": "#d6c08f",
     "symbolIcon.snippetForeground": "#f2cdcd",
     "symbolIcon.stringForeground": "#a6e7c0",
-    "symbolIcon.structForeground": "#e4998f",
+    "symbolIcon.structForeground": "#e6978d",
     "symbolIcon.typeParameterForeground": "#b0b4ef",
     "symbolIcon.unitForeground": "#98e6c8",
     "symbolIcon.variableForeground": "#bcc7e6",
@@ -1274,7 +1274,7 @@
       ],
       "settings": {
         "foreground": "#8dddd1",
-        "fontStyle": "italic",
+        "fontStyle": "italic"
       }
     },
     {
