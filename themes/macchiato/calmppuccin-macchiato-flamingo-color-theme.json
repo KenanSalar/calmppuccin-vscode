@@ -515,7 +515,7 @@
     "symbolIcon.referenceForeground": "#d6c08f",
     "symbolIcon.snippetForeground": "#f2cdcd",
     "symbolIcon.stringForeground": "#a8e2bf",
-    "symbolIcon.structForeground": "#e0978e",
+    "symbolIcon.structForeground": "#e2988e",
     "symbolIcon.typeParameterForeground": "#acb4e0",
     "symbolIcon.unitForeground": "#98dfc4",
     "symbolIcon.variableForeground": "#bbc4e0",
