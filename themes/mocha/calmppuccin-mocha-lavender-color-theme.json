@@ -515,7 +515,7 @@
     "symbolIcon.referenceForeground": "#d6c08f",
     "symbolIcon.snippetForeground": "#f2cdcd",
     "symbolIcon.stringForeground": "#a4dbba",
-    "symbolIcon.structForeground": "#db8781",
+    "symbolIcon.structForeground": "#dd968d",
     "symbolIcon.typeParameterForeground": "#A9B0DA",
     "symbolIcon.unitForeground": "#96dbc1",
     "symbolIcon.variableForeground": "#bbc4df",
@@ -674,9 +674,11 @@
         "string constant.other.placeholder",
         "variable.object",
         "support",
+        "entity.name.module",
         "meta.toc-list.id.html",
         "source.json meta.structure.dictionary.json support.type.property-name.json",
         "meta.var.clojure",
+        "source.java meta.class.body.java",
         "entity.name.package.go",
         "source.c",
         "source.cpp",
@@ -686,6 +688,9 @@
         "source.ruby",
         "source.coffee.embedded.source",
         "source.coffee",
+        "storage.modifier.import",
+        "storage.modifier.package",
+        "punctuation.definition.annotation",
         "source.groovy.embedded.source",
         "punctuation.definition.variable",
         "source.powershell",
@@ -753,6 +758,7 @@
         "source.reason constant.language.list",
         "support.variable.class.hideshow",
         "entity.other.attribute-name.class",
+        "meta.attribute.id entity.other.attribute-name",
         "text.html entity.other.attribute-name",
         "meta.tag.attributes entity.other.attribute-name",
         "source.cs entity.other.attribute-name",
@@ -767,8 +773,6 @@
         "constant.language.empty-list.haskell",
         "constant.language.unit.fsharp",
         "source.reason constant.language.unit",
-        "constant.other",
-        "constant.other.caps",
         "constant.others",
         "constant.numeric",
         "constant.language",
@@ -784,14 +788,6 @@
     {
       "name": "namespace",
       "scope": ["entity.name.namespace", "entity.name.type.namespace"],
-      "settings": {
-        "foreground": "#81c2ba",
-        "fontStyle": ""
-      }
-    },
-    {
-      "name": "module",
-      "scope": ["entity.name.module"],
       "settings": {
         "foreground": "#81c2ba",
         "fontStyle": ""
@@ -815,7 +811,7 @@
       "name": "struct",
       "scope": ["variable.other.struct", "entity.name.type.struct"],
       "settings": {
-        "foreground": "#db8781",
+        "foreground": "#dd968d",
         "fontStyle": ""
       }
     },
@@ -837,7 +833,7 @@
     },
     {
       "name": "interface",
-      "scope": ["variable.other.interface", "entity.name.type.interface", "entity.name.type.trait"],
+      "scope": ["variable.other.interface", "entity.name.type.interface"],
       "settings": {
         "foreground": "#d8caa5",
         "fontStyle": ""
@@ -880,12 +876,6 @@
         "keyword.other.template",
         "keyword.other.substitution",
         "storage.modifier",
-        "storage.modifier.import",
-        "storage.modifier.package",
-        "storage.type.core.rust",
-        "storage.class.std.rust",
-        "entity.name.type.primitive",
-        "entity.name.lifetime.rust",
         "meta.tag.sgml",
         "constant.other.color",
         "entity.name.section",
@@ -911,6 +901,7 @@
         "source.kotlin storage.type.package",
         "constant.string.documentation.powershell",
         "punctuation.section.directive",
+        "punctuation.definition.attribute",
         "punctuation.definition.preprocessor",
         "punctuation.separator.namespace",
         "punctuation.separator.method",
@@ -928,6 +919,7 @@
         "variable.language.this",
         "variable.parameter.function.language.special",
         "variable.language.special.self.python",
+        "storage.modifier.java",
         "storage.type",
         "storage.type.type",
         "storage.type.modifier",
@@ -962,9 +954,10 @@
         "keyword.operator.expression.new",
         "variable.language.base",
         "variable.language.this",
-        "keyword.other.rust",
         "keyword.other.static",
         "keyword.other.using",
+        "storage.type.annotation",
+        "punctuation.definition.annotation",
         "variable.language",
         "keyword.operator.expression",
         "keyword.type.char",
@@ -985,7 +978,6 @@
         "keyword.other.directive",
         "keyword.local",
         "keyword.control.lua",
-        "keyword.control.java",
         "keyword.control.flow",
         "keyword.control.loop",
         "keyword.control.conditional",
@@ -1116,7 +1108,6 @@
         "source.toml constant",
         "source.zig keyword.constant.bool",
         "source.zig keyword.constant.default",
-        "entity.name.type.numeric",
         "entity.other.keyframe-offset.percentage"
       ],
       "settings": {
@@ -1252,12 +1243,16 @@
         "punctuation.definition.storage.type.objc",
         "markup punctuation.definition",
         "comment.block.documentation entity.name.type",
+        "source.java storage.type",
         "source.groovy storage.type",
-        "storage.type.annotation",
-        "punctuation.definition.annotation",
+        "storage.type.r",
         "source.haskell storage.type",
         "punctuation.separator.clause-head-body",
         "source.go storage.type",
+        "storage.type.core.rust",
+        "storage.class.std.rust",
+        "storage.modifier.lifetime.rust",
+        "entity.name.lifetime.rust",
         "support.type.vb",
         "support.type.julia",
         "constant.other.reference",
@@ -1273,8 +1268,7 @@
         "markup.mark"
       ],
       "settings": {
-        "foreground": "#81c2ba",
-        "fontStyle": "italic"
+        "foreground": "#6daf96"
       }
     },
     {
@@ -1400,22 +1394,9 @@
     },
     {
       "name": "Attributes",
-      "scope": [
-        "entity.other.attribute-name",
-        "entity.other.attribute-name.pseudo-class",
-        "meta.attribute.id entity.other.attribute-name"
-      ],
+      "scope": ["entity.other.attribute-name", "entity.other.attribute-name.pseudo-class"],
       "settings": {
-        "foreground": "#d39fbd",
-        "fontStyle": ""
-      }
-    },
-    {
-      "name": "attributes italic",
-      "scope": ["punctuation.definition.attribute", "meta.attribute.rust"],
-      "settings": {
-        "foreground": "#d39fbd",
-        "fontStyle": "italic"
+        "foreground": "#d39fbd"
       }
     },
     {
@@ -1423,21 +1404,21 @@
       "scope": ["text.html.basic entity.other.attribute-name.html", "text.html.basic entity.other.attribute-name"],
       "settings": {
         "fontStyle": "italic",
-        "foreground": "#d39fbd"
+        "foreground": "#c5a873"
       }
     },
     {
       "name": "CSS Classes",
       "scope": ["entity.other.attribute-name.class"],
       "settings": {
-        "foreground": "#e4bf96"
+        "foreground": "#d8ac5a"
       }
     },
     {
       "name": "CSS ID's",
       "scope": ["source.sass keyword.control"],
       "settings": {
-        "foreground": "#99a1f0"
+        "foreground": "#6a89ce"
       }
     },
     {
@@ -1541,7 +1522,7 @@
         "source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json"
       ],
       "settings": {
-        "foreground": "#db8781"
+        "foreground": "#dd968d"
       }
     },
     {
@@ -1852,10 +1833,6 @@
       "foreground": "#81c2ba",
       "fontStyle": ""
     },
-    "namespace.attribute": {
-      "foreground": "#71c2b8",
-      "fontStyle": "italic"
-    },
     "module": {
       "foreground": "#81c2ba",
       "fontStyle": ""
@@ -1877,11 +1854,11 @@
       "fontStyle": ""
     },
     "struct": {
-      "foreground": "#db8781",
+      "foreground": "#dd968d",
       "fontStyle": ""
     },
     "recordStruct": {
-      "foreground": "#db8781",
+      "foreground": "#dd968d",
       "fontStyle": ""
     },
     "interface": {
@@ -1899,14 +1876,6 @@
     "field": {
       "foreground": "#d39fbd",
       "fontStyle": ""
-    },
-    "attribute": {
-      "foreground": "#d39fbd",
-      "fontStyle": ""
-    },
-    "attributeBracket": {
-      "foreground": "#d39fbd",
-      "fontStyle": "italic"
     },
     "property": {
       "foreground": "#d18fd8",
@@ -1994,7 +1963,7 @@
     },
     "annotation": {
       "foreground": "#81c2ba",
-      "fontStyle": "italic"
+      "fontStyle": ""
     },
     "comment": {
       "foreground": "#858aa0",
