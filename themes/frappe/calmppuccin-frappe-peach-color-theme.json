@@ -974,6 +974,8 @@
         "source.nim storage.type",
         "source.elm storage.type",
         "keyword.other.directive",
+        "keyword.local",
+        "keyword.control.lua",
         "keyword.control.flow",
         "keyword.control.loop",
         "keyword.control.conditional",
