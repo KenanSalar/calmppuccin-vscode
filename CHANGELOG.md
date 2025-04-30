@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.6] - 2025-04-30
+
+- Fixed numerous highlighting issues
+- Added amodule and attribute italic to the texMate scope
+- Added namespace.attribute, attribute and attributeBracket to the semantic scope
+- Annotations are now italic
+
 ## [1.2.5] - 2025-04-30
 
 - Added keyword.local and keyword.control.lua to the keyword scope
