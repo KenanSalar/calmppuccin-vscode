@@ -1161,34 +1161,53 @@
       }
     },
     {
+      "name": "razor comment",
+      "scope": [
+        "keyword.control.razor.comment",
+        "keyword.control.razor.comment.star",
+        "meta.comment.razor keyword.control.cshtml.transition"
+      ],
+      "settings": {
+        "foreground": "#7C7F93",
+        "fontStyle": "italic"
+      }
+    },
+    {
       "name": "razor directive",
+      "scope": ["keyword.control.cshtml.transition"],
+      "settings": {
+        "foreground": "#3fa091",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "razor directive italic",
       "scope": [
         "keyword.control.razor.directive",
+        "keyword.control.razor.directive.page",
+        "keyword.control.razor.directive.inherits",
         "keyword.control.razor.directive.code",
-        "keyword.control.razor.comment.star",
-        "keyword.control.cshtml.transition",
-        "keyword.control.cshtml",
         "keyword.control.razor.directive.codeblock",
         "keyword.control.razor.directive.codeblock.open",
         "keyword.control.razor.directive.codeblock.close"
       ],
       "settings": {
-        "foreground": "#554af0",
-        "fontStyle": ""
+        "foreground": "#3fa091",
+        "fontStyle": "italic"
       }
     },
     {
       "name": "Colors",
       "scope": ["constant.other.color"],
       "settings": {
-        "foreground": "#667e42"
+        "foreground": "#2fb0e4"
       }
     },
     {
       "name": "Meta selector",
       "scope": ["meta.selector"],
       "settings": {
-        "foreground": "#667e42"
+        "foreground": "#2fb0e4"
       }
     },
     {
@@ -1280,11 +1299,8 @@
     {
       "name": "support",
       "scope": [
-        "entity.name",
         "entity.other",
-        "support.orther.namespace.use.php",
         "meta.use.php",
-        "support.other.namespace.php",
         "support.type",
         "support.class",
         "punctuation.definition.parameters",
@@ -1496,7 +1512,7 @@
       "name": "JSON Key - Level 0",
       "scope": ["source.json meta.structure.dictionary.json support.type.property-name.json"],
       "settings": {
-        "foreground": "#be7c3f"
+        "foreground": "#428bc4"
       }
     },
     {
@@ -1505,7 +1521,7 @@
         "source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json"
       ],
       "settings": {
-        "foreground": "#428bc4"
+        "foreground": "#b265bb"
       }
     },
     {
@@ -1514,7 +1530,7 @@
         "source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json"
       ],
       "settings": {
-        "foreground": "#b980a0"
+        "foreground": "#be7c3f"
       }
     },
     {
@@ -1523,7 +1539,7 @@
         "source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json"
       ],
       "settings": {
-        "foreground": "#cf8799"
+        "foreground": "#b980a0"
       }
     },
     {
@@ -1532,7 +1548,7 @@
         "source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json"
       ],
       "settings": {
-        "foreground": "#554af0"
+        "foreground": "#cf8799"
       }
     },
     {
@@ -1541,7 +1557,7 @@
         "source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json"
       ],
       "settings": {
-        "foreground": "#d35950"
+        "foreground": "#554af0"
       }
     },
     {
@@ -1550,7 +1566,7 @@
         "source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json"
       ],
       "settings": {
-        "foreground": "#b265bb"
+        "foreground": "#d35950"
       }
     },
     {
@@ -1575,7 +1591,7 @@
       "name": "Markdown - Plain",
       "scope": ["text.html.markdown", "punctuation.definition.list_item.markdown", "meta.paragraph.markdown"],
       "settings": {
-        "foreground": "#667e42"
+        "foreground": "#2fb0e4"
       }
     },
     {
@@ -1817,7 +1833,7 @@
       "name": "text",
       "scope": ["text"],
       "settings": {
-        "foreground": "#667e42",
+        "foreground": "#2fb0e4",
         "fontStyle": ""
       }
     }
@@ -2001,7 +2017,7 @@
       "fontStyle": "italic"
     },
     "text": {
-      "foreground": "#667e42",
+      "foreground": "#2fb0e4",
       "fontStyle": ""
     },
     "regexCharacterClass": {
@@ -2044,16 +2060,24 @@
       "foreground": "#7C7F93",
       "fontStyle": "italic"
     },
-    "razorTransition": {
-      "foreground": "#554af0",
+    "razorCommentTransition": {
+      "foreground": "#7C7F93",
       "fontStyle": "italic"
     },
+    "razorCommentStar": {
+      "foreground": "#7C7F93",
+      "fontStyle": "italic"
+    },
+    "razorTransition": {
+      "foreground": "#3fa091",
+      "fontStyle": ""
+    },
     "razorDirective": {
-      "foreground": "#554af0",
+      "foreground": "#3fa091",
       "fontStyle": "italic"
     },
     "razorDirectiveAttribute": {
-      "foreground": "#554af0",
+      "foreground": "#b980a0",
       "fontStyle": "italic"
     },
     "razorComponentElement": {
