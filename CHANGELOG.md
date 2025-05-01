@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.2.7] - 2025-05-01
+
+- Changed many scopes to represent the palette accents better with a less or more intense color
+  - classes -> `peach`
+  - interfaces/traits -> `yellow`
+  - enums -> `maroon`
+  - structs -> `red`
+  - functions/methods -> `blue`
+  - parameters -> `sapphire`
+  - fields/attributes -> `pink`
+  - properties -> `mauve`
+  - constants -> `lavender` (but far more intense)
+  - strings -> `green`
+  - text -> `sky`
+- Improved highlighting for razor files (directives, transitions, attributes and comments)
+- Changed JSON highlighting
+
 ## [1.2.6] - 2025-04-30
 
 - Fixed numerous highlighting issues
