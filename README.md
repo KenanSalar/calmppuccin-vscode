@@ -5,14 +5,14 @@
 <hr/>
 <br/>
 <div align="center">
-    <img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/preview/preview.png" alt="Preview" width="775" height="550">
+    <img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/preview/preview.png" alt="Preview" width="900" height="675">
 </div>
 
 ## Previews
 
 <details>
 <summary>🌻 Latte</summary>
-<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/latte-yellow.png" alt="Latte" width="800" height="´250">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/latte-mauve.png" alt="Latte" width="800" height="´250">
 </details>
 
 <details>
@@ -32,7 +32,7 @@
 
 <details>
 <summary>🪻 Nitro Cold Brew</summary>
-<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/mocha-maroon.png" alt="Nitro Cold Brew" width="800" height="´250">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/nitro-cold-brew-teal.png" alt="Nitro Cold Brew" width="800" height="´250">
 </details>
 
 ## Calmppuccin: A Soothing and Optimized VS Code Theme
