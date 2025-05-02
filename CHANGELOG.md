@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.8] - 2025-05-02
+
+- Removed a redundant scope and commands
+- Added `Nitro Cold Brew` theme, including all accent variations
+  - Nitro Cold Brew offers an even darker palette with more subdued syntax highlighting.
+  - Perfect for coding at night or in extremely dark environments-like pitch-black rooms (or cellars, if you’re one of those people 😄)
+
 ## [1.2.7] - 2025-05-01
 
 - Changed many scopes to represent the palette accents better with a less or more intense color
