@@ -341,7 +341,72 @@
       {
         "label": "Calmppuccin Nitro Cold Brew Blue",
         "uiTheme": "vs-dark",
-        "path": "./themes/nitro-cold-brew//calmppuccin-nitro-cold-brew-blue-color-theme.json"
+        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-blue-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Nitro Cold Brew Flamingo",
+        "uiTheme": "vs-dark",
+        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-flamingo-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Nitro Cold Brew Green",
+        "uiTheme": "vs-dark",
+        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-green-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Nitro Cold Brew Lavender",
+        "uiTheme": "vs-dark",
+        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-lavender-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Nitro Cold Brew Maroon",
+        "uiTheme": "vs-dark",
+        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-maroon-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Nitro Cold Brew Mauve",
+        "uiTheme": "vs-dark",
+        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-mauve-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Nitro Cold Brew Peach",
+        "uiTheme": "vs-dark",
+        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-peach-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Nitro Cold Brew Pink",
+        "uiTheme": "vs-dark",
+        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-pink-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Nitro Cold Brew Red",
+        "uiTheme": "vs-dark",
+        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-red-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Nitro Cold Brew Rosewater",
+        "uiTheme": "vs-dark",
+        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-rosewater-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Nitro Cold Brew Sapphire",
+        "uiTheme": "vs-dark",
+        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-sapphire-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Nitro Cold Brew Sky",
+        "uiTheme": "vs-dark",
+        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-sky-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Nitro Cold Brew Teal",
+        "uiTheme": "vs-dark",
+        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-teal-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Nitro Cold Brew Yellow",
+        "uiTheme": "vs-dark",
+        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-yellow-color-theme.json"
       }
     ]
   }

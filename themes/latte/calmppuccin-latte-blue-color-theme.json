@@ -1302,8 +1302,6 @@
       "scope": [
         "entity.other",
         "meta.use.php",
-        "support.type",
-        "support.class",
         "punctuation.definition.parameters",
         "support.function.construct",
         "markup.changed.git_gutter",
@@ -1385,13 +1383,6 @@
       "scope": ["markup.changed.git_gutter"],
       "settings": {
         "foreground": "#c79333"
-      }
-    },
-    {
-      "name": "Entity Types",
-      "scope": ["support.type"],
-      "settings": {
-        "foreground": "#91a5ad"
       }
     },
     {
