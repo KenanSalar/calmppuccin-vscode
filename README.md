@@ -30,58 +30,123 @@
 <img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/mocha-maroon.png" alt="Mocha" width="800" height="´250">
 </details>
 
-<br/>
+<details>
+<summary>🪻 Nitro Cold Brew</summary>
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/mocha-maroon.png" alt="Nitro Cold Brew" width="800" height="´250">
+</details>
 
 ## Calmppuccin: A Soothing and Optimized VS Code Theme
 
-Calmppuccin is a visually refined theme for Visual Studio Code, designed to<br/>
+Calmppuccin is a visually refined theme for Visual Studio Code, designed to\
 offer a harmonious coding experience. Inspired by the popular
-<a href="https://marketplace.visualstudio.com/items?itemName=Catppuccin.catppuccin-vsc">Catppuccin theme</a>, <br/>
-Calmppuccin takes the beloved pastel palette and transforms it into a gentler, <br/>
+[Catppuccin theme](https://marketplace.visualstudio.com/items?itemName=Catppuccin.catppuccin-vsc)\
+Calmppuccin takes the beloved pastel palette and transforms it into a gentler,\
 less intense version, perfect for long coding sessions without eye strain.
 
+## Installation
+
+To install the Calmppuccin extension in Visual Studio Code, open the Extensions view\
+by clicking the Extensions icon in the Activity Bar or pressing `Ctrl+Shift+X`. In the search bar,\
+enter `Calmppuccin`, locate the extension in the results, and select Install to add it to your editor.
 
 ## Key Features
 
 - **Enhanced Syntax Highlighting:**
-Carefully optimized color choices ensure clear and <br/>
+Carefully optimized color choices ensure clear and\
 distinguishable syntax elements, making code easier to read and navigate.
 
 - **Reduced Eye Strain:**
-Subtle and muted tones create a calming workspace that <br/>
-minimizes visual fatigue, ideal for developers working for extended periods.
+Subtle and muted tones create a calming workspace that\
+minimizes visual fatigue, ideal for developers working for extended periods.\
+Also with a new theme variant called `Nitro Cold Brew`, which is even darker and more subdued.
 
-- **Aesthetic Balance:** Strikes the perfect balance between functionality and beauty,<br/>
+- **Aesthetic Balance:** Strikes the perfect balance between functionality and beauty,\
 blending soothing colors with practical design.
 
-- **Customizable:** Offers flexibility to tweak background colors, text shades, and <br/>
+- **Customizable:** Offers flexibility to tweak background colors, text shades, and\
 accents to suit individual preferences.
 
 ### 🎨 Accents
-*   `Blue`
-*   `Flamingo`
-*   `Green`
-*   `Lavender`
-*   `Maroon`
-*   `Mauve`
-*   `Peach`
-*   `Pink`
-*   `Red`
-*   `Rosewater`
-*   `Sapphire`
-*   `Sky`
-*   `Teal`
-*   `Yellow`
 
-<hr/>
+- `Blue`
+- `Flamingo`
+- `Green`
+- `Lavender`
+- `Maroon`
+- `Mauve`
+- `Peach`
+- `Pink`
+- `Red`
+- `Rosewater`
+- `Sapphire`
+- `Sky`
+- `Teal`
+- `Yellow`
 
-Calmppuccin is more than just a theme—it's an invitation to code in comfort and style. <br/>
-Whether you're debugging complex codebases or crafting new projects, Calmppuccin <br/>
+---
+
+Calmppuccin is more than just a theme—it's an invitation to code in comfort and style.\
+Whether you're debugging complex codebases or crafting new projects, Calmppuccin\
 ensures your workspace remains a serene and productive environment.
 
-Ensure you have semantic highlighting enabled in your `settings.json` by adding or <br/>
+## Recommendations
+
+Ensure you have semantic highlighting enabled in your `settings.json` by adding or\
 verifying this line:
 
 ```json
 "editor.semanticHighlighting.enabled": true
 ```
+
+You could also use it witout semantic highlighting, but it's not recommended.
+
+### Icons
+
+- **Note:** These extensions are not required, but it provides a more consistent icon set.\
+**Catppuccin Icons for VSCode:** Mocha icons for nitro cold brew and mocha themes, the others are self-explanatory.
+
+- **Recommended:** [Catppuccin Icons for VSCode](https://marketplace.visualstudio.com/items?itemName=Catppuccin.catppuccin-vsc-icons)
+- **Alternative 1:** [Atom Material Icons](https://marketplace.visualstudio.com/items/?itemName=AtomMaterial.a-file-icon-vscode)
+- **Alternative 2:** [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme)
+
+### Font and Font Settings
+
+- **Editor Font:** `Monaspace Neon` or alternatively `JetBrains Mono`
+
+  - **Note:** Font weight is set to "normal" which is the default weight for both fonts.\
+  If you want to customize it, vscode supports font weight from 100 to 900 (400 is normal).\
+  Change the font size to your preference (e.g. `"editor.fontSize": 15`).
+
+  [Download Monaspace Neon](https://github.com/githubnext/monaspace)
+
+  [Download Jetbrains Mono](https://github.com/JetBrains/JetBrainsMono)
+
+  - Settings for Monaspace Neon:
+
+  ```json
+  "editor.fontFamily": "'Monaspace Neon', monospace",
+  "editor.fontLigatures": "'calt', 'liga', 'ss01', 'ss02', 'ss03', 'ss04', 'ss05', 'ss06', 'ss07', 'ss08', 'ss09', 'cv01' 2",
+  "editor.fontWeight": "normal"
+  ```
+
+  - Settings for Jetbrains Mono:
+
+  ```json
+  "editor.fontFamily": "'Jetbrains Mono', monospace",
+  "editor.fontLigatures": true,
+  "editor.fontWeight": "normal"
+  ```
+  
+  ---
+
+- **Terminal Font:** `Jetbrains Mono Nerd Font`
+
+  [Download Jetbrains Mono Nerd Font](https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/JetBrainsMono)
+
+  - Settings for Jetbrains Mono Nerd Font:
+  
+  ```json
+  "terminal.integrated.fontFamily": "'JetbrainsMono Nerd Font', monospace",
+  "terminal.integrated.cursorStyle": "line",
+  "terminal.integrated.fontWeight": "normal"
+  ```
