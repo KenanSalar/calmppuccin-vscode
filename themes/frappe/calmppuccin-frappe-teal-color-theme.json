@@ -962,6 +962,7 @@
         "keyword.operator.expression.new",
         "variable.language.base",
         "variable.language.this",
+        "variable.language.discard",
         "keyword.other.rust",
         "keyword.other.static",
         "keyword.other.using",
@@ -1301,8 +1302,6 @@
       "scope": [
         "entity.other",
         "meta.use.php",
-        "support.type",
-        "support.class",
         "punctuation.definition.parameters",
         "support.function.construct",
         "markup.changed.git_gutter",
@@ -1384,13 +1383,6 @@
       "scope": ["markup.changed.git_gutter"],
       "settings": {
         "foreground": "#cca356"
-      }
-    },
-    {
-      "name": "Entity Types",
-      "scope": ["support.type"],
-      "settings": {
-        "foreground": "#91a5ad"
       }
     },
     {
