@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.9] - 2025-05-03
+
+- Added some commands for different scopes for better highlighting
+
 ## [1.2.8] - 2025-05-02
 
 - Removed a redundant scope and commands
