@@ -804,6 +804,7 @@
         "variable.other.class",
         "entity.name.type",
         "entity.name.type.class",
+        "entity.name.class",
         "support.class"
       ],
       "settings": {
@@ -813,7 +814,7 @@
     },
     {
       "name": "struct",
-      "scope": ["variable.other.struct", "entity.name.type.struct"],
+      "scope": ["variable.other.struct", "entity.name.type.struct", "entity.name.struct"],
       "settings": {
         "foreground": "#dd8ba2",
         "fontStyle": ""
@@ -821,7 +822,7 @@
     },
     {
       "name": "enum",
-      "scope": ["variable.other.enum", "entity.name.type.enum"],
+      "scope": ["variable.other.enum", "entity.name.type.enum", "entity.name.enum"],
       "settings": {
         "foreground": "#cf959f",
         "fontStyle": ""
@@ -829,7 +830,13 @@
     },
     {
       "name": "enum member",
-      "scope": ["variable.other.enummember", "entity.name.type.enummember", "entity.name.variable.enum-member"],
+      "scope": [
+        "variable.other.enummember",
+        "entity.name.type.enummember",
+        "entity.name.variable.enum-member",
+        "entity.name.enumMember",
+        "entity.name.enummember"
+      ],
       "settings": {
         "foreground": "#cf959f",
         "fontStyle": "italic"
@@ -837,7 +844,7 @@
     },
     {
       "name": "interface",
-      "scope": ["variable.other.interface", "entity.name.type.interface", "entity.name.type.trait"],
+      "scope": ["variable.other.interface", "entity.name.type.interface", "entity.name.type.trait", "entity.name.interface"],
       "settings": {
         "foreground": "#d6c59d",
         "fontStyle": ""
@@ -985,6 +992,9 @@
         "source.elm storage.type",
         "keyword.other.directive",
         "keyword.local",
+        "keyword.keys",
+        "keyword.control.ahk2",
+        "keyword.control.directive",
         "keyword.control.lua",
         "keyword.control.java",
         "keyword.control.flow",
@@ -1233,6 +1243,7 @@
         "keyword.operator.null-conditional",
         "keyword.operator.nullable-type",
         "punctuation.accessor",
+        "punctuation.definition.colon",
         "keyword.operator.ternary"
       ],
       "settings": {
@@ -1270,6 +1281,7 @@
         "punctuation.definition.typeparameters",
         "comment.block.documentation.phpdoc.php keyword.other.type.php",
         "punctuation.definition.storage.type.objc",
+        "punctuation.definition.directive",
         "markup punctuation.definition",
         "comment.block.documentation entity.name.type",
         "source.groovy storage.type",
@@ -1411,7 +1423,8 @@
       "scope": [
         "entity.other.attribute-name",
         "entity.other.attribute-name.pseudo-class",
-        "meta.attribute.id entity.other.attribute-name"
+        "meta.attribute.id entity.other.attribute-name",
+        "entity.other.attribute"
       ],
       "settings": {
         "foreground": "#cca6c1",
