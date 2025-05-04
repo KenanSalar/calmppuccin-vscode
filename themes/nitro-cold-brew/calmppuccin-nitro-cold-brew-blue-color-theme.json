@@ -783,7 +783,12 @@
     },
     {
       "name": "namespace",
-      "scope": ["entity.name.namespace", "entity.name.type.namespace"],
+      "scope": [
+        "entity.name.namespace",
+        "entity.name.type.namespace",
+        "support.other.namespace",
+        "punctuation.separator.namespace.access"
+      ],
       "settings": {
         "foreground": "#7cb9b2",
         "fontStyle": ""
@@ -805,7 +810,9 @@
         "entity.name.type",
         "entity.name.type.class",
         "entity.name.class",
-        "support.class"
+        "support.class",
+        "support.class.builtin",
+        "entity.other.inherited-class"
       ],
       "settings": {
         "foreground": "#d8aa8d",
@@ -924,7 +931,6 @@
         "keyword.control punctuation.definition.function",
         "source.ocaml variable.interpolation string",
         "source.reason variable.interpolation",
-        "punctuation.definition.directive",
         "keyword.other.class.fileds",
         "source.toml entity.other.attribute-name",
         "source.css entity.name.tag.custom",
@@ -950,6 +956,7 @@
         "storage.type.interface",
         "storage.type.struct",
         "storage.type.enum",
+        "storage.type.numeric",
         "keyword.type",
         "keyword.type.primitive",
         "keyword.type.string",
@@ -973,6 +980,11 @@
         "keyword.other.rust",
         "keyword.other.static",
         "keyword.other.using",
+        "keyword.other.use",
+        "keyword.other.new",
+        "keyword.other.namespace",
+        "keyword.other.type",
+        "keyword.other.typedef",
         "variable.language",
         "keyword.operator.expression",
         "keyword.type.char",
@@ -996,12 +1008,15 @@
         "keyword.control.ahk2",
         "keyword.control.directive",
         "keyword.control.lua",
+        "keyword.control.c",
+        "keyword.control.cpp",
         "keyword.control.java",
         "keyword.control.flow",
         "keyword.control.loop",
         "keyword.control.conditional",
         "keyword.control.fun",
         "keyword.control.class",
+        "keyword.control.declare",
         "keyword.control.def",
         "keyword.control.import",
         "keyword.control.export",
@@ -1019,8 +1034,10 @@
         "keyword.control.throw",
         "keyword.control.else",
         "keyword.control.if",
+        "keyword.control.elseif",
         "keyword.control.do",
         "keyword.control.while",
+        "keyword.control.goto",
         "keyword.control.for",
         "keyword.control.foreach",
         "keyword.control.switch",
@@ -1031,8 +1048,8 @@
         "keyword.control.context",
         "support.type.sys-types",
         "support.type",
-        "support.other.namespace",
-        "support.other.namespace.use"
+        "support.other.namespace.use",
+        "meta.use"
       ],
       "settings": {
         "foreground": "#ada7d3",
@@ -1244,6 +1261,7 @@
         "keyword.operator.nullable-type",
         "punctuation.accessor",
         "punctuation.definition.colon",
+        "punctuation.separator.scope-resolution",
         "keyword.operator.ternary"
       ],
       "settings": {
@@ -1282,6 +1300,8 @@
         "comment.block.documentation.phpdoc.php keyword.other.type.php",
         "punctuation.definition.storage.type.objc",
         "punctuation.definition.directive",
+        "punctuation.section.embedded",
+        "punctuation.separator.inheritance",
         "markup punctuation.definition",
         "comment.block.documentation entity.name.type",
         "source.groovy storage.type",
@@ -1297,7 +1317,6 @@
         "source.reason support.type string",
         "support.class.crystal",
         "storage.type.integral",
-        "support.class.builtin",
         "source.tf meta.keyword.string",
         "source.tf meta.keyword.number",
         "source.scala entity.name.class",
@@ -1313,7 +1332,6 @@
       "name": "support",
       "scope": [
         "entity.other",
-        "meta.use.php",
         "punctuation.definition.parameters",
         "support.function.construct",
         "markup.changed.git_gutter",
