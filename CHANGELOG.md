@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.0] - 2025-05-04
+
+- Expanding the scope of the namespace token to include `support.other.namespace` and `punctuation.separator.namespace.access` for better identification of namespace-related code
+- Adding `support.class.builtin` and `entity.other.inherited-class` to the class token scope, improving the highlighting of built-in and inherited classes
+- Adding `storage.type.numeric` to the type token scope
+- Adding several keywords such as `use`, `new`, `namespace`, `type`, and `typedef` to the keyword token scope for improved keyword highlighting
+- Adding several control keywords for C, C++, php, python, etc.
+- Improved punctuation highlighting
+- These changes provide a more consistent and accurate syntax highlighting experience across different languages and code structures
+
 ## [1.2.9] - 2025-05-03
 
 - Added some commands for different scopes for better highlighting
