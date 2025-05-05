@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.1] - 2025-05-05
+
+- Delegates are now displayed in italic style and use the `Flamingo` accent color
+
 ## [1.3.0] - 2025-05-04
 
 - Expanding the scope of the namespace token to include `support.other.namespace` and `punctuation.separator.namespace.access` for better identification of namespace-related code
