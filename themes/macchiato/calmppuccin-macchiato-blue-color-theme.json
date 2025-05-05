@@ -1980,8 +1980,8 @@
       "fontStyle": ""
     },
     "delegate": {
-      "foreground": "#78a2e6",
-      "fontStyle": ""
+      "foreground": "#e9c6c6",
+      "fontStyle": "italic"
     },
     "event": {
       "foreground": "#a3e0c4",
