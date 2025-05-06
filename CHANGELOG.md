@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.3] - 2025-05-06
+
+- Fixed scope for `support.variable`
+
 ## [1.3.2] - 2025-05-06
 
 - Delegates and type parameters are not itlaic anymore
