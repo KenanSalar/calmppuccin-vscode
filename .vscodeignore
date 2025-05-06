@@ -1,4 +1,7 @@
+assets/images/preview/**
+assets/images/screenshots/**
+.gitattributes
+.gitignore
 .vscode/**
 .vscode-test/**
-.gitignore
 vsc-extension-quickstart.md
