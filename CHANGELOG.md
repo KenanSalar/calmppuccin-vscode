@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.2] - 2025-05-06
+
+- Delegates and type parameters are not itlaic anymore
+- Parameters are now using the `Rosewater` accent color
+- Type parameter colors are now a blend of the parameter color and the type color (quite fitting, don’t you think?)
+- Added various commands to the corresponding scopes for better highlighting
+- Improved the brightness of syntax highlighting for all dark themes
+- Updated screenshots and the preview image
+
 ## [1.3.1] - 2025-05-05
 
 - Delegates are now displayed in italic style and use the `Flamingo` accent color
@@ -23,7 +32,7 @@
 - Removed a redundant scope and commands
 - Added `Nitro Cold Brew` theme, including all accent variations
   - Nitro Cold Brew offers an even darker palette with more subdued syntax highlighting.
-  - Perfect for coding at night or in extremely dark environments-like pitch-black rooms (or cellars, if you’re one of those people 😄)
+  - Perfect for coding at night or in extremely dark environments like pitch black rooms (or cellars, if you’re one of those people 😄)
 
 ## [1.2.7] - 2025-05-01
 
