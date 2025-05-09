@@ -409,6 +409,11 @@
         "label": "Calmppuccin Nitro Cold Brew Yellow",
         "uiTheme": "vs-dark",
         "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-yellow-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Oledppuccin Blue",
+        "uiTheme": "vs-dark",
+        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-blue-color-theme.json"
       }
     ]
   }
