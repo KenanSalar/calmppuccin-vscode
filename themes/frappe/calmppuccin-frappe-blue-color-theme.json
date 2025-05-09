@@ -622,8 +622,8 @@
     "titleBar.inactiveForeground": "#c6d0f580",
     "titleBar.border": "#585b7000",
 
-    "tree.indentGuidesStroke": "#787d92",
-    "tree.inactiveIndentGuidesStroke": "#45475a",
+    "tree.indentGuidesStroke": "#8ca9eeec",
+    "tree.inactiveIndentGuidesStroke": "#5b5e77",
     "toolbar.hoverBackground": "#5d5f6260",
 
     "walkThrough.embeddedEditorBackground": "#2f3344",
@@ -1112,7 +1112,8 @@
         "source.scala punctuation.definition.character",
         "constant.character.literal.scala",
         "source.tf entity.name",
-        "string.quoted.double"
+        "string.quoted.double",
+        "string.unquoted"
       ],
       "settings": {
         "foreground": "#ade6a7",
