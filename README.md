@@ -5,7 +5,7 @@
 <hr/>
 <br/>
 <div align="center">
-    <img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/preview/preview.png" alt="Preview" width="900" height="675">
+    <img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/preview/preview.png" alt="Preview" width="820" height="800">
 </div>
 
 ## Previews
@@ -35,6 +35,11 @@
 <img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/nitro-cold-brew-teal.png" alt="Nitro Cold Brew" width="800" height="´250">
 </details>
 
+<details>
+<summary>🐾 Oledppuccin</summary>
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/oledppuccin-pink.png" alt="Oledppuccin" width="800" height="´250">
+</details>
+
 ## Calmppuccin: A Soothing and Optimized VS Code Theme
 
 Calmppuccin is a visually refined theme for Visual Studio Code, designed to\
@@ -58,7 +63,8 @@ distinguishable syntax elements, making code easier to read and navigate.
 - **Reduced Eye Strain:**
 Subtle and muted tones create a calming workspace that\
 minimizes visual fatigue, ideal for developers working for extended periods.\
-Also with a new theme variant called `Nitro Cold Brew`, which is even darker and more subdued.
+Also with new theme variants like `Nitro Cold Brew` (even darker and more subdued) and\
+`Oledppuccin`, specifically designed for OLED screens and pitch-black rooms.
 
 - **Aesthetic Balance:** Strikes the perfect balance between functionality and beauty,\
 blending soothing colors with practical design.
@@ -85,7 +91,7 @@ accents to suit individual preferences.
 
 ---
 
-Calmppuccin is more than just a theme—it's an invitation to code in comfort and style.\
+Calmppuccin is more than just a theme, it's an invitation to code in comfort and style.\
 Whether you're debugging complex codebases or crafting new projects, Calmppuccin\
 ensures your workspace remains a serene and productive environment.
 
@@ -103,7 +109,7 @@ You could also use it witout semantic highlighting, but it's not recommended.
 ### Icons
 
 - **Note:** These extensions are not required, but it provides a more consistent icon set.\
-**Catppuccin Icons for VSCode:** Mocha icons for nitro cold brew and mocha themes, the others are self-explanatory.
+**Catppuccin Icons for VSCode:** Mocha icons for nitro cold brew, mocha and oledppuccin themes, the others are self-explanatory.
 
 - **Recommended:** [Catppuccin Icons for VSCode](https://marketplace.visualstudio.com/items?itemName=Catppuccin.catppuccin-vsc-icons)
 - **Alternative 1:** [Atom Material Icons](https://marketplace.visualstudio.com/items/?itemName=AtomMaterial.a-file-icon-vscode)

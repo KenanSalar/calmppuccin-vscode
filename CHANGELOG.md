@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.4] - 2025-05-10
+
+- Major improvements to the latte themes
+- Added `Oledppuccin` theme, including all accent variations; providing users with more options for darker, OLED-friendly color palettes (perfect for OLED screens and pitch black room setups)
+- Adjusted `tree.indentGuidesStroke` and `tree.inactiveIndentGuidesStroke` on all themes to match the accent colors
+- Updated screenshots and the preview image
+
 ## [1.3.3] - 2025-05-06
 
 - Fixed scope for `support.variable`
