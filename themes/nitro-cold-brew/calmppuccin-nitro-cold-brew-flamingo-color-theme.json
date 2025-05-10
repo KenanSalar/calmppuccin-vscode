@@ -622,7 +622,7 @@
     "titleBar.inactiveForeground": "#a7aec580",
     "titleBar.border": "#4f526400",
 
-    "tree.indentGuidesStroke": "#787d92",
+    "tree.indentGuidesStroke": "#ddbbbbd0",
     "tree.inactiveIndentGuidesStroke": "#404253",
     "toolbar.hoverBackground": "#5d5f6260",
 
@@ -1112,7 +1112,8 @@
         "source.scala punctuation.definition.character",
         "constant.character.literal.scala",
         "source.tf entity.name",
-        "string.quoted.double"
+        "string.quoted.double",
+        "string.unquoted"
       ],
       "settings": {
         "foreground": "#a8d1a4",
