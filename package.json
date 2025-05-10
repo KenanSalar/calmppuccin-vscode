@@ -409,6 +409,76 @@
         "label": "Calmppuccin Nitro Cold Brew Yellow",
         "uiTheme": "vs-dark",
         "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-yellow-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Oledppuccin Blue",
+        "uiTheme": "vs-dark",
+        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-blue-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Oledppuccin Flamingo",
+        "uiTheme": "vs-dark",
+        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-flamingo-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Oledppuccin Green",
+        "uiTheme": "vs-dark",
+        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-green-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Oledppuccin Lavender",
+        "uiTheme": "vs-dark",
+        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-lavender-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Oledppuccin Maroon",
+        "uiTheme": "vs-dark",
+        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-maroon-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Oledppuccin Mauve",
+        "uiTheme": "vs-dark",
+        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-mauve-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Oledppuccin Peach",
+        "uiTheme": "vs-dark",
+        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-peach-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Oledppuccin Pink",
+        "uiTheme": "vs-dark",
+        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-pink-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Oledppuccin Red",
+        "uiTheme": "vs-dark",
+        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-red-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Oledppuccin Rosewater",
+        "uiTheme": "vs-dark",
+        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-rosewater-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Oledppuccin Sapphire",
+        "uiTheme": "vs-dark",
+        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-sapphire-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Oledppuccin Sky",
+        "uiTheme": "vs-dark",
+        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-sky-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Oledppuccin Teal",
+        "uiTheme": "vs-dark",
+        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-teal-color-theme.json"
+      },
+      {
+        "label": "Calmppuccin Oledppuccin Yellow",
+        "uiTheme": "vs-dark",
+        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-yellow-color-theme.json"
       }
     ]
   }
