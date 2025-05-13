@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.3.5] - 2025-05-13
+
+- Resolved an issue where the interfaces in the `Mocha` and `Nitro Cold Brew` themes appeared excessively bright
+- Fixed frappe theme's escape character color
+
 ## [1.3.4] - 2025-05-10
 
 - Major improvements to the latte themes
