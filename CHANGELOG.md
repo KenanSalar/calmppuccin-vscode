@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.6] - 2025-05-16
+
+- Added scopes for log files
+- Improved info and error colors across all themes
+- Adjusted debug colors for latte themes
+
 ## [1.3.5] - 2025-05-13
 
 - Resolved an issue where the interfaces in the `Mocha` and `Nitro Cold Brew` themes appeared excessively bright
