@@ -899,6 +899,7 @@
         "constant.string.documentation.powershell",
         "entity.name.lifetime.rust",
         "entity.name.section",
+        "entity.name.section.group-title.editorconfig",
         "entity.name.type.primitive",
         "entity.other.attribute-name.pseudo-element",
         "keyword.contro.rust",
@@ -1077,7 +1078,8 @@
         "variable.language.special.self.python",
         "variable.language.this",
         "variable.language.this",
-        "variable.parameter.function.language.special"
+        "variable.parameter.function.language.special",
+        "keyword.other.definition"
       ],
       "settings": {
         "foreground": "#b8b0e4",
@@ -1933,7 +1935,7 @@
     },
     {
       "name": "text",
-      "scope": ["text"],
+      "scope": ["text", "source.ignore"],
       "settings": {
         "foreground": "#a0d6e2",
         "fontStyle": ""
