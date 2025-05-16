@@ -1101,6 +1101,54 @@
       }
     },
     {
+      "name": "log date",
+      "scope": ["log.date"],
+      "settings": {
+        "foreground": "#b1b9d1",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "log info",
+      "scope": ["log.info"],
+      "settings": {
+        "foreground": "#7698cf",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "log text and constant",
+      "scope": ["text.log", "log.constant"],
+      "settings": {
+        "foreground": "#98c7d1",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "log debug",
+      "scope": ["log.debug"],
+      "settings": {
+        "foreground": "#bf9de6",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "log exceptiontype",
+      "scope": ["log.exceptiontype"],
+      "settings": {
+        "foreground": "#a8d1a4",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "log error",
+      "scope": ["log.error"],
+      "settings": {
+        "foreground": "#d17a94",
+        "fontStyle": ""
+      }
+    },
+    {
       "name": "string",
       "scope": [
         "string",
