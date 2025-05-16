@@ -546,10 +546,10 @@
     "terminal.background": "#0b0b11",
     "terminal.foreground": "#8c92a7",
     "terminal.ansiBlack": "#333542",
-    "terminal.ansiRed": "#bb7187",
+    "terminal.ansiRed": "#bd7087",
     "terminal.ansiGreen": "#85b480",
     "terminal.ansiYellow": "#bba981",
-    "terminal.ansiBlue": "#6f8ebe",
+    "terminal.ansiBlue": "#708fc0",
     "terminal.ansiMagenta": "#ad8ba4",
     "terminal.ansiCyan": "#78afa9",
     "terminal.ansiWhite": "#959baf",
@@ -1097,6 +1097,54 @@
       "scope": ["variable.other.event"],
       "settings": {
         "foreground": "#8ebda7",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "log date",
+      "scope": ["log.date"],
+      "settings": {
+        "foreground": "#a2a8bb",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "log info",
+      "scope": ["log.info"],
+      "settings": {
+        "foreground": "#708fc0",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "log text and constant",
+      "scope": ["text.log", "log.constant"],
+      "settings": {
+        "foreground": "#8db4bd",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "log debug",
+      "scope": ["log.debug"],
+      "settings": {
+        "foreground": "#a78ac5",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "log exceptiontype",
+      "scope": ["log.exceptiontype"],
+      "settings": {
+        "foreground": "#96b694",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "log error",
+      "scope": ["log.error"],
+      "settings": {
+        "foreground": "#bd7087",
         "fontStyle": ""
       }
     },

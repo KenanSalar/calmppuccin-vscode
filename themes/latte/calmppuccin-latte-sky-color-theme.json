@@ -77,26 +77,26 @@
     "debugTokenExpression.type": "#8f4fe4",
     "debugTokenExpression.boolean": "#4a5af0",
     "debugTokenExpression.string": "#4a996a",
-    "debugTokenExpression.error": "#d47b95",
-    "debugIcon.breakpointForeground": "#d47b95",
-    "debugIcon.breakpointDisabledForeground": "#d47b9599",
+    "debugTokenExpression.error": "#d20f39",
+    "debugIcon.breakpointForeground": "#d20f39",
+    "debugIcon.breakpointDisabledForeground": "#d20f3999",
     "debugIcon.breakpointUnverifiedForeground": "#a6738c",
     "debugIcon.breakpointCurrentStackframeForeground": "#585b70",
     "debugIcon.breakpointStackframeForeground": "#585b70",
-    "debugIcon.startForeground": "#95ce8f",
-    "debugIcon.pauseForeground": "#87aae2",
-    "debugIcon.stopForeground": "#d47b95",
+    "debugIcon.startForeground": "#40a02b",
+    "debugIcon.pauseForeground": "#5282cf",
+    "debugIcon.stopForeground": "#d20f39",
     "debugIcon.disconnectForeground": "#585b70",
     "debugIcon.restartForeground": "#3fa091",
     "debugIcon.stepOverForeground": "#0396cf",
     "debugIcon.stepIntoForeground": "#474a63",
     "debugIcon.stepOutForeground": "#474a63",
-    "debugIcon.continueForeground": "#95ce8f",
+    "debugIcon.continueForeground": "#40a02b",
     "debugIcon.stepBackForeground": "#585b70",
-    "debugConsole.infoForeground": "#87aae2",
-    "debugConsole.warningForeground": "#e9b391",
-    "debugConsole.errorForeground": "#d47b95",
-    "debugConsole.sourceForeground": "#c9b4b0",
+    "debugConsole.infoForeground": "#5282cf",
+    "debugConsole.warningForeground": "#fe640b",
+    "debugConsole.errorForeground": "#d20f39",
+    "debugConsole.sourceForeground": "#c58a7e",
     "debugConsoleInputIcon.foreground": "#474a63",
 
     "diffEditor.border": "#5e617e",
@@ -579,32 +579,32 @@
     "terminalCommandDecoration.errorBackground": "#d20f39",
 
     "testing.runAction": "#0396cf",
-    "testing.iconErrored": "#d47b95",
-    "testing.iconFailed": "#d47b95",
-    "testing.iconPassed": "#95ce8f",
-    "testing.iconQueued": "#87aae2",
+    "testing.iconErrored": "#d20f39",
+    "testing.iconFailed": "#d20f39",
+    "testing.iconPassed": "#40a02b",
+    "testing.iconQueued": "#5282cf",
     "testing.iconUnset": "#474a63",
     "testing.iconSkipped": "#a6adc8",
-    "testing.iconErrored.retired": "#d47b95",
-    "testing.iconFailed.retired": "#d47b95",
-    "testing.iconPassed.retired": "#95ce8f",
-    "testing.iconQueued.retired": "#87aae2",
+    "testing.iconErrored.retired": "#d20f39",
+    "testing.iconFailed.retired": "#d20f39",
+    "testing.iconPassed.retired": "#40a02b",
+    "testing.iconQueued.retired": "#5282cf",
     "testing.iconUnset.retired": "#474a63",
     "testing.iconSkipped.retired": "#a6adc8",
     "testing.peekBorder": "#0396cf",
     "testing.peekHeaderBackground": "#585b70",
-    "testing.message.error.lineBackground": "#d47b9526",
-    "testing.message.info.decorationForeground": "#95ce8fcc",
-    "testing.message.info.lineBackground": "#95ce8f26",
+    "testing.message.error.lineBackground": "#d20f3926",
+    "testing.message.info.decorationForeground": "#40a02bcc",
+    "testing.message.info.lineBackground": "#40a02b26",
     "testing.messagePeekBorder": "#0396cf",
     "testing.messagePeekHeaderBackground": "#585b70",
-    "testing.coveredBackground": "#95ce8f4d",
+    "testing.coveredBackground": "#40a02b4d",
     "testing.coveredBorder": "#00000000",
-    "testing.coveredGutterBackground": "#95ce8f4d",
-    "testing.uncoveredBranchBackground": "#d47b9533",
-    "testing.uncoveredBackground": "#d47b9533",
+    "testing.coveredGutterBackground": "#40a02b4d",
+    "testing.uncoveredBranchBackground": "#d20f3933",
+    "testing.uncoveredBackground": "#d20f3933",
     "testing.uncoveredBorder": "#00000000",
-    "testing.uncoveredGutterBackground": "#d47b9540",
+    "testing.uncoveredGutterBackground": "#d20f3940",
     "testing.coverCountBadgeBackground": "#00000000",
     "testing.coverCountBadgeForeground": "#0396cf",
 
@@ -1097,6 +1097,54 @@
       "scope": ["variable.other.event"],
       "settings": {
         "foreground": "#8de652",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "log date",
+      "scope": ["log.date"],
+      "settings": {
+        "foreground": "#474a63",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "log info",
+      "scope": ["log.info"],
+      "settings": {
+        "foreground": "#1c5ee4",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "log text and constant",
+      "scope": ["text.log", "log.constant"],
+      "settings": {
+        "foreground": "#2ba3d3",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "log debug",
+      "scope": ["log.debug"],
+      "settings": {
+        "foreground": "#9a3ba5",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "log exceptiontype",
+      "scope": ["log.exceptiontype"],
+      "settings": {
+        "foreground": "#459163",
+        "fontStyle": ""
+      }
+    },
+    {
+      "name": "log error",
+      "scope": ["log.error"],
+      "settings": {
+        "foreground": "#d20f39",
         "fontStyle": ""
       }
     },
