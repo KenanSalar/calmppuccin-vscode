@@ -885,7 +885,9 @@
         "source.tf support.class",
         "support.function",
         "support.function.construct.",
-        "meta.group.simple.subexpression.powershell"
+        "meta.group.simple.subexpression.powershell",
+        "keyword.other.special-method",
+        "entity.name.command.shell"
       ],
       "settings": {
         "foreground": "#89abe2",
@@ -1079,7 +1081,22 @@
         "variable.language.this",
         "variable.language.this",
         "variable.parameter.function.language.special",
-        "keyword.other.definition"
+        "keyword.other.definition",
+        "keyword.control.shell",
+        "keyword.control.then.shell",
+        "keyword.control.fi.shell",
+        "keyword.control.for.shell",
+        "keyword.control.in.shell",
+        "keyword.control.while.shell",
+        "keyword.control.if.shell",
+        "keyword.control.then.shell",
+        "keyword.control.else.shell",
+        "keyword.control.elif.shell",
+        "keyword.control.do.shell",
+        "keyword.control.done.shell",
+        "keyword.control.case.shell",
+        "keyword.control.esac.shell",
+        "keyword.control.select.shell"
       ],
       "settings": {
         "foreground": "#b0a9d6",
@@ -1935,7 +1952,7 @@
     },
     {
       "name": "text",
-      "scope": ["text", "source.ignore"],
+      "scope": ["text", "source.ignore", "source.dockerfile"],
       "settings": {
         "foreground": "#98c7d1",
         "fontStyle": ""
