@@ -1,6 +1,12 @@
 # Changelog
 
-## [1.3.6] - 2025-05-17
+## [1.3.8] - 2025-06-09
+
+- Added highlighting for shell control flow keywords (if, then, else, for, while, case, etc.)highlighting
+- Added highlighting for special methods and shell commands
+- Included `source.dockerfile` in the scope for text highlighting to improve Dockerfile readability.
+
+## [1.3.7] - 2025-05-17
 
 - Added `entity.name.section.group-title.editorconfig` and `keyword.other.definition` to the keyword scope for .ediotrconfig highlighting
 - Added `source.ignore` to the text scope for igonre file highlighting (e.g. .gitignore)
