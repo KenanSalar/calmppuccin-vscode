@@ -1952,7 +1952,7 @@
     },
     {
       "name": "text",
-      "scope": ["text", "source.ignore", "source.dockerfile"],
+      "scope": ["text", "source.ignore"],
       "settings": {
         "foreground": "#a1d4df",
         "fontStyle": ""
