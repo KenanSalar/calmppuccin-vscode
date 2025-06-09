@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.9] - 2025-06-09
+
+- Removed `source.dockerfile` because of inconsistencies.
+
 ## [1.3.8] - 2025-06-09
 
 - Added highlighting for shell control flow keywords (if, then, else, for, while, case, etc.)highlighting
