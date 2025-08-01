@@ -1,0 +1,31 @@
+name: Publish to VS Marketplace
+
+# This workflow runs only when a push happens on the main branch.
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    # Using the latest version of Ubuntu as the operating system for the job.
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checks out the repository code so the workflow can access it.
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Set up Node.js, which is required to run npm and vsce.
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 3. Install all the dependencies from package-lock.json.
+      # Using 'npm ci' is faster and more reliable for CI environments than 'npm install'.
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Publish the extension to the Marketplace.
+      - name: Publish to VS Marketplace
+        run: npx vsce publish -p ${{ secrets.VSCE_PAT }}
