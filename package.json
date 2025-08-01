@@ -2,8 +2,8 @@
   "name": "calmppuccin-vscode",
   "displayName": "Calmppuccin",
   "description": "Calmppuccin is a visually refined theme for Visual Studio Code, designed to offer a harmonious coding experience. Inspired by the popular Catppuccin theme, Calmppuccin takes the beloved pastel palette and transforms it into a gentler, less intense version, perfect for long coding sessions without eye strain.",
-  "icon": "./assets/images/logo/icon.png",
-  "version": "1.3.9",
+  "icon": "assets/images/logo/icon.png",
+  "version": "1.4.0",
   "publisher": "kenan-salar",
   "license": "MIT",
   "repository": {
@@ -11,7 +11,7 @@
     "url": "https://github.com/KenanSalar/calmppuccin-vscode.git"
   },
   "engines": {
-    "vscode": "^1.99.0"
+    "vscode": "^1.85.0"
   },
   "categories": [
     "Themes"
@@ -60,428 +60,76 @@
     "relaxing",
     "relaxing theme"
   ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
   "contributes": {
     "themes": [
       {
-        "label": "Calmppuccin Mocha Blue",
+        "label": "Calmppuccin Macchiato",
         "uiTheme": "vs-dark",
-        "path": "./themes/mocha/calmppuccin-mocha-blue-color-theme.json"
+        "path": "./themes/calmppuccin-macchiato-color-theme.json"
       },
       {
-        "label": "Calmppuccin Mocha Flamingo",
+        "label": "Calmppuccin Mocha",
         "uiTheme": "vs-dark",
-        "path": "./themes/mocha/calmppuccin-mocha-flamingo-color-theme.json"
+        "path": "./themes/calmppuccin-mocha-color-theme.json"
       },
       {
-        "label": "Calmppuccin Mocha Green",
+        "label": "Calmppuccin Nitro Cold Brew",
         "uiTheme": "vs-dark",
-        "path": "./themes/mocha/calmppuccin-mocha-green-color-theme.json"
+        "path": "./themes/calmppuccin-nitro-cold-brew-color-theme.json"
       },
       {
-        "label": "Calmppuccin Mocha Lavender",
+        "label": "Calmppuccin Oledppuccin",
         "uiTheme": "vs-dark",
-        "path": "./themes/mocha/calmppuccin-mocha-lavender-color-theme.json"
+        "path": "./themes/calmppuccin-oledppuccin-color-theme.json"
       },
       {
-        "label": "Calmppuccin Mocha Maroon",
+        "label": "Calmppuccin Frappé",
         "uiTheme": "vs-dark",
-        "path": "./themes/mocha/calmppuccin-mocha-maroon-color-theme.json"
+        "path": "./themes/calmppuccin-frappe-color-theme.json"
       },
       {
-        "label": "Calmppuccin Mocha Mauve",
-        "uiTheme": "vs-dark",
-        "path": "./themes/mocha/calmppuccin-mocha-mauve-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Mocha Peach",
-        "uiTheme": "vs-dark",
-        "path": "./themes/mocha/calmppuccin-mocha-peach-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Mocha Pink",
-        "uiTheme": "vs-dark",
-        "path": "./themes/mocha/calmppuccin-mocha-pink-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Mocha Red",
-        "uiTheme": "vs-dark",
-        "path": "./themes/mocha/calmppuccin-mocha-red-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Mocha Rosewater",
-        "uiTheme": "vs-dark",
-        "path": "./themes/mocha/calmppuccin-mocha-rosewater-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Mocha Sapphire",
-        "uiTheme": "vs-dark",
-        "path": "./themes/mocha/calmppuccin-mocha-sapphire-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Mocha Sky",
-        "uiTheme": "vs-dark",
-        "path": "./themes/mocha/calmppuccin-mocha-sky-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Mocha Teal",
-        "uiTheme": "vs-dark",
-        "path": "./themes/mocha/calmppuccin-mocha-teal-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Mocha Yellow",
-        "uiTheme": "vs-dark",
-        "path": "./themes/mocha/calmppuccin-mocha-yellow-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Macchiato Blue",
-        "uiTheme": "vs-dark",
-        "path": "./themes/macchiato/calmppuccin-macchiato-blue-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Macchiato Flamingo",
-        "uiTheme": "vs-dark",
-        "path": "./themes/macchiato/calmppuccin-macchiato-flamingo-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Macchiato Green",
-        "uiTheme": "vs-dark",
-        "path": "./themes/macchiato/calmppuccin-macchiato-green-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Macchiato Lavender",
-        "uiTheme": "vs-dark",
-        "path": "./themes/macchiato/calmppuccin-macchiato-lavender-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Macchiato Maroon",
-        "uiTheme": "vs-dark",
-        "path": "./themes/macchiato/calmppuccin-macchiato-maroon-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Macchiato Mauve",
-        "uiTheme": "vs-dark",
-        "path": "./themes/macchiato/calmppuccin-macchiato-mauve-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Macchiato Peach",
-        "uiTheme": "vs-dark",
-        "path": "./themes/macchiato/calmppuccin-macchiato-peach-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Macchiato Pink",
-        "uiTheme": "vs-dark",
-        "path": "./themes/macchiato/calmppuccin-macchiato-pink-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Macchiato Red",
-        "uiTheme": "vs-dark",
-        "path": "./themes/macchiato/calmppuccin-macchiato-red-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Macchiato Rosewater",
-        "uiTheme": "vs-dark",
-        "path": "./themes/macchiato/calmppuccin-macchiato-rosewater-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Macchiato Sapphire",
-        "uiTheme": "vs-dark",
-        "path": "./themes/macchiato/calmppuccin-macchiato-sapphire-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Macchiato Sky",
-        "uiTheme": "vs-dark",
-        "path": "./themes/macchiato/calmppuccin-macchiato-sky-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Macchiato Teal",
-        "uiTheme": "vs-dark",
-        "path": "./themes/macchiato/calmppuccin-macchiato-teal-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Macchiato Yellow",
-        "uiTheme": "vs-dark",
-        "path": "./themes/macchiato/calmppuccin-macchiato-yellow-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Frappé Blue",
-        "uiTheme": "vs-dark",
-        "path": "./themes/frappe/calmppuccin-frappe-blue-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Frappé Flamingo",
-        "uiTheme": "vs-dark",
-        "path": "./themes/frappe/calmppuccin-frappe-flamingo-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Frappé Green",
-        "uiTheme": "vs-dark",
-        "path": "./themes/frappe/calmppuccin-frappe-green-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Frappé Lavender",
-        "uiTheme": "vs-dark",
-        "path": "./themes/frappe/calmppuccin-frappe-lavender-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Frappé Maroon",
-        "uiTheme": "vs-dark",
-        "path": "./themes/frappe/calmppuccin-frappe-maroon-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Frappé Mauve",
-        "uiTheme": "vs-dark",
-        "path": "./themes/frappe/calmppuccin-frappe-mauve-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Frappé Peach",
-        "uiTheme": "vs-dark",
-        "path": "./themes/frappe/calmppuccin-frappe-peach-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Frappé Pink",
-        "uiTheme": "vs-dark",
-        "path": "./themes/frappe/calmppuccin-frappe-pink-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Frappé Red",
-        "uiTheme": "vs-dark",
-        "path": "./themes/frappe/calmppuccin-frappe-red-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Frappé Rosewater",
-        "uiTheme": "vs-dark",
-        "path": "./themes/frappe/calmppuccin-frappe-rosewater-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Frappé Sapphire",
-        "uiTheme": "vs-dark",
-        "path": "./themes/frappe/calmppuccin-frappe-sapphire-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Frappé Sky",
-        "uiTheme": "vs-dark",
-        "path": "./themes/frappe/calmppuccin-frappe-sky-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Frappé Teal",
-        "uiTheme": "vs-dark",
-        "path": "./themes/frappe/calmppuccin-frappe-teal-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Frappé Yellow",
-        "uiTheme": "vs-dark",
-        "path": "./themes/frappe/calmppuccin-frappe-yellow-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Latte Blue",
+        "label": "Calmppuccin Latte",
         "uiTheme": "vs",
-        "path": "./themes/latte/calmppuccin-latte-blue-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Latte Flamingo",
-        "uiTheme": "vs",
-        "path": "./themes/latte/calmppuccin-latte-flamingo-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Latte Green",
-        "uiTheme": "vs",
-        "path": "./themes/latte/calmppuccin-latte-green-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Latte Lavender",
-        "uiTheme": "vs",
-        "path": "./themes/latte/calmppuccin-latte-lavender-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Latte Maroon",
-        "uiTheme": "vs",
-        "path": "./themes/latte/calmppuccin-latte-maroon-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Latte Mauve",
-        "uiTheme": "vs",
-        "path": "./themes/latte/calmppuccin-latte-mauve-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Latte Peach",
-        "uiTheme": "vs",
-        "path": "./themes/latte/calmppuccin-latte-peach-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Latte Pink",
-        "uiTheme": "vs",
-        "path": "./themes/latte/calmppuccin-latte-pink-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Latte Red",
-        "uiTheme": "vs",
-        "path": "./themes/latte/calmppuccin-latte-red-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Latte Rosewater",
-        "uiTheme": "vs",
-        "path": "./themes/latte/calmppuccin-latte-rosewater-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Latte Sapphire",
-        "uiTheme": "vs",
-        "path": "./themes/latte/calmppuccin-latte-sapphire-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Latte Sky",
-        "uiTheme": "vs",
-        "path": "./themes/latte/calmppuccin-latte-sky-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Latte Teal",
-        "uiTheme": "vs",
-        "path": "./themes/latte/calmppuccin-latte-teal-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Latte Yellow",
-        "uiTheme": "vs",
-        "path": "./themes/latte/calmppuccin-latte-yellow-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Nitro Cold Brew Blue",
-        "uiTheme": "vs-dark",
-        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-blue-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Nitro Cold Brew Flamingo",
-        "uiTheme": "vs-dark",
-        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-flamingo-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Nitro Cold Brew Green",
-        "uiTheme": "vs-dark",
-        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-green-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Nitro Cold Brew Lavender",
-        "uiTheme": "vs-dark",
-        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-lavender-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Nitro Cold Brew Maroon",
-        "uiTheme": "vs-dark",
-        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-maroon-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Nitro Cold Brew Mauve",
-        "uiTheme": "vs-dark",
-        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-mauve-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Nitro Cold Brew Peach",
-        "uiTheme": "vs-dark",
-        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-peach-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Nitro Cold Brew Pink",
-        "uiTheme": "vs-dark",
-        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-pink-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Nitro Cold Brew Red",
-        "uiTheme": "vs-dark",
-        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-red-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Nitro Cold Brew Rosewater",
-        "uiTheme": "vs-dark",
-        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-rosewater-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Nitro Cold Brew Sapphire",
-        "uiTheme": "vs-dark",
-        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-sapphire-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Nitro Cold Brew Sky",
-        "uiTheme": "vs-dark",
-        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-sky-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Nitro Cold Brew Teal",
-        "uiTheme": "vs-dark",
-        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-teal-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Nitro Cold Brew Yellow",
-        "uiTheme": "vs-dark",
-        "path": "./themes/nitro-cold-brew/calmppuccin-nitro-cold-brew-yellow-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Oledppuccin Blue",
-        "uiTheme": "vs-dark",
-        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-blue-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Oledppuccin Flamingo",
-        "uiTheme": "vs-dark",
-        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-flamingo-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Oledppuccin Green",
-        "uiTheme": "vs-dark",
-        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-green-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Oledppuccin Lavender",
-        "uiTheme": "vs-dark",
-        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-lavender-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Oledppuccin Maroon",
-        "uiTheme": "vs-dark",
-        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-maroon-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Oledppuccin Mauve",
-        "uiTheme": "vs-dark",
-        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-mauve-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Oledppuccin Peach",
-        "uiTheme": "vs-dark",
-        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-peach-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Oledppuccin Pink",
-        "uiTheme": "vs-dark",
-        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-pink-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Oledppuccin Red",
-        "uiTheme": "vs-dark",
-        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-red-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Oledppuccin Rosewater",
-        "uiTheme": "vs-dark",
-        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-rosewater-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Oledppuccin Sapphire",
-        "uiTheme": "vs-dark",
-        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-sapphire-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Oledppuccin Sky",
-        "uiTheme": "vs-dark",
-        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-sky-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Oledppuccin Teal",
-        "uiTheme": "vs-dark",
-        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-teal-color-theme.json"
-      },
-      {
-        "label": "Calmppuccin Oledppuccin Yellow",
-        "uiTheme": "vs-dark",
-        "path": "./themes/oledppuccin/calmppuccin-oledppuccin-yellow-color-theme.json"
+        "path": "./themes/calmppuccin-latte-color-theme.json"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Calmppuccin",
+      "properties": {
+        "calmppuccin.accent": {
+          "type": "string",
+          "default": "sapphire",
+          "description": "The accent color for all Calmppuccin themes.",
+          "enum": [
+            "rosewater",
+            "flamingo",
+            "pink",
+            "mauve",
+            "red",
+            "maroon",
+            "peach",
+            "yellow",
+            "green",
+            "teal",
+            "sky",
+            "sapphire",
+            "blue",
+            "lavender"
+          ]
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "node ./build.js",
+    "package": "npm run compile"
+  },
+  "devDependencies": {
+    "fs-extra": "^11.2.0"
   }
 }

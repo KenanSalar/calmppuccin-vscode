@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0] - 2025-08-01
+
+- **Major Refactor:** Completely rebuilt the theme from over 80 static files into a modern, dynamic VSIX extension. This massively improves the theme's maintainability and reduces its footprint.
+- **Feature:** Added a new setting, `calmppuccin.accent`. Users can now choose a single accent color from the settings dropdown, which is then applied across all theme flavors for a consistent, personalized look.
+- **Improvement:** The theme selection menu has been streamlined. It now cleanly displays only the 6 main flavors (Latte, Frappe, Mocha, etc.), removing the clutter of dozens of accent variations.
+- **Improvement:** The unique syntax highlighting for each flavor (Latte's, Mocha's, etc.) has been preserved, while UI elements now dynamically adapt to the user's chosen accent color.
+
 ## [1.3.9] - 2025-06-09
 
 - Removed `source.dockerfile` because of inconsistencies.
