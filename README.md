@@ -54,6 +54,47 @@ To install the Calmppuccin extension in Visual Studio Code, open the Extensions 
 by clicking the Extensions icon in the Activity Bar or pressing `Ctrl+Shift+X`. In the search bar,\
 enter `Calmppuccin`, locate the extension in the results, and select Install to add it to your editor.
 
+## Customizing the Accent Color
+
+All Calmppuccin flavors (Latte, Mocha, etc.) share a dynamic accent color, which you can easily change to fit your preference.
+
+There are two ways to configure your accent color:
+
+### 1. Using the Settings Menu (Recommended)
+
+1.  Open your VS Code Settings (`Ctrl` + `,`).
+2.  In the search bar, type `Calmppuccin`.
+3.  You will see a setting called **"Calmppuccin: Accent"** with a dropdown menu.
+4.  Select your desired accent color from the list.
+5.  A notification will prompt you to reload VS Code. Click **"Reload Window"** to apply the changes across all theme flavors.
+
+### 2. Editing `settings.json`
+
+For those who prefer editing JSON directly, you can add the following line to your `settings.json` file.
+
+```json
+"calmppuccin.accent": "mauve"
+```
+
+Replace "mauve" with any of the available accent options below.
+
+#### 🎨 Accents
+
+- `blue`
+- `flamingo`
+- `green`
+- `lavender`
+- `maroon`
+- `mauve`
+- `peach`
+- `pink`
+- `red`
+- `rosewater`
+- `sapphire`
+- `sky`
+- `teal`
+- `yellow`
+
 ## Key Features
 
 - **Enhanced Syntax Highlighting:**
@@ -72,25 +113,9 @@ blending soothing colors with practical design.
 - **Customizable:** Offers flexibility to tweak background colors, text shades, and\
 accents to suit individual preferences.
 
-### 🎨 Accents
-
-- `Blue`
-- `Flamingo`
-- `Green`
-- `Lavender`
-- `Maroon`
-- `Mauve`
-- `Peach`
-- `Pink`
-- `Red`
-- `Rosewater`
-- `Sapphire`
-- `Sky`
-- `Teal`
-- `Yellow`
-
 ---
 
+\
 Calmppuccin is more than just a theme, it's an invitation to code in comfort and style.\
 Whether you're debugging complex codebases or crafting new projects, Calmppuccin\
 ensures your workspace remains a serene and productive environment.
