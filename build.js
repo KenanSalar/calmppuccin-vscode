@@ -1,61 +1,57 @@
+// build.js
 const fs = require("fs-extra");
 const path = require("path");
 const palette = require("./src/palette");
 
 const THEME_DIR = path.join(__dirname, "themes");
-const TEMPLATES_DIR = path.join(__dirname, "src", "templates");
+const TEMPLATE_PATH = path.join(__dirname, "src", "template.json");
 const FLAVORS = Object.keys(palette);
+const LIGHT_FLAVORS = ["latte"];
 
-/**
- * Generates all theme flavors based on a single accent color,
- * using a specific template for each flavor.
- * @param {string} accentName - The name of the accent color (e.g., 'sapphire').
- */
 async function buildAllFlavors(accentName) {
   await fs.ensureDir(THEME_DIR);
+  const templateStr = await fs.readFile(TEMPLATE_PATH, "utf-8");
 
   for (const flavor of FLAVORS) {
-    // 1. Construct the path to the correct template for the current flavor.
-    const templatePath = path.join(TEMPLATES_DIR, `${flavor}.json`);
-
-    // 2. Check if the template exists before proceeding.
-    if (!(await fs.pathExists(templatePath))) {
-      console.warn(`Warning: Template for flavor "${flavor}" not found at ${templatePath}`);
-      continue; // Skip this flavor if its template is missing
-    }
-
-    // 3. Read the flavor-specific template file.
-    const templateStr = await fs.readFile(templatePath, "utf-8");
     const flavorPalette = palette[flavor];
+    // Get the chosen accent's hex value, without the '#'
+    const accentHexValue = (flavorPalette[accentName] || flavorPalette.mauve).substring(1);
 
-    // 4. Get the accent color hex code from the palette.
-    const accentHex = flavorPalette[accentName] || flavorPalette.mauve; // Fallback
-
-    // 5. Replace UI placeholders. Note that syntax colors are NOT replaced.
-    let themeContent = templateStr;
-    const uiColors = {
-      base: flavorPalette.base,
-      mantle: flavorPalette.mantle,
-      crust: flavorPalette.crust,
-      uiText: flavorPalette.uiText,
-      accent: accentHex,
-    };
-
-    for (const [colorName, colorValue] of Object.entries(uiColors)) {
-      themeContent = themeContent.replace(new RegExp(`\\{\\{${colorName}\\}\\}`, "g"), colorValue);
+    const resolvedPalette = {};
+    for (const [key, value] of Object.entries(flavorPalette)) {
+      if (typeof value === "string" && value.startsWith("{{accent}}")) {
+        // If the value is a recipe like "{{accent}}2f", resolve it
+        const transparency = value.substring(10); // Grabs the "2f" part
+        resolvedPalette[key] = `#${accentHexValue}${transparency}`;
+      } else {
+        // Otherwise, use the value as is
+        resolvedPalette[key] = value;
+      }
     }
 
-    // 6. Write the final generated theme file.
+    // Use the fully resolved palette for replacements
+    const colorsToReplace = { ...resolvedPalette, accent: `#${accentHexValue}` };
+
+    let themeContent = templateStr;
+    for (const [colorName, colorValue] of Object.entries(colorsToReplace)) {
+      const placeholder = new RegExp(`\\{\\{${colorName}\\}\\}`, "g");
+      themeContent = themeContent.replace(placeholder, colorValue);
+    }
+
+    const themeJson = JSON.parse(themeContent);
+    const flavorDisplayName = flavor.charAt(0).toUpperCase() + flavor.slice(1);
+    themeJson.name = `Calmppuccin ${flavorDisplayName}`;
+    themeJson.type = LIGHT_FLAVORS.includes(flavor) ? "light" : "dark";
+
     const themePath = path.join(THEME_DIR, `calmppuccin-${flavor}-color-theme.json`);
-    // Use writeJson to ensure it's formatted nicely.
-    await fs.writeJson(themePath, JSON.parse(themeContent), { spaces: 2 });
+    await fs.writeJson(themePath, themeJson, { spaces: 2 });
   }
 
   console.log(`All Calmppuccin themes built with the "${accentName}" accent.`);
 }
 
 if (require.main === module) {
-  const defaultAccent = "sapphire"; // Match the package.json default
+  const defaultAccent = "sapphire";
   buildAllFlavors(defaultAccent);
 }
 

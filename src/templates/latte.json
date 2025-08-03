@@ -45,7 +45,7 @@
     "charts.foreground": "{{uiText}}",
     "charts.lines": "#5c5f77",
     "charts.red": "#d20f39",
-    "charts.blue": "{{accent}}",
+    "charts.blue": "{{chartsBlue}}",
     "charts.yellow": "#df8e1d",
     "charts.orange": "#fe640b",
     "charts.green": "#40a02b",
@@ -159,7 +159,7 @@
     "editor.wordHighlightBorder": "#00000000",
     "editor.wordHighlightBackground": "#7c7f9333",
 
-    "editor.inactiveSelectionBackground": "#7C7F931a",
+    "editor.inactiveSelectionBackground": "#7C7F9333",
 
     "editorBracketMatch.background": "#7c7f931a",
     "editorBracketMatch.border": "#7c7f93",

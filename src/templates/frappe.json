@@ -159,7 +159,7 @@
     "editor.wordHighlightBorder": "#00000000",
     "editor.wordHighlightBackground": "#949cbb33",
 
-    "editor.inactiveSelectionBackground": "#949cbb1a",
+    "editor.inactiveSelectionBackground": "#949cbb33",
 
     "editorBracketMatch.background": "#949cbb1a",
     "editorBracketMatch.border": "#949cbb",
