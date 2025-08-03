@@ -230,7 +230,7 @@ module.exports = {
   rawInline: "#9175a3",
   rawInlinePunctuation: "#5c6872",
   heading: "#8fa175",
-  markdownSelection: "#e9b392",
+  markdownSection: "#e9b392",
   markdownBlockquote: "#65737E",
   markupItalic: "#9b92f1",
   markupBold: "#e0b2d3",

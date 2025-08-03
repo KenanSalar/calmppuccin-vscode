@@ -1752,7 +1752,7 @@
       "name": "Markdown - Section",
       "scope": ["entity.name.section.markdown"],
       "settings": {
-        "foreground": "{{markdownSelection}}"
+        "foreground": "{{markdownSection}}"
       }
     },
     {
