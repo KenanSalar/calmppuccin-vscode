@@ -243,5 +243,5 @@ module.exports = {
   markdownFencedLanguage: "#65737E",
   markdownSeparator: "#65737E",
   markupTable: "#c9cece",
-  cssAttributeId: "#e4b191",
+  cssAttributeId: "#a0a77d",
 };
