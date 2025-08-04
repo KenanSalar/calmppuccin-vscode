@@ -22,6 +22,7 @@ module.exports = {
   crust: "#181825",
   uiText: "#a7aec5",
   uiTransparent: "#00000000",
+  // TODO
   uiInfo: "#799fdb",
   uiRedErrorDeleted: "#d87c97",
   uiSuccessAndAdded: "#95ce8f",
