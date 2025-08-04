@@ -55,7 +55,6 @@ module.exports = {
   uiDebugBreackpoint1: "#d87c9799",
   uiDebugPauseAndInfo: "#87aae2",
   uiDebugRestart: "#85cac2",
-  uiDebugInfo: "#85cac2",
   uiDebugWarning: "#e9b391",
   uiDebugSource: "#f5e0dc",
   uiDiffeditorFill: "#585b7099",
