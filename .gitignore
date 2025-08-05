@@ -6,6 +6,7 @@ node_modules
 !.vscode/extensions.json
 !.vscode/*.code-snippets
 /themes/
+/dist
 
 # Local History for Visual Studio Code
 .history/
