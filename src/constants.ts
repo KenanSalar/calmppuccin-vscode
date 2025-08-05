@@ -8,6 +8,8 @@ export const EXTENSION_NAMESPACE = "calmppuccin";
 export const CONFIG_KEY_ACCENT = "accent";
 export const REGENERATE_COMMAND_ID = "calmppuccin.regenerateThemes";
 export const RELOAD_COMMAND_ID = "workbench.action.reloadWindow";
+export const ICON_THEME_KEY = "workbench.iconTheme";
+export const CATPPUCCIN_ICON_PACK_ID = "catppuccin-";
 
 // For build.ts
 export const THEMES_DIR = "themes";
