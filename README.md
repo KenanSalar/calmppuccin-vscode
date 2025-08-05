@@ -134,9 +134,10 @@ You could also use it witout semantic highlighting, but it's not recommended.
 ### Icons
 
 - **Note:** These extensions are not required, but it provides a more consistent icon set.\
-**Catppuccin Icons for VSCode:** Mocha icons for nitro cold brew, mocha and oledppuccin themes, the others are self-explanatory.
 
 - **Recommended:** [Catppuccin Icons for VSCode](https://marketplace.visualstudio.com/items?itemName=Catppuccin.catppuccin-vsc-icons)
+  - **Automatic Syncing:** Calmppuccin now automatically syncs with this icon pack! When you switch your color theme (e.g., from Mocha to Latte), the icon flavor will update to match.
+  - **Note:** For the custom `Nitro Cold Brew` and `Oledppuccin` themes, the icons will sync to the `Mocha` flavor.
 - **Alternative 1:** [Atom Material Icons](https://marketplace.visualstudio.com/items/?itemName=AtomMaterial.a-file-icon-vscode)
 - **Alternative 2:** [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme)
 
