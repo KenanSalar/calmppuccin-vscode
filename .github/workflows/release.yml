@@ -25,7 +25,11 @@ jobs:
       # Using 'npm ci' is faster and more reliable for CI environments than 'npm install'.
       - name: Install dependencies
         run: npm ci
+      
+      # 4. Compile TypeScript files to JavaScript.
+      - name: Compile TypeScript
+        run: npm run compile
 
-      # 4. Publish the extension to the Marketplace.
+      # 5. Publish the extension to the Marketplace.
       - name: Publish to VS Marketplace
         run: npm run publish:ci -- -p ${{ secrets.VSCE_PAT }}
