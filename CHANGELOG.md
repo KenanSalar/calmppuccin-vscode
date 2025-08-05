@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.4.3] - 2025-08-05
+
+- **Feature**: Added automatic synchronization with the Catppuccin Icons extension. The icon pack's flavor will now automatically update to match the selected Calmppuccin theme.
+- **Improvement**: The icon-syncing feature is now more robust and will only activate if the user is already using a Catppuccin icon theme, preventing it from overriding other icon pack choices.
+- **Fix**: Corrected the theme name parsing logic to properly handle flavors with special characters (e.g., Frappé) and multiple words (e.g., Nitro Cold Brew).
+
 ## [1.4.2] - 2025-08-05
 
 - **Improvement**: Enhanced error handling significantly. If building the themes fails, users now see a more descriptive error message.
