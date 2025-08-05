@@ -129,8 +129,8 @@
     "compile": "webpack --mode production",
     "watch": "webpack --watch",
     "build-themes": "node ./dist/build.js",
-    "package": "npm run build-themes && vsce package --no-dependencies",
-    "publish:ci": "npm run build-themes && vsce publish --no-dependencies"
+    "package": "npm run build-themes && npx vsce package --no-dependencies",
+    "publish:ci": "npm run build-themes && npx vsce publish --no-dependencies"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
