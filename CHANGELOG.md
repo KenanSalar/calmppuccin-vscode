@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1] - 2025-08-05
+
+- **Refactor:** Centralized all UI and syntax colors into individual palette files (`latte.js`, `mocha.js`, etc.) for improved organization and maintainability.
+- **Refactor:** Consolidated the theme structure to use a single, universal `template.json`. This makes adding new themeable elements a one-time edit.
+- **Improvement:** The build script is now fully dynamic, capable of generating all theme variations from the single template and applying palette-specific metadata like theme `name` and `type` (`light`/`dark`).
+- **Feature:** Added support for dynamic transparent color variations. Colors can now be defined in the palette as recipes (e.g., `{{accent}}2f`) to be automatically generated based on the user's chosen accent.
+
 ## [1.4.0] - 2025-08-01
 
 - **Major Refactor:** Completely rebuilt the theme from over 80 static files into a modern, dynamic VSIX extension. This massively improves the theme's maintainability and reduces its footprint.
