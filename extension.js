@@ -31,7 +31,7 @@ function activate(context) {
 
   // Create a listener that watches for changes to the user's settings.
   const settingsChangeListener = vscode.workspace.onDidChangeConfiguration((event) => {
-    // If the setting that changed is 'calmppuccin.accent', run our command.
+    // If the setting that changed is 'calmppuccin.accent', run the command.
     if (event.affectsConfiguration("calmppuccin.accent")) {
       vscode.commands.executeCommand("calmppuccin.regenerateThemes");
     }
@@ -40,7 +40,7 @@ function activate(context) {
   // Add the command and the listener to the extension's subscriptions so they get cleaned up on deactivation.
   context.subscriptions.push(regenerateThemesCommand, settingsChangeListener);
 
-  // On first-time activation, we run the build immediately.
+  // On first-time activation, running the build immediately.
   // This ensures the theme files exist right after the user installs the extension.
   const initialConfig = vscode.workspace.getConfiguration("calmppuccin");
   const initialAccent = initialConfig.get("accent", "sapphire");
