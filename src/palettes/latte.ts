@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   themeName: "Calmppuccin Latte",
   themeType: "light",
   // Accent colors
@@ -244,4 +244,4 @@ module.exports = {
   markdownSeparator: "#65737E",
   markupTable: "#c9cece",
   cssAttributeId: "#a0a77d",
-};
+} as const;
