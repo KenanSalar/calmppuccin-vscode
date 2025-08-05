@@ -9,7 +9,11 @@ type Palette = { [key: string]: string };
 const THEME_DIR = path.resolve(__dirname, "..", "themes");
 const TEMPLATE_PATH = path.resolve(__dirname, "..", "src", "template.json");
 const FLAVORS = Object.keys(palette);
-const LIGHT_FLAVORS = ["latte"];
+const LIGHT_FLAVOR_NAME = "latte";
+const FALLBACK_ACCENT_NAME = "mauve";
+const ACCENT_RECIPE_PREFIX = "{{accent}}";
+const THEME_FILE_PREFIX = "calmppuccin";
+const THEME_FILE_SUFFIX = "color-theme.json";
 
 /**
  * Resolves accent color recipes in the palette.
@@ -21,8 +25,8 @@ const LIGHT_FLAVORS = ["latte"];
 function resolveAccentRecipes(flavorPalette: Palette, accentHexValue: string): Palette {
   const resolvedPalette: Palette = {};
   for (const [key, value] of Object.entries(flavorPalette)) {
-    if (typeof value === "string" && value.startsWith("{{accent}}")) {
-      const transparency = value.substring(10); // Extracts "2f" from "{{accent}}2f"
+    if (typeof value === "string" && value.startsWith(ACCENT_RECIPE_PREFIX)) {
+      const transparency = value.substring(ACCENT_RECIPE_PREFIX.length);
       resolvedPalette[key] = `#${accentHexValue}${transparency}`;
     } else {
       resolvedPalette[key] = value;
@@ -56,14 +60,14 @@ export async function buildAllFlavors(accentName: string): Promise<void> {
 
   for (const flavor of FLAVORS) {
     const flavorPalette = (palette as { [key: string]: any })[flavor];
-    const accentColor = flavorPalette[accentName] || flavorPalette.mauve; // Fallback to mauve
+    const accentColor = flavorPalette[accentName] || flavorPalette[FALLBACK_ACCENT_NAME];
     const accentHexValue = accentColor.substring(1);
 
     const resolvedPalette = resolveAccentRecipes(flavorPalette, accentHexValue);
 
     const colorsToReplace: Palette = {
       ...resolvedPalette,
-      accent: accentColor, // The chosen accent color itself
+      accent: accentColor,
     };
 
     const themeContentStr = replaceAllPlaceholders(templateStr, colorsToReplace);
@@ -71,9 +75,10 @@ export async function buildAllFlavors(accentName: string): Promise<void> {
     const themeJson = JSON.parse(themeContentStr);
     const flavorDisplayName = flavor.charAt(0).toUpperCase() + flavor.slice(1);
     themeJson.name = `Calmppuccin ${flavorDisplayName}`;
-    themeJson.type = LIGHT_FLAVORS.includes(flavor) ? "light" : "dark";
+    themeJson.type = flavor === LIGHT_FLAVOR_NAME ? "light" : "dark";
 
-    const themePath = path.join(THEME_DIR, `calmppuccin-${flavor}-color-theme.json`);
+    const themeFileName = `${THEME_FILE_PREFIX}-${flavor}-${THEME_FILE_SUFFIX}`;
+    const themePath = path.join(THEME_DIR, themeFileName);
     await fs.writeJson(themePath, themeJson, { spaces: 2 });
   }
 
@@ -82,6 +87,5 @@ export async function buildAllFlavors(accentName: string): Promise<void> {
 
 // This check allows running the script directly from the command line for testing.
 if (require.main === module) {
-  const defaultAccent = "sapphire";
-  buildAllFlavors(defaultAccent);
+  buildAllFlavors("sapphire");
 }
