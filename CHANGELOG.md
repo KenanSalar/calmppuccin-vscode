@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2] - 2025-08-05
+
+- **Feature**: Implemented a seamless "live reload" for accent color changes. The theme now automatically refreshes without requiring a full window reload, creating a much smoother user experience.
+- **Improvement**: Enhanced error handling significantly. If building the themes fails, users now see a more descriptive error message.
+- **Improvement**: Added a "Report Issue" button to the error notification, which directly opens the project's GitHub issues page to make bug reporting easier for users.
+- **Info**: Be aware that the theme is now only available at version 1.102.0 and onwards because of a package version issue.
+
 ## [1.4.1] - 2025-08-05
 
 - **Major Refactor**: Migrated the entire extension and build process from JavaScript to TypeScript, providing strong typing for improved robustness and maintainability.
