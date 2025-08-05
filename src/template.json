@@ -1006,6 +1006,8 @@
         "keyword.type.short",
         "keyword.type.string",
         "keyword.type.void",
+        "keyword.control.as",
+        "keyword.control.as.ts",
         "markup.heading",
         "markup.heading punctuation.definition",
         "meta.expression.clojure",

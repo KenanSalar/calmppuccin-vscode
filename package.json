@@ -11,7 +11,7 @@
     "url": "https://github.com/KenanSalar/calmppuccin-vscode.git"
   },
   "engines": {
-    "vscode": "^1.85.0"
+    "vscode": "^1.102.0"
   },
   "categories": [
     "Themes"
@@ -63,7 +63,7 @@
   "activationEvents": [
     "onStartupFinished"
   ],
-  "main": "./extension.js",
+  "main": "./dist/extension.js",
   "contributes": {
     "themes": [
       {
@@ -125,11 +125,20 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run package",
-    "compile": "node ./build.js",
-    "package": "npm run compile"
+    "vscode:prepublish": "npm run compile",
+    "compile": "webpack --mode production",
+    "watch": "webpack --watch",
+    "build-themes": "node ./dist/build.js",
+    "package": "npm run build-themes && vsce package --no-dependencies"
   },
   "devDependencies": {
-    "fs-extra": "^11.2.0"
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^24.2.0",
+    "@types/vscode": "^1.102.0",
+    "fs-extra": "^11.2.0",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.9.2",
+    "webpack": "^5.101.0",
+    "webpack-cli": "^6.0.1"
   }
 }
