@@ -28,4 +28,4 @@ jobs:
 
       # 4. Publish the extension to the Marketplace.
       - name: Publish to VS Marketplace
-        run: npx vsce publish -p ${{ secrets.VSCE_PAT }}
+        run: npm run publish:ci -- -p ${{ secrets.VSCE_PAT }}
