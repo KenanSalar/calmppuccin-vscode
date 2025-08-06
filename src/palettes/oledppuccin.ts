@@ -124,7 +124,6 @@ export default {
   uiPanelDropAndSectionBorder: "#31333fa2",
   uiPanelTitleInactiveForeground: "#8c92a8",
   uiPanelSectionHeaderBackground: "#5d5f6220",
-  uiPeekViewTitleDescForeground: "#bac1dbb3",
   uiProfileBadgeBackground: "#9996aa",
   uiQuickInputListFocusBackground: "#413f4d73",
   uiScrollbarSliderBackground: "{{accent}}31",
