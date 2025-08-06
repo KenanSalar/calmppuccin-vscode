@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.4.4] - 2025-08-06
+
+- **Fix**: Resolved an issue where the build script would not recompile on-the-fly changes, ensuring that all theme modifications are correctly packaged.
+- **Fix**: Corrected a color contrast issue in the Latte theme's Git diff view, significantly improving the readability of modified file details.
+- **Improvement**: Enhanced and refined syntax highlighting across the Latte theme for better code distinction and a more consistent visual experience.
+
 ## [1.4.3] - 2025-08-05
 
 - **Feature**: Added automatic synchronization with the Catppuccin Icons extension. The icon pack's flavor will now automatically update to match the selected Calmppuccin theme.
