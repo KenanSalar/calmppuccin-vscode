@@ -18,7 +18,7 @@ export default {
   lavender: "#6678e0",
   // UI colors
   base: "#cfd1d4",
-  mantle: "#e2e4e7",
+  mantle: "#DCDEE1",
   crust: "#e9eaee",
   uiText: "#474a63",
   uiTransparent: "#00000000",

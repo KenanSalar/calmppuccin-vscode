@@ -4,7 +4,7 @@
 
 - **Fix**: Resolved an issue where the build script would not recompile on-the-fly changes, ensuring that all theme modifications are correctly packaged.
 - **Fix**: Corrected a color contrast issue in the Latte theme's Git diff view, significantly improving the readability of modified file details.
-- **Improvement**: Enhanced and refined syntax highlighting across the Latte theme for better code distinction and a more consistent visual experience.
+- **Improvement**: Enhanced and refined syntax highlighting across the Latte theme for better code distinction and a more consistent visual experience. Also adjusted the mantle color of the latte theme to `#DCDEE1`
 
 ## [1.4.3] - 2025-08-05
 
