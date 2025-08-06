@@ -399,7 +399,7 @@
     "peekViewResult.selectionBackground": "{{uiSelectionBackground}}",
     "peekViewResult.selectionForeground": "{{uiText}}",
     "peekViewTitle.background": "{{base}}",
-    "peekViewTitleDescription.foreground": "{{uiPeekViewTitleDescForeground}}",
+    "peekViewTitleDescription.foreground": "{{uiText}}",
     "peekViewTitleLabel.foreground": "{{uiText}}",
     "peekViewEditorStickyScroll.background": "{{crust}}",
 

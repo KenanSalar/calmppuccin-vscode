@@ -23,6 +23,8 @@ const FLAVORS = Object.keys(palette);
  * @param accentName The name of the accent color to use (e.g., "sapphire").
  */
 export async function buildAllFlavors(accentName: string): Promise<void> {
+  // Deleting old theme files
+  await fs.emptyDir(THEME_DIR);
   // Ensure the output directory exists.
   await fs.ensureDir(THEME_DIR);
   // Read the master template file.

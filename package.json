@@ -128,7 +128,7 @@
     "vscode:prepublish": "npm run compile",
     "compile": "webpack --mode production",
     "watch": "webpack --watch",
-    "build-themes": "node ./dist/build.js",
+    "build-themes": "npm run compile && node ./dist/build.js",
     "package": "npm run build-themes && npx vsce package --no-dependencies",
     "publish:ci": "npm run build-themes && npx vsce publish --no-dependencies"
   },
