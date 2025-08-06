@@ -54,23 +54,21 @@ To install the Calmppuccin extension in Visual Studio Code, open the Extensions 
 by clicking the Extensions icon in the Activity Bar or pressing `Ctrl+Shift+X`. In the search bar,\
 enter `Calmppuccin`, locate the extension in the results, and select Install to add it to your editor.
 
-## Customizing the Accent Color
+## Customization
 
-All Calmppuccin flavors (Latte, Mocha, etc.) share a dynamic accent color, which you can easily change to fit your preference.
-
-There are two ways to configure your accent color:
+You can easily tailor Calmppuccin to fit your personal preferences for both accent colors and font styles.
 
 ### 1. Using the Settings Menu (Recommended)
 
 1.  Open your VS Code Settings (`Ctrl` + `,`).
 2.  In the search bar, type `Calmppuccin`.
-3.  You will see a setting called **"Calmppuccin: Accent"** with a dropdown menu.
-4.  Select your desired accent color from the list.
-5.  A notification will prompt you to reload VS Code. Click **"Reload Window"** to apply the changes across all theme flavors.
+3.  You will see all the available settings, including **"Calmppuccin: Accent"** and the various **"Calmppuccin: ... Font Style"** options.
+4.  Select your desired accent color and font styles from the dropdown menus.
+5.  A notification will prompt you to reload VS Code. Click **"Reload Window"** to apply the changes.
 
 ### 2. Editing `settings.json`
 
-For those who prefer editing JSON directly, you can add the following line to your `settings.json` file.
+For those who prefer editing JSON directly, you can add the following lines to your `settings.json` file.
 
 ```json
 "calmppuccin.accent": "mauve"
@@ -94,6 +92,23 @@ Replace "mauve" with any of the available accent options below.
 - `sky`
 - `teal`
 - `yellow`
+
+#### ✒️ Font Styles
+
+You can control the font style for various syntax elements. Here is an example of how to change the style for comments and keywords:
+
+```json
+"calmppuccin.commentFontStyle": "italic",
+"calmppuccin.keywordFontStyle": "bold"
+```
+
+Each font style setting can be configured with one of the following options:
+
+- "" (for no font style)
+- `italic`
+- `bold`
+- `italic bold`
+- `underline`
 
 ## Key Features
 
