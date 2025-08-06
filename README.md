@@ -60,11 +60,11 @@ You can easily tailor Calmppuccin to fit your personal preferences for both acce
 
 ### 1. Using the Settings Menu (Recommended)
 
-1.  Open your VS Code Settings (`Ctrl` + `,`).
-2.  In the search bar, type `Calmppuccin`.
-3.  You will see all the available settings, including **"Calmppuccin: Accent"** and the various **"Calmppuccin: ... Font Style"** options.
-4.  Select your desired accent color and font styles from the dropdown menus.
-5.  A notification will prompt you to reload VS Code. Click **"Reload Window"** to apply the changes.
+1. Open your VS Code Settings (`Ctrl` + `,`).
+2. In the search bar, type `Calmppuccin`.
+3. You will see all the available settings, including **"Calmppuccin: Accent"** and the various **"Calmppuccin: ... Font Style"** options.
+4. Select your desired accent color and font styles from the dropdown menus.
+5. A notification will prompt you to reload VS Code. Click **"Reload Window"** to apply the changes.
 
 ### 2. Editing `settings.json`
 
