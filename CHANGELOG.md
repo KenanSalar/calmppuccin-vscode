@@ -2,8 +2,6 @@
 
 ## [1.4.4] - 2025-08-06
 
-## [1.4.4] - 2025-08-06
-
 - **Feature**: Added highly customizable font style settings. Users can now choose between `none`, `italic`, `bold`, `italic bold` and `underline` for various syntax elements like comments, keywords, classes, and more, providing granular control over the syntax font style.
 - **Improvement**: Enhanced and refined syntax highlighting across the Latte theme for better code distinction. The mantle color was also adjusted to `#DCDEE1` for a softer look.
 - **Fix**: Resolved an issue where the build script would not recompile on-the-fly changes, ensuring that all theme modifications are correctly packaged.
