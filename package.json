@@ -140,6 +140,25 @@
             "Underline font style"
           ]
         },
+        "calmppuccin.variableFontStyle": {
+          "type": "string",
+          "default": "none",
+          "description": "Set the font style for variables.",
+          "enum": [
+            "none",
+            "italic",
+            "bold",
+            "italic bold",
+            "underline"
+          ],
+          "enumDescriptions": [
+            "No font style",
+            "Italic font style",
+            "Bold font style",
+            "Italic and bold font style",
+            "Underline font style"
+          ]
+        },
         "calmppuccin.keywordFontStyle": {
           "type": "string",
           "default": "none",
