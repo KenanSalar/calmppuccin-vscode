@@ -25,39 +25,31 @@ const flavorIconMap: Record<string, string> = {
  * has a Catppuccin icon theme active.
  */
 async function syncIconFlavor() {
-  // Use a minimal timeout to defer the execution to the next event loop tick.
-  // This ensures that when the function runs, VS Code's configuration has been fully updated.
   setTimeout(async () => {
     const workbenchConfig = vscode.workspace.getConfiguration("workbench");
     const currentTheme = workbenchConfig.get<string>("colorTheme", "");
     const currentIconTheme = workbenchConfig.get<string>("iconTheme");
 
-    // 1. Only proceed if the user is currently using a Catppuccin icon theme.
-    // This prevents overriding their choice if they prefer other icons (e.g., Material Icons).
     if (!currentIconTheme || !currentIconTheme.startsWith(C.CATPPUCCIN_ICON_PACK_ID)) {
       return;
     }
 
-    // 2. Only proceed if the active color theme is a Calmppuccin theme.
     const themeParts = currentTheme.split(" ");
     if (themeParts[0]?.toLowerCase() !== "calmppuccin" || themeParts.length < 2) {
       return;
     }
 
-    // 3. Robustly parse the flavor name from the theme string.
-    // This handles multi-word names (e.g., "Nitro Cold Brew") and special characters (e.g., "Frappé").
     const flavor = themeParts
-      .slice(1) // Get all parts after "Calmppuccin"
-      .join("-") // Join them with a hyphen
-      .toLowerCase() // Convert to lowercase
-      .normalize("NFD") // Normalize to separate accents from letters
-      .replace(/[\u0300-\u036f]/g, ""); // Remove the accent characters
+      .slice(1)
+      .join("-")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
 
     if (!flavorIconMap[flavor]) {
       return;
     }
 
-    // 4. Construct the target icon theme ID and update only if it's different.
     const targetIconFlavor = flavorIconMap[flavor];
     const targetIconThemeId = `${C.CATPPUCCIN_ICON_PACK_ID}${targetIconFlavor}`;
 
@@ -74,12 +66,27 @@ async function syncIconFlavor() {
 export function activate(context: vscode.ExtensionContext) {
   console.log("Calmppuccin theme is now active!");
 
+  // Dynamically get all configuration keys from package.json
+  const extensionConfig = vscode.extensions.getExtension("kenan-salar.calmppuccin-vscode")?.packageJSON;
+  const configKeys = Object.keys(extensionConfig?.contributes?.configuration?.properties ?? {});
+
   const regenerateThemesCommand = vscode.commands.registerCommand(C.REGENERATE_COMMAND_ID, async () => {
     try {
       const config = vscode.workspace.getConfiguration(C.EXTENSION_NAMESPACE);
       const accent = config.get<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
 
-      await buildAllFlavors(accent);
+      // Dynamically build the settings object from the user's configuration
+      const editorSettings: { [key: string]: any } = {};
+      for (const key of configKeys) {
+        const settingName = key.split(".")[1];
+        // This is the fix: only add the setting if it's not the accent color.
+        if (settingName && settingName !== C.CONFIG_KEY_ACCENT) {
+          editorSettings[settingName] = config.get(settingName);
+        }
+      }
+
+      // Pass the dynamically created settings object to the build function
+      await buildAllFlavors(accent, editorSettings);
 
       const selection = await vscode.window.showInformationMessage(C.INFO_MESSAGE(accent), C.RELOAD_ACTION);
 
@@ -101,8 +108,11 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
+  // The listener now checks against the dynamic list of settings.
   const settingsChangeListener = vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
-    if (event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACCENT}`)) {
+    const affectsOurSettings = configKeys.some((key) => event.affectsConfiguration(key));
+
+    if (affectsOurSettings) {
       vscode.commands.executeCommand(C.REGENERATE_COMMAND_ID);
     }
     if (event.affectsConfiguration("workbench.colorTheme")) {
@@ -111,8 +121,6 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   context.subscriptions.push(regenerateThemesCommand, settingsChangeListener);
-
-  // Run the icon sync on extension activation to ensure consistency.
   syncIconFlavor();
 }
 
