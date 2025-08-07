@@ -40,6 +40,8 @@
 <img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/oledppuccin-pink.png" alt="Oledppuccin" width="800" height="´250">
 </details>
 
+<br/>
+
 ## Calmppuccin: A Soothing and Optimized VS Code Theme
 
 Calmppuccin is a visually refined theme for Visual Studio Code, designed to\
@@ -48,11 +50,15 @@ offer a harmonious coding experience. Inspired by the popular
 Calmppuccin takes the beloved pastel palette and transforms it into a gentler,\
 less intense version, perfect for long coding sessions without eye strain.
 
+<br/>
+
 ## Installation
 
 To install the Calmppuccin extension in Visual Studio Code, open the Extensions view\
 by clicking the Extensions icon in the Activity Bar or pressing `Ctrl+Shift+X`. In the search bar,\
 enter `Calmppuccin`, locate the extension in the results, and select Install to add it to your editor.
+
+<br/>
 
 ## Customization
 
@@ -66,6 +72,8 @@ This is the easiest and recommended way to configure everything in one place. Yo
 
 1. Open the Command Palette (`Ctrl` + `Shift` + `P`, `Cmd` + `Shift` + `P` or `F1`).
 2. Type `Calmppuccin` and select Calmppuccin: Customize Theme.
+
+<br/>
 
 - **Via the Settings Menu:**
 
@@ -142,6 +150,8 @@ Here is an example of the structure:
 - `italic bold`
 - `underline`
 
+<br/>
+
 ## Key Features
 
 - **Enhanced Syntax Highlighting:**
@@ -160,12 +170,13 @@ blending soothing colors with practical design.
 - **Highly Customizable:** Personalize your coding environment by selecting from a palette of\
 14 accent colors and applying unique font styles (like italic or bold) to individual syntax elements.
 
----
+<br/>
 
-\
 Calmppuccin is more than just a theme, it's an invitation to code in comfort and style.\
 Whether you're debugging complex codebases or crafting new projects, Calmppuccin\
 ensures your workspace remains a serene and productive environment.
+
+<br/>
 
 ## Recommendations
 
@@ -187,6 +198,10 @@ You could also use it witout semantic highlighting, but it's not recommended.
   - **Note:** For the custom `Nitro Cold Brew` and `Oledppuccin` themes, the icons will sync to the `Mocha` flavor.
 - **Alternative 1:** [Atom Material Icons](https://marketplace.visualstudio.com/items/?itemName=AtomMaterial.a-file-icon-vscode)
 - **Alternative 2:** [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme)
+
+---
+
+
 
 ### Font and Font Settings
 
@@ -217,6 +232,8 @@ You could also use it witout semantic highlighting, but it's not recommended.
   ```
   
   ---
+  
+<br/>
 
 - **Terminal Font:** `Jetbrains Mono Nerd Font`
 
@@ -229,3 +246,11 @@ You could also use it witout semantic highlighting, but it's not recommended.
   "terminal.integrated.cursorStyle": "line",
   "terminal.integrated.fontWeight": "normal"
   ```
+
+<br/>
+
+## Acknowledgements
+
+This theme was built from the ground up and is heavily inspired by the amazing [Catppuccin](https://github.com/catppuccin/vscode) theme.\
+While Calmppuccin aims for a gentler, more subdued palette, it would not exist without the incredible\
+foundation and color philosophy established by the Catppuccin team.
