@@ -7,7 +7,7 @@ const configs = [
   // Config for the Extension's runtime code
   {
     target: "node",
-    mode: "none",
+    mode: "production",
     entry: "./extension.ts",
     output: {
       path: path.resolve(__dirname, "dist"),
