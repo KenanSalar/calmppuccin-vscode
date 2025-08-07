@@ -70,12 +70,15 @@ export function activate(context: vscode.ExtensionContext) {
   const regenerateThemesCommand = vscode.commands.registerCommand(C.REGENERATE_COMMAND_ID, async () => {
     try {
       const config = vscode.workspace.getConfiguration(C.EXTENSION_NAMESPACE);
-      const accent = config.get<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
+      const accentSetting = config.get<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
+      const customAccent = config.get<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
       const fontStyles = config.get<{ [key: string]: string }>("fontStyles");
 
-      await buildAllFlavors(accent, fontStyles || {});
+      const accentValue = accentSetting === "custom" ? customAccent : accentSetting;
 
-      const selection = await vscode.window.showInformationMessage(C.INFO_MESSAGE(accent), C.RELOAD_ACTION);
+      await buildAllFlavors(accentValue, fontStyles || {});
+
+      const selection = await vscode.window.showInformationMessage(C.INFO_MESSAGE(accentSetting), C.RELOAD_ACTION);
 
       if (selection === C.RELOAD_ACTION) {
         vscode.commands.executeCommand(C.RELOAD_COMMAND_ID);
@@ -102,7 +105,8 @@ export function activate(context: vscode.ExtensionContext) {
   const settingsChangeListener = vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
     if (
       event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACCENT}`) ||
-      event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.fontStyles`)
+      event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.fontStyles`) ||
+      event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_CUSTOM_ACCENT}`)
     ) {
       vscode.commands.executeCommand(C.REGENERATE_COMMAND_ID);
     }

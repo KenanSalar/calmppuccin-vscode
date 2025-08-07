@@ -11,8 +11,14 @@
     <p>Changes are saved automatically. A reload is required to apply them.</p>
 
     <div id="accent-container" class="settings-section">
-        <h2>Accent Color</h2>
+        <div id="custom-accent-picker-container" style="display: none;">
+            <label for="custom-accent-picker">Custom Color:</label>
+            <div class="color-picker-wrapper">
+                <input type="color" id="custom-accent-picker">
+                <input type="text" id="custom-accent-hex-input" maxlength="7">
+            </div>
         </div>
+    </div>
 
     <div id="font-styles-container" class="settings-section">
       <h2>Font Styles</h2>

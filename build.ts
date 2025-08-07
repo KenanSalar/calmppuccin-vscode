@@ -22,10 +22,10 @@ const FLAVORS = Object.keys(palette);
 /**
  * Builds all theme flavors (Latte, Mocha, etc.) with a specified accent color and user settings.
  * It generates a complete theme file for each flavor and writes it to the /themes directory.
- * @param accentName The name of the accent color to use (e.g., "sapphire").
+ * @param accentIdentifier The accent to use. Can be a named color (e.g., "sapphire") or a hex code.
  * @param editorSettings A generic object containing all user-configurable settings (e.g., italics).
  */
-export async function buildAllFlavors(accentName: string, editorSettings: GenericSettings): Promise<void> {
+export async function buildAllFlavors(accentIdentifier: string, editorSettings: GenericSettings): Promise<void> {
   // Deleting old theme files to ensure a clean build
   await fs.emptyDir(THEME_DIR);
   // Ensure the output directory exists.
@@ -35,7 +35,13 @@ export async function buildAllFlavors(accentName: string, editorSettings: Generi
 
   for (const flavor of FLAVORS) {
     const flavorPalette = (palette as { [key: string]: any })[flavor];
-    const accentColor = flavorPalette[accentName] || flavorPalette[C.FALLBACK_ACCENT];
+
+    // FIX: Check if the identifier is a hex code. If so, use it directly.
+    // Otherwise, look it up in the palette.
+    const accentColor = accentIdentifier.startsWith("#")
+      ? accentIdentifier
+      : flavorPalette[accentIdentifier] || flavorPalette[C.FALLBACK_ACCENT];
+
     const accentHexValue = accentColor.substring(1);
 
     const resolvedPalette: Palette = {};
@@ -76,7 +82,7 @@ export async function buildAllFlavors(accentName: string, editorSettings: Generi
     await fs.writeJson(themePath, themeJson, { spaces: 2 });
   }
 
-  console.log(`All Calmppuccin themes built with the "${accentName}" accent.`);
+  console.log(`All Calmppuccin themes built with the "${accentIdentifier}" accent.`);
 }
 
 /**
