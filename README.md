@@ -56,27 +56,47 @@ enter `Calmppuccin`, locate the extension in the results, and select Install to 
 
 ## Customization
 
-You can easily tailor Calmppuccin to fit your personal preferences for both accent colors and font styles.
+You can easily tailor Calmppuccin to fit your personal preferences. Choose the method that works best for you.
 
-### 1. Using the Settings Menu (Recommended)
+### 1. Using the Customization UI (Recommended)
+
+This is the easiest and recommended way to configure everything in one place. You can open the custom UI in two main ways:
+
+- **Via the Command Palette (Quickest Method):**
+
+1. Open the Command Palette (`Ctrl` + `Shift` + `P`, `Cmd` + `Shift` + `P` or `F1`).
+2. Type `Calmppuccin` and select Calmppuccin: Customize Theme.
+
+- **Via the Settings Menu:**
+
+1. Open VS Code Settings (`Crtl` + `,`)
+2. Seach for `Calmppuccin`.
+3. Find the setting titled `Calmppuccin: Open Customization UI` and click the link within its description to open the panel.
+
+Either method will open a new panel where you can visually change the Accent Color and all Font Styles. Changes are\
+saved automatically, and a notification will appear prompting you to reload VS Code to apply them.
+
+### 2. Using the Standard Settings UI
+
+This is a quick way to change **only the accent color**.
 
 1. Open your VS Code Settings (`Ctrl` + `,`).
-2. In the search bar, type `Calmppuccin`.
-3. You will see all the available settings, including **"Calmppuccin: Accent"** and the various **"Calmppuccin: ... Font Style"** options.
-4. Select your desired accent color and font styles from the dropdown menus.
-5. A notification will prompt you to reload VS Code. Click **"Reload Window"** to apply the changes.
+2. In the search bar, type `Calmppuccin Accent`.
+3. Use the dropdown menu to select your desired accent color.
 
-### 2. Editing `settings.json`
+### 3. Editing `settings.json` (For Power Users)
 
-For those who prefer editing JSON directly, you can add the following lines to your `settings.json` file.
+For those who prefer editing JSON directly, you can modify your settings.json file.
+
+#### 🎨 Accent Color
+
+Add the following line to set your accent color. Replace `mauve` with any of the available options below.
 
 ```json
 "calmppuccin.accent": "mauve"
 ```
 
-Replace "mauve" with any of the available accent options below.
-
-#### 🎨 Accents
+##### **Available Accents:**
 
 - `blue`
 - `flamingo`
@@ -95,16 +115,28 @@ Replace "mauve" with any of the available accent options below.
 
 #### ✒️ Font Styles
 
-You can control the font style for various syntax elements. Here is an example of how to change the style for comments and keywords:
+You can control the font style for each syntax element directly in the JSON.
+
+A helpful shortcut:
+
+1. Go to the standard Settings UI and search for `Calmppuccin: Font Styles`.
+2. Click the `Edit in settings.json` link.
+3. This will automatically add the entire `calmppuccin.fontStyles` object with all default values to your file, making it easy to edit.
+
+Here is an example of the structure:
 
 ```json
-"calmppuccin.commentFontStyle": "italic",
-"calmppuccin.keywordFontStyle": "bold"
+"calmppuccin.fontStyles": {
+  "commentFontStyle": "italic",
+  "variableFontStyle": "none",
+  "keywordFontStyle": "none",
+  // ... and so on for all other elements
+}
 ```
 
-Each font style setting can be configured with one of the following options:
+##### **Available Font Style Options:**
 
-- "" (for no font style)
+- `none` (will be replaced with an empty string)
 - `italic`
 - `bold`
 - `italic bold`
@@ -125,8 +157,8 @@ Also with new theme variants like `Nitro Cold Brew` (even darker and more subdue
 - **Aesthetic Balance:** Strikes the perfect balance between functionality and beauty,\
 blending soothing colors with practical design.
 
-- **Customizable:** Offers flexibility to tweak background colors, text shades, and\
-accents to suit individual preferences.
+- **Highly Customizable:** Personalize your coding environment by selecting from a palette of\
+14 accent colors and applying unique font styles (like italic or bold) to individual syntax elements.
 
 ---
 

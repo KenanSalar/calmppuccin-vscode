@@ -7,6 +7,7 @@
 import * as vscode from "vscode";
 import { buildAllFlavors } from "./build";
 import * as C from "./src/constants";
+import { SettingsPanel } from "./src/SettingsPanel";
 
 /**
  * Maps Calmppuccin theme flavors to their corresponding Catppuccin Icon flavors.
@@ -66,27 +67,13 @@ async function syncIconFlavor() {
 export function activate(context: vscode.ExtensionContext) {
   console.log("Calmppuccin theme is now active!");
 
-  // Dynamically get all configuration keys from package.json
-  const extensionConfig = vscode.extensions.getExtension("kenan-salar.calmppuccin-vscode")?.packageJSON;
-  const configKeys = Object.keys(extensionConfig?.contributes?.configuration?.properties ?? {});
-
   const regenerateThemesCommand = vscode.commands.registerCommand(C.REGENERATE_COMMAND_ID, async () => {
     try {
       const config = vscode.workspace.getConfiguration(C.EXTENSION_NAMESPACE);
       const accent = config.get<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
+      const fontStyles = config.get<{ [key: string]: string }>("fontStyles");
 
-      // Dynamically build the settings object from the user's configuration
-      const editorSettings: { [key: string]: any } = {};
-      for (const key of configKeys) {
-        const settingName = key.split(".")[1];
-        // This is the fix: only add the setting if it's not the accent color.
-        if (settingName && settingName !== C.CONFIG_KEY_ACCENT) {
-          editorSettings[settingName] = config.get(settingName);
-        }
-      }
-
-      // Pass the dynamically created settings object to the build function
-      await buildAllFlavors(accent, editorSettings);
+      await buildAllFlavors(accent, fontStyles || {});
 
       const selection = await vscode.window.showInformationMessage(C.INFO_MESSAGE(accent), C.RELOAD_ACTION);
 
@@ -108,19 +95,25 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
-  // The listener now checks against the dynamic list of settings.
-  const settingsChangeListener = vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
-    const affectsOurSettings = configKeys.some((key) => event.affectsConfiguration(key));
+  const customizeCommand = vscode.commands.registerCommand("calmppuccin.customize", () => {
+    SettingsPanel.createOrShow(context.extensionPath);
+  });
 
-    if (affectsOurSettings) {
+  const settingsChangeListener = vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
+    if (
+      event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACCENT}`) ||
+      event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.fontStyles`)
+    ) {
       vscode.commands.executeCommand(C.REGENERATE_COMMAND_ID);
     }
+
     if (event.affectsConfiguration("workbench.colorTheme")) {
       syncIconFlavor();
     }
   });
 
-  context.subscriptions.push(regenerateThemesCommand, settingsChangeListener);
+  context.subscriptions.push(regenerateThemesCommand, settingsChangeListener, customizeCommand);
+
   syncIconFlavor();
 }
 

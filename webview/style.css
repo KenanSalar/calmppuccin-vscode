@@ -1,0 +1,38 @@
+body {
+    background-color: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+    font-family: var(--vscode-font-family);
+    padding: 0 20px;
+}
+
+#settings-container {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px 20px;
+    align-items: center;
+    margin-top: 20px;
+}
+
+label {
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+select {
+    width: 100%;
+    padding: 5px;
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+    border: 1px solid var(--vscode-input-border);
+    border-radius: 4px;
+}
+
+.settings-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--vscode-editor-widget-border);
+}
+
+h2 {
+    margin-top: 0;
+}
