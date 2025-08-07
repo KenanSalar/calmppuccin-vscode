@@ -125,8 +125,14 @@
             "sky",
             "sapphire",
             "blue",
-            "lavender"
+            "lavender",
+            "custom"
           ]
+        },
+        "calmppuccin.customAccentColor": {
+          "type": "string",
+          "default": "#89b4fa",
+          "description": "The custom accent color (hex code) to use when 'custom' is selected in the Accent Color dropdown."
         },
         "calmppuccin.openCustomizationUI": {
           "type": "null",
