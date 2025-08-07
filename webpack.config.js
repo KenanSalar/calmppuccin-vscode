@@ -54,5 +54,27 @@ const configs = [
       ],
     },
   },
+  {
+    target: "web",
+    mode: "production",
+    entry: "./webview/main.ts", // Entry point for the webview script
+    output: {
+      path: path.resolve(__dirname, "dist"),
+      filename: "webview.js", // Output file
+    },
+    resolve: {
+      extensions: [".ts", ".js"],
+    },
+    module: {
+      rules: [
+        {
+          test: /\.ts$/,
+          exclude: /node_modules/,
+          use: ["ts-loader"],
+        },
+      ],
+    },
+    devtool: "source-map",
+  },
 ];
 module.exports = configs;

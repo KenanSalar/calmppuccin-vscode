@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.5] - 2025-08-07
+
+- **Feature**: Added a custom settings UI built with a webview. Users can now run the `Calmppuccin: Customize Theme` command to open a graphical editor.
+- **Feature**: The new customization UI allows users to change the accent color and all granular font styles from a single, user-friendly panel.
+- **Improvement**: Reworked the extension's settings in the standard VS Code UI. The font style settings are now bundled into a single expandable object, and a new clickable link is provided to guide users to the custom UI.
+- **Fix**: Implemented state persistence for the custom UI, so its content is no longer lost when switching tabs.
+- **Fix**: Corrected the communication logic between the webview and the extension, ensuring that changes made in the UI are correctly saved and trigger a theme regeneration.
+
 ## [1.4.4] - 2025-08-06
 
 - **Feature**: Added highly customizable font style settings. Users can now choose between `none`, `italic`, `bold`, `italic bold` and `underline` for various syntax elements like comments, keywords, classes, and more, providing granular control over the syntax font style.

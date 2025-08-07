@@ -3,7 +3,7 @@
   "displayName": "Calmppuccin",
   "description": "Calmppuccin is a visually refined theme for Visual Studio Code, designed to offer a harmonious coding experience. Inspired by the popular Catppuccin theme, Calmppuccin takes the beloved pastel palette and transforms it into a gentler, less intense version, perfect for long coding sessions without eye strain.",
   "icon": "assets/images/logo/icon.png",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "publisher": "kenan-salar",
   "license": "MIT",
   "repository": {
@@ -65,6 +65,13 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "commands": [
+      {
+        "command": "calmppuccin.customize",
+        "title": "Customize Theme",
+        "category": "Calmppuccin"
+      }
+    ],
     "themes": [
       {
         "label": "Calmppuccin Macchiato",
@@ -121,556 +128,394 @@
             "lavender"
           ]
         },
-        "calmppuccin.commentFontStyle": {
-          "type": "string",
-          "default": "italic",
-          "description": "Set the font style for comments.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
+        "calmppuccin.openCustomizationUI": {
+          "type": "null",
+          "markdownDescription": "Click the link to open the graphical UI for customizing colors and font styles. [**Open Customization UI**](command:calmppuccin.customize)"
         },
-        "calmppuccin.variableFontStyle": {
-          "type": "string",
-          "default": "none",
-          "description": "Set the font style for variables.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.keywordFontStyle": {
-          "type": "string",
-          "default": "none",
-          "description": "Set the font style for keywords.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.namespaceFontStyle": {
-          "type": "string",
-          "default": "none",
-          "description": "Set the font style for namespaces.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.namespaceAttributeFontStyle": {
-          "type": "string",
-          "default": "italic",
-          "description": "Set the font style for namespace attributes.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.moduleFontStyle": {
-          "type": "string",
-          "default": "none",
-          "description": "Set the font style for modules.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.annotationFontStyle": {
-          "type": "string",
-          "default": "italic",
-          "description": "Set the font style for annotations.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.classFontStyle": {
-          "type": "string",
-          "default": "none",
-          "description": "Set the font style for classes.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.interfaceFontStyle": {
-          "type": "string",
-          "default": "none",
-          "description": "Set the font style for interfaces.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.structFontStyle": {
-          "type": "string",
-          "default": "none",
-          "description": "Set the font style for structs.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.enumFontStyle": {
-          "type": "string",
-          "default": "none",
-          "description": "Set the font style for enums.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.enumMemberFontStyle": {
-          "type": "string",
-          "default": "italic",
-          "description": "Set the font style for enum members.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.fieldAndAttributeFontStyle": {
-          "type": "string",
-          "default": "none",
-          "description": "Set the font style for fields and attributes.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.attributeBracketFontStyle": {
-          "type": "string",
-          "default": "italic",
-          "description": "Set the font style for attribute brackets.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.propertyFontStyle": {
-          "type": "string",
-          "default": "none",
-          "description": "Set the font style for properties.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.propertyReadOnlyFontStyle": {
-          "type": "string",
-          "default": "italic",
-          "description": "Set the font style for read only properties.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.functionAndMethodFontStyle": {
-          "type": "string",
-          "default": "none",
-          "description": "Set the font style for functions and methods.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.extensionMethodFontStyle": {
-          "type": "string",
-          "default": "italic",
-          "description": "Set the font style for extension methods.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.delegateFontStyle": {
-          "type": "string",
-          "default": "none",
-          "description": "Set the font style for delegates.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.eventFontStyle": {
-          "type": "string",
-          "default": "none",
-          "description": "Set the font style for events.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.parameterFontStyle": {
-          "type": "string",
-          "default": "italic",
-          "description": "Set the font style for parameters.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.typeParameterFontStyle": {
-          "type": "string",
-          "default": "italic",
-          "description": "Set the font style for type parameters.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.numberAndConstantFontStyle": {
-          "type": "string",
-          "default": "none",
-          "description": "Set the font style for numbers and constants.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.operatorFontStyle": {
-          "type": "string",
-          "default": "none",
-          "description": "Set the font style for operators.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.operatorOverloadFontStyle": {
-          "type": "string",
-          "default": "bold",
-          "description": "Set the font style for overload operators.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.punctuationFontStyle": {
-          "type": "string",
-          "default": "none",
-          "description": "Set the font style for punctuations.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.stringFontStyle": {
-          "type": "string",
-          "default": "none",
-          "description": "Set the font style for strings.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.stringVerbatimFontStyle": {
-          "type": "string",
-          "default": "italic",
-          "description": "Set the font style for verbatim strings.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
-        },
-        "calmppuccin.textFontStyle": {
-          "type": "string",
-          "default": "none",
-          "description": "Set the font style for text.",
-          "enum": [
-            "none",
-            "italic",
-            "bold",
-            "italic bold",
-            "underline"
-          ],
-          "enumDescriptions": [
-            "No font style",
-            "Italic font style",
-            "Bold font style",
-            "Italic and bold font style",
-            "Underline font style"
-          ]
+        "calmppuccin.fontStyles": {
+          "type": "object",
+          "description": "The raw JSON configuration for font styles. For a better experience, use the Customization UI.",
+          "default": {
+            "commentFontStyle": "italic",
+            "variableFontStyle": "none",
+            "keywordFontStyle": "none",
+            "namespaceFontStyle": "none",
+            "namespaceAttributeFontStyle": "italic",
+            "moduleFontStyle": "none",
+            "annotationFontStyle": "italic",
+            "classFontStyle": "none",
+            "interfaceFontStyle": "none",
+            "structFontStyle": "none",
+            "enumFontStyle": "none",
+            "enumMemberFontStyle": "italic",
+            "fieldAndAttributeFontStyle": "none",
+            "attributeBracketFontStyle": "italic",
+            "propertyFontStyle": "none",
+            "propertyReadOnlyFontStyle": "italic",
+            "functionAndMethodFontStyle": "none",
+            "extensionMethodFontStyle": "italic",
+            "delegateFontStyle": "none",
+            "eventFontStyle": "none",
+            "parameterFontStyle": "italic",
+            "typeParameterFontStyle": "italic",
+            "numberAndConstantFontStyle": "none",
+            "operatorFontStyle": "none",
+            "operatorOverloadFontStyle": "bold",
+            "punctuationFontStyle": "none",
+            "stringFontStyle": "none",
+            "stringVerbatimFontStyle": "italic",
+            "textFontStyle": "none"
+          },
+          "properties": {
+            "commentFontStyle": {
+              "type": "string",
+              "default": "italic",
+              "description": "Set the font style for comments.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "variableFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for variables.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "keywordFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for keywords.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "namespaceFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for namespaces.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "namespaceAttributeFontStyle": {
+              "type": "string",
+              "default": "italic",
+              "description": "Set the font style for namespace attributes.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "moduleFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for modules.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "annotationFontStyle": {
+              "type": "string",
+              "default": "italic",
+              "description": "Set the font style for annotations.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "classFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for classes.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "interfaceFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for interfaces.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "structFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for structs.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "enumFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for enums.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "enumMemberFontStyle": {
+              "type": "string",
+              "default": "italic",
+              "description": "Set the font style for enum members.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "fieldAndAttributeFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for fields and attributes.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "attributeBracketFontStyle": {
+              "type": "string",
+              "default": "italic",
+              "description": "Set the font style for attribute brackets.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "propertyFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for properties.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "propertyReadOnlyFontStyle": {
+              "type": "string",
+              "default": "italic",
+              "description": "Set the font style for read only properties.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "functionAndMethodFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for functions and methods.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "extensionMethodFontStyle": {
+              "type": "string",
+              "default": "italic",
+              "description": "Set the font style for extension methods.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "delegateFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for delegates.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "eventFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for events.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "parameterFontStyle": {
+              "type": "string",
+              "default": "italic",
+              "description": "Set the font style for parameters.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "typeParameterFontStyle": {
+              "type": "string",
+              "default": "italic",
+              "description": "Set the font style for type parameters.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "numberAndConstantFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for numbers and constants.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "operatorFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for operators.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "operatorOverloadFontStyle": {
+              "type": "string",
+              "default": "bold",
+              "description": "Set the font style for overload operators.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "punctuationFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for punctuations.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "stringFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for strings.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "stringVerbatimFontStyle": {
+              "type": "string",
+              "default": "italic",
+              "description": "Set the font style for verbatim strings.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "textFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for text.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            }
+          }
         }
       }
     }
