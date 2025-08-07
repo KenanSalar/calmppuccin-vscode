@@ -11,6 +11,7 @@ export const REGENERATE_COMMAND_ID = "calmppuccin.regenerateThemes";
 export const RELOAD_COMMAND_ID = "workbench.action.reloadWindow";
 export const ICON_THEME_KEY = "workbench.iconTheme";
 export const CATPPUCCIN_ICON_PACK_ID = "catppuccin-";
+export const PANEL_IS_OPEN_KEY = "calmppuccin.panelIsOpen";
 
 // For build.ts
 export const THEMES_DIR = "themes";
