@@ -99,7 +99,7 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   const customizeCommand = vscode.commands.registerCommand("calmppuccin.customize", () => {
-    SettingsPanel.createOrShow(context.extensionPath);
+    SettingsPanel.createOrShow(context);
   });
 
   const settingsChangeListener = vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
@@ -117,6 +117,11 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   context.subscriptions.push(regenerateThemesCommand, settingsChangeListener, customizeCommand);
+
+  // Restore the panel if it was open before the reload
+  if (context.globalState.get<boolean>(C.PANEL_IS_OPEN_KEY)) {
+    SettingsPanel.createOrShow(context);
+  }
 
   syncIconFlavor();
 }
