@@ -13,15 +13,17 @@
 
     <div id="accent-container" class="settings-section">
         <div id="custom-accent-picker-container" style="display: none;">
-            <label for="custom-accent-picker">Custom Color:</label>
-            <div id="custom-accent-swatch" class="color-swatch"></div>
+            <label>Custom Color:</label>
+            <div class="color-input-wrapper">
+                <input type="color" id="custom-accent-picker">
+                <input type="text" id="custom-accent-hex-input" class="hex-input-display">
+            </div>
         </div>
     </div>
 
     <div id="font-styles-container" class="settings-section">
       <h2>Font Styles & Syntax Colors</h2>
-      <div id="settings-container">
-          </div>
+      <div id="settings-container"></div>
     </div>
 
     <div id="color-picker-modal" class="modal-overlay" style="display: none;">
