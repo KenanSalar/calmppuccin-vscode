@@ -1,73 +1,49 @@
 body {
-    background-color: var(--vscode-editor-background);
-    color: var(--vscode-editor-foreground);
-    font-family: var(--vscode-font-family);
-    padding: 0 20px;
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+  font-family: var(--vscode-font-family);
+  padding: 0 20px;
 }
 
-/*
- * Defines the main grid for the settings area.
- * Columns: 1. Label, 2. Font Style Control Group, 3. Color Control Group
- */
 #settings-container {
-    display: grid;
-    grid-template-columns: auto 1fr 1fr;
-    gap: 10px 20px;
-    align-items: center;
-    margin-top: 20px;
+  display: grid;
+  grid-template-columns: auto minmax(120px, 1fr) auto;
+  gap: 10px 15px;
+  align-items: center;
+  margin-top: 20px;
 }
 
-/*
- * A helper class to create a sub-grid for a control (like a dropdown)
- * and its associated "Reset" button, placing them neatly side-by-side.
- */
 .setting-with-reset {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 10px;
-    align-items: center;
-}
-
-/*
- * This class targets the container for the "Reset All" button and makes it
- * span all columns of the parent grid.
- */
-.reset-all-container {
-    grid-column: 1 / -1;
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid var(--vscode-editor-widget-border);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
 }
 
 #custom-accent-picker-container {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 10px 20px;
-    align-items: center;
-    margin-top: 15px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px 20px;
+  align-items: center;
+  margin-top: 15px;
 }
 
-/* New wrapper for the color swatch and its hex input */
 .color-input-wrapper {
-    display: grid;
-    grid-template-columns: 40px 1fr; /* Column for swatch, column for text */
-    gap: 10px;
-    align-items: center;
-    border: 1px solid var(--vscode-input-border);
-    border-radius: 4px;
-    background-color: var(--vscode-input-background);
-    padding: 2px;
-    height: 30px;
-    box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 4px;
+  background-color: var(--vscode-input-background);
+  padding: 2px;
+  height: 30px;
+  box-sizing: border-box;
 }
 
-/*
- * Styles the clickable color swatch that will open the color picker modal.
- * The checkerboard background indicates that transparency is supported.
- */
 .color-swatch {
     width: 100%;
-    height: 24px; /* Slightly smaller to fit padding */
+    height: 24px;
     border: 1px solid var(--vscode-input-border);
     border-radius: 2px;
     cursor: pointer;
@@ -79,110 +55,290 @@ body {
     background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
 }
 
-/* Style for the text input next to the swatch */
 .hex-input-display {
-    background: none;
-    border: none;
-    color: var(--vscode-input-foreground);
-    font-family: var(--vscode-font-family);
-    font-size: 1em;
-    padding: 0 5px;
-    outline: none;
+  background: none;
+  border: none;
+  color: var(--vscode-input-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: 1em;
+  padding: 0 5px;
+  outline: none;
 }
 
 label {
-    font-weight: bold;
-    text-transform: capitalize;
+  font-weight: bold;
+  text-transform: capitalize;
 }
 
 select {
-    width: 100%;
-    padding: 5px;
-    background-color: var(--vscode-input-background);
-    color: var(--vscode-input-foreground);
-    border: 1px solid var(--vscode-input-border);
-    border-radius: 4px;
+  min-width: 120px;
+  width: 100%;
+  padding: 5px;
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
-/* This rule targets the standard HTML color picker used for the accent color */
 input[type="color"] {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 24px;
-    padding: 0;
-    border-radius: 2px;
-    overflow: hidden;
-    cursor: pointer;
-    border: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 24px;
+  padding: 0;
+  border-radius: 2px;
+  overflow: hidden;
+  cursor: pointer;
+  border: none;
 }
 
 input[type="color"]::-webkit-color-swatch-wrapper {
-    padding: 0;
+  padding: 0;
 }
-
 input[type="color"]::-webkit-color-swatch {
-    border: none;
-    border-radius: 2px;
+  border: none;
+  border-radius: 2px;
 }
 
 .settings-section {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid var(--vscode-editor-widget-border);
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--vscode-editor-widget-border);
 }
 
 h2 {
-    margin-top: 0;
+  margin-top: 0;
 }
 
 button.reset-button {
-    background: var(--vscode-button-secondaryBackground);
-    color: var(--vscode-button-secondaryForeground);
-    border: 1px solid var(--vscode-input-border);
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-    justify-self: start;
+  background: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  justify-self: start;
 }
 
 button.reset-button:hover {
-    background: var(--vscode-button-secondaryHoverBackground);
+  background: var(--vscode-button-secondaryHoverBackground);
 }
 
-/* --- Styles for the iro.js Color Picker Modal --- */
-
-/* The full-screen overlay that contains the modal. */
+/* --- Modal Styles --- */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
-/* The content box of the modal. */
 .modal-content {
-    background-color: var(--vscode-editor-widget-background);
-    border: 1px solid var(--vscode-editor-widget-border);
-    padding: 20px;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  background-color: var(--vscode-editor-widget-background);
+  border: 1px solid var(--vscode-editor-widget-border);
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-/* The hex input field inside the modal. */
 .modal-hex-input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 15px;
+  padding: 5px;
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 4px;
+  text-align: center;
+}
+
+/* --- IMPROVED: Better Responsive Layout --- */
+.main-container {
+  display: grid;
+  grid-template-columns: minmax(450px, 1fr) minmax(300px, 1fr);
+  gap: 30px;
+  margin-top: 20px;
+  /* Prevent the container from overflowing */
+  max-width: 100vw;
+  box-sizing: border-box;
+  /* Ensure the container itself doesn't overflow the viewport */
+  overflow-x: hidden;
+}
+
+.controls-column {
+  display: flex;
+  flex-direction: column;
+  /* Ensure the controls column maintains a minimum width */
+  min-width: 450px;
+  /* Prevent overflow */
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.preview-column {
+  display: flex;
+  flex-direction: column;
+  /* Important: Set minimum width to 0 so it can shrink */
+  min-width: 0;
+  /* Prevent overflow */
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* NEW: Preview container to handle overflow properly */
+.preview-container {
+  /* Create a strict overflow container */
+  overflow: hidden;
+  border-radius: 6px;
+  /* Ensure it doesn't expand beyond its grid cell */
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  /* Add a subtle border to show the boundary */
+  border: 1px solid var(--vscode-editor-widget-border);
+}
+
+.vscode-editor-mock {
+  border-radius: 5px;
+  line-height: var(--vscode-editor-line-height);
+  padding: 15px;
+  /* Enable scrolling within the strict container */
+  overflow: auto;
+  /* Strict size constraints */
+  width: 100%;
+  max-width: 100%;
+  max-height: 70vh;
+  min-height: 400px;
+  box-sizing: border-box;
+  /* Ensure content doesn't break out */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.vscode-editor-mock pre,
+.vscode-editor-mock code {
+  background: none;
+  font-family: var(--vscode-editor-font-family);
+  font-size: var(--vscode-editor-font-size);
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word; /* Better word breaking */
+  /* Prevent overflow */
+  overflow-wrap: break-word;
+}
+
+.reset-all-button {
+  width: 100%;
+  padding: 10px;
+  cursor: pointer;
+  background-color: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 4px;
+}
+
+.reset-all-button:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+
+/* --- Responsive Breakpoints --- */
+/* For screens smaller than 1200px, adjust layout */
+@media (max-width: 1200px) {
+  .main-container {
+    gap: 20px;
+    grid-template-columns: minmax(400px, 1fr) minmax(280px, 1fr);
+  }
+
+  .controls-column {
+    min-width: 400px;
+  }
+}
+
+/* For screens smaller than 1000px, further adjustments */
+@media (max-width: 1000px) {
+  .main-container {
+    gap: 15px;
+    grid-template-columns: minmax(350px, 1fr) minmax(250px, 1fr);
+  }
+
+  .controls-column {
+    min-width: 350px;
+  }
+
+  #settings-container {
+    gap: 8px 10px;
+  }
+}
+
+/* For screens smaller than 800px, stack vertically */
+@media (max-width: 800px) {
+  .main-container {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    /* Remove horizontal overflow on mobile */
+    overflow-x: visible;
+  }
+
+  .controls-column {
+    min-width: 0;
     width: 100%;
-    box-sizing: border-box; /* Ensures padding is included in the width */
-    margin-top: 15px;
-    padding: 5px;
-    background-color: var(--vscode-input-background);
-    color: var(--vscode-input-foreground);
-    border: 1px solid var(--vscode-input-border);
-    border-radius: 4px;
-    text-align: center;
+    overflow-x: visible;
+  }
+
+  .preview-column {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .preview-container {
+    /* On mobile, the container can use full width */
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .vscode-editor-mock {
+    /* Smaller padding on mobile */
+    padding: 10px;
+    min-height: 300px;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 600px) {
+  body {
+    padding: 0 10px;
+  }
+
+  .main-container {
+    gap: 15px;
+  }
+
+  /* Make the settings grid more responsive */
+  #settings-container {
+    grid-template-columns: auto 1fr;
+    gap: 8px 10px;
+  }
+
+  /* Move reset buttons to next line on very small screens */
+  .setting-with-reset {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  select {
+    min-width: 100px;
+  }
+
+  /* Stack color inputs vertically on very small screens */
+  #custom-accent-picker-container {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 }
