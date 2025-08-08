@@ -47,15 +47,29 @@ body {
     margin-top: 15px;
 }
 
+/* New wrapper for the color swatch and its hex input */
+.color-input-wrapper {
+    display: grid;
+    grid-template-columns: 40px 1fr; /* Column for swatch, column for text */
+    gap: 10px;
+    align-items: center;
+    border: 1px solid var(--vscode-input-border);
+    border-radius: 4px;
+    background-color: var(--vscode-input-background);
+    padding: 2px;
+    height: 30px;
+    box-sizing: border-box;
+}
+
 /*
  * Styles the clickable color swatch that will open the color picker modal.
  * The checkerboard background indicates that transparency is supported.
  */
 .color-swatch {
     width: 100%;
-    height: 30px;
+    height: 24px; /* Slightly smaller to fit padding */
     border: 1px solid var(--vscode-input-border);
-    border-radius: 4px;
+    border-radius: 2px;
     cursor: pointer;
     background-image: linear-gradient(45deg, #808080 25%, transparent 25%),
                       linear-gradient(-45deg, #808080 25%, transparent 25%),
@@ -63,6 +77,17 @@ body {
                       linear-gradient(-45deg, transparent 75%, #808080 75%);
     background-size: 12px 12px;
     background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
+}
+
+/* Style for the text input next to the swatch */
+.hex-input-display {
+    background: none;
+    border: none;
+    color: var(--vscode-input-foreground);
+    font-family: var(--vscode-font-family);
+    font-size: 1em;
+    padding: 0 5px;
+    outline: none;
 }
 
 label {

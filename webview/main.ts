@@ -13,18 +13,19 @@ function initialize() {
   const accentContainer = document.getElementById("accent-container");
   const settingsContainer = document.getElementById("settings-container");
   const customAccentPickerContainer = document.getElementById("custom-accent-picker-container");
-  const customAccentSwatch = document.getElementById("custom-accent-swatch");
   const flavorTitle = document.getElementById("current-flavor");
   const modal = document.getElementById("color-picker-modal");
   const iroPickerContainer = document.getElementById("iro-picker-container");
   const modalHexInput = document.getElementById("modal-hex-input") as HTMLInputElement;
+
+  // This will be created dynamically, so we declare it here.
+  let customAccentSwatch: HTMLElement | null;
 
   // If any essential element isn't found, exit early to prevent errors.
   if (
     !settingsContainer ||
     !accentContainer ||
     !customAccentPickerContainer ||
-    !customAccentSwatch ||
     !flavorTitle ||
     !modal ||
     !iroPickerContainer
@@ -33,8 +34,6 @@ function initialize() {
 
   const fontStyleOptions = ["none", "italic", "bold", "italic bold", "underline"];
   const hexRegex = /^#([0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
-
-  // A variable to hold the active color picker instance, so we can destroy it later.
   let activeColorPicker: iro.ColorPicker | null = null;
 
   // When the user clicks on the dark overlay, hide the modal and clean up the color picker.
@@ -42,7 +41,6 @@ function initialize() {
     if (e.target === modal) {
       modal.style.display = "none";
       if (activeColorPicker) {
-        // Clean up the iro.js component to avoid memory leaks.
         (activeColorPicker.base as HTMLElement).remove();
         activeColorPicker = null;
       }
@@ -52,17 +50,19 @@ function initialize() {
   /**
    * Creates and displays the iro.js color picker in a modal.
    * @param initialColor The color to initialize the picker with.
+   * @param targetHexInput The specific hex input field in the UI to update live.
    * @param onColorChange A callback function to execute when the user confirms a color change.
    */
-  const openColorPicker = (initialColor: string, onColorChange: (color: iro.Color) => void) => {
-    // Clean up any previous instance before creating a new one.
+  const openColorPicker = (
+    initialColor: string,
+    targetHexInput: HTMLInputElement,
+    onColorChange: (color: iro.Color) => void
+  ) => {
     if (activeColorPicker) {
       (activeColorPicker.base as HTMLElement).remove();
     }
+    modal.style.display = "flex";
 
-    modal.style.display = "flex"; // Show the modal.
-
-    // Create a new iro.js color picker instance.
     activeColorPicker = new (iro.ColorPicker as any)(iroPickerContainer, {
       width: 240,
       color: initialColor,
@@ -74,17 +74,16 @@ function initialize() {
       ],
     });
 
-    // We use the non-null assertion operator (!) here because we know for certain
-    // that activeColorPicker was just created on the line above.
     activeColorPicker!.on("color:change", (color: iro.Color) => {
-      modalHexInput.value = color.hex8String;
+      const newHex = color.hex8String;
+      modalHexInput.value = newHex;
+      targetHexInput.value = newHex;
     });
 
     activeColorPicker!.on("input:end", (color: iro.Color) => {
       onColorChange(color);
     });
 
-    // Initialize the hex input and allow the user to type a hex code directly.
     modalHexInput.value = activeColorPicker!.color.hex8String;
     modalHexInput.oninput = () => {
       if (hexRegex.test(modalHexInput.value)) {
@@ -93,7 +92,7 @@ function initialize() {
     };
   };
 
-  // Listen for messages from the extension's backend (SettingsPanel.ts).
+  // Listen for the 'loadSettings' message from the extension backend.
   window.addEventListener("message", (event) => {
     const message = event.data;
     if (message.command === "loadSettings") {
@@ -103,7 +102,6 @@ function initialize() {
       accentContainer.innerHTML = "";
       settingsContainer.innerHTML = "";
       accentContainer.appendChild(customAccentPickerContainer);
-
       flavorTitle.textContent = `Editing: ${activeFlavor.charAt(0).toUpperCase() + activeFlavor.slice(1)}`;
 
       // --- 1. RENDER ACCENT COLOR DROPDOWN ---
@@ -135,11 +133,27 @@ function initialize() {
       accentContainer.insertBefore(accentSelectContainer, customAccentPickerContainer);
 
       // --- 2. INITIALIZE CUSTOM ACCENT PICKER ---
-      (customAccentSwatch as HTMLElement).style.backgroundColor = customAccentColor;
+      const customAccentInputWrapper = document.createElement("div");
+      customAccentInputWrapper.className = "color-input-wrapper";
+
+      customAccentSwatch = document.createElement("div");
+      customAccentSwatch.className = "color-swatch";
+      customAccentSwatch.style.backgroundColor = customAccentColor;
+
+      const customAccentHexInput = document.createElement("input");
+      customAccentHexInput.type = "text";
+      customAccentHexInput.className = "hex-input-display";
+      customAccentHexInput.value = customAccentColor;
+      customAccentHexInput.readOnly = true;
+
+      customAccentInputWrapper.appendChild(customAccentSwatch);
+      customAccentInputWrapper.appendChild(customAccentHexInput);
+      customAccentPickerContainer.appendChild(customAccentInputWrapper);
+
       handleAccentChange(currentAccent);
 
       customAccentSwatch.addEventListener("click", () => {
-        openColorPicker(customAccentColor, (color) => {
+        openColorPicker(customAccentHexInput.value, customAccentHexInput, (color) => {
           const newColor = color.hex8String;
           (customAccentSwatch as HTMLElement).style.backgroundColor = newColor;
           vscode.postMessage({ command: "updateCustomAccent", value: newColor });
@@ -170,6 +184,7 @@ function initialize() {
           const newValue = (e.target as HTMLSelectElement).value;
           vscode.postMessage({ command: "updateSetting", key: fontStyleKey, value: newValue });
         });
+
         const fontResetButton = document.createElement("button");
         fontResetButton.textContent = "Reset";
         fontResetButton.className = "reset-button";
@@ -178,23 +193,35 @@ function initialize() {
           vscode.postMessage({ command: "resetFontStyle", key: fontStyleKey });
         });
 
-        // --- Color Swatch & Reset ---
+        // --- Color Control Group (Swatch + Hex Input) ---
+        const colorInputWrapper = document.createElement("div");
+        colorInputWrapper.className = "color-input-wrapper";
         const colorSwatch = document.createElement("div");
         colorSwatch.className = "color-swatch";
         colorSwatch.style.backgroundColor = color;
+        const hexInput = document.createElement("input");
+        hexInput.type = "text";
+        hexInput.className = "hex-input-display";
+        hexInput.value = color;
+        hexInput.readOnly = true;
+        colorInputWrapper.appendChild(colorSwatch);
+        colorInputWrapper.appendChild(hexInput);
+
         colorSwatch.addEventListener("click", () => {
-          openColorPicker(color, (newColor) => {
+          openColorPicker(hexInput.value, hexInput, (newColor) => {
             const finalColor = newColor.hex8String;
             colorSwatch.style.backgroundColor = finalColor;
             vscode.postMessage({ command: "updateSyntaxColor", flavor: activeFlavor, key, value: finalColor });
           });
         });
 
+        // --- Color Reset Button ---
         const colorResetButton = document.createElement("button");
         colorResetButton.textContent = "Reset";
         colorResetButton.className = "reset-button";
         colorResetButton.addEventListener("click", () => {
           colorSwatch.style.backgroundColor = defaultColor;
+          hexInput.value = defaultColor;
           vscode.postMessage({ command: "resetSyntaxColor", flavor: activeFlavor, key });
         });
 
@@ -204,12 +231,15 @@ function initialize() {
         const fontContainer = document.createElement("div");
         fontContainer.className = "setting-with-reset";
         fontContainer.appendChild(select);
+        // ** THE FIX IS HERE: **
+        // Build the complete container first...
         fontContainer.appendChild(fontResetButton);
+        // ...then append it to the grid.
         settingsContainer.appendChild(fontContainer);
 
         const colorContainer = document.createElement("div");
         colorContainer.className = "setting-with-reset";
-        colorContainer.appendChild(colorSwatch);
+        colorContainer.appendChild(colorInputWrapper);
         colorContainer.appendChild(colorResetButton);
         settingsContainer.appendChild(colorContainer);
       });
@@ -217,7 +247,6 @@ function initialize() {
       // --- Add "Reset All" Button ---
       const resetButtonContainer = document.createElement("div");
       resetButtonContainer.className = "reset-all-container";
-
       const resetAllButton = document.createElement("button");
       resetAllButton.textContent = "Reset All Settings to Default";
       resetAllButton.style.width = "100%";
@@ -226,11 +255,9 @@ function initialize() {
       resetAllButton.style.backgroundColor = "var(--vscode-button-secondaryBackground)";
       resetAllButton.style.color = "var(--vscode-button-secondaryForeground)";
       resetAllButton.style.border = "1px solid var(--vscode-input-border)";
-
       resetAllButton.addEventListener("click", () => {
         vscode.postMessage({ command: "resetAll" });
       });
-
       resetButtonContainer.appendChild(resetAllButton);
       settingsContainer.appendChild(resetButtonContainer);
     }
