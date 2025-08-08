@@ -1,3 +1,4 @@
+/* General Body Styles */
 body {
   background-color: var(--vscode-editor-background);
   color: var(--vscode-editor-foreground);
@@ -5,8 +6,17 @@ body {
   padding: 0 20px;
 }
 
+h1,
+h2,
+p {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+/* --- Controls Column Styles --- */
 #settings-container {
   display: grid;
+  /* A robust 3-column layout for the controls: Label (auto), Dropdown (flexible), Color Picker (auto) */
   grid-template-columns: auto minmax(120px, 1fr) auto;
   gap: 10px 15px;
   align-items: center;
@@ -18,14 +28,6 @@ body {
   grid-template-columns: 1fr auto;
   gap: 10px;
   align-items: center;
-}
-
-#custom-accent-picker-container {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 10px 20px;
-  align-items: center;
-  margin-top: 15px;
 }
 
 .color-input-wrapper {
@@ -41,20 +43,89 @@ body {
   box-sizing: border-box;
 }
 
-.color-swatch {
-    width: 100%;
-    height: 24px;
-    border: 1px solid var(--vscode-input-border);
-    border-radius: 2px;
-    cursor: pointer;
-    background-image: linear-gradient(45deg, #808080 25%, transparent 25%),
-                      linear-gradient(-45deg, #808080 25%, transparent 25%),
-                      linear-gradient(45deg, transparent 75%, #808080 75%),
-                      linear-gradient(-45deg, transparent 75%, #808080 75%);
-    background-size: 12px 12px;
-    background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
+select {
+  width: 100%;
+  padding: 5px;
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 4px;
 }
 
+/* --- NEW: Simplified and Robust Main Layout --- */
+.main-container {
+  display: flex;
+  /* Allows columns to stack vertically on smaller screens */
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.controls-column,
+.preview-column {
+  /* This prevents flex items from overflowing their container */
+  min-width: 0;
+  /* Each column will try to take up half the space, but can shrink and grow. */
+  flex: 1 1 500px;
+}
+
+/* --- NEW: Unbreakable Preview Pane --- */
+.preview-container {
+  border: 1px solid var(--vscode-editor-widget-border, #333);
+  border-radius: 6px;
+  height: 100%;
+  min-height: 400px;
+  box-sizing: border-box;
+  /* The container itself scrolls if the content inside is too tall */
+  overflow: auto;
+}
+
+.vscode-editor-mock {
+  padding: 15px;
+  line-height: var(--vscode-editor-line-height);
+}
+
+.vscode-editor-mock pre,
+.vscode-editor-mock code {
+  background: none;
+  font-family: var(--vscode-editor-font-family);
+  font-size: var(--vscode-editor-font-size);
+  margin: 0;
+  /* THIS IS THE KEY: The code will now wrap automatically */
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* --- NEW: Responsive Stacking --- */
+/* On screens narrower than 1100px, switch to a single-column layout */
+@media (max-width: 1100px) {
+  .main-container {
+    flex-direction: column;
+    gap: 40px;
+  }
+}
+
+/* (Other styles for buttons, modal, etc. remain the same) */
+#custom-accent-picker-container {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px 20px;
+  align-items: center;
+  margin-top: 15px;
+}
+.color-swatch {
+  width: 100%;
+  height: 24px;
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 2px;
+  cursor: pointer;
+  background-image: linear-gradient(45deg, #808080 25%, transparent 25%),
+                    linear-gradient(-45deg, #808080 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, #808080 75%),
+                    linear-gradient(-45deg, transparent 75%, #808080 75%);
+  background-size: 12px 12px;
+  background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+}
 .hex-input-display {
   background: none;
   border: none;
@@ -64,23 +135,10 @@ body {
   padding: 0 5px;
   outline: none;
 }
-
 label {
-  font-weight: bold;
+  font-weight: 700;
   text-transform: capitalize;
 }
-
-select {
-  min-width: 120px;
-  width: 100%;
-  padding: 5px;
-  background-color: var(--vscode-input-background);
-  color: var(--vscode-input-foreground);
-  border: 1px solid var(--vscode-input-border);
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
 input[type="color"] {
   -webkit-appearance: none;
   width: 100%;
@@ -91,7 +149,6 @@ input[type="color"] {
   cursor: pointer;
   border: none;
 }
-
 input[type="color"]::-webkit-color-swatch-wrapper {
   padding: 0;
 }
@@ -99,17 +156,11 @@ input[type="color"]::-webkit-color-swatch {
   border: none;
   border-radius: 2px;
 }
-
 .settings-section {
   margin-top: 30px;
   padding-top: 20px;
   border-top: 1px solid var(--vscode-editor-widget-border);
 }
-
-h2 {
-  margin-top: 0;
-}
-
 button.reset-button {
   background: var(--vscode-button-secondaryBackground);
   color: var(--vscode-button-secondaryForeground);
@@ -119,12 +170,9 @@ button.reset-button {
   cursor: pointer;
   justify-self: start;
 }
-
 button.reset-button:hover {
   background: var(--vscode-button-secondaryHoverBackground);
 }
-
-/* --- Modal Styles --- */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -137,7 +185,6 @@ button.reset-button:hover {
   align-items: center;
   z-index: 1000;
 }
-
 .modal-content {
   background-color: var(--vscode-editor-widget-background);
   border: 1px solid var(--vscode-editor-widget-border);
@@ -145,7 +192,6 @@ button.reset-button:hover {
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
-
 .modal-hex-input {
   width: 100%;
   box-sizing: border-box;
@@ -157,83 +203,6 @@ button.reset-button:hover {
   border-radius: 4px;
   text-align: center;
 }
-
-/* --- IMPROVED: Better Responsive Layout --- */
-.main-container {
-  display: grid;
-  grid-template-columns: minmax(450px, 1fr) minmax(300px, 1fr);
-  gap: 30px;
-  margin-top: 20px;
-  /* Prevent the container from overflowing */
-  max-width: 100vw;
-  box-sizing: border-box;
-  /* Ensure the container itself doesn't overflow the viewport */
-  overflow-x: hidden;
-}
-
-.controls-column {
-  display: flex;
-  flex-direction: column;
-  /* Ensure the controls column maintains a minimum width */
-  min-width: 450px;
-  /* Prevent overflow */
-  overflow-x: hidden;
-  box-sizing: border-box;
-}
-
-.preview-column {
-  display: flex;
-  flex-direction: column;
-  /* Important: Set minimum width to 0 so it can shrink */
-  min-width: 0;
-  /* Prevent overflow */
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-/* NEW: Preview container to handle overflow properly */
-.preview-container {
-  /* Create a strict overflow container */
-  overflow: hidden;
-  border-radius: 6px;
-  /* Ensure it doesn't expand beyond its grid cell */
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-  /* Add a subtle border to show the boundary */
-  border: 1px solid var(--vscode-editor-widget-border);
-}
-
-.vscode-editor-mock {
-  border-radius: 5px;
-  line-height: var(--vscode-editor-line-height);
-  padding: 15px;
-  /* Enable scrolling within the strict container */
-  overflow: auto;
-  /* Strict size constraints */
-  width: 100%;
-  max-width: 100%;
-  max-height: 70vh;
-  min-height: 400px;
-  box-sizing: border-box;
-  /* Ensure content doesn't break out */
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-
-.vscode-editor-mock pre,
-.vscode-editor-mock code {
-  background: none;
-  font-family: var(--vscode-editor-font-family);
-  font-size: var(--vscode-editor-font-size);
-  margin: 0;
-  white-space: pre-wrap;
-  word-break: break-word; /* Better word breaking */
-  /* Prevent overflow */
-  overflow-wrap: break-word;
-}
-
 .reset-all-button {
   width: 100%;
   padding: 10px;
@@ -243,102 +212,6 @@ button.reset-button:hover {
   border: 1px solid var(--vscode-input-border);
   border-radius: 4px;
 }
-
 .reset-all-button:hover {
   background: var(--vscode-button-secondaryHoverBackground);
-}
-
-/* --- Responsive Breakpoints --- */
-/* For screens smaller than 1200px, adjust layout */
-@media (max-width: 1200px) {
-  .main-container {
-    gap: 20px;
-    grid-template-columns: minmax(400px, 1fr) minmax(280px, 1fr);
-  }
-
-  .controls-column {
-    min-width: 400px;
-  }
-}
-
-/* For screens smaller than 1000px, further adjustments */
-@media (max-width: 1000px) {
-  .main-container {
-    gap: 15px;
-    grid-template-columns: minmax(350px, 1fr) minmax(250px, 1fr);
-  }
-
-  .controls-column {
-    min-width: 350px;
-  }
-
-  #settings-container {
-    gap: 8px 10px;
-  }
-}
-
-/* For screens smaller than 800px, stack vertically */
-@media (max-width: 800px) {
-  .main-container {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    /* Remove horizontal overflow on mobile */
-    overflow-x: visible;
-  }
-
-  .controls-column {
-    min-width: 0;
-    width: 100%;
-    overflow-x: visible;
-  }
-
-  .preview-column {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .preview-container {
-    /* On mobile, the container can use full width */
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .vscode-editor-mock {
-    /* Smaller padding on mobile */
-    padding: 10px;
-    min-height: 300px;
-  }
-}
-
-/* For very small screens */
-@media (max-width: 600px) {
-  body {
-    padding: 0 10px;
-  }
-
-  .main-container {
-    gap: 15px;
-  }
-
-  /* Make the settings grid more responsive */
-  #settings-container {
-    grid-template-columns: auto 1fr;
-    gap: 8px 10px;
-  }
-
-  /* Move reset buttons to next line on very small screens */
-  .setting-with-reset {
-    grid-template-columns: 1fr;
-    gap: 5px;
-  }
-
-  select {
-    min-width: 100px;
-  }
-
-  /* Stack color inputs vertically on very small screens */
-  #custom-accent-picker-container {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
 }
