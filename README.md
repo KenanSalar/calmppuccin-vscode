@@ -62,11 +62,21 @@ enter `Calmppuccin`, locate the extension in the results, and select Install to 
 
 ## Customization
 
-You can easily tailor Calmppuccin to fit your personal preferences. Choose the method that works best for you.
+You can easily tailor Calmppuccin to fit your personal preferences using the built-in graphical interface or by editing your `settings.json` directly.
 
 ### 1. Using the Customization UI (Recommended)
 
-This is the easiest and recommended way to configure everything in one place. You can open the custom UI in two main ways:
+This is the easiest and most powerful way to configure everything in one place.\
+The UI gives you full control over accent colors, font styles, and granular syntax colors with transparency support.
+
+<details>
+<summary>🛠️ Customization UI</summary>
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/customUI/custom-ui.png" alt="customUI" width="600" height="1000">
+</details>
+
+<br/>
+
+You can open the custom UI in two main ways:
 
 <details>
 <summary><b>Via the Command Palette (Quickest Method):</b></summary>
@@ -88,8 +98,7 @@ This is the easiest and recommended way to configure everything in one place. Yo
 
 <br/>
 
-Either method will open a new panel where you can visually change the Accent Color and all Font Styles. Changes are\
-saved automatically, and a notification will appear prompting you to reload VS Code to apply them.
+Changes are saved automatically. A notification will appear prompting you to reload VS Code to apply them.
 
 ### 2. Using the Standard Settings UI
 
@@ -112,7 +121,12 @@ For those who prefer editing JSON directly, you can modify your settings.json fi
 Add the following line to set your accent color. Replace `mauve` with any of the available options below.
 
 ```json
-"calmppuccin.accent": "mauve"
+// Use a predefined accent
+"calmppuccin.accent": "mauve",
+
+// Use a custom hex color
+"calmppuccin.accent": "custom",
+"calmppuccin.customAccentColor": "#36d9ce"
 ```
 
 <details>
@@ -136,16 +150,6 @@ Add the following line to set your accent color. Replace `mauve` with any of the
 </details>
 
 <br/>
-
-When you select `custom` as the accent color, you can pick any color using the color picker in the `Customization UI`.
-Alternatively, you can set the color directly in  `settings.json`:
-
-```json
-"calmppuccin.accent": "custom",
-"calmppuccin.customAccentColor": "#36d9ce"
-```
-
-Use any hex color you like.
 
 #### ✒️ Font Styles
 

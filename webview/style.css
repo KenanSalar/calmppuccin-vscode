@@ -104,6 +104,27 @@ select {
     border-radius: 4px;
 }
 
+/* This rule targets the standard HTML color picker used for the accent color */
+input[type="color"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 24px;
+    padding: 0;
+    border-radius: 2px;
+    overflow: hidden;
+    cursor: pointer;
+    border: none;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 2px;
+}
+
 .settings-section {
     margin-top: 30px;
     padding-top: 20px;

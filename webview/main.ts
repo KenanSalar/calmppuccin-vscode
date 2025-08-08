@@ -18,8 +18,9 @@ function initialize() {
   const iroPickerContainer = document.getElementById("iro-picker-container");
   const modalHexInput = document.getElementById("modal-hex-input") as HTMLInputElement;
 
-  // This will be created dynamically, so we declare it here.
-  let customAccentSwatch: HTMLElement | null;
+  // Get specific references for the standard HTML accent color inputs
+  const customAccentPicker = document.getElementById("custom-accent-picker") as HTMLInputElement;
+  const customAccentHexInput = document.getElementById("custom-accent-hex-input") as HTMLInputElement;
 
   // If any essential element isn't found, exit early to prevent errors.
   if (
@@ -28,12 +29,15 @@ function initialize() {
     !customAccentPickerContainer ||
     !flavorTitle ||
     !modal ||
-    !iroPickerContainer
+    !iroPickerContainer ||
+    !customAccentPicker ||
+    !customAccentHexInput
   )
     return;
 
   const fontStyleOptions = ["none", "italic", "bold", "italic bold", "underline"];
   const hexRegex = /^#([0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
+  const hex6Regex = /^#[0-9a-fA-F]{6}$/; // Regex for 6-digit hex only for the accent color
   let activeColorPicker: iro.ColorPicker | null = null;
 
   // When the user clicks on the dark overlay, hide the modal and clean up the color picker.
@@ -49,9 +53,7 @@ function initialize() {
 
   /**
    * Creates and displays the iro.js color picker in a modal.
-   * @param initialColor The color to initialize the picker with.
-   * @param targetHexInput The specific hex input field in the UI to update live.
-   * @param onColorChange A callback function to execute when the user confirms a color change.
+   * This is now ONLY used for syntax colors.
    */
   const openColorPicker = (
     initialColor: string,
@@ -92,7 +94,6 @@ function initialize() {
     };
   };
 
-  // Listen for the 'loadSettings' message from the extension backend.
   window.addEventListener("message", (event) => {
     const message = event.data;
     if (message.command === "loadSettings") {
@@ -132,35 +133,32 @@ function initialize() {
       accentSelectContainer.appendChild(accentSelect);
       accentContainer.insertBefore(accentSelectContainer, customAccentPickerContainer);
 
-      // --- 2. INITIALIZE CUSTOM ACCENT PICKER ---
-      const customAccentInputWrapper = document.createElement("div");
-      customAccentInputWrapper.className = "color-input-wrapper";
-
-      customAccentSwatch = document.createElement("div");
-      customAccentSwatch.className = "color-swatch";
-      customAccentSwatch.style.backgroundColor = customAccentColor;
-
-      const customAccentHexInput = document.createElement("input");
-      customAccentHexInput.type = "text";
-      customAccentHexInput.className = "hex-input-display";
+      // --- 2. INITIALIZE CUSTOM ACCENT PICKER (STANDARD HTML VERSION) ---
+      // This logic is now fully restored to its simple, original state.
+      customAccentPicker.value = customAccentColor;
       customAccentHexInput.value = customAccentColor;
-      customAccentHexInput.readOnly = true;
-
-      customAccentInputWrapper.appendChild(customAccentSwatch);
-      customAccentInputWrapper.appendChild(customAccentHexInput);
-      customAccentPickerContainer.appendChild(customAccentInputWrapper);
+      customAccentHexInput.maxLength = 7; // Only allow 6-digit hex + #
 
       handleAccentChange(currentAccent);
 
-      customAccentSwatch.addEventListener("click", () => {
-        openColorPicker(customAccentHexInput.value, customAccentHexInput, (color) => {
-          const newColor = color.hex8String;
-          (customAccentSwatch as HTMLElement).style.backgroundColor = newColor;
-          vscode.postMessage({ command: "updateCustomAccent", value: newColor });
-        });
+      // Simple event listener for the standard color picker
+      customAccentPicker.addEventListener("input", (e) => {
+        const newValue = (e.target as HTMLInputElement).value;
+        customAccentHexInput.value = newValue;
+        vscode.postMessage({ command: "updateCustomAccent", value: newValue });
       });
 
-      // --- 3. RENDER SYNTAX SETTINGS ROWS ---
+      // Simple event listener for the hex input
+      customAccentHexInput.addEventListener("input", (e) => {
+        const newValue = (e.target as HTMLInputElement).value;
+        // Use the 6-digit regex here
+        if (hex6Regex.test(newValue)) {
+          customAccentPicker.value = newValue;
+          vscode.postMessage({ command: "updateCustomAccent", value: newValue });
+        }
+      });
+
+      // --- 3. RENDER SYNTAX SETTINGS ROWS (IRO.JS VERSION) ---
       syntaxSettings.forEach((setting: any) => {
         const { key, fontStyle, color, defaultColor } = setting;
         const fontStyleKey = `${key}FontStyle`;
@@ -207,6 +205,7 @@ function initialize() {
         colorInputWrapper.appendChild(colorSwatch);
         colorInputWrapper.appendChild(hexInput);
 
+        // This click listener correctly opens the iro.js modal for syntax colors
         colorSwatch.addEventListener("click", () => {
           openColorPicker(hexInput.value, hexInput, (newColor) => {
             const finalColor = newColor.hex8String;
@@ -231,10 +230,7 @@ function initialize() {
         const fontContainer = document.createElement("div");
         fontContainer.className = "setting-with-reset";
         fontContainer.appendChild(select);
-        // ** THE FIX IS HERE: **
-        // Build the complete container first...
         fontContainer.appendChild(fontResetButton);
-        // ...then append it to the grid.
         settingsContainer.appendChild(fontContainer);
 
         const colorContainer = document.createElement("div");
