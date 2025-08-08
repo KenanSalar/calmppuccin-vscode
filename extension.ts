@@ -73,10 +73,11 @@ export function activate(context: vscode.ExtensionContext) {
       const accentSetting = config.get<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
       const customAccent = config.get<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
       const fontStyles = config.get<{ [key: string]: string }>("fontStyles");
+      const syntaxOverrides = config.get<object>("syntaxOverrides", {});
 
       const accentValue = accentSetting === "custom" ? customAccent : accentSetting;
 
-      await buildAllFlavors(accentValue, fontStyles || {});
+      await buildAllFlavors(accentValue, fontStyles || {}, syntaxOverrides as any);
 
       const selection = await vscode.window.showInformationMessage(C.INFO_MESSAGE(accentSetting), C.RELOAD_ACTION);
 
@@ -106,13 +107,16 @@ export function activate(context: vscode.ExtensionContext) {
     if (
       event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACCENT}`) ||
       event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.fontStyles`) ||
-      event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_CUSTOM_ACCENT}`)
+      event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_CUSTOM_ACCENT}`) ||
+      event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.syntaxOverrides`)
     ) {
       vscode.commands.executeCommand(C.REGENERATE_COMMAND_ID);
     }
 
     if (event.affectsConfiguration("workbench.colorTheme")) {
       syncIconFlavor();
+      // If the theme changes, we should update the webview if it's open
+      SettingsPanel.updateIfVisible();
     }
   });
 

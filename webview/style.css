@@ -7,7 +7,8 @@ body {
 
 #settings-container {
     display: grid;
-    grid-template-columns: auto 1fr;
+    /* Updated grid to accommodate label, font style, color picker, reset button */
+    grid-template-columns: auto 1fr 140px auto;
     gap: 10px 20px;
     align-items: center;
     margin-top: 20px;
@@ -85,4 +86,18 @@ input[type="text"] {
 
 h2 {
     margin-top: 0;
+}
+
+button.reset-button {
+    background: var(--vscode-button-secondaryBackground);
+    color: var(--vscode-button-secondaryForeground);
+    border: 1px solid var(--vscode-input-border);
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    justify-self: start;
+}
+
+button.reset-button:hover {
+    background: var(--vscode-button-secondaryHoverBackground);
 }
