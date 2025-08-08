@@ -5,13 +5,25 @@ body {
     padding: 0 20px;
 }
 
+/* * Defines the main grid for the settings area.
+ * Columns: 1. Label, 2. Font Style Control Group, 3. Color Control Group
+ */
 #settings-container {
     display: grid;
-    /* Updated grid to accommodate label, font style, color picker, reset button */
-    grid-template-columns: auto 1fr 140px auto;
+    grid-template-columns: auto 1fr 1fr;
     gap: 10px 20px;
     align-items: center;
     margin-top: 20px;
+}
+
+/* * A helper class to create a sub-grid for a control (like a dropdown or color picker)
+ * and its associated "Reset" button, placing them neatly side-by-side.
+ */
+.setting-with-reset {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
 }
 
 #custom-accent-picker-container {
@@ -56,7 +68,12 @@ input[type="color"] {
     border-radius: 2px;
     overflow: hidden;
     cursor: pointer;
-    background: none;
+    background-image: linear-gradient(45deg, #808080 25%, transparent 25%),
+                      linear-gradient(-45deg, #808080 25%, transparent 25%),
+                      linear-gradient(45deg, transparent 75%, #808080 75%),
+                      linear-gradient(-45deg, transparent 75%, #808080 75%);
+    background-size: 10px 10px;
+    background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
 }
 
 input[type="color"]::-webkit-color-swatch-wrapper {
@@ -95,7 +112,7 @@ button.reset-button {
     border-radius: 4px;
     padding: 5px 10px;
     cursor: pointer;
-    justify-self: start;
+    justify-self: start; /* Aligns the button to the start of its grid cell */
 }
 
 button.reset-button:hover {
