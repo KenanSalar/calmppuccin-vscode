@@ -1,3 +1,5 @@
+import iro from "@jaames/iro";
+
 // Define an interface for the VS Code API object to get TypeScript support.
 interface VsCodeApi {
   postMessage(message: any): void;
@@ -11,42 +13,97 @@ function initialize() {
   const accentContainer = document.getElementById("accent-container");
   const settingsContainer = document.getElementById("settings-container");
   const customAccentPickerContainer = document.getElementById("custom-accent-picker-container");
-  const customAccentPicker = document.getElementById("custom-accent-picker") as HTMLInputElement;
-  const customAccentHexInput = document.getElementById("custom-accent-hex-input") as HTMLInputElement;
+  const customAccentSwatch = document.getElementById("custom-accent-swatch");
   const flavorTitle = document.getElementById("current-flavor");
+  const modal = document.getElementById("color-picker-modal");
+  const iroPickerContainer = document.getElementById("iro-picker-container");
+  const modalHexInput = document.getElementById("modal-hex-input") as HTMLInputElement;
 
   // If any essential element isn't found, exit early to prevent errors.
   if (
     !settingsContainer ||
     !accentContainer ||
     !customAccentPickerContainer ||
-    !customAccentPicker ||
-    !customAccentHexInput ||
-    !flavorTitle
+    !customAccentSwatch ||
+    !flavorTitle ||
+    !modal ||
+    !iroPickerContainer
   )
     return;
 
   const fontStyleOptions = ["none", "italic", "bold", "italic bold", "underline"];
-
-  // A regular expression to validate a 6-digit (#RRGGBB) or 8-digit (#RRGGBBAA) hex code.
   const hexRegex = /^#([0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
 
-  // Listen for messages sent from the extension's backend (SettingsPanel.ts).
+  // A variable to hold the active color picker instance, so we can destroy it later.
+  let activeColorPicker: iro.ColorPicker | null = null;
+
+  // When the user clicks on the dark overlay, hide the modal and clean up the color picker.
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.style.display = "none";
+      if (activeColorPicker) {
+        // Clean up the iro.js component to avoid memory leaks.
+        (activeColorPicker.base as HTMLElement).remove();
+        activeColorPicker = null;
+      }
+    }
+  });
+
+  /**
+   * Creates and displays the iro.js color picker in a modal.
+   * @param initialColor The color to initialize the picker with.
+   * @param onColorChange A callback function to execute when the user confirms a color change.
+   */
+  const openColorPicker = (initialColor: string, onColorChange: (color: iro.Color) => void) => {
+    // Clean up any previous instance before creating a new one.
+    if (activeColorPicker) {
+      (activeColorPicker.base as HTMLElement).remove();
+    }
+
+    modal.style.display = "flex"; // Show the modal.
+
+    // Create a new iro.js color picker instance.
+    activeColorPicker = new (iro.ColorPicker as any)(iroPickerContainer, {
+      width: 240,
+      color: initialColor,
+      borderWidth: 1,
+      borderColor: "var(--vscode-input-border)",
+      layout: [
+        { component: (iro.ui as any).Wheel },
+        { component: (iro.ui as any).Slider, options: { sliderType: "alpha" } },
+      ],
+    });
+
+    // We use the non-null assertion operator (!) here because we know for certain
+    // that activeColorPicker was just created on the line above.
+    activeColorPicker!.on("color:change", (color: iro.Color) => {
+      modalHexInput.value = color.hex8String;
+    });
+
+    activeColorPicker!.on("input:end", (color: iro.Color) => {
+      onColorChange(color);
+    });
+
+    // Initialize the hex input and allow the user to type a hex code directly.
+    modalHexInput.value = activeColorPicker!.color.hex8String;
+    modalHexInput.oninput = () => {
+      if (hexRegex.test(modalHexInput.value)) {
+        activeColorPicker!.color.hexString = modalHexInput.value;
+      }
+    };
+  };
+
+  // Listen for messages from the extension's backend (SettingsPanel.ts).
   window.addEventListener("message", (event) => {
     const message = event.data;
     if (message.command === "loadSettings") {
-      // Destructure all the data sent from the extension.
       const { activeFlavor, syntaxSettings, currentAccent, accentOptions, customAccentColor, defaultFontStyles } =
         message.settings;
 
-      // Clear previous content to handle re-renders when the active theme changes.
       accentContainer.innerHTML = "";
       settingsContainer.innerHTML = "";
-
-      // The custom accent picker is part of the original HTML, so we re-append it after clearing.
       accentContainer.appendChild(customAccentPickerContainer);
 
-      // Display the currently active theme flavor.
       flavorTitle.textContent = `Editing: ${activeFlavor.charAt(0).toUpperCase() + activeFlavor.slice(1)}`;
 
       // --- 1. RENDER ACCENT COLOR DROPDOWN ---
@@ -55,12 +112,9 @@ function initialize() {
       accentSelectContainer.style.gridTemplateColumns = "auto 1fr";
       accentSelectContainer.style.gap = "10px 20px";
       accentSelectContainer.style.alignItems = "center";
-
       const accentLabel = document.createElement("label");
       accentLabel.textContent = "Accent Color:";
       const accentSelect = document.createElement("select");
-
-      // Populate the dropdown with all available accent colors.
       accentOptions.forEach((option: string) => {
         const optionElement = document.createElement("option");
         optionElement.value = option;
@@ -68,61 +122,41 @@ function initialize() {
         if (currentAccent === option) optionElement.selected = true;
         accentSelect.appendChild(optionElement);
       });
-
-      // Shows or hides the custom color picker based on the dropdown's selection.
       const handleAccentChange = (value: string) => {
         customAccentPickerContainer.style.display = value === "custom" ? "grid" : "none";
       };
-
-      // When the dropdown value changes, update the UI and notify the extension.
       accentSelect.addEventListener("change", (e) => {
         const newValue = (e.target as HTMLSelectElement).value;
         handleAccentChange(newValue);
         vscode.postMessage({ command: "updateAccent", value: newValue });
       });
-
       accentSelectContainer.appendChild(accentLabel);
       accentSelectContainer.appendChild(accentSelect);
       accentContainer.insertBefore(accentSelectContainer, customAccentPickerContainer);
 
-      // --- 2. INITIALIZE CUSTOM ACCENT PICKER & HEX INPUT ---
-      customAccentPicker.value = customAccentColor.substring(0, 7); // HTML color input only supports 6-digit hex.
-      customAccentHexInput.value = customAccentColor;
-      customAccentHexInput.maxLength = 9; // Allow for #RRGGBBAA.
+      // --- 2. INITIALIZE CUSTOM ACCENT PICKER ---
+      (customAccentSwatch as HTMLElement).style.backgroundColor = customAccentColor;
       handleAccentChange(currentAccent);
 
-      // Sync the color picker swatch to the text input.
-      customAccentPicker.addEventListener("input", (e) => {
-        const newValue = (e.target as HTMLInputElement).value;
-        customAccentHexInput.value = newValue; // A change here is always a 6-digit hex.
-        vscode.postMessage({ command: "updateCustomAccent", value: newValue });
+      customAccentSwatch.addEventListener("click", () => {
+        openColorPicker(customAccentColor, (color) => {
+          const newColor = color.hex8String;
+          (customAccentSwatch as HTMLElement).style.backgroundColor = newColor;
+          vscode.postMessage({ command: "updateCustomAccent", value: newColor });
+        });
       });
 
-      // Sync the text input to the color picker swatch.
-      customAccentHexInput.addEventListener("input", (e) => {
-        const newValue = (e.target as HTMLInputElement).value;
-        if (hexRegex.test(newValue)) {
-          // Only update the color swatch if it's a valid 6-digit hex, as it doesn't understand alpha.
-          if (newValue.length === 7) {
-            customAccentPicker.value = newValue;
-          }
-          vscode.postMessage({ command: "updateCustomAccent", value: newValue });
-        }
-      });
-
-      // --- 3. RENDER SYNTAX SETTINGS (FONT STYLES & COLORS) ---
-      // Loop through each customizable syntax item and build its UI row.
+      // --- 3. RENDER SYNTAX SETTINGS ROWS ---
       syntaxSettings.forEach((setting: any) => {
         const { key, fontStyle, color, defaultColor } = setting;
         const fontStyleKey = `${key}FontStyle`;
         const defaultFontStyle = defaultFontStyles[fontStyleKey] || "none";
 
-        // Create the label for the row (e.g., "Keyword:").
         const label = document.createElement("label");
         label.textContent = key.replace(/([A-Z])/g, " $1").trim() + ":";
         label.htmlFor = key;
 
-        // --- Font Style Dropdown ---
+        // --- Font Style Dropdown & Reset ---
         const select = document.createElement("select");
         select.id = key;
         fontStyleOptions.forEach((option) => {
@@ -136,76 +170,51 @@ function initialize() {
           const newValue = (e.target as HTMLSelectElement).value;
           vscode.postMessage({ command: "updateSetting", key: fontStyleKey, value: newValue });
         });
-
-        // --- Font Style Reset Button ---
         const fontResetButton = document.createElement("button");
         fontResetButton.textContent = "Reset";
         fontResetButton.className = "reset-button";
         fontResetButton.addEventListener("click", () => {
-          select.value = defaultFontStyle; // Visually reset the dropdown.
+          select.value = defaultFontStyle;
           vscode.postMessage({ command: "resetFontStyle", key: fontStyleKey });
         });
 
-        // --- Color Picker ---
-        const colorPickerWrapper = document.createElement("div");
-        colorPickerWrapper.className = "color-picker-wrapper";
-        const colorInput = document.createElement("input");
-        colorInput.type = "color";
-        colorInput.value = color.substring(0, 7); // The color swatch only understands 6-digit hex.
-        const hexInput = document.createElement("input");
-        hexInput.type = "text";
-        hexInput.value = color;
-        hexInput.maxLength = 9; // Allow #RRGGBBAA.
-
-        colorInput.addEventListener("input", (e) => {
-          const newColor = (e.target as HTMLInputElement).value;
-          hexInput.value = newColor; // A change here always results in a 6-digit hex.
-          vscode.postMessage({ command: "updateSyntaxColor", flavor: activeFlavor, key, value: newColor });
+        // --- Color Swatch & Reset ---
+        const colorSwatch = document.createElement("div");
+        colorSwatch.className = "color-swatch";
+        colorSwatch.style.backgroundColor = color;
+        colorSwatch.addEventListener("click", () => {
+          openColorPicker(color, (newColor) => {
+            const finalColor = newColor.hex8String;
+            colorSwatch.style.backgroundColor = finalColor;
+            vscode.postMessage({ command: "updateSyntaxColor", flavor: activeFlavor, key, value: finalColor });
+          });
         });
 
-        hexInput.addEventListener("input", (e) => {
-          const newColor = (e.target as HTMLInputElement).value;
-          if (hexRegex.test(newColor)) {
-            // Only update the color swatch if it's a valid 6-digit hex.
-            if (newColor.length === 7) {
-              colorInput.value = newColor;
-            }
-            vscode.postMessage({ command: "updateSyntaxColor", flavor: activeFlavor, key, value: newColor });
-          }
-        });
-
-        colorPickerWrapper.appendChild(colorInput);
-        colorPickerWrapper.appendChild(hexInput);
-
-        // --- Color Reset Button ---
         const colorResetButton = document.createElement("button");
         colorResetButton.textContent = "Reset";
         colorResetButton.className = "reset-button";
         colorResetButton.addEventListener("click", () => {
-          colorInput.value = defaultColor.substring(0, 7); // Visually reset the color picker.
-          hexInput.value = defaultColor;
+          colorSwatch.style.backgroundColor = defaultColor;
           vscode.postMessage({ command: "resetSyntaxColor", flavor: activeFlavor, key });
         });
 
-        // --- Assemble and Append to the Main Container ---
+        // --- Assemble and Append Everything ---
         settingsContainer.appendChild(label);
 
-        // Group the font dropdown with its reset button.
         const fontContainer = document.createElement("div");
         fontContainer.className = "setting-with-reset";
         fontContainer.appendChild(select);
         fontContainer.appendChild(fontResetButton);
         settingsContainer.appendChild(fontContainer);
 
-        // Group the color picker with its reset button.
         const colorContainer = document.createElement("div");
         colorContainer.className = "setting-with-reset";
-        colorContainer.appendChild(colorPickerWrapper);
+        colorContainer.appendChild(colorSwatch);
         colorContainer.appendChild(colorResetButton);
         settingsContainer.appendChild(colorContainer);
       });
 
-      // --- Add "Reset All" Button at the very end ---
+      // --- Add "Reset All" Button ---
       const resetButtonContainer = document.createElement("div");
       resetButtonContainer.className = "reset-all-container";
 
@@ -223,7 +232,7 @@ function initialize() {
       });
 
       resetButtonContainer.appendChild(resetAllButton);
-      settingsContainer.appendChild(resetButtonContainer); // Append to the settings grid.
+      settingsContainer.appendChild(resetButtonContainer);
     }
   });
 }

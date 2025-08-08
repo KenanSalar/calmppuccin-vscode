@@ -14,10 +14,7 @@
     <div id="accent-container" class="settings-section">
         <div id="custom-accent-picker-container" style="display: none;">
             <label for="custom-accent-picker">Custom Color:</label>
-            <div class="color-picker-wrapper">
-                <input type="color" id="custom-accent-picker">
-                <input type="text" id="custom-accent-hex-input" maxlength="7">
-            </div>
+            <div id="custom-accent-swatch" class="color-swatch"></div>
         </div>
     </div>
 
@@ -25,6 +22,13 @@
       <h2>Font Styles & Syntax Colors</h2>
       <div id="settings-container">
           </div>
+    </div>
+
+    <div id="color-picker-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div id="iro-picker-container"></div>
+            <input type="text" id="modal-hex-input" class="modal-hex-input">
+        </div>
     </div>
     
     <script src="webview.js"></script>
