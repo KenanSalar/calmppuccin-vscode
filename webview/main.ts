@@ -204,6 +204,26 @@ function initialize() {
         colorContainer.appendChild(colorResetButton);
         settingsContainer.appendChild(colorContainer);
       });
+
+      // --- Add "Reset All" Button at the very end ---
+      const resetButtonContainer = document.createElement("div");
+      resetButtonContainer.className = "reset-all-container";
+
+      const resetAllButton = document.createElement("button");
+      resetAllButton.textContent = "Reset All Settings to Default";
+      resetAllButton.style.width = "100%";
+      resetAllButton.style.padding = "10px";
+      resetAllButton.style.cursor = "pointer";
+      resetAllButton.style.backgroundColor = "var(--vscode-button-secondaryBackground)";
+      resetAllButton.style.color = "var(--vscode-button-secondaryForeground)";
+      resetAllButton.style.border = "1px solid var(--vscode-input-border)";
+
+      resetAllButton.addEventListener("click", () => {
+        vscode.postMessage({ command: "resetAll" });
+      });
+
+      resetButtonContainer.appendChild(resetAllButton);
+      settingsContainer.appendChild(resetButtonContainer); // Append to the settings grid.
     }
   });
 }

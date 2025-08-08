@@ -16,6 +16,13 @@ body {
     margin-top: 20px;
 }
 
+.reset-all-container {
+    grid-column: 1 / -1;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--vscode-editor-widget-border);
+}
+
 /* * A helper class to create a sub-grid for a control (like a dropdown or color picker)
  * and its associated "Reset" button, placing them neatly side-by-side.
  */
