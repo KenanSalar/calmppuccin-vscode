@@ -1387,7 +1387,9 @@
         "punctuation.separator.array",
         "punctuation.separator",
         "meta.structure.dictionary.value",
-        "punctuation.parenthesis"
+        "punctuation.parenthesis",
+        "punctuation.squarebracket.open",
+        "punctuation.squarebracket.close"
       ],
       "settings": {
         "foreground": "{{punctuation}}",
