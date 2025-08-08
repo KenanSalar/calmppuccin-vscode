@@ -496,7 +496,7 @@
     "symbolIcon.enumeratorForeground": "{{enum}}",
     "symbolIcon.enumeratorMemberForeground": "{{enumMember}}",
     "symbolIcon.eventForeground": "{{event}}",
-    "symbolIcon.fieldForeground": "{{attribute}}",
+    "symbolIcon.fieldForeground": "{{fieldAndAttribute}}",
     "symbolIcon.fileForeground": "{{namespace}}",
     "symbolIcon.folderForeground": "{{namespace}}",
     "symbolIcon.functionForeground": "{{functionAndMethod}}",
@@ -1229,7 +1229,7 @@
         "punctuation.definition.template-expression.end"
       ],
       "settings": {
-        "foreground": "{{stringTemplateExpression}}",
+        "foreground": "{{string}}",
         "fontStyle": ""
       }
     },
@@ -1260,7 +1260,7 @@
         "text.xml entity.other.attribute-name"
       ],
       "settings": {
-        "foreground": "{{attribute}}",
+        "foreground": "{{fieldAndAttribute}}",
         "fontStyle": "{{fieldAndAttributeFontStyle}}"
       }
     },
@@ -1552,7 +1552,7 @@
         "meta.attribute.rust"
       ],
       "settings": {
-        "foreground": "{{attribute}}",
+        "foreground": "{{fieldAndAttribute}}",
         "fontStyle": "{{fieldAndAttributeFontStyle}}"
       }
     },
@@ -1560,7 +1560,7 @@
       "name": "HTML Attributes",
       "scope": ["text.html.basic entity.other.attribute-name.html", "text.html.basic entity.other.attribute-name"],
       "settings": {
-        "foreground": "{{attribute}}",
+        "foreground": "{{fieldAndAttribute}}",
         "fontStyle": "{{fieldAndAttributeFontStyle}}"
       }
     },
@@ -1929,7 +1929,7 @@
       "name": "html attribute name",
       "scope": ["entity.other.attribute-name.html"],
       "settings": {
-        "foreground": "{{attribute}}",
+        "foreground": "{{fieldAndAttribute}}",
         "fontStyle": "{{fieldAndAttributeFontStyle}}"
       }
     },
@@ -1993,7 +1993,7 @@
       "fontStyle": "{{namespaceFontStyle}}"
     },
     "namespace.attribute": {
-      "foreground": "{{namespace}}",
+      "foreground": "{{namespaceAttribute}}",
       "fontStyle": "{{namespaceAttributeFontStyle}}"
     },
     "module": {
@@ -2041,15 +2041,15 @@
       "fontStyle": "{{enumMemberFontStyle}}"
     },
     "field": {
-      "foreground": "{{attribute}}",
+      "foreground": "{{fieldAndAttribute}}",
       "fontStyle": "{{fieldAndAttributeFontStyle}}"
     },
     "attribute": {
-      "foreground": "{{attribute}}",
+      "foreground": "{{fieldAndAttribute}}",
       "fontStyle": "{{fieldAndAttributeFontStyle}}"
     },
     "attributeBracket": {
-      "foreground": "{{attribute}}",
+      "foreground": "{{attributeBracket}}",
       "fontStyle": "{{attributeBracketFontStyle}}"
     },
     "property": {
@@ -2057,7 +2057,7 @@
       "fontStyle": "{{propertyFontStyle}}"
     },
     "property.readonly": {
-      "foreground": "{{propertyReadonly}}",
+      "foreground": "{{propertyReadOnly}}",
       "fontStyle": "{{propertyReadOnlyFontStyle}}"
     },
     "recordComponent": {
@@ -2081,7 +2081,7 @@
       "fontStyle": "{{functionAndMethodFontStyle}}"
     },
     "extensionMethod": {
-      "foreground": "{{functionAndMethod}}",
+      "foreground": "{{extensionMethod}}",
       "fontStyle": "{{extensionMethodFontStyle}}"
     },
     "delegate": {
@@ -2129,7 +2129,7 @@
       "fontStyle": "{{stringFontStyle}}"
     },
     "stringVerbatim": {
-      "foreground": "{{string}}",
+      "foreground": "{{stringVerbatim}}",
       "fontStyle": "{{stringVerbatimFontStyle}}"
     },
     "stringEscapeCharacter": {
@@ -2169,7 +2169,7 @@
       "fontStyle": "{{keywordFontStyle}}"
     },
     "markupAttribute": {
-      "foreground": "{{attribute}}",
+      "foreground": "{{fieldAndAttribute}}",
       "fontStyle": "{{fieldAndAttributeFontStyle}}"
     },
     "markupAttributeValue": {
@@ -2201,7 +2201,7 @@
       "fontStyle": "italic"
     },
     "razorDirectiveAttribute": {
-      "foreground": "{{attribute}}",
+      "foreground": "{{fieldAndAttribute}}",
       "fontStyle": "{{fieldAndAttributeFontStyle}}"
     },
     "razorComponentElement": {
@@ -2209,7 +2209,7 @@
       "fontStyle": "{{keywordFontStyle}}"
     },
     "razorComponentAttribute": {
-      "foreground": "{{attribute}}",
+      "foreground": "{{fieldAndAttribute}}",
       "fontStyle": "{{fieldAndAttributeFontStyle}}"
     },
     "razorTagHelperElement": {
@@ -2217,7 +2217,7 @@
       "fontStyle": "{{keywordFontStyle}}"
     },
     "razorTagHelperAttribute": {
-      "foreground": "{{attribute}}",
+      "foreground": "{{fieldAndAttribute}}",
       "fontStyle": "{{fieldAndAttributeFontStyle}}"
     },
     "markdownHeading": {
@@ -2241,7 +2241,7 @@
       "fontStyle": "{{commentFontStyle}}"
     },
     "xmlDocCommentAttributeName": {
-      "foreground": "{{attribute}}",
+      "foreground": "{{fieldAndAttribute}}",
       "fontStyle": "{{fieldAndAttributeFontStyle}}"
     },
     "xmlDocCommentAttributeValue": {
