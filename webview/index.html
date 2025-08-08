@@ -8,22 +8,29 @@
 </head>
 <body>
     <h1>Calmppuccin Customization</h1>
+    <h2 id="current-flavor"></h2>
     <p>Changes are saved automatically. A reload is required to apply them.</p>
 
     <div id="accent-container" class="settings-section">
         <div id="custom-accent-picker-container" style="display: none;">
-            <label for="custom-accent-picker">Custom Color:</label>
-            <div class="color-picker-wrapper">
+            <label>Custom Color:</label>
+            <div class="color-input-wrapper">
                 <input type="color" id="custom-accent-picker">
-                <input type="text" id="custom-accent-hex-input" maxlength="7">
+                <input type="text" id="custom-accent-hex-input" class="hex-input-display">
             </div>
         </div>
     </div>
 
     <div id="font-styles-container" class="settings-section">
-      <h2>Font Styles</h2>
-      <div id="settings-container">
-          </div>
+      <h2>Font Styles & Syntax Colors</h2>
+      <div id="settings-container"></div>
+    </div>
+
+    <div id="color-picker-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div id="iro-picker-container"></div>
+            <input type="text" id="modal-hex-input" class="modal-hex-input">
+        </div>
     </div>
     
     <script src="webview.js"></script>
