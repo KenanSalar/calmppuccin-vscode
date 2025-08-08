@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.5.0] - 2025-08-08
+
+- **Feature**: Added a custom settings UI built with a webview. Users can now run the `Calmppuccin: Customize Theme` command to open a graphical editor.
+- **Feature**: The new customization UI allows users to change the accent color and all granular font styles from a single, user-friendly panel.
+- **Feature**: Added a color picker for custom accent colors.
+- **Improvement**: Reworked the extension's settings in the standard VS Code UI. The font style settings are now bundled into a single expandable object, and a new clickable link is provided to guide users to the custom UI.
+- **Fix**: Implemented state persistence for the custom UI, so its content is no longer lost when switching tabs.
+- **Fix**: Corrected the communication logic between the webview and the extension, ensuring that changes made in the UI are correctly saved and trigger a theme regeneration.
+- **Major Feature**: Added granular syntax color customization. Users can now change the color of individual syntax elements (like keywords, comments, etc.) for each theme flavor directly from the custom UI.
+- **Major Feature**: Implemented an advanced color picker with full alpha (transparency) support, allowing for even more personalized and subtle theme variations.
+- **Feature**: Added "Reset" buttons for every individual font style and syntax color, allowing users to easily revert specific changes back to the theme's defaults.
+- **Feature**: Added a "Reset All Settings" button to the custom UI, providing a one-click way to restore all customizations to their original state.
+- **Improvement**: The custom UI now displays the currently active theme flavor (e.g., "Editing: Mocha") to avoid confusion.
+- **Fix**: Resolved multiple minor bugs in the custom UI, including issues with the "Reset" button not triggering immediate theme rebuilds and layout problems with UI elements.
+
 ## [1.4.4] - 2025-08-06
 
 - **Feature**: Added highly customizable font style settings. Users can now choose between `none`, `italic`, `bold`, `italic bold` and `underline` for various syntax elements like comments, keywords, classes, and more, providing granular control over the syntax font style.

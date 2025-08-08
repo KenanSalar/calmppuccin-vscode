@@ -7,7 +7,7 @@ const configs = [
   // Config for the Extension's runtime code
   {
     target: "node",
-    mode: "none",
+    mode: "production",
     entry: "./extension.ts",
     output: {
       path: path.resolve(__dirname, "dist"),
@@ -53,6 +53,29 @@ const configs = [
         },
       ],
     },
+  },
+  // Config for the webview's main logic script
+  {
+    target: "web",
+    mode: "production",
+    entry: "./webview/main.ts",
+    output: {
+      path: path.resolve(__dirname, "dist"),
+      filename: "webview.js",
+    },
+    resolve: {
+      extensions: [".ts", ".js"],
+    },
+    module: {
+      rules: [
+        {
+          test: /\.ts$/,
+          exclude: /node_modules/,
+          use: ["ts-loader"],
+        },
+      ],
+    },
+    devtool: "source-map",
   },
 ];
 module.exports = configs;

@@ -1,0 +1,188 @@
+body {
+    background-color: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+    font-family: var(--vscode-font-family);
+    padding: 0 20px;
+}
+
+/*
+ * Defines the main grid for the settings area.
+ * Columns: 1. Label, 2. Font Style Control Group, 3. Color Control Group
+ */
+#settings-container {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr;
+    gap: 10px 20px;
+    align-items: center;
+    margin-top: 20px;
+}
+
+/*
+ * A helper class to create a sub-grid for a control (like a dropdown)
+ * and its associated "Reset" button, placing them neatly side-by-side.
+ */
+.setting-with-reset {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+}
+
+/*
+ * This class targets the container for the "Reset All" button and makes it
+ * span all columns of the parent grid.
+ */
+.reset-all-container {
+    grid-column: 1 / -1;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--vscode-editor-widget-border);
+}
+
+#custom-accent-picker-container {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px 20px;
+    align-items: center;
+    margin-top: 15px;
+}
+
+/* New wrapper for the color swatch and its hex input */
+.color-input-wrapper {
+    display: grid;
+    grid-template-columns: 40px 1fr; /* Column for swatch, column for text */
+    gap: 10px;
+    align-items: center;
+    border: 1px solid var(--vscode-input-border);
+    border-radius: 4px;
+    background-color: var(--vscode-input-background);
+    padding: 2px;
+    height: 30px;
+    box-sizing: border-box;
+}
+
+/*
+ * Styles the clickable color swatch that will open the color picker modal.
+ * The checkerboard background indicates that transparency is supported.
+ */
+.color-swatch {
+    width: 100%;
+    height: 24px; /* Slightly smaller to fit padding */
+    border: 1px solid var(--vscode-input-border);
+    border-radius: 2px;
+    cursor: pointer;
+    background-image: linear-gradient(45deg, #808080 25%, transparent 25%),
+                      linear-gradient(-45deg, #808080 25%, transparent 25%),
+                      linear-gradient(45deg, transparent 75%, #808080 75%),
+                      linear-gradient(-45deg, transparent 75%, #808080 75%);
+    background-size: 12px 12px;
+    background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
+}
+
+/* Style for the text input next to the swatch */
+.hex-input-display {
+    background: none;
+    border: none;
+    color: var(--vscode-input-foreground);
+    font-family: var(--vscode-font-family);
+    font-size: 1em;
+    padding: 0 5px;
+    outline: none;
+}
+
+label {
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+select {
+    width: 100%;
+    padding: 5px;
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+    border: 1px solid var(--vscode-input-border);
+    border-radius: 4px;
+}
+
+/* This rule targets the standard HTML color picker used for the accent color */
+input[type="color"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 24px;
+    padding: 0;
+    border-radius: 2px;
+    overflow: hidden;
+    cursor: pointer;
+    border: none;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 2px;
+}
+
+.settings-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--vscode-editor-widget-border);
+}
+
+h2 {
+    margin-top: 0;
+}
+
+button.reset-button {
+    background: var(--vscode-button-secondaryBackground);
+    color: var(--vscode-button-secondaryForeground);
+    border: 1px solid var(--vscode-input-border);
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    justify-self: start;
+}
+
+button.reset-button:hover {
+    background: var(--vscode-button-secondaryHoverBackground);
+}
+
+/* --- Styles for the iro.js Color Picker Modal --- */
+
+/* The full-screen overlay that contains the modal. */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* The content box of the modal. */
+.modal-content {
+    background-color: var(--vscode-editor-widget-background);
+    border: 1px solid var(--vscode-editor-widget-border);
+    padding: 20px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* The hex input field inside the modal. */
+.modal-hex-input {
+    width: 100%;
+    box-sizing: border-box; /* Ensures padding is included in the width */
+    margin-top: 15px;
+    padding: 5px;
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+    border: 1px solid var(--vscode-input-border);
+    border-radius: 4px;
+    text-align: center;
+}

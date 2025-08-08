@@ -12,7 +12,9 @@ import * as C from "./src/constants";
 // Defines a generic type for a palette object.
 type Palette = { [key: string]: string };
 // Defines a generic type for editor settings to handle any configuration.
-type GenericSettings = { [key: string]: string | boolean };
+type GenericSettings = { [key: string]: any };
+// Type for the user's syntax overrides.
+type SyntaxOverrides = { [flavor: string]: Palette };
 
 // Define file system paths and theme constants.
 const THEME_DIR = path.resolve(__dirname, "..", C.THEMES_DIR);
@@ -22,24 +24,34 @@ const FLAVORS = Object.keys(palette);
 /**
  * Builds all theme flavors (Latte, Mocha, etc.) with a specified accent color and user settings.
  * It generates a complete theme file for each flavor and writes it to the /themes directory.
- * @param accentName The name of the accent color to use (e.g., "sapphire").
+ * @param accentIdentifier The accent to use. Can be a named color (e.g., "sapphire") or a hex code.
  * @param editorSettings A generic object containing all user-configurable settings (e.g., italics).
+ * @param syntaxOverrides A nested object containing user-defined syntax color overrides per flavor.
  */
-export async function buildAllFlavors(accentName: string, editorSettings: GenericSettings): Promise<void> {
-  // Deleting old theme files to ensure a clean build
+export async function buildAllFlavors(
+  accentIdentifier: string,
+  editorSettings: GenericSettings,
+  syntaxOverrides: SyntaxOverrides
+): Promise<void> {
   await fs.emptyDir(THEME_DIR);
-  // Ensure the output directory exists.
   await fs.ensureDir(THEME_DIR);
-  // Read the master template file.
   const templateStr = await fs.readFile(TEMPLATE_PATH, "utf-8");
 
   for (const flavor of FLAVORS) {
-    const flavorPalette = (palette as { [key: string]: any })[flavor];
-    const accentColor = flavorPalette[accentName] || flavorPalette[C.FALLBACK_ACCENT];
+    const basePalette = (palette as { [key: string]: any })[flavor];
+    const flavorOverrides = syntaxOverrides[flavor] || {};
+
+    // Create the final palette by merging the base palette with user overrides
+    const finalPalette = { ...basePalette, ...flavorOverrides };
+
+    const accentColor = accentIdentifier.startsWith("#")
+      ? accentIdentifier
+      : finalPalette[accentIdentifier] || finalPalette[C.FALLBACK_ACCENT];
+
     const accentHexValue = accentColor.substring(1);
 
     const resolvedPalette: Palette = {};
-    for (const [key, value] of Object.entries(flavorPalette)) {
+    for (const [key, value] of Object.entries(finalPalette)) {
       if (typeof value === "string" && value.startsWith(C.ACCENT_RECIPE_PREFIX)) {
         const transparency = value.substring(C.ACCENT_RECIPE_PREFIX.length);
         resolvedPalette[key] = `#${accentHexValue}${transparency}`;
@@ -48,7 +60,6 @@ export async function buildAllFlavors(accentName: string, editorSettings: Generi
       }
     }
 
-    // Combine all placeholders (colors and settings) into one object for replacement.
     const replacements: GenericSettings = {
       ...resolvedPalette,
       accent: accentColor,
@@ -57,10 +68,7 @@ export async function buildAllFlavors(accentName: string, editorSettings: Generi
 
     let themeContent = templateStr;
 
-    // Dynamically replace all placeholders in the template.
     for (const [key, value] of Object.entries(replacements)) {
-      // If a setting's value is "none", convert it to an empty string for VS Code.
-      // Otherwise, use the value directly (e.g., "italic", "bold").
       const finalValue = value === "none" ? "" : value;
       const placeholder = new RegExp(`\\{\\{${key}\\}\\}`, "g");
       themeContent = themeContent.replace(placeholder, finalValue as string);
@@ -76,7 +84,7 @@ export async function buildAllFlavors(accentName: string, editorSettings: Generi
     await fs.writeJson(themePath, themeJson, { spaces: 2 });
   }
 
-  console.log(`All Calmppuccin themes built with the "${accentName}" accent.`);
+  console.log(`All Calmppuccin themes built with the "${accentIdentifier}" accent.`);
 }
 
 /**
@@ -84,5 +92,5 @@ export async function buildAllFlavors(accentName: string, editorSettings: Generi
  * with `node ./dist/build.js`, which is useful for testing and development.
  */
 if (require.main === module) {
-  buildAllFlavors(C.DEFAULT_ACCENT, {});
+  buildAllFlavors(C.DEFAULT_ACCENT, {}, {});
 }

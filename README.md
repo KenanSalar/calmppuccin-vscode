@@ -40,6 +40,8 @@
 <img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/oledppuccin-pink.png" alt="Oledppuccin" width="800" height="´250">
 </details>
 
+<br/>
+
 ## Calmppuccin: A Soothing and Optimized VS Code Theme
 
 Calmppuccin is a visually refined theme for Visual Studio Code, designed to\
@@ -48,35 +50,87 @@ offer a harmonious coding experience. Inspired by the popular
 Calmppuccin takes the beloved pastel palette and transforms it into a gentler,\
 less intense version, perfect for long coding sessions without eye strain.
 
+<br/>
+
 ## Installation
 
 To install the Calmppuccin extension in Visual Studio Code, open the Extensions view\
 by clicking the Extensions icon in the Activity Bar or pressing `Ctrl+Shift+X`. In the search bar,\
 enter `Calmppuccin`, locate the extension in the results, and select Install to add it to your editor.
 
+<br/>
+
 ## Customization
 
-You can easily tailor Calmppuccin to fit your personal preferences for both accent colors and font styles.
+You can easily tailor Calmppuccin to fit your personal preferences using the built-in graphical interface or by editing your `settings.json` directly.
 
-### 1. Using the Settings Menu (Recommended)
+### 1. Using the Customization UI (Recommended)
+
+This is the easiest and most powerful way to configure everything in one place.\
+The UI gives you full control over accent colors, font styles, and granular syntax colors with transparency support.
+
+<details>
+<summary>🛠️ Customization UI</summary>
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/customUI/custom-ui.png" alt="customUI" width="600" height="1000">
+</details>
+
+<br/>
+
+You can open the custom UI in two main ways:
+
+<details>
+<summary><b>Via the Command Palette (Quickest Method):</b></summary>
+
+1. Open the Command Palette (`Ctrl` + `Shift` + `P`, `Cmd` + `Shift` + `P` or `F1`).
+2. Type `Calmppuccin` and select Calmppuccin: Customize Theme.
+</details>
+
+
+<br/>
+
+<details>
+<summary><b>Via the Settings Menu:</b></summary>
+
+1. Open VS Code Settings (`Crtl` + `,`)
+2. Seach for `Calmppuccin`.
+3. Find the setting titled `Calmppuccin: Open Customization UI` and click the link within its description to open the panel.
+</details>
+
+<br/>
+
+Changes are saved automatically. A notification will appear prompting you to reload VS Code to apply them.
+
+### 2. Using the Standard Settings UI
+
+<details>
+<summary>This is a quick way to change <b>only the accent color</b></summary>
+
 
 1. Open your VS Code Settings (`Ctrl` + `,`).
-2. In the search bar, type `Calmppuccin`.
-3. You will see all the available settings, including **"Calmppuccin: Accent"** and the various **"Calmppuccin: ... Font Style"** options.
-4. Select your desired accent color and font styles from the dropdown menus.
-5. A notification will prompt you to reload VS Code. Click **"Reload Window"** to apply the changes.
+2. In the search bar, type `Calmppuccin Accent`.
+3. Use the dropdown menu to select your desired accent color.
+</details>
 
-### 2. Editing `settings.json`
 
-For those who prefer editing JSON directly, you can add the following lines to your `settings.json` file.
+### 3. Editing `settings.json` (For Power Users)
+
+For those who prefer editing JSON directly, you can modify your settings.json file.
+
+#### 🎨 Accent Color
+
+Add the following line to set your accent color. Replace `mauve` with any of the available options below.
 
 ```json
-"calmppuccin.accent": "mauve"
+// Use a predefined accent
+"calmppuccin.accent": "mauve",
+
+// Use a custom hex color
+"calmppuccin.accent": "custom",
+"calmppuccin.customAccentColor": "#36d9ce"
 ```
 
-Replace "mauve" with any of the available accent options below.
-
-#### 🎨 Accents
+<details>
+<summary><b>🎨 Available Accents:</b></summary>
 
 - `blue`
 - `flamingo`
@@ -92,23 +146,41 @@ Replace "mauve" with any of the available accent options below.
 - `sky`
 - `teal`
 - `yellow`
+- `custom`
+</details>
+
+<br/>
 
 #### ✒️ Font Styles
 
-You can control the font style for various syntax elements. Here is an example of how to change the style for comments and keywords:
+You can control the font style for each syntax element directly in the JSON.
+
+A helpful shortcut:
+
+1. Go to the standard Settings UI and search for `Calmppuccin: Font Styles`.
+2. Click the `Edit in settings.json` link.
+3. This will automatically add the entire `calmppuccin.fontStyles` object with all default values to your file, making it easy to edit.
+
+Here is an example of the structure:
 
 ```json
-"calmppuccin.commentFontStyle": "italic",
-"calmppuccin.keywordFontStyle": "bold"
+"calmppuccin.fontStyles": {
+  "commentFontStyle": "italic",
+  "variableFontStyle": "none",
+  "keywordFontStyle": "none",
+  // ... and so on for all other elements
+}
 ```
 
-Each font style setting can be configured with one of the following options:
+##### **Available Font Style Options:**
 
-- "" (for no font style)
+- `none` (will be replaced with an empty string)
 - `italic`
 - `bold`
 - `italic bold`
 - `underline`
+
+<br/>
 
 ## Key Features
 
@@ -125,15 +197,16 @@ Also with new theme variants like `Nitro Cold Brew` (even darker and more subdue
 - **Aesthetic Balance:** Strikes the perfect balance between functionality and beauty,\
 blending soothing colors with practical design.
 
-- **Customizable:** Offers flexibility to tweak background colors, text shades, and\
-accents to suit individual preferences.
+- **Highly Customizable:** Personalize your coding environment by selecting from a palette of\
+14 accent colors and applying unique font styles (like italic or bold) to individual syntax elements.
 
----
+<br/>
 
-\
 Calmppuccin is more than just a theme, it's an invitation to code in comfort and style.\
 Whether you're debugging complex codebases or crafting new projects, Calmppuccin\
 ensures your workspace remains a serene and productive environment.
+
+<br/>
 
 ## Recommendations
 
@@ -155,6 +228,10 @@ You could also use it witout semantic highlighting, but it's not recommended.
   - **Note:** For the custom `Nitro Cold Brew` and `Oledppuccin` themes, the icons will sync to the `Mocha` flavor.
 - **Alternative 1:** [Atom Material Icons](https://marketplace.visualstudio.com/items/?itemName=AtomMaterial.a-file-icon-vscode)
 - **Alternative 2:** [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme)
+
+---
+
+
 
 ### Font and Font Settings
 
@@ -185,6 +262,8 @@ You could also use it witout semantic highlighting, but it's not recommended.
   ```
   
   ---
+  
+<br/>
 
 - **Terminal Font:** `Jetbrains Mono Nerd Font`
 
@@ -197,3 +276,11 @@ You could also use it witout semantic highlighting, but it's not recommended.
   "terminal.integrated.cursorStyle": "line",
   "terminal.integrated.fontWeight": "normal"
   ```
+
+<br/>
+
+## Acknowledgements
+
+This theme was built from the ground up and is heavily inspired by the amazing [Catppuccin](https://github.com/catppuccin/vscode) theme.\
+While Calmppuccin aims for a gentler, more subdued palette, it would not exist without the incredible\
+foundation and color philosophy established by the Catppuccin team.
