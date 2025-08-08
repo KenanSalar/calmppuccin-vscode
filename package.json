@@ -3,7 +3,7 @@
   "displayName": "Calmppuccin",
   "description": "Calmppuccin is a visually refined theme for Visual Studio Code, designed to offer a harmonious coding experience. Inspired by the popular Catppuccin theme, Calmppuccin takes the beloved pastel palette and transforms it into a gentler, less intense version, perfect for long coding sessions without eye strain.",
   "icon": "assets/images/logo/icon.png",
-  "version": "1.4.5",
+  "version": "1.5.0",
   "publisher": "kenan-salar",
   "license": "MIT",
   "repository": {
@@ -522,6 +522,163 @@
               ]
             }
           }
+        },
+        "calmppuccin.syntaxOverrides": {
+          "type": "object",
+          "default": {},
+          "description": "Override specific syntax colors for each Calmppuccin flavor. Use the Customization UI for a better experience.",
+          "patternProperties": {
+            "^(latte|frappe|macchiato|mocha|nitro-cold-brew|oledppuccin)$": {
+              "type": "object",
+              "properties": {
+                "comment": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for comments."
+                },
+                "variable": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for variables."
+                },
+                "keyword": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for keywords."
+                },
+                "namespace": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for namespaces."
+                },
+                "namespaceAttribute": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for namespace attributes."
+                },
+                "module": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for modules."
+                },
+                "annotation": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for annotations."
+                },
+                "class": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for classes."
+                },
+                "interface": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for interfaces."
+                },
+                "struct": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for structs."
+                },
+                "enum": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for enums."
+                },
+                "enumMember": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for enum members."
+                },
+                "fieldAndAttribute": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for fields and attributes."
+                },
+                "attributeBracket": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for attribute brackets."
+                },
+                "property": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for properties."
+                },
+                "propertyReadOnly": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for read-only properties."
+                },
+                "functionAndMethod": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for functions and methods."
+                },
+                "extensionMethod": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for extension methods."
+                },
+                "delegate": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for delegates."
+                },
+                "event": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for events."
+                },
+                "parameter": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for parameters."
+                },
+                "typeParameter": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for type parameters."
+                },
+                "numberAndConstant": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for numbers and constants."
+                },
+                "operator": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for operators."
+                },
+                "operatorOverload": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for overloaded operators."
+                },
+                "punctuation": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for punctuation."
+                },
+                "string": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for strings."
+                },
+                "stringVerbatim": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for verbatim strings."
+                },
+                "text": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for plain text."
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -543,5 +700,8 @@
     "typescript": "^5.9.2",
     "webpack": "^5.101.0",
     "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "@jaames/iro": "^5.5.2"
   }
 }
