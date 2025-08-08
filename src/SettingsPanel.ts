@@ -36,7 +36,6 @@ const customizableSyntaxKeys = [
   "operatorOverload",
   "punctuation",
   "string",
-  "stringTemplateExpression",
   "stringVerbatim",
   "text",
 ];
@@ -117,6 +116,18 @@ export class SettingsPanel {
               }
               await config.update("syntaxOverrides", newOverrides, vscode.ConfigurationTarget.Global);
             }
+            return;
+          }
+          case "resetAll": {
+            // Passing 'undefined' removes the entire configuration key.
+            await config.update("fontStyles", undefined, vscode.ConfigurationTarget.Global);
+            await config.update("syntaxOverrides", undefined, vscode.ConfigurationTarget.Global);
+
+            // Also reset the accent color to the default.
+            await config.update(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT, vscode.ConfigurationTarget.Global);
+
+            // Trigger a refresh of the webview to show the restored defaults.
+            this._update();
             return;
           }
         }
