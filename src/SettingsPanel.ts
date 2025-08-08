@@ -4,7 +4,10 @@ import * as fs from "fs";
 import * as C from "./constants";
 import palettes from "./palette";
 
-// Define which syntax keys from the palette are customizable
+/**
+ * An array of syntax keys that are customizable in the UI.
+ * This acts as a single source of truth for which options to display.
+ */
 const customizableSyntaxKeys = [
   "comment",
   "variable",
@@ -33,6 +36,7 @@ const customizableSyntaxKeys = [
   "operatorOverload",
   "punctuation",
   "string",
+  "stringTemplateExpression",
   "stringVerbatim",
   "text",
 ];
@@ -47,15 +51,18 @@ export class SettingsPanel {
     this._panel = panel;
     this._context = context;
 
+    // Set up initial state and listeners
     this._update();
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
     this._panel.onDidChangeViewState(() => this._update(), null, this._disposables);
 
+    // Listen for messages from the webview
     this._panel.webview.onDidReceiveMessage(
       async (message) => {
         const config = vscode.workspace.getConfiguration(C.EXTENSION_NAMESPACE);
 
         switch (message.command) {
+          // Handles updates to any font style dropdown
           case "updateSetting": {
             const { key, value } = message;
             const fontStyles = config.get("fontStyles", {});
@@ -63,13 +70,28 @@ export class SettingsPanel {
             await config.update("fontStyles", newFontStyles, vscode.ConfigurationTarget.Global);
             return;
           }
+          // Handles resetting a specific font style to its default
+          case "resetFontStyle": {
+            const { key } = message;
+            const currentFontStyles = config.get<any>("fontStyles", {});
+            // Create a deep copy to ensure VS Code detects the change
+            const newFontStyles = JSON.parse(JSON.stringify(currentFontStyles));
+
+            if (newFontStyles[key]) {
+              delete newFontStyles[key];
+              await config.update("fontStyles", newFontStyles, vscode.ConfigurationTarget.Global);
+            }
+            return;
+          }
+          // Handles updates to the accent color dropdown
           case "updateAccent":
             await config.update(C.CONFIG_KEY_ACCENT, message.value, vscode.ConfigurationTarget.Global);
             return;
+          // Handles updates to the custom accent color picker
           case "updateCustomAccent":
             await config.update(C.CONFIG_KEY_CUSTOM_ACCENT, message.value, vscode.ConfigurationTarget.Global);
             return;
-
+          // Handles updates to any syntax color picker
           case "updateSyntaxColor": {
             const { flavor, key, value } = message;
             const syntaxOverrides = config.get<any>("syntaxOverrides", {});
@@ -80,14 +102,16 @@ export class SettingsPanel {
             await config.update("syntaxOverrides", syntaxOverrides, vscode.ConfigurationTarget.Global);
             return;
           }
+          // Handles resetting a specific syntax color to its default for the active theme
           case "resetSyntaxColor": {
             const { flavor, key } = message;
             const currentOverrides = config.get<any>("syntaxOverrides", {});
-            // FIX 1: Create a deep copy of the object to ensure the change is detected.
+            // Create a deep copy to ensure the change is detected
             const newOverrides = JSON.parse(JSON.stringify(currentOverrides));
 
             if (newOverrides[flavor] && newOverrides[flavor][key]) {
               delete newOverrides[flavor][key];
+              // If the flavor object is now empty, remove it completely for a clean config
               if (Object.keys(newOverrides[flavor]).length === 0) {
                 delete newOverrides[flavor];
               }
@@ -102,6 +126,7 @@ export class SettingsPanel {
     );
   }
 
+  // Creates a new panel or shows an existing one
   public static createOrShow(context: vscode.ExtensionContext) {
     const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
     const extensionPath = context.extensionPath;
@@ -129,25 +154,28 @@ export class SettingsPanel {
     context.globalState.update(C.PANEL_IS_OPEN_KEY, true);
   }
 
+  // Allows the main extension to trigger a webview update (e.g., when the theme changes)
   public static updateIfVisible() {
     if (SettingsPanel.currentPanel) {
       SettingsPanel.currentPanel._update();
     }
   }
 
+  // Helper to parse the flavor name from the full theme name
   private _getFlavorFromTheme(themeName: string): string | null {
     const calmppuccinPrefix = "calmppuccin ";
     if (themeName.toLowerCase().startsWith(calmppuccinPrefix)) {
       return themeName
         .slice(calmppuccinPrefix.length)
         .toLowerCase()
-        .replace(" ", "-") // Handle "Nitro Cold Brew"
+        .replace(" ", "-") // Handle multi-word names like "Nitro Cold Brew"
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
     }
     return null;
   }
 
+  // Main method to gather all data and send it to the webview
   private _update() {
     if (!this._panel.visible) return;
 
@@ -157,23 +185,33 @@ export class SettingsPanel {
     this._panel.title = "Calmppuccin Customization";
     webview.html = this._getHtmlForWebview(extensionPath);
 
+    // Get all necessary configuration objects
     const config = vscode.workspace.getConfiguration(C.EXTENSION_NAMESPACE);
     const workbenchConfig = vscode.workspace.getConfiguration("workbench");
+    const extensionConfig = vscode.extensions.getExtension("kenan-salar.calmppuccin-vscode")?.packageJSON;
 
+    // Determine the active theme flavor to show the correct colors
     const activeTheme = workbenchConfig.get<string>("colorTheme", "Calmppuccin Mocha");
     const activeFlavor = this._getFlavorFromTheme(activeTheme) || "mocha";
 
+    // Get all current user settings and overrides
     const fontStyles = config.get("fontStyles");
     const syntaxOverrides = config.get<any>("syntaxOverrides", {});
     const currentAccent = config.get<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
     const customAccentColor = config.get<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
 
+    // Get default values from package.json to compare against for the "Reset" functionality
+    const defaultFontStyles =
+      extensionConfig?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.fontStyles`]?.default ?? {};
+    const accentOptions =
+      extensionConfig?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACCENT}`]?.enum ??
+      [];
+
+    // Prepare the data payload for the webview
     const defaultPalette = (palettes as any)[activeFlavor];
     const overridePalette = syntaxOverrides[activeFlavor] || {};
 
-    // This will now use the new, complete list of keys
     const syntaxSettings = customizableSyntaxKeys.map((key) => {
-      // Derive the fontStyle key from the syntax key (e.g., 'keyword' -> 'keywordFontStyle')
       const fontStyleKey = `${key}FontStyle`;
       return {
         key: key,
@@ -183,24 +221,21 @@ export class SettingsPanel {
       };
     });
 
-    const extensionConfig = vscode.extensions.getExtension("kenan-salar.calmppuccin-vscode")?.packageJSON;
-    const accentOptions =
-      extensionConfig?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACCENT}`]?.enum ??
-      [];
-
+    // Post the complete settings object to the webview
     webview.postMessage({
       command: "loadSettings",
       settings: {
         activeFlavor,
-        fontStyles,
         syntaxSettings,
         currentAccent,
         accentOptions,
         customAccentColor,
+        defaultFontStyles, // Pass defaults for the reset button logic
       },
     });
   }
 
+  // Generates the HTML content for the webview, injecting script and style URIs
   private _getHtmlForWebview(extensionPath: string): string {
     const htmlPath = path.join(extensionPath, "webview", "index.html");
     let htmlContent = fs.readFileSync(htmlPath, "utf8");
@@ -213,9 +248,9 @@ export class SettingsPanel {
     return htmlContent;
   }
 
+  // Cleans up resources when the panel is closed
   public dispose() {
     this._context.globalState.update(C.PANEL_IS_OPEN_KEY, false);
-
     SettingsPanel.currentPanel = undefined;
     this._panel.dispose();
     while (this._disposables.length) {
