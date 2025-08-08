@@ -54,13 +54,14 @@ const configs = [
       ],
     },
   },
+  // Config for the webview's main logic script
   {
     target: "web",
     mode: "production",
-    entry: "./webview/main.ts", // Entry point for the webview script
+    entry: "./webview/main.ts",
     output: {
       path: path.resolve(__dirname, "dist"),
-      filename: "webview.js", // Output file
+      filename: "webview.js",
     },
     resolve: {
       extensions: [".ts", ".js"],
