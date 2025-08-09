@@ -79,7 +79,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       await buildAllFlavors(accentValue, fontStyles || {}, syntaxOverrides as any);
 
-      const selection = await vscode.window.showInformationMessage(C.INFO_MESSAGE(accentSetting), C.RELOAD_ACTION);
+      const selection = await vscode.window.showInformationMessage(C.INFO_MESSAGE, C.RELOAD_ACTION);
 
       if (selection === C.RELOAD_ACTION) {
         vscode.commands.executeCommand(C.RELOAD_COMMAND_ID);
