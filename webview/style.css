@@ -6,6 +6,7 @@
   --card-padding: 24px;
   --transition-speed: 250ms;
   --accent-color: var(--vscode-button-background, #0e639c);
+  --dynamic-accent-color: var(--accent-color);
   --card-border-color: var(--vscode-panel-border, #0000002a);
   --danger-color: #f44336;
   --danger-color-transparent: #f4433640;
@@ -74,7 +75,7 @@ body {
 .card {
   background: var(--vscode-side-bar-background, var(--vscode-editor-widget-background));
   background-image: var(--gradient-subtle);
-  border: 1px solid var(--card-border-color);
+  border: 1px solid var(--dynamic-accent-color);
   border-radius: var(--radius);
   box-shadow: var(--shadow-light);
   transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
@@ -83,14 +84,13 @@ body {
 
 .card:hover {
   box-shadow: var(--shadow-medium);
-  border-color: var(--accent-color);
   transform: translateY(-2px);
 }
 
 .card-header {
   padding: 20px var(--card-padding);
   background: rgba(255,255,255,0.02);
-  border-bottom: 1px solid var(--card-border-color);
+  border-bottom: 1px solid var(--dynamic-accent-color);
   transition: border-bottom-color var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -120,7 +120,7 @@ body {
   gap: 10px 20px;
 }
 
-/* --- Danger Zone Styling --- */
+/* --- Danger Zone Styling (This remains unchanged and will override the accent color) --- */
 section.card.danger-zone {
   border-color: var(--danger-color-transparent);
 }
@@ -129,7 +129,6 @@ section.card.danger-zone:hover {
   border-color: var(--danger-color);
 }
 
-/* Make the header border red as well */
 section.card.danger-zone .card-header {
   border-bottom-color: var(--danger-color-transparent);
 }
@@ -138,7 +137,6 @@ section.card.danger-zone:hover .card-header {
   border-bottom-color: var(--danger-color);
 }
 
-/* Material 3 inspired reset button */
 section.card.danger-zone button.reset-all-button {
   background-color: #b71c1c; /* Darker red for background */
   color: #ffffff;
@@ -224,14 +222,13 @@ select {
   background-size: 1.5em 1.5em;
 }
 
-/* Specific override for the accent dropdown to ensure it's wide enough */
 #accent-container select {
   min-width: 180px;
-  justify-self: start; /* Aligns the dropdown to the start of the grid cell */
+  justify-self: start;
 }
 
 select:hover {
-  border-color: var(--accent-color);
+  border-color: var(--dynamic-accent-color);
   box-shadow: var(--shadow-medium);
 }
 
@@ -256,7 +253,7 @@ select:focus {
 }
 
 .color-input-wrapper:hover {
-  border-color: var(--accent-color);
+  border-color: var(--dynamic-accent-color);
   box-shadow: var(--shadow-medium);
 }
 
@@ -289,10 +286,9 @@ select:focus {
   font-size: 1em;
   padding: 0 16px;
   outline: none;
-  pointer-events: none; /* Makes the text unclickable */
+  pointer-events: none;
 }
 
-/* This is for the syntax color pickers that use the iro.js modal */
 input[type="color"] {
   grid-column: 1;
   grid-row: 1;
@@ -302,12 +298,11 @@ input[type="color"] {
   padding: 0;
   border: none;
   cursor: pointer;
-  opacity: 0; /* Make it invisible but still clickable */
+  opacity: 0;
 }
 
-/* --- NEW: Custom Accent Color Picker --- */
 #custom-accent-picker {
-  opacity: 1; /* Make the native color picker swatch visible */
+  opacity: 1;
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
@@ -343,7 +338,7 @@ input[type="color"] {
 
 .reset-button:hover {
   background: var(--vscode-button-secondary-hover-background);
-  border-color: var(--accent-color);
+  border-color: var(--dynamic-accent-color);
   opacity: 1;
   transform: translateY(-1px);
   box-shadow: var(--shadow-light);
@@ -366,7 +361,7 @@ input[type="color"] {
   flex-grow: 1;
   background: var(--vscode-editor-background);
   border-radius: 0 0 var(--radius) var(--radius);
-  overflow: hidden; /* Hide scrollbars */
+  overflow: hidden;
 }
 
 .vscode-editor-mock {

@@ -20,7 +20,7 @@ function initialize() {
   const customAccentPicker = document.getElementById("custom-accent-picker") as HTMLInputElement;
   const customAccentHexInput = document.getElementById("custom-accent-hex-input") as HTMLInputElement;
 
-  // NEW: Get references for the preview pane
+  // Get references for the preview pane
   const previewPane = document.getElementById("preview-pane");
   const resetAllContainer = document.getElementById("reset-all-container");
 
@@ -41,6 +41,8 @@ function initialize() {
 
   // In-memory state for the preview styles.
   let previewState: { [key: string]: { color?: string; fontStyle?: string } } = {};
+  // Store accent color options
+  let accentColorMap: { [key: string]: string } = {};
 
   const fontStyleOptions = ["none", "italic", "bold", "italic bold", "underline"];
   const hexRegex = /^#([0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
@@ -58,7 +60,15 @@ function initialize() {
   });
 
   /**
-   * NEW: Updates the styles of the tokens in the preview pane.
+   * Updates the accent color CSS variable for live preview of borders.
+   * @param newColor The new color string (e.g., '#RRGGBB').
+   */
+  function updateAccentColor(newColor: string) {
+    document.documentElement.style.setProperty("--dynamic-accent-color", newColor);
+  }
+
+  /**
+   * Updates the styles of the tokens in the preview pane.
    */
   function updatePreviewPane() {
     for (const tokenKey in previewState) {
@@ -125,7 +135,11 @@ function initialize() {
         customAccentColor,
         defaultFontStyles,
         activeThemeBackgroundColor,
+        accentColorPalettes, // Get the accent color map
       } = message.settings;
+
+      // Store the accent color map
+      accentColorMap = accentColorPalettes;
 
       // Clear previous controls
       accentContainer.innerHTML = "";
@@ -134,7 +148,6 @@ function initialize() {
       accentContainer.appendChild(customAccentPickerContainer);
 
       flavorTitle.textContent = `Editing: ${activeFlavor.charAt(0).toUpperCase() + activeFlavor.slice(1)}`;
-      // NEW: Set the background color of the preview pane
       previewPane.style.backgroundColor = activeThemeBackgroundColor;
 
       // --- 1. RENDER ACCENT COLOR DROPDOWN ---
@@ -155,6 +168,12 @@ function initialize() {
       });
       const handleAccentChange = (value: string) => {
         customAccentPickerContainer.style.display = value === "custom" ? "grid" : "none";
+        // Update live preview for accent color
+        if (value === "custom") {
+          updateAccentColor(customAccentPicker.value);
+        } else {
+          updateAccentColor(accentColorMap[value]);
+        }
       };
       accentSelect.addEventListener("change", (e) => {
         const newValue = (e.target as HTMLSelectElement).value;
@@ -169,16 +188,18 @@ function initialize() {
       customAccentPicker.value = customAccentColor;
       customAccentHexInput.value = customAccentColor;
       customAccentHexInput.maxLength = 7;
-      handleAccentChange(currentAccent);
+      handleAccentChange(currentAccent); // Set initial state
       customAccentPicker.addEventListener("input", (e) => {
         const newValue = (e.target as HTMLInputElement).value;
         customAccentHexInput.value = newValue;
+        updateAccentColor(newValue); // Live update
         vscode.postMessage({ command: "updateCustomAccent", value: newValue });
       });
       customAccentHexInput.addEventListener("input", (e) => {
         const newValue = (e.target as HTMLInputElement).value;
         if (hex6Regex.test(newValue)) {
           customAccentPicker.value = newValue;
+          updateAccentColor(newValue); // Live update
           vscode.postMessage({ command: "updateCustomAccent", value: newValue });
         }
       });
@@ -275,6 +296,8 @@ function initialize() {
 
       // Perform the initial render of the preview styles
       updatePreviewPane();
+      // Set the initial accent color for borders
+      handleAccentChange(currentAccent);
 
       // --- 4. ADD "RESET ALL" BUTTON ---
       const resetAllButton = document.createElement("button");
