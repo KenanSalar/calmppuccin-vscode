@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.5.2] - 2025-08-09
+
+- **Fix**: Fixed a critical bug in the Customization UI where resetting a syntax color to its default value would not work correctly. The setting would incorrectly persist in `settings.json` after a reload. This was resolved by ensuring the extension works with a safe copy of the configuration, preventing direct modification of VS Code's read-only settings objects.
+
 ## [1.5.1] - 2025-08-09
 
 - **Major Feature**: Added a live preview pane to the Customization UI. Changes to syntax colors and font styles are now reflected instantly in a C# code snippet, providing immediate visual feedback without needing to reload the editor.
