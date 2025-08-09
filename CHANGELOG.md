@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.5.4] - 2025-08-10
+
+- **Fix**: Updated the `README.md` to show the new customization ui; Replaced the `custom-ui.png` with the updated one.
+
 ## [1.5.3] - 2025-08-09
 
 - **Improvement**: Numbers and constants can now be customized separately.
