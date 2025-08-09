@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.5.5] - 2025-08-10
+
+- **Improvement**: The customization ui now displays the updated accent color.
+
 ## [1.5.4] - 2025-08-10
 
 - **Fix**: Updated the `README.md` to show the new customization ui; Replaced the `custom-ui.png` with the updated one.
