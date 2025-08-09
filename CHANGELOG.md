@@ -3,6 +3,7 @@
 ## [1.5.3] - 2025-08-09
 
 - **Improvement**: Numbers and constants can now be customized separately.
+- **Improvement**: Customization UI has a new design.
 
 ## [1.5.2] - 2025-08-09
 
