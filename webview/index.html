@@ -1,38 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
     <title>Calmppuccin Customization</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Calmppuccin Customization</h1>
     <h2 id="current-flavor"></h2>
-    <p>Changes are saved automatically. A reload is required to apply them.</p>
+    <p>Changes are saved automatically. A reload is required to apply them globally.</p>
 
-    <div id="accent-container" class="settings-section">
-        <div id="custom-accent-picker-container" style="display: none;">
+    <div class="main-container">
+      <div class="controls-column">
+        <div id="accent-container" class="settings-section">
+          <div id="custom-accent-picker-container" style="display: none">
             <label>Custom Color:</label>
             <div class="color-input-wrapper">
-                <input type="color" id="custom-accent-picker">
-                <input type="text" id="custom-accent-hex-input" class="hex-input-display">
+              <input type="color" id="custom-accent-picker" />
+              <input type="text" id="custom-accent-hex-input" class="hex-input-display" />
             </div>
+          </div>
         </div>
+
+        <div id="font-styles-container" class="settings-section">
+          <h2>Font Styles & Syntax Colors</h2>
+          <div id="settings-container"></div>
+        </div>
+
+        <div id="reset-all-container" class="settings-section"></div>
+      </div>
+
+      <div class="preview-column">
+        <h2>Live Preview</h2>
+        <div class="preview-container">
+          <div id="preview-pane" class="vscode-editor-mock">
+            <pre>
+<span data-token="keyword">namespace</span> <span data-token="namespace">MyApp<span data-token="operator">.</span>Core</span><span data-token="punctuation">;</span>
+
+<span data-token="keyword">using</span> <span data-token="class">Module</span> <span data-token="operator">=</span> <span data-token="namespace">System</span><span data-token="operator">.</span><span data-token="class">Console</span><span data-token="punctuation">;</span>
+
+<span data-token="keyword">public</span> <span data-token="keyword">enum</span> <span data-token="enum">Status</span> <span data-token="punctuation">{</span> <span data-token="enumMember">Pending</span><span data-token="punctuation">,</span> <span data-token="enumMember">Completed</span> <span data-token="punctuation">}</span>
+<span data-token="keyword">public</span> <span data-token="keyword">delegate</span> <span data-token="keyword">void</span> <span data-token="delegate">UpdateHandler</span><span data-token="punctuation">(</span><span data-token="keyword">string</span> <span data-token="parameter">message</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+
+<span data-token="keyword">public</span> <span data-token="keyword">interface</span> <span data-token="interface">IProcessable</span><span data-token="punctuation">&lt;</span><span data-token="typeParameter">T</span><span data-token="punctuation">&gt;</span> <span data-token="keyword">where</span> <span data-token="typeParameter">T</span> <span data-token="punctuation">:</span> <span data-token="keyword">struct</span>
+<span data-token="punctuation">{</span>
+    <span data-token="keyword">event</span> <span data-token="delegate">UpdateHandler</span><span data-token="operator">?</span> <span data-token="event">OnUpdate</span><span data-token="punctuation">;</span>
+    <span data-token="typeParameter">T</span> <span data-token="property">Data</span> <span data-token="punctuation">{</span> <span data-token="keyword">get</span><span data-token="punctuation">;</span> <span data-token="punctuation">}</span>
+<span data-token="punctuation">}</span>
+
+<span data-token="comment">// Using a record struct for an immutable data type</span>
+<span data-token="keyword">public</span> <span data-token="keyword">readonly</span> <span data-token="keyword">record</span> <span data-token="keyword">struct</span> <span data-token="struct">Point</span><span data-token="punctuation">(</span><span data-token="keyword">int</span> <span data-token="parameter">X</span><span data-token="punctuation">,</span> <span data-token="keyword">int</span> <span data-token="parameter">Y</span><span data-token="punctuation">)</span>
+<span data-token="punctuation">{</span>
+    <span data-token="keyword">public</span> <span data-token="keyword">static</span> <span data-token="struct">Point</span> <span data-token="keyword">operator</span> <span data-token="operator">+</span><span data-token="punctuation">(</span><span data-token="struct">Point</span> <span data-token="parameter">a</span><span data-token="punctuation">,</span> <span data-token="struct">Point</span> <span data-token="parameter">b</span><span data-token="punctuation">)</span> <span data-token="operator">=></span> <span data-token="keyword">new</span><span data-token="punctuation">(</span><span data-token="parameter">a</span><span data-token="operator">.</span><span data-token="property">X</span> <span data-token="operator">+</span> <span data-token="parameter">b</span><span data-token="operator">.</span><span data-token="property">X</span><span data-token="punctuation">,</span> <span data-token="parameter">a</span><span data-token="operator">.</span><span data-token="property">Y</span> <span data-token="operator">+</span> <span data-token="parameter">b</span><span data-token="operator">.</span><span data-token="property">Y</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+<span data-token="punctuation">}</span>
+
+<span data-token="keyword">public</span> <span data-token="keyword">class</span> <span data-token="class">Calculator</span>
+<span data-token="punctuation">{</span>
+    <span data-token="keyword">public</span> <span data-token="keyword">void</span> <span data-token="functionAndMethod">RunExample</span><span data-token="punctuation">(</span><span data-token="punctuation">)</span>
+    <span data-token="punctuation">{</span>
+        <span data-token="comment">// Two instances of the Point struct</span>
+        <span data-token="keyword">var</span> <span data-token="variable">point1</span> <span data-token="operator">=</span> <span data-token="keyword">new</span> <span data-token="struct">Point</span><span data-token="punctuation">(</span><span data-token="numberAndConstant">10</span><span data-token="punctuation">,</span> <span data-token="numberAndConstant">20</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+        <span data-token="keyword">var</span> <span data-token="variable">point2</span> <span data-token="operator">=</span> <span data-token="keyword">new</span> <span data-token="struct">Point</span><span data-token="punctuation">(</span><span data-token="numberAndConstant">5</span><span data-token="punctuation">,</span> <span data-token="numberAndConstant">8</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+
+        <span data-token="comment">// Using the overloaded '+' operator</span>
+        <span data-token="struct">Point</span> <span data-token="variable">result</span> <span data-token="operator">=</span> <span data-token="variable">point1</span> <span data-token="operatorOverload">+</span> <span data-token="variable">point2</span><span data-token="punctuation">;</span>
+
+        <span data-token="class">Module</span><span data-token="punctuation">.</span><span data-token="functionAndMethod">WriteLine</span><span data-token="punctuation">(</span><span data-token="stringVerbatim">$"Result: X=</span><span data-token="punctuation">{</span><span data-token="variable">result</span><span data-token="punctuation">.</span><span data-token="property">X</span><span data-token="punctuation">}</span><span data-token="stringVerbatim">, Y=</span><span data-token="punctuation">{</span><span data-token="variable">result</span><span data-token="punctuation">.</span><span data-token="property">Y</span><span data-token="punctuation">}</span><span data-token="stringVerbatim">"</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+    <span data-token="punctuation">}</span>
+<span data-token="punctuation">}</span>
+
+<span data-token="comment">// Using primary constructors for dependency injection</span>
+<span data-token="keyword">public</span> <span data-token="keyword">class</span> <span data-token="class">DataService</span><span data-token="punctuation">&lt;</span><span data-token="typeParameter">T</span><span data-token="punctuation">&gt;</span><span data-token="punctuation">(</span><span data-token="interface">ILogger</span> <span data-token="parameter">logger</span><span data-token="punctuation">)</span> <span data-token="keyword">where</span> <span data-token="typeParameter">T</span> <span data-token="punctuation">:</span> <span data-token="keyword">struct</span>
+<span data-token="punctuation">{</span>
+    <span data-token="keyword">private readonly</span> <span data-token="struct">Guid</span> <span data-token="fieldAndAttribute">_id</span> <span data-token="operator">=</span> <span data-token="struct">Guid<span data-token="punctuation">.</span><span data-token="functionAndMethod">NewGuid</span><span data-token="punctuation">(</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+    <span data-token="keyword">public</span> <span data-token="keyword">required</span> <span data-token="keyword">string</span> <span data-token="property">Name</span> <span data-token="punctuation">{</span> <span data-token="keyword">get</span><span data-token="punctuation">;</span> <span data-token="keyword">init</span><span data-token="punctuation">;</span> <span data-token="punctuation">}</span>
+
+    <span data-token="keyword">public</span> <span data-token="keyword">void</span> <span data-token="functionAndMethod">Process</span><span data-token="punctuation">(</span><span data-token="typeParameter">T</span><span data-token="operator">?</span> <span data-token="parameter">data</span><span data-token="punctuation">)</span>
+    <span data-token="punctuation">{</span>
+        <span data-token="comment">// Using extension method</span>
+        <span data-token="parameter">logger</span><span data-token="punctuation">.</span><span data-token="extensionMethod">GetTypeName</span><span data-token="punctuation">(</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+
+        <span data-token="keyword">const</span> <span data-token="keyword">double</span> <span data-token="numberAndConstant">PI</span> <span data-token="operator">=</span> <span data-token="numberAndConstant">3.14</span><span data-token="punctuation">;</span>
+        <span data-token="keyword">var</span> <span data-token="variable">message</span> <span data-token="operator">=</span> <span data-token="parameter">data</span> <span data-token="operator">is</span> <span data-token="operator">not</span> <span data-token="numberAndConstant">null</span> <span data-token="operator">?</span> <span data-token="keyword">this</span><span data-token="operator">.</span><span data-token="extensionMethod">GetTypeName</span><span data-token="punctuation">(</span><span data-token="punctuation">)</span> <span data-token="operator">:</span> <span data-token="string">"No data"</span><span data-token="punctuation">;</span>
+        
+        <span data-token="comment">// Using a raw, interpolated string literal</span>
+        <span data-token="keyword">var</span> <span data-token="variable">log</span> <span data-token="operator">=</span> <span data-token="string">$$"""
+            Processing "</span><span data-token="punctuation">{</span><span data-token="variable">message</span><span data-token="punctuation">}</span><span data-token="string">"
+            ID: </span><span data-token="punctuation">{</span><span data-token="fieldAndAttribute">_id</span><span data-token="punctuation">}</span><span data-token="string">
+            PI: </span><span data-token="punctuation">{</span><span data-token="numberAndConstant">PI</span><span data-token="punctuation">}</span><span data-token="string">
+            """</span><span data-token="punctuation">;</span>
+        
+        <span data-token="comment">// Using a verbatim string literal</span>
+        <span data-token="keyword">string</span><span data-token="operator">?</span> <span data-token="variable">verbatim</span> <span data-token="operator">=</span> <span data-token="stringVerbatim">@"C:\Path\To\File.txt"</span><span data-token="punctuation">;</span>
+        
+        <span data-token="comment">// Using string escape character</span>
+        <span data-token="class">Module</span><span data-token="punctuation">.</span><span data-token="functionAndMethod">WriteLine</span><span data-token="punctuation">(</span><span data-token="string">"C:</span><span data-token="numberAndConstant">\\</span><span data-token="string">Path</span><span data-token="numberAndConstant">\\</span><span data-token="string">To</span><span data-token="numberAndConstant">\\</span><span data-token="string">File.txt"</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+
+        <span data-token="class">Module</span><span data-token="punctuation">.</span><span data-token="functionAndMethod">WriteLine</span><span data-token="punctuation">(</span><span data-token="variable">log</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+        <span data-token="class">Module</span><span data-token="punctuation">.</span><span data-token="functionAndMethod">WriteLine</span><span data-token="punctuation">(</span><span data-token="variable">verbatim</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+    <span data-token="punctuation">}</span>
+
+<span data-token="punctuation">[</span><span data-token="namespace">System</span><span data-token="operator">.</span><span data-token="namespace">Diagnostics</span><span data-token="operator">.</span><span data-token="namespace">CodeAnalysis</span><span data-token="operator">.</span><span data-token="class">ExcludeFromCodeCoverage</span><span data-token="punctuation">]</span>
+<span data-token="keyword">public</span> <span data-token="keyword">static</span> <span data-token="keyword">class</span> <span data-token="class">ObjectExtensions</span>
+<span data-token="punctuation">{</span>
+    <span data-token="keyword">public</span> <span data-token="keyword">static</span> <span data-token="keyword">string</span> <span data-token="extensionMethod">GetTypeName</span><span data-token="punctuation">(</span><span data-token="keyword">this</span> <span data-token="keyword">object</span> <span data-token="parameter">_</span><span data-token="punctuation">)</span> <span data-token="operator">=></span> <span data-token="string">"System.Object"</span><span data-token="punctuation">;</span>
+<span data-token="punctuation">}</span></code></pre>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div id="font-styles-container" class="settings-section">
-      <h2>Font Styles & Syntax Colors</h2>
-      <div id="settings-container"></div>
+    <div id="color-picker-modal" class="modal-overlay" style="display: none">
+      <div class="modal-content">
+        <div id="iro-picker-container"></div>
+        <input type="text" id="modal-hex-input" class="modal-hex-input" />
+      </div>
     </div>
 
-    <div id="color-picker-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <div id="iro-picker-container"></div>
-            <input type="text" id="modal-hex-input" class="modal-hex-input">
-        </div>
-    </div>
-    
     <script src="webview.js"></script>
-</body>
+  </body>
 </html>

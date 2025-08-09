@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1] - 2025-08-09
+
+- **Major Feature**: Added a live preview pane to the Customization UI. Changes to syntax colors and font styles are now reflected instantly in a C# code snippet, providing immediate visual feedback without needing to reload the editor.
+- **Improvement**: Completely overhauled the layout of the Customization UI to be fully responsive. The controls and preview pane now correctly resize and stack vertically on smaller window sizes, preventing UI elements from overlapping.
+- **Improvement**: The code snippet in the preview pane now wraps long lines of code, improving readability and preventing layout issues.
+- **Fix**: Fixed a critical bug where the theme would appear with incorrect font styles on a fresh installation. The extension's build process now correctly includes the default font styles, ensuring the theme works perfectly out-of-the-box.
+
 ## [1.5.0] - 2025-08-08
 
 - **Feature**: Added a custom settings UI built with a webview. Users can now run the `Calmppuccin: Customize Theme` command to open a graphical editor.
