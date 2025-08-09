@@ -69,7 +69,11 @@ export class SettingsPanel {
             const { key } = message;
             const fontStyles = { ...config.get<any>("fontStyles", {}) };
             delete fontStyles[key];
-            await config.update("fontStyles", fontStyles, vscode.ConfigurationTarget.Global);
+
+            // If the object is now empty, update with `undefined` to remove it from settings.json
+            const finalFontStyles = Object.keys(fontStyles).length === 0 ? undefined : fontStyles;
+
+            await config.update("fontStyles", finalFontStyles, vscode.ConfigurationTarget.Global);
             return;
           }
           case "updateAccent":
@@ -80,21 +84,33 @@ export class SettingsPanel {
             return;
           case "updateSyntaxColor": {
             const { flavor, key, value } = message;
-            const overrides = config.get<any>("syntaxOverrides", {});
-            if (!overrides[flavor]) overrides[flavor] = {};
+            // Create a deep copy to safely mutate
+            const overrides = JSON.parse(JSON.stringify(config.get<any>("syntaxOverrides", {})));
+
+            if (!overrides[flavor]) {
+              overrides[flavor] = {};
+            }
             overrides[flavor][key] = value;
+
             await config.update("syntaxOverrides", overrides, vscode.ConfigurationTarget.Global);
             return;
           }
           case "resetSyntaxColor": {
             const { flavor, key } = message;
-            const overrides = { ...config.get<any>("syntaxOverrides", {}) };
+            // Create a deep copy to safely mutate
+            const overrides = JSON.parse(JSON.stringify(config.get<any>("syntaxOverrides", {})));
+
             if (overrides[flavor]?.[key]) {
               delete overrides[flavor][key];
+
               if (Object.keys(overrides[flavor]).length === 0) {
                 delete overrides[flavor];
               }
-              await config.update("syntaxOverrides", overrides, vscode.ConfigurationTarget.Global);
+
+              // If the object is empty, update with `undefined` to remove it from settings.json
+              const finalOverrides = Object.keys(overrides).length === 0 ? undefined : overrides;
+
+              await config.update("syntaxOverrides", finalOverrides, vscode.ConfigurationTarget.Global);
             }
             return;
           }
@@ -181,7 +197,6 @@ export class SettingsPanel {
     const defaultPalette = (palettes as any)[activeFlavor];
     const overridePalette = syntaxOverrides[activeFlavor] || {};
 
-    // **NEW**: Get the background color to send to the webview for the preview pane.
     const activeThemeBackgroundColor = defaultPalette.crust;
 
     const syntaxSettings = customizableSyntaxKeys.map((key) => {
@@ -203,7 +218,7 @@ export class SettingsPanel {
         accentOptions,
         customAccentColor,
         defaultFontStyles,
-        activeThemeBackgroundColor, // Pass the background color
+        activeThemeBackgroundColor,
       },
     });
   }
