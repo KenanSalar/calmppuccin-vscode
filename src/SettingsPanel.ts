@@ -200,6 +200,14 @@ export class SettingsPanel {
 
     const activeThemeBackgroundColor = defaultPalette.crust;
 
+    // Extract accent colors from the active flavor's palette
+    const accentColorPalettes = accentOptions.reduce((acc: any, option: string) => {
+      if (defaultPalette[option]) {
+        acc[option] = defaultPalette[option];
+      }
+      return acc;
+    }, {});
+
     const syntaxSettings = customizableSyntaxKeys.map((key) => {
       const fontStyleKey = `${key}FontStyle`;
       return {
@@ -220,6 +228,7 @@ export class SettingsPanel {
         customAccentColor,
         defaultFontStyles,
         activeThemeBackgroundColor,
+        accentColorPalettes, // Pass the accent colors
       },
     });
   }
