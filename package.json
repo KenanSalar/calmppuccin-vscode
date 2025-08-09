@@ -3,7 +3,7 @@
   "displayName": "Calmppuccin",
   "description": "Calmppuccin is a visually refined theme for Visual Studio Code, designed to offer a harmonious coding experience. Inspired by the popular Catppuccin theme, Calmppuccin takes the beloved pastel palette and transforms it into a gentler, less intense version, perfect for long coding sessions without eye strain.",
   "icon": "assets/images/logo/icon.png",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "publisher": "kenan-salar",
   "license": "MIT",
   "repository": {
@@ -164,7 +164,8 @@
             "eventFontStyle": "none",
             "parameterFontStyle": "italic",
             "typeParameterFontStyle": "none",
-            "numberAndConstantFontStyle": "none",
+            "numberFontStyle": "none",
+            "constantFontStyle": "none",
             "operatorFontStyle": "none",
             "operatorOverloadFontStyle": "bold",
             "punctuationFontStyle": "none",
@@ -437,10 +438,22 @@
                 "underline"
               ]
             },
-            "numberAndConstantFontStyle": {
+            "numberFontStyle": {
               "type": "string",
               "default": "none",
-              "description": "Set the font style for numbers and constants.",
+              "description": "Set the font style for numbers.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "constantFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for constants.",
               "enum": [
                 "none",
                 "italic",
@@ -641,10 +654,15 @@
                   "format": "color-hex",
                   "description": "Overrides the color for type parameters."
                 },
-                "numberAndConstant": {
+                "number": {
                   "type": "string",
                   "format": "color-hex",
-                  "description": "Overrides the color for numbers and constants."
+                  "description": "Overrides the color for numbers."
+                },
+                "constant": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for constants."
                 },
                 "operator": {
                   "type": "string",

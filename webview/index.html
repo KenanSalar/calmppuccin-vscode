@@ -7,36 +7,55 @@
     <title>Calmppuccin Customization</title>
   </head>
   <body>
-    <h1>Calmppuccin Customization</h1>
-    <h2 id="current-flavor"></h2>
-    <p>Changes are saved automatically. A reload is required to apply them globally.</p>
+    <header class="header">
+      <h1>Calmppuccin Customization</h1>
+      <h2 id="current-flavor"></h2>
+      <p>Changes are saved automatically. A reload is required to apply them globally.</p>
+    </header>
 
     <div class="main-container">
       <div class="controls-column">
-        <div id="accent-container" class="settings-section">
-          <div id="custom-accent-picker-container" style="display: none">
-            <label>Custom Color:</label>
-            <div class="color-input-wrapper">
-              <input type="color" id="custom-accent-picker" />
-              <input type="text" id="custom-accent-hex-input" class="hex-input-display" />
-            </div>
+        <section class="card">
+          <div class="card-header">
+            <h3>Accent Color</h3>
           </div>
-        </div>
+          <div class="card-body" id="accent-container">
+            <div id="custom-accent-picker-container" style="display: none">
+              <label for="custom-accent-hex-input">Custom Color:</label>
+              <div class="color-input-wrapper">
+                <input type="color" id="custom-accent-picker" />
+                <input type="text" id="custom-accent-hex-input" class="hex-input-display" readonly />
+              </div>
+            </div>
+            </div>
+        </section>
 
-        <div id="font-styles-container" class="settings-section">
-          <h2>Font Styles & Syntax Colors</h2>
-          <div id="settings-container"></div>
-        </div>
+        <section class="card">
+          <div class="card-header">
+            <h3>Font Styles & Syntax Colors</h3>
+          </div>
+          <div class="card-body" id="settings-container">
+            </div>
+        </section>
 
-        <div id="reset-all-container" class="settings-section"></div>
+        <section class="card danger-zone">
+          <div class="card-header">
+            <h3>Danger Zone</h3>
+          </div>
+          <div class="card-body" id="reset-all-container">
+            </div>
+        </section>
       </div>
 
       <div class="preview-column">
-        <h2>Live Preview</h2>
-        <div class="preview-container">
-          <div id="preview-pane" class="vscode-editor-mock">
-            <pre>
-<span data-token="keyword">namespace</span> <span data-token="namespace">MyApp<span data-token="operator">.</span>Core</span><span data-token="punctuation">;</span>
+        <section class="card">
+          <div class="card-header">
+            <h3>Live Preview</h3>
+          </div>
+          <div class="preview-container">
+            <div id="preview-pane" class="vscode-editor-mock">
+              <pre>
+<code><span data-token="keyword">namespace</span> <span data-token="namespace">MyApp<span data-token="operator">.</span>Core</span><span data-token="punctuation">;</span>
 
 <span data-token="keyword">using</span> <span data-token="class">Module</span> <span data-token="operator">=</span> <span data-token="namespace">System</span><span data-token="operator">.</span><span data-token="class">Console</span><span data-token="punctuation">;</span>
 
@@ -60,8 +79,8 @@
     <span data-token="keyword">public</span> <span data-token="keyword">void</span> <span data-token="functionAndMethod">RunExample</span><span data-token="punctuation">(</span><span data-token="punctuation">)</span>
     <span data-token="punctuation">{</span>
         <span data-token="comment">// Two instances of the Point struct</span>
-        <span data-token="keyword">var</span> <span data-token="variable">point1</span> <span data-token="operator">=</span> <span data-token="keyword">new</span> <span data-token="struct">Point</span><span data-token="punctuation">(</span><span data-token="numberAndConstant">10</span><span data-token="punctuation">,</span> <span data-token="numberAndConstant">20</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
-        <span data-token="keyword">var</span> <span data-token="variable">point2</span> <span data-token="operator">=</span> <span data-token="keyword">new</span> <span data-token="struct">Point</span><span data-token="punctuation">(</span><span data-token="numberAndConstant">5</span><span data-token="punctuation">,</span> <span data-token="numberAndConstant">8</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+        <span data-token="keyword">var</span> <span data-token="variable">point1</span> <span data-token="operator">=</span> <span data-token="keyword">new</span> <span data-token="struct">Point</span><span data-token="punctuation">(</span><span data-token="number">10</span><span data-token="punctuation">,</span> <span data-token="number">20</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+        <span data-token="keyword">var</span> <span data-token="variable">point2</span> <span data-token="operator">=</span> <span data-token="keyword">new</span> <span data-token="struct">Point</span><span data-token="punctuation">(</span><span data-token="number">5</span><span data-token="punctuation">,</span> <span data-token="number">8</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
 
         <span data-token="comment">// Using the overloaded '+' operator</span>
         <span data-token="struct">Point</span> <span data-token="variable">result</span> <span data-token="operator">=</span> <span data-token="variable">point1</span> <span data-token="operatorOverload">+</span> <span data-token="variable">point2</span><span data-token="punctuation">;</span>
@@ -81,21 +100,21 @@
         <span data-token="comment">// Using extension method</span>
         <span data-token="parameter">logger</span><span data-token="punctuation">.</span><span data-token="extensionMethod">GetTypeName</span><span data-token="punctuation">(</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
 
-        <span data-token="keyword">const</span> <span data-token="keyword">double</span> <span data-token="numberAndConstant">PI</span> <span data-token="operator">=</span> <span data-token="numberAndConstant">3.14</span><span data-token="punctuation">;</span>
-        <span data-token="keyword">var</span> <span data-token="variable">message</span> <span data-token="operator">=</span> <span data-token="parameter">data</span> <span data-token="operator">is</span> <span data-token="operator">not</span> <span data-token="numberAndConstant">null</span> <span data-token="operator">?</span> <span data-token="keyword">this</span><span data-token="operator">.</span><span data-token="extensionMethod">GetTypeName</span><span data-token="punctuation">(</span><span data-token="punctuation">)</span> <span data-token="operator">:</span> <span data-token="string">"No data"</span><span data-token="punctuation">;</span>
+        <span data-token="keyword">const</span> <span data-token="keyword">double</span> <span data-token="constant">PI</span> <span data-token="operator">=</span> <span data-token="number">3.14</span><span data-token="punctuation">;</span>
+        <span data-token="keyword">var</span> <span data-token="variable">message</span> <span data-token="operator">=</span> <span data-token="parameter">data</span> <span data-token="operator">is</span> <span data-token="operator">not</span> <span data-token="constant">null</span> <span data-token="operator">?</span> <span data-token="keyword">this</span><span data-token="operator">.</span><span data-token="extensionMethod">GetTypeName</span><span data-token="punctuation">(</span><span data-token="punctuation">)</span> <span data-token="operator">:</span> <span data-token="string">"No data"</span><span data-token="punctuation">;</span>
         
         <span data-token="comment">// Using a raw, interpolated string literal</span>
         <span data-token="keyword">var</span> <span data-token="variable">log</span> <span data-token="operator">=</span> <span data-token="string">$$"""
             Processing "</span><span data-token="punctuation">{</span><span data-token="variable">message</span><span data-token="punctuation">}</span><span data-token="string">"
             ID: </span><span data-token="punctuation">{</span><span data-token="fieldAndAttribute">_id</span><span data-token="punctuation">}</span><span data-token="string">
-            PI: </span><span data-token="punctuation">{</span><span data-token="numberAndConstant">PI</span><span data-token="punctuation">}</span><span data-token="string">
+            PI: </span><span data-token="punctuation">{</span><span data-token="constant">PI</span><span data-token="punctuation">}</span><span data-token="string">
             """</span><span data-token="punctuation">;</span>
         
         <span data-token="comment">// Using a verbatim string literal</span>
         <span data-token="keyword">string</span><span data-token="operator">?</span> <span data-token="variable">verbatim</span> <span data-token="operator">=</span> <span data-token="stringVerbatim">@"C:\Path\To\File.txt"</span><span data-token="punctuation">;</span>
         
         <span data-token="comment">// Using string escape character</span>
-        <span data-token="class">Module</span><span data-token="punctuation">.</span><span data-token="functionAndMethod">WriteLine</span><span data-token="punctuation">(</span><span data-token="string">"C:</span><span data-token="numberAndConstant">\\</span><span data-token="string">Path</span><span data-token="numberAndConstant">\\</span><span data-token="string">To</span><span data-token="numberAndConstant">\\</span><span data-token="string">File.txt"</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+        <span data-token="class">Module</span><span data-token="punctuation">.</span><span data-token="functionAndMethod">WriteLine</span><span data-token="punctuation">(</span><span data-token="string">"C:</span><span data-token="constant">\\</span><span data-token="string">Path</span><span data-token="constant">\\</span><span data-token="string">To</span><span data-token="constant">\\</span><span data-token="string">File.txt"</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
 
         <span data-token="class">Module</span><span data-token="punctuation">.</span><span data-token="functionAndMethod">WriteLine</span><span data-token="punctuation">(</span><span data-token="variable">log</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
         <span data-token="class">Module</span><span data-token="punctuation">.</span><span data-token="functionAndMethod">WriteLine</span><span data-token="punctuation">(</span><span data-token="variable">verbatim</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
@@ -106,8 +125,9 @@
 <span data-token="punctuation">{</span>
     <span data-token="keyword">public</span> <span data-token="keyword">static</span> <span data-token="keyword">string</span> <span data-token="extensionMethod">GetTypeName</span><span data-token="punctuation">(</span><span data-token="keyword">this</span> <span data-token="keyword">object</span> <span data-token="parameter">_</span><span data-token="punctuation">)</span> <span data-token="operator">=></span> <span data-token="string">"System.Object"</span><span data-token="punctuation">;</span>
 <span data-token="punctuation">}</span></code></pre>
+            </div>
           </div>
-        </div>
+        </section>
       </div>
     </div>
 
