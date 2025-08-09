@@ -9,25 +9,14 @@ import * as path from "path";
 import palette from "./src/palette";
 import * as C from "./src/constants";
 
-// Defines a generic type for a palette object.
 type Palette = { [key: string]: string };
-// Defines a generic type for editor settings to handle any configuration.
 type GenericSettings = { [key: string]: any };
-// Type for the user's syntax overrides.
 type SyntaxOverrides = { [flavor: string]: Palette };
 
-// Define file system paths and theme constants.
 const THEME_DIR = path.resolve(__dirname, "..", C.THEMES_DIR);
 const TEMPLATE_PATH = path.resolve(__dirname, "..", C.SRC_DIR, C.TEMPLATE_FILE);
 const FLAVORS = Object.keys(palette);
 
-/**
- * Builds all theme flavors (Latte, Mocha, etc.) with a specified accent color and user settings.
- * It generates a complete theme file for each flavor and writes it to the /themes directory.
- * @param accentIdentifier The accent to use. Can be a named color (e.g., "sapphire") or a hex code.
- * @param editorSettings A generic object containing all user-configurable settings (e.g., italics).
- * @param syntaxOverrides A nested object containing user-defined syntax color overrides per flavor.
- */
 export async function buildAllFlavors(
   accentIdentifier: string,
   editorSettings: GenericSettings,
@@ -40,17 +29,13 @@ export async function buildAllFlavors(
   for (const flavor of FLAVORS) {
     const basePalette = (palette as { [key: string]: any })[flavor];
     const flavorOverrides = syntaxOverrides[flavor] || {};
-
-    // Create the final palette by merging the base palette with user overrides
     const finalPalette = { ...basePalette, ...flavorOverrides };
-
     const accentColor = accentIdentifier.startsWith("#")
       ? accentIdentifier
       : finalPalette[accentIdentifier] || finalPalette[C.FALLBACK_ACCENT];
-
     const accentHexValue = accentColor.substring(1);
-
     const resolvedPalette: Palette = {};
+
     for (const [key, value] of Object.entries(finalPalette)) {
       if (typeof value === "string" && value.startsWith(C.ACCENT_RECIPE_PREFIX)) {
         const transparency = value.substring(C.ACCENT_RECIPE_PREFIX.length);
@@ -60,12 +45,7 @@ export async function buildAllFlavors(
       }
     }
 
-    const replacements: GenericSettings = {
-      ...resolvedPalette,
-      accent: accentColor,
-      ...editorSettings,
-    };
-
+    const replacements: GenericSettings = { ...resolvedPalette, accent: accentColor, ...editorSettings };
     let themeContent = templateStr;
 
     for (const [key, value] of Object.entries(replacements)) {
@@ -88,9 +68,18 @@ export async function buildAllFlavors(
 }
 
 /**
- * This check allows the script to be executed directly from the command line
- * with `node ./dist/build.js`, which is useful for testing and development.
+ * Reads the package.json to get the default font styles.
+ */
+function getDefaultFontStyles() {
+  const packageJsonPath = path.resolve(__dirname, "..", "package.json");
+  const packageJson = fs.readJsonSync(packageJsonPath);
+  return packageJson?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.fontStyles`]?.default ?? {};
+}
+
+/**
+ * This check allows the script to be executed directly from the command line.
  */
 if (require.main === module) {
-  buildAllFlavors(C.DEFAULT_ACCENT, {}, {});
+  const defaultFontStyles = getDefaultFontStyles();
+  buildAllFlavors(C.DEFAULT_ACCENT, defaultFontStyles, {});
 }

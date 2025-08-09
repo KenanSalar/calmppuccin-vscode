@@ -62,16 +62,17 @@ enter `Calmppuccin`, locate the extension in the results, and select Install to 
 
 ## Customization
 
-You can easily tailor Calmppuccin to fit your personal preferences using the built-in graphical interface or by editing your `settings.json` directly.
+You can easily tailor Calmppuccin to fit your personal preferences using the\
+built-in graphical interface or by editing your `settings.json` directly.
 
 ### 1. Using the Customization UI (Recommended)
 
-This is the easiest and most powerful way to configure everything in one place.\
-The UI gives you full control over accent colors, font styles, and granular syntax colors with transparency support.
+This is the easiest and most powerful way to configure everything in one place. The UI gives you full control over accent colors,\
+font styles, and granular syntax colors, with a live preview pane that updates instantly as you make changes.
 
 <details>
-<summary>🛠️ Customization UI</summary>
-<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/customUI/custom-ui.png" alt="customUI" width="600" height="1000">
+<summary>🛠️ <b>Customization UI</b></summary>
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/customUI/custom-ui.png" alt="customUI" width="1000" height="1000">
 </details>
 
 <br/>
