@@ -73,9 +73,9 @@
     "debugToolBar.border": "{{uiTransparent}}",
     "debugExceptionWidget.background": "{{base}}",
     "debugExceptionWidget.border": "{{accent}}",
-    "debugTokenExpression.number": "{{numberAndConstant}}",
+    "debugTokenExpression.number": "{{number}}",
     "debugTokenExpression.type": "{{keyword}}",
-    "debugTokenExpression.boolean": "{{numberAndConstant}}",
+    "debugTokenExpression.boolean": "{{constant}}",
     "debugTokenExpression.string": "{{string}}",
     "debugTokenExpression.error": "{{uiRedErrorDeleted}}",
     "debugIcon.breakpointForeground": "{{uiRedErrorDeleted}}",
@@ -488,10 +488,10 @@
 
     "symbolIcon.textForeground": "{{uiText}}",
     "symbolIcon.arrayForeground": "{{uiWarning}}",
-    "symbolIcon.booleanForeground": "{{numberAndConstant}}",
+    "symbolIcon.booleanForeground": "{{constant}}",
     "symbolIcon.classForeground": "{{class}}",
     "symbolIcon.colorForeground": "{{uiSponsorAndColor}}",
-    "symbolIcon.constantForeground": "{{numberAndConstant}}",
+    "symbolIcon.constantForeground": "{{constant}}",
     "symbolIcon.constructorForeground": "{{class}}",
     "symbolIcon.enumeratorForeground": "{{enum}}",
     "symbolIcon.enumeratorMemberForeground": "{{enumMember}}",
@@ -506,8 +506,8 @@
     "symbolIcon.methodForeground": "{{functionAndMethod}}",
     "symbolIcon.moduleForeground": "{{module}}",
     "symbolIcon.namespaceForeground": "{{namespace}}",
-    "symbolIcon.nullForeground": "{{numberAndConstant}}",
-    "symbolIcon.numberForeground": "{{numberAndConstant}}",
+    "symbolIcon.nullForeground": "{{constant}}",
+    "symbolIcon.numberForeground": "{{number}}",
     "symbolIcon.objectForeground": "{{class}}",
     "symbolIcon.operatorForeground": "{{operator}}",
     "symbolIcon.packageForeground": "{{uiSymboliconPackageAndSnippetForeground}}",
@@ -780,8 +780,8 @@
         "meta.expression.implicit"
       ],
       "settings": {
-        "foreground": "{{numberAndConstant}}",
-        "fontStyle": "{{numberAndConstantFontStyle}}"
+        "foreground": "{{constant}}",
+        "fontStyle": "{{constantFontStyle}}"
       }
     },
     {
@@ -1217,8 +1217,8 @@
       "name": "string escape",
       "scope": ["constant.character.escape"],
       "settings": {
-        "foreground": "{{numberAndConstant}}",
-        "fontStyle": "{{numberAndConstantFontStyle}}"
+        "foreground": "{{constant}}",
+        "fontStyle": "{{constantFontStyle}}"
       }
     },
     {
@@ -1247,8 +1247,8 @@
         "entity.other.keyframe-offset.percentage"
       ],
       "settings": {
-        "foreground": "{{numberAndConstant}}",
-        "fontStyle": "{{numberAndConstantFontStyle}}"
+        "foreground": "{{number}}",
+        "fontStyle": "{{numberFontStyle}}"
       }
     },
     {
@@ -1589,8 +1589,8 @@
       "name": "CSS ID's",
       "scope": ["source.sass keyword.control"],
       "settings": {
-        "foreground": "{{numberAndConstant}}",
-        "fontStyle": "{{numberAndConstantFontStyle}}"
+        "foreground": "{{constant}}",
+        "fontStyle": "{{constantFontStyle}}"
       }
     },
     {
@@ -1918,8 +1918,8 @@
       "name": "css property value",
       "scope": ["meta.property-value", "support.constant.property-value.css"],
       "settings": {
-        "foreground": "{{numberAndConstant}}",
-        "fontStyle": "italic"
+        "foreground": "{{constant}}",
+        "fontStyle": "{{constantFontStyle}}"
       }
     },
     {
@@ -2114,8 +2114,8 @@
       "fontStyle": "{{typeParameterFontStyle}}"
     },
     "number": {
-      "foreground": "{{numberAndConstant}}",
-      "fontStyle": "{{numberAndConstantFontStyle}}"
+      "foreground": "{{number}}",
+      "fontStyle": "{{numberFontStyle}}"
     },
     "operator": {
       "foreground": "{{operator}}",
@@ -2130,12 +2130,12 @@
       "fontStyle": "{{punctuationFontStyle}}"
     },
     "constant": {
-      "foreground": "{{numberAndConstant}}",
-      "fontStyle": "{{numberAndConstantFontStyle}}"
+      "foreground": "{{constant}}",
+      "fontStyle": "{{constantFontStyle}}"
     },
     "builtinConstant": {
-      "foreground": "{{numberAndConstant}}",
-      "fontStyle": "{{numberAndConstantFontStyle}}"
+      "foreground": "{{constant}}",
+      "fontStyle": "{{constantFontStyle}}"
     },
     "string": {
       "foreground": "{{string}}",
@@ -2146,8 +2146,8 @@
       "fontStyle": "{{stringVerbatimFontStyle}}"
     },
     "stringEscapeCharacter": {
-      "foreground": "{{numberAndConstant}}",
-      "fontStyle": "{{numberAndConstantFontStyle}}"
+      "foreground": "{{constant}}",
+      "fontStyle": "{{constantFontStyle}}"
     },
     "comment": {
       "foreground": "{{comment}}",
