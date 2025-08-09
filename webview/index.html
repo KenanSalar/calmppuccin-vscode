@@ -7,36 +7,55 @@
     <title>Calmppuccin Customization</title>
   </head>
   <body>
-    <h1>Calmppuccin Customization</h1>
-    <h2 id="current-flavor"></h2>
-    <p>Changes are saved automatically. A reload is required to apply them globally.</p>
+    <header class="header">
+      <h1>Calmppuccin Customization</h1>
+      <h2 id="current-flavor"></h2>
+      <p>Changes are saved automatically. A reload is required to apply them globally.</p>
+    </header>
 
     <div class="main-container">
       <div class="controls-column">
-        <div id="accent-container" class="settings-section">
-          <div id="custom-accent-picker-container" style="display: none">
-            <label>Custom Color:</label>
-            <div class="color-input-wrapper">
-              <input type="color" id="custom-accent-picker" />
-              <input type="text" id="custom-accent-hex-input" class="hex-input-display" />
-            </div>
+        <section class="card">
+          <div class="card-header">
+            <h3>Accent Color</h3>
           </div>
-        </div>
+          <div class="card-body" id="accent-container">
+            <div id="custom-accent-picker-container" style="display: none">
+              <label for="custom-accent-hex-input">Custom Color:</label>
+              <div class="color-input-wrapper">
+                <input type="color" id="custom-accent-picker" />
+                <input type="text" id="custom-accent-hex-input" class="hex-input-display" readonly />
+              </div>
+            </div>
+            </div>
+        </section>
 
-        <div id="font-styles-container" class="settings-section">
-          <h2>Font Styles & Syntax Colors</h2>
-          <div id="settings-container"></div>
-        </div>
+        <section class="card">
+          <div class="card-header">
+            <h3>Font Styles & Syntax Colors</h3>
+          </div>
+          <div class="card-body" id="settings-container">
+            </div>
+        </section>
 
-        <div id="reset-all-container" class="settings-section"></div>
+        <section class="card danger-zone">
+          <div class="card-header">
+            <h3>Danger Zone</h3>
+          </div>
+          <div class="card-body" id="reset-all-container">
+            </div>
+        </section>
       </div>
 
       <div class="preview-column">
-        <h2>Live Preview</h2>
-        <div class="preview-container">
-          <div id="preview-pane" class="vscode-editor-mock">
-            <pre>
-<span data-token="keyword">namespace</span> <span data-token="namespace">MyApp<span data-token="operator">.</span>Core</span><span data-token="punctuation">;</span>
+        <section class="card">
+          <div class="card-header">
+            <h3>Live Preview</h3>
+          </div>
+          <div class="preview-container">
+            <div id="preview-pane" class="vscode-editor-mock">
+              <pre>
+<code><span data-token="keyword">namespace</span> <span data-token="namespace">MyApp<span data-token="operator">.</span>Core</span><span data-token="punctuation">;</span>
 
 <span data-token="keyword">using</span> <span data-token="class">Module</span> <span data-token="operator">=</span> <span data-token="namespace">System</span><span data-token="operator">.</span><span data-token="class">Console</span><span data-token="punctuation">;</span>
 
@@ -106,8 +125,9 @@
 <span data-token="punctuation">{</span>
     <span data-token="keyword">public</span> <span data-token="keyword">static</span> <span data-token="keyword">string</span> <span data-token="extensionMethod">GetTypeName</span><span data-token="punctuation">(</span><span data-token="keyword">this</span> <span data-token="keyword">object</span> <span data-token="parameter">_</span><span data-token="punctuation">)</span> <span data-token="operator">=></span> <span data-token="string">"System.Object"</span><span data-token="punctuation">;</span>
 <span data-token="punctuation">}</span></code></pre>
+            </div>
           </div>
-        </div>
+        </section>
       </div>
     </div>
 
