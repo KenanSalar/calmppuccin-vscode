@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.5.3] - 2025-08-09
+
+- **Improvement**: Numbers and constants can now be customized separately.
+
 ## [1.5.2] - 2025-08-09
 
 - **Fix**: Fixed a critical bug in the Customization UI where resetting a syntax color to its default value would not work correctly. The setting would incorrectly persist in `settings.json` after a reload. This was resolved by ensuring the extension works with a safe copy of the configuration, preventing direct modification of VS Code's read-only settings objects.
