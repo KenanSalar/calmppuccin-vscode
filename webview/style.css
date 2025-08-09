@@ -115,9 +115,9 @@ body {
 
 #custom-accent-picker-container {
   display: grid;
-  grid-template-columns: max-content 1fr;
+  grid-template-columns: auto 1fr;
   align-items: center;
-  gap: 12px var(--gap-size);
+  gap: 10px 20px;
 }
 
 /* --- Danger Zone Styling --- */
@@ -328,27 +328,31 @@ input[type="color"] {
 
 /* --- Buttons --- */
 .reset-button {
-  height: var(--control-height);
-  padding: 0 20px;
+  height: calc(var(--control-height) - 8px);
+  padding: 0 16px;
   cursor: pointer;
-  border-radius: var(--radius);
+  border-radius: calc(var(--radius) - 4px);
   background: var(--vscode-button-secondary-background);
   color: var(--vscode-button-secondary-foreground);
-  border: 1px solid var(--vscode-button-border, transparent);
+  border: 1px solid var(--vscode-input-border);
   font-weight: 500;
-  font-size: 0.95em;
+  font-size: 0.9em;
   transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0.8;
 }
 
 .reset-button:hover {
   background: var(--vscode-button-secondary-hover-background);
+  border-color: var(--accent-color);
+  opacity: 1;
   transform: translateY(-1px);
-  box-shadow: var(--shadow-medium);
+  box-shadow: var(--shadow-light);
 }
 
 .reset-button:active {
   transform: translateY(0);
-  box-shadow: var(--shadow-light);
+  opacity: 1;
+  box-shadow: none;
 }
 
 /* --- Preview Pane --- */
