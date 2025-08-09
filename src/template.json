@@ -1364,11 +1364,22 @@
         "punctuation.accessor",
         "punctuation.definition.colon",
         "punctuation.separator.scope-resolution",
-        "keyword.operator.ternary"
+        "keyword.operator.ternary",
+        "entity.name.function.member.overload"
       ],
       "settings": {
         "foreground": "{{operator}}",
         "fontStyle": "{{operatorFontStyle}}"
+      }
+    },
+    {
+      "name": "operator",
+      "scope": [
+        "entity.name.function.member.overload"
+      ],
+      "settings": {
+        "foreground": "{{operatorOverload}}",
+        "fontStyle": "{{operatorOverloadFontStyle}}"
       }
     },
     {

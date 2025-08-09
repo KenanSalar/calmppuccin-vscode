@@ -651,11 +651,6 @@
                   "format": "color-hex",
                   "description": "Overrides the color for operators."
                 },
-                "operatorOverload": {
-                  "type": "string",
-                  "format": "color-hex",
-                  "description": "Overrides the color for overloaded operators."
-                },
                 "punctuation": {
                   "type": "string",
                   "format": "color-hex",

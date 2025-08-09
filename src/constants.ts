@@ -28,7 +28,7 @@ export const THEME_TYPE_LIGHT = "light";
 export const THEME_TYPE_DARK = "dark";
 
 // User-facing messages
-export const INFO_MESSAGE = (accent: string) => `Calmppuccin accent updated to ${accent}. Reload to apply.`;
+export const INFO_MESSAGE = "Calmppuccin theme updated. Reload to apply.";
 export const RELOAD_ACTION = "Reload Window";
 export const REPORT_ISSUE_ACTION = "Report Issue";
 export const ERROR_MESSAGE_PREFIX = "Failed to update Calmppuccin themes. Error: ";
