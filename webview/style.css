@@ -1,88 +1,379 @@
-/* General Body Styles */
+/* --- Global Styles & VSCode Variables --- */
+:root {
+  --control-height: 40px;
+  --gap-size: 24px;
+  --radius: 16px;
+  --card-padding: 24px;
+  --transition-speed: 250ms;
+  --accent-color: var(--vscode-button-background, #0e639c);
+  --card-border-color: var(--vscode-panel-border, #0000002a);
+  --danger-color: #f44336;
+  --danger-color-transparent: #f4433640;
+  --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-strong: 0 10px 30px rgba(0, 0, 0, 0.12);
+  --gradient-subtle: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%);
+}
+
 body {
   background-color: var(--vscode-editor-background);
-  color: var(--vscode-editor-foreground);
+  color: var(--vscode-foreground);
   font-family: var(--vscode-font-family);
-  padding: 0 20px;
+  font-size: var(--vscode-font-size);
+  padding: 24px 32px;
+  line-height: 1.6;
 }
 
-h1,
-h2,
-p {
-  margin-left: 10px;
-  margin-right: 10px;
+/* --- Header --- */
+.header {
+  margin-bottom: 48px;
+  text-align: left;
 }
 
-/* --- Controls Column Styles --- */
+.header h1 {
+  font-size: 2.8em;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: var(--vscode-text-link-foreground);
+  letter-spacing: -0.03em;
+}
+
+.header h2 {
+  font-size: 1.5em;
+  font-weight: 500;
+  margin: 0 0 16px 0;
+  color: var(--vscode-description-foreground);
+  opacity: 0.9;
+}
+
+.header p {
+  margin: 0;
+  max-width: 80ch;
+  color: var(--vscode-description-foreground);
+  opacity: 0.8;
+  font-size: 1em;
+}
+
+/* --- Main Layout --- */
+.main-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-size);
+}
+
+.controls-column,
+.preview-column {
+  flex: 1 1 550px;
+  min-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-size);
+}
+
+/* --- Card Layout --- */
+.card {
+  background: var(--vscode-side-bar-background, var(--vscode-editor-widget-background));
+  background-image: var(--gradient-subtle);
+  border: 1px solid var(--card-border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-light);
+  transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden; /* Important for border-radius on children */
+}
+
+.card:hover {
+  box-shadow: var(--shadow-medium);
+  border-color: var(--accent-color);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  padding: 20px var(--card-padding);
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid var(--card-border-color);
+  transition: border-bottom-color var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 1.4em;
+  font-weight: 600;
+  color: var(--vscode-side-bar-title-foreground, var(--vscode-foreground));
+  letter-spacing: -0.01em;
+}
+
+.card-body {
+  padding: var(--card-padding);
+}
+
+/* --- Accent Color Section Layout Tweak --- */
+#accent-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-size);
+}
+
+#custom-accent-picker-container {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 10px 20px;
+}
+
+/* --- Danger Zone Styling --- */
+section.card.danger-zone {
+  border-color: var(--danger-color-transparent);
+}
+
+section.card.danger-zone:hover {
+  border-color: var(--danger-color);
+}
+
+/* Make the header border red as well */
+section.card.danger-zone .card-header {
+  border-bottom-color: var(--danger-color-transparent);
+}
+
+section.card.danger-zone:hover .card-header {
+  border-bottom-color: var(--danger-color);
+}
+
+/* Material 3 inspired reset button */
+section.card.danger-zone button.reset-all-button {
+  background-color: #b71c1c; /* Darker red for background */
+  color: #ffffff;
+  font-weight: 600;
+  border: none;
+  height: 48px;
+  padding: 0 32px;
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2), 0 2px 6px rgba(0,0,0,0.1);
+  transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.95em;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+section.card.danger-zone button.reset-all-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  padding-bottom: 300%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.6s, opacity 0.6s;
+  opacity: 0;
+}
+
+section.card.danger-zone button.reset-all-button:hover {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-1px);
+}
+
+section.card.danger-zone button.reset-all-button:active::before {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  transition: transform 0s, opacity 0s;
+}
+
+/* --- Form Controls & Settings Grid --- */
 #settings-container {
   display: grid;
-  /* A robust 3-column layout for the controls: Label (auto), Dropdown (flexible), Color Picker (auto) */
-  grid-template-columns: auto minmax(120px, 1fr) auto;
-  gap: 10px 15px;
+  grid-template-columns: auto repeat(2, 1fr);
+  gap: var(--gap-size);
   align-items: center;
-  margin-top: 20px;
+}
+
+label {
+  font-weight: 500;
+  color: var(--vscode-description-foreground);
+  text-transform: capitalize;
+  padding-right: var(--gap-size);
+  font-size: 1em;
 }
 
 .setting-with-reset {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
-}
-
-.color-input-wrapper {
-  display: grid;
-  grid-template-columns: 40px 1fr;
-  gap: 10px;
-  align-items: center;
-  border: 1px solid var(--vscode-input-border);
-  border-radius: 4px;
-  background-color: var(--vscode-input-background);
-  padding: 2px;
-  height: 30px;
-  box-sizing: border-box;
 }
 
 select {
   width: 100%;
-  padding: 5px;
+  height: var(--control-height);
+  padding: 0 16px;
   background-color: var(--vscode-input-background);
   color: var(--vscode-input-foreground);
   border: 1px solid var(--vscode-input-border);
-  border-radius: 4px;
+  border-radius: var(--radius);
+  outline: none;
+  transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1em;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.7rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
 }
 
-/* --- NEW: Simplified and Robust Main Layout --- */
-.main-container {
-  display: flex;
-  /* Allows columns to stack vertically on smaller screens */
-  flex-wrap: wrap;
-  gap: 30px;
-  margin-top: 20px;
+/* Specific override for the accent dropdown to ensure it's wide enough */
+#accent-container select {
+  min-width: 180px;
+  justify-self: start; /* Aligns the dropdown to the start of the grid cell */
 }
 
-.controls-column,
-.preview-column {
-  /* This prevents flex items from overflowing their container */
-  min-width: 0;
-  /* Each column will try to take up half the space, but can shrink and grow. */
-  flex: 1 1 500px;
+select:hover {
+  border-color: var(--accent-color);
+  box-shadow: var(--shadow-medium);
 }
 
-/* --- NEW: Unbreakable Preview Pane --- */
-.preview-container {
-  border: 1px solid var(--vscode-editor-widget-border, #333);
-  border-radius: 6px;
-  height: 100%;
-  min-height: 400px;
+select:focus {
+  border-color: var(--vscode-focus-border);
+  box-shadow: 0 0 0 2px var(--vscode-focus-border);
+}
+
+/* --- Color Input (Swatch + Hex) for Syntax --- */
+.color-input-wrapper {
+  display: grid;
+  grid-template-columns: var(--control-height) 1fr;
+  align-items: center;
+  border: 1px solid var(--vscode-input-border);
+  border-radius: var(--radius);
+  background-color: var(--vscode-input-background);
+  height: var(--control-height);
   box-sizing: border-box;
-  /* The container itself scrolls if the content inside is too tall */
-  overflow: auto;
+  overflow: hidden;
+  transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.color-input-wrapper:hover {
+  border-color: var(--accent-color);
+  box-shadow: var(--shadow-medium);
+}
+
+.color-input-wrapper:focus-within {
+  border-color: var(--vscode-focus-border);
+  box-shadow: 0 0 0 2px var(--vscode-focus-border);
+}
+
+.color-swatch {
+  grid-column: 1;
+  grid-row: 1;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  background-image: linear-gradient(45deg, #808080 25%, transparent 25%),
+    linear-gradient(-45deg, #808080 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #808080 75%),
+    linear-gradient(-45deg, transparent 75%, #808080 75%);
+  background-size: 12px 12px;
+  background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
+  border-right: 1px solid var(--vscode-input-border);
+}
+
+.hex-input-display {
+  grid-column: 2;
+  grid-row: 1;
+  background: none;
+  border: none;
+  color: var(--vscode-input-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: 1em;
+  padding: 0 16px;
+  outline: none;
+  pointer-events: none; /* Makes the text unclickable */
+}
+
+/* This is for the syntax color pickers that use the iro.js modal */
+input[type="color"] {
+  grid-column: 1;
+  grid-row: 1;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  opacity: 0; /* Make it invisible but still clickable */
+}
+
+/* --- NEW: Custom Accent Color Picker --- */
+#custom-accent-picker {
+  opacity: 1; /* Make the native color picker swatch visible */
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  border-right: 1px solid var(--vscode-input-border);
+  cursor: pointer;
+  background-color: transparent;
+}
+#custom-accent-picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+#custom-accent-picker::-webkit-color-swatch {
+  border: none;
+  border-radius: 0;
+}
+
+/* --- Buttons --- */
+.reset-button {
+  height: calc(var(--control-height) - 8px);
+  padding: 0 16px;
+  cursor: pointer;
+  border-radius: calc(var(--radius) - 4px);
+  background: var(--vscode-button-secondary-background);
+  color: var(--vscode-button-secondary-foreground);
+  border: 1px solid var(--vscode-input-border);
+  font-weight: 500;
+  font-size: 0.9em;
+  transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0.8;
+}
+
+.reset-button:hover {
+  background: var(--vscode-button-secondary-hover-background);
+  border-color: var(--accent-color);
+  opacity: 1;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-light);
+}
+
+.reset-button:active {
+  transform: translateY(0);
+  opacity: 1;
+  box-shadow: none;
+}
+
+/* --- Preview Pane --- */
+.preview-column .card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.preview-container {
+  flex-grow: 1;
+  background: var(--vscode-editor-background);
+  border-radius: 0 0 var(--radius) var(--radius);
+  overflow: hidden; /* Hide scrollbars */
 }
 
 .vscode-editor-mock {
-  padding: 15px;
-  line-height: var(--vscode-editor-line-height);
+  padding: var(--card-padding);
+  line-height: var(--vscode-editor-line-height, 1.5);
+  height: 100%;
+  box-sizing: border-box;
 }
 
 .vscode-editor-mock pre,
@@ -91,88 +382,13 @@ select {
   font-family: var(--vscode-editor-font-family);
   font-size: var(--vscode-editor-font-size);
   margin: 0;
-  /* THIS IS THE KEY: The code will now wrap automatically */
+  padding: 0;
   white-space: pre-wrap;
   word-break: break-all;
+  height: 100%;
 }
 
-/* --- NEW: Responsive Stacking --- */
-/* On screens narrower than 1100px, switch to a single-column layout */
-@media (max-width: 1100px) {
-  .main-container {
-    flex-direction: column;
-    gap: 40px;
-  }
-}
-
-/* (Other styles for buttons, modal, etc. remain the same) */
-#custom-accent-picker-container {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 10px 20px;
-  align-items: center;
-  margin-top: 15px;
-}
-.color-swatch {
-  width: 100%;
-  height: 24px;
-  border: 1px solid var(--vscode-input-border);
-  border-radius: 2px;
-  cursor: pointer;
-  background-image: linear-gradient(45deg, #808080 25%, transparent 25%),
-                    linear-gradient(-45deg, #808080 25%, transparent 25%),
-                    linear-gradient(45deg, transparent 75%, #808080 75%),
-                    linear-gradient(-45deg, transparent 75%, #808080 75%);
-  background-size: 12px 12px;
-  background-position: 0 0, 0 6px, 6px -6px, -6px 0;
-}
-.hex-input-display {
-  background: none;
-  border: none;
-  color: var(--vscode-input-foreground);
-  font-family: var(--vscode-font-family);
-  font-size: 1em;
-  padding: 0 5px;
-  outline: none;
-}
-label {
-  font-weight: 700;
-  text-transform: capitalize;
-}
-input[type="color"] {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 24px;
-  padding: 0;
-  border-radius: 2px;
-  overflow: hidden;
-  cursor: pointer;
-  border: none;
-}
-input[type="color"]::-webkit-color-swatch-wrapper {
-  padding: 0;
-}
-input[type="color"]::-webkit-color-swatch {
-  border: none;
-  border-radius: 2px;
-}
-.settings-section {
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid var(--vscode-editor-widget-border);
-}
-button.reset-button {
-  background: var(--vscode-button-secondaryBackground);
-  color: var(--vscode-button-secondaryForeground);
-  border: 1px solid var(--vscode-input-border);
-  border-radius: 4px;
-  padding: 5px 10px;
-  cursor: pointer;
-  justify-self: start;
-}
-button.reset-button:hover {
-  background: var(--vscode-button-secondaryHoverBackground);
-}
+/* --- Color Picker Modal --- */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -180,38 +396,102 @@ button.reset-button:hover {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  animation: fadeIn var(--transition-speed) ease-out;
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .modal-content {
   background-color: var(--vscode-editor-widget-background);
   border: 1px solid var(--vscode-editor-widget-border);
-  padding: 20px;
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  padding: 32px;
+  border-radius: calc(var(--radius) * 1.5);
+  box-shadow: var(--shadow-strong);
+  animation: slideIn var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
 .modal-hex-input {
   width: 100%;
   box-sizing: border-box;
-  margin-top: 15px;
-  padding: 5px;
+  margin-top: 20px;
+  height: var(--control-height);
+  padding: 0 16px;
   background-color: var(--vscode-input-background);
   color: var(--vscode-input-foreground);
   border: 1px solid var(--vscode-input-border);
-  border-radius: 4px;
+  border-radius: var(--radius);
   text-align: center;
+  font-family: var(--vscode-editor-font-family);
+  font-size: 1em;
+  transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
 }
-.reset-all-button {
-  width: 100%;
-  padding: 10px;
-  cursor: pointer;
-  background-color: var(--vscode-button-secondaryBackground);
-  color: var(--vscode-button-secondaryForeground);
-  border: 1px solid var(--vscode-input-border);
-  border-radius: 4px;
+
+.modal-hex-input:focus {
+  border-color: var(--vscode-focus-border);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--vscode-focus-border);
 }
-.reset-all-button:hover {
-  background: var(--vscode-button-secondaryHoverBackground);
+
+/* --- Scrollbar Styling --- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--vscode-scrollbar-slider-background);
+  border-radius: 10px;
+  border: 2px solid var(--vscode-editor-background);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--vscode-scrollbar-slider-hover-background);
+}
+
+/* --- Responsive improvements --- */
+@media (max-width: 768px) {
+  body {
+    padding: 16px 20px;
+  }
+
+  .header h1 {
+    font-size: 2.4em;
+  }
+
+  .header h2 {
+    font-size: 1.3em;
+  }
+
+  .card-body,
+  .card-header {
+    padding: 20px;
+  }
+
+  .modal-content {
+    margin: 20px;
+    padding: 24px;
+  }
 }
