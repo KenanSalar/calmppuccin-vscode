@@ -875,14 +875,12 @@
         "meta.function-call.generic.python",
         "meta.method-call.groovy meta.method.groovy",
         "meta.class.body.groovy meta.method.body.java storage.type.groovy",
-        "punctuation.definition.decorator",
         "support.function.any-method",
         "text.tex support.function",
         "text.tex punctuation.definition.function",
         "entity.name.section.fsharp entity.name.section.fsharp",
         "support.variable.class.function",
         "keyword.control.cucumber.table",
-        "punctuation.decorator",
         "source.tf support.class",
         "support.function",
         "support.function.construct.",
@@ -1073,8 +1071,6 @@
         "support.type.builtin",
         "support.type.primitive",
         "support.type.sys-types",
-        "tag.decorator.js entity.name.tag.js",
-        "tag.decorator.js punctuation.definition.tag.js",
         "text.pug meta.tag.other",
         "text.pug storage.type",
         "variable.language",
@@ -1631,10 +1627,17 @@
     },
     {
       "name": "Decorators",
-      "scope": ["tag.decorator.js entity.name.tag.js", "tag.decorator.js punctuation.definition.tag.js"],
+      "scope": [
+        "tag.decorator.js entity.name.tag.js",
+        "tag.decorator.js punctuation.definition.tag.js",
+        "punctuation.decorator",
+        "entity.name.function.decorator",
+        "punctuation.definition.decorator",
+        "meta.function.decorator"
+      ],
       "settings": {
-        "fontStyle": "italic",
-        "foreground": "{{decorator}}"
+        "foreground": "{{decorator}}",
+        "fontStyle": "{{decoratorFontStyle}}"
       }
     },
     {
@@ -2016,6 +2019,14 @@
     "annotation": {
       "foreground": "{{annotation}}",
       "fontStyle": "{{annotationFontStyle}}"
+    },
+    "decorator": {
+      "foreground": "{{decorator}}",
+      "fontStyle": "{{decoratorFontStyle}}"
+    },
+    "function.decorator": {
+      "foreground": "{{decorator}}",
+      "fontStyle": "{{decoratorFontStyle}}"
     },
     "class": {
       "foreground": "{{class}}",
