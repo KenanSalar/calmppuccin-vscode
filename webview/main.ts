@@ -1,4 +1,5 @@
 import iro from "@jaames/iro";
+import { codeSnippets } from "./snippets";
 
 // Define an interface for the VS Code API object to get TypeScript support.
 interface VsCodeApi {
@@ -22,7 +23,9 @@ function initialize() {
 
   // Get references for the preview pane
   const previewPane = document.getElementById("preview-pane");
+  const codePreview = document.getElementById("code-preview");
   const resetAllContainer = document.getElementById("reset-all-container");
+  const languageSelect = document.getElementById("language-select") as HTMLSelectElement;
 
   // If any essential element isn't found, exit early to prevent errors.
   if (
@@ -35,7 +38,9 @@ function initialize() {
     !customAccentPicker ||
     !customAccentHexInput ||
     !previewPane ||
-    !resetAllContainer
+    !resetAllContainer ||
+    !codePreview ||
+    !languageSelect
   )
     return;
 
@@ -72,7 +77,8 @@ function initialize() {
    */
   function updatePreviewPane() {
     for (const tokenKey in previewState) {
-      const elements = previewPane!.querySelectorAll(`[data-token="${tokenKey}"]`);
+      // Query against the `codePreview` element which contains the spans.
+      const elements = codePreview!.querySelectorAll(`[data-token="${tokenKey}"]`);
       elements.forEach((el) => {
         const element = el as HTMLElement;
         const tokenStyle = previewState[tokenKey];
@@ -124,6 +130,24 @@ function initialize() {
     };
   };
 
+  // Populate the language dropdown
+  for (const lang in codeSnippets) {
+    const option = document.createElement("option");
+    option.value = lang;
+    option.textContent = lang.charAt(0).toUpperCase() + lang.slice(1);
+    languageSelect.appendChild(option);
+  }
+
+  // Set the initial code snippet (C#)
+  codePreview.innerHTML = codeSnippets.csharp;
+
+  // Add event listener to handle language change
+  languageSelect.addEventListener("change", (e) => {
+    const selectedLanguage = (e.target as HTMLSelectElement).value;
+    codePreview.innerHTML = codeSnippets[selectedLanguage];
+    updatePreviewPane();
+  });
+
   window.addEventListener("message", (event) => {
     const message = event.data;
     if (message.command === "loadSettings") {
@@ -135,7 +159,7 @@ function initialize() {
         customAccentColor,
         defaultFontStyles,
         activeThemeBackgroundColor,
-        accentColorPalettes, // Get the accent color map
+        accentColorPalettes,
       } = message.settings;
 
       // Store the accent color map
@@ -188,18 +212,18 @@ function initialize() {
       customAccentPicker.value = customAccentColor;
       customAccentHexInput.value = customAccentColor;
       customAccentHexInput.maxLength = 7;
-      handleAccentChange(currentAccent); // Set initial state
+      handleAccentChange(currentAccent);
       customAccentPicker.addEventListener("input", (e) => {
         const newValue = (e.target as HTMLInputElement).value;
         customAccentHexInput.value = newValue;
-        updateAccentColor(newValue); // Live update
+        updateAccentColor(newValue);
         vscode.postMessage({ command: "updateCustomAccent", value: newValue });
       });
       customAccentHexInput.addEventListener("input", (e) => {
         const newValue = (e.target as HTMLInputElement).value;
         if (hex6Regex.test(newValue)) {
           customAccentPicker.value = newValue;
-          updateAccentColor(newValue); // Live update
+          updateAccentColor(newValue);
           vscode.postMessage({ command: "updateCustomAccent", value: newValue });
         }
       });
@@ -229,7 +253,6 @@ function initialize() {
         });
         select.addEventListener("change", (e) => {
           const newValue = (e.target as HTMLSelectElement).value;
-          // 1. Update state, 2. Update preview, 3. Save setting
           previewState[key].fontStyle = newValue;
           updatePreviewPane();
           vscode.postMessage({ command: "updateSetting", key: fontStyleKey, value: newValue });
@@ -240,7 +263,6 @@ function initialize() {
         fontResetButton.className = "reset-button";
         fontResetButton.addEventListener("click", () => {
           select.value = defaultFontStyle;
-          // 1. Update state, 2. Update preview, 3. Save setting
           previewState[key].fontStyle = defaultFontStyle;
           updatePreviewPane();
           vscode.postMessage({ command: "resetFontStyle", key: fontStyleKey });
@@ -262,7 +284,6 @@ function initialize() {
           openColorPicker(hexInput.value, hexInput, (newColor) => {
             const finalColor = newColor.hex8String;
             colorSwatch.style.backgroundColor = finalColor;
-            // 1. Update state, 2. Update preview, 3. Save setting
             previewState[key].color = finalColor;
             updatePreviewPane();
             vscode.postMessage({ command: "updateSyntaxColor", flavor: activeFlavor, key, value: finalColor });
@@ -275,7 +296,6 @@ function initialize() {
         colorResetButton.addEventListener("click", () => {
           colorSwatch.style.backgroundColor = defaultColor;
           hexInput.value = defaultColor;
-          // 1. Update state, 2. Update preview, 3. Save setting
           previewState[key].color = defaultColor;
           updatePreviewPane();
           vscode.postMessage({ command: "resetSyntaxColor", flavor: activeFlavor, key });
