@@ -79,7 +79,7 @@ body {
   border-radius: var(--radius);
   box-shadow: var(--shadow-light);
   transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden; /* Important for border-radius on children */
+  overflow: hidden;
 }
 
 .card:hover {
@@ -92,6 +92,9 @@ body {
   background: rgba(255,255,255,0.02);
   border-bottom: 1px solid var(--dynamic-accent-color);
   transition: border-bottom-color var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .card-header h3 {
@@ -120,7 +123,7 @@ body {
   gap: 10px 20px;
 }
 
-/* --- Danger Zone Styling (This remains unchanged and will override the accent color) --- */
+/* --- Danger Zone Styling --- */
 section.card.danger-zone {
   border-color: var(--danger-color-transparent);
 }
@@ -138,7 +141,7 @@ section.card.danger-zone:hover .card-header {
 }
 
 section.card.danger-zone button.reset-all-button {
-  background-color: #b71c1c; /* Darker red for background */
+  background-color: #b71c1c;
   color: #ffffff;
   font-weight: 600;
   border: none;
@@ -355,6 +358,21 @@ input[type="color"] {
   display: flex;
   flex-direction: column;
   height: 100%;
+}
+
+#language-select {
+  height: calc(var(--control-height) - 10px);
+  padding: 0 30px 0 12px;
+  min-width: 120px;
+  background-color: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: calc(var(--radius) - 4px);
+  color: var(--vscode-input-foreground);
+  font-weight: 500;
+}
+
+#language-select:hover {
+  border-color: var(--dynamic-accent-color);
 }
 
 .preview-container {
