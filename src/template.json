@@ -1372,16 +1372,16 @@
         "fontStyle": "{{operatorFontStyle}}"
       }
     },
-    {
-      "name": "operator",
-      "scope": [
-        "entity.name.function.member.overload"
-      ],
-      "settings": {
-        "foreground": "{{operatorOverload}}",
-        "fontStyle": "{{operatorOverloadFontStyle}}"
-      }
-    },
+        {
+          "name": "operator overload",
+          "scope": [
+            "entity.name.function.member.overload"
+          ],
+          "settings": {
+            "foreground": "{{operatorOverload}}",
+            "fontStyle": "{{operatorOverloadFontStyle}}"
+          }
+        },
     {
       "name": "punctuation",
       "scope": [
@@ -2121,7 +2121,7 @@
       "foreground": "{{operator}}",
       "fontStyle": "{{operatorFontStyle}}"
     },
-    "operatorOverload": {
+    "operator.overridden": {
       "foreground": "{{operatorOverload}}",
       "fontStyle": "{{operatorOverloadFontStyle}}"
     },
