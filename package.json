@@ -149,6 +149,7 @@
             "namespaceAttributeFontStyle": "italic",
             "moduleFontStyle": "none",
             "annotationFontStyle": "italic",
+            "decoratorFontStyle": "italic",
             "classFontStyle": "none",
             "interfaceFontStyle": "none",
             "structFontStyle": "none",
@@ -250,6 +251,18 @@
               "type": "string",
               "default": "italic",
               "description": "Set the font style for annotations.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "decoratorFontStyle": {
+              "type": "string",
+              "default": "italic",
+              "description": "Set the font style for decorators.",
               "enum": [
                 "none",
                 "italic",
@@ -575,6 +588,11 @@
                   "description": "Overrides the color for modules."
                 },
                 "annotation": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for annotations."
+                },
+                "decorator": {
                   "type": "string",
                   "format": "color-hex",
                   "description": "Overrides the color for annotations."
