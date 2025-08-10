@@ -134,7 +134,7 @@ function initialize() {
   for (const lang in codeSnippets) {
     const option = document.createElement("option");
     option.value = lang;
-    option.textContent = lang.charAt(0).toUpperCase() + lang.slice(1);
+    option.textContent = lang;
     languageSelect.appendChild(option);
   }
 
