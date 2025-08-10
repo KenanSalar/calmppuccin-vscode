@@ -6,6 +6,12 @@ export type CodeSnippets = {
 // Central storage for all code snippets.
 // This keeps the HTML markup separate from the main application logic.
 export const codeSnippets: CodeSnippets = {
+  c: `
+
+`,
+  "c++": `
+
+`,
   csharp: `
 <span data-token="keyword">namespace</span> <span data-token="namespace">MyApp<span data-token="operator">.</span>Core</span><span data-token="punctuation">;</span>
 <span data-token="keyword">using</span> <span data-token="class">Module</span> <span data-token="operator">=</span> <span data-token="namespace">System</span><span data-token="operator">.</span><span data-token="class">Console</span><span data-token="punctuation">;</span>
@@ -81,6 +87,27 @@ export const codeSnippets: CodeSnippets = {
         <span data-token="operator">=></span> <span data-token="string">"System.Object"</span><span data-token="punctuation">;</span>
 <span data-token="punctuation">}</span>
 `,
+  css: `
+
+`,
+  go: `
+
+`,
+  html: `
+
+`,
+  java: `
+
+`,
+  javascript: `
+
+`,
+  kotlin: `
+
+`,
+  php: `
+
+`,
   python: `
 <span data-token="keyword">from</span> <span data-token="namespace">enum</span> <span data-token="keyword">import</span> <span data-token="enum">Enum</span>
 <span data-token="keyword">from</span> <span data-token="namespace">dataclasses</span> <span data-token="keyword">import</span> <span data-token="functionAndMethod">dataclass</span>
@@ -133,5 +160,17 @@ export const codeSnippets: CodeSnippets = {
 
 <span data-token="constant">PI</span> <span data-token="operator">=</span> <span data-token="number">3.14159</span>
 <span data-token="functionAndMethod">print</span><span data-token="punctuation">(</span><span data-token="string">f"Result: X=</span><span data-token="punctuation">{</span><span data-token="variable">result</span><span data-token="operator">.</span><span data-token="property">x</span><span data-token="punctuation">}</span><span data-token="string">, Y=</span><span data-token="punctuation">{</span><span data-token="variable">result</span><span data-token="operator">.</span><span data-token="property">y</span><span data-token="punctuation">}</span><span data-token="string">"</span><span data-token="punctuation">)</span>
+`,
+  rust: `
+
+`,
+  sql: `
+
+`,
+  swift: `
+
+`,
+  typescript: `
+
 `,
 };
