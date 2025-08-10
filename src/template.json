@@ -886,7 +886,8 @@
         "support.function.construct.",
         "meta.group.simple.subexpression.powershell",
         "keyword.other.special-method",
-        "entity.name.command.shell"
+        "entity.name.command.shell",
+        "support.function.magic"
       ],
       "settings": {
         "foreground": "{{functionAndMethod}}",
@@ -1361,23 +1362,23 @@
         "punctuation.definition.colon",
         "punctuation.separator.scope-resolution",
         "keyword.operator.ternary",
-        "entity.name.function.member.overload"
+        "punctuation.separator.period"
       ],
       "settings": {
         "foreground": "{{operator}}",
         "fontStyle": "{{operatorFontStyle}}"
       }
     },
-        {
-          "name": "operator overload",
-          "scope": [
-            "entity.name.function.member.overload"
-          ],
-          "settings": {
-            "foreground": "{{operatorOverload}}",
-            "fontStyle": "{{operatorOverloadFontStyle}}"
-          }
-        },
+    {
+      "name": "operator overload",
+      "scope": [
+        "entity.name.function.member.overload"
+      ],
+      "settings": {
+        "foreground": "{{operatorOverload}}",
+        "fontStyle": "{{operatorOverloadFontStyle}}"
+      }
+    },
     {
       "name": "punctuation",
       "scope": [
@@ -1558,7 +1559,7 @@
         "meta.attribute.id entity.other.attribute-name",
         "entity.other.attribute",
         "punctuation.definition.attribute",
-        "meta.attribute.rust"
+        "meta.attribute"
       ],
       "settings": {
         "foreground": "{{fieldAndAttribute}}",
@@ -2004,6 +2005,10 @@
       "foreground": "{{keyword}}",
       "fontStyle": "{{keywordFontStyle}}"
     },
+    "class.typeHint": {
+      "foreground": "{{keyword}}",
+      "fontStyle": "{{keywordFontStyle}}"
+    },
     "namespace": {
       "foreground": "{{namespace}}",
       "fontStyle": "{{namespaceFontStyle}}"
@@ -2025,6 +2030,10 @@
       "fontStyle": "{{decoratorFontStyle}}"
     },
     "function.decorator": {
+      "foreground": "{{decorator}}",
+      "fontStyle": "{{decoratorFontStyle}}"
+    },
+    "class.decorator": {
       "foreground": "{{decorator}}",
       "fontStyle": "{{decoratorFontStyle}}"
     },
@@ -2089,6 +2098,10 @@
       "fontStyle": "{{propertyFontStyle}}"
     },
     "function": {
+      "foreground": "{{functionAndMethod}}",
+      "fontStyle": "{{functionAndMethodFontStyle}}"
+    },
+    "magicFunction": {
       "foreground": "{{functionAndMethod}}",
       "fontStyle": "{{functionAndMethodFontStyle}}"
     },
