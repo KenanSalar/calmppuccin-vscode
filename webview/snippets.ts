@@ -7,10 +7,8 @@ export type CodeSnippets = {
 // This keeps the HTML markup separate from the main application logic.
 export const codeSnippets: CodeSnippets = {
   c: `
-<span data-token="comment">// Header guard to prevent multiple inclusions</span>
-<span data-token="keyword">#ifndef</span> <span data-token="constant">MY_APP_H</span>
-<span data-token="keyword">#define</span> <span data-token="constant">MY_APP_H</span>
-
+<span data-token="comment">// The syntax in c is hard to customizy/colorize in vscode</span>
+<span data-token="comment">// So the syntax will be less distinguishable</span>
 <span data-token="keyword">#include</span> <span data-token="string">&lt;stdio.h&gt;</span>
 <span data-token="keyword">#include</span> <span data-token="string">&lt;stdlib.h&gt;</span>
 
@@ -66,8 +64,6 @@ export const codeSnippets: CodeSnippets = {
 
     <span data-token="keyword">return</span> <span data-token="number">0</span><span data-token="punctuation">;</span>
 <span data-token="punctuation">}</span>
-
-<span data-token="keyword">#endif</span> <span data-token="comment">// MY_APP_H</span>
 `,
   "c++": `
 
