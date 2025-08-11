@@ -137,7 +137,9 @@ function initialize() {
     option.textContent = lang;
     languageSelect.appendChild(option);
   }
-
+  
+  // Set the dropdown's selected value to match the initial snippet
+  languageSelect.value = "csharp";
   // Set the initial code snippet (C#)
   codePreview.innerHTML = codeSnippets.csharp;
 
