@@ -171,6 +171,7 @@ export default {
   uiWidgetShadow: "#cfd1d480",
   // Syntax colors
   keyword: "#7941C2",
+  type: "#7941C2",
   namespace: "#398f82",
   namespaceAttribute: "#398f82",
   annotation: "#398f82",

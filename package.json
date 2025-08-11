@@ -145,6 +145,7 @@
             "commentFontStyle": "italic",
             "variableFontStyle": "none",
             "keywordFontStyle": "none",
+            "typeFontStyle": "italic",
             "namespaceFontStyle": "none",
             "namespaceAttributeFontStyle": "italic",
             "moduleFontStyle": "none",
@@ -203,6 +204,18 @@
               "type": "string",
               "default": "none",
               "description": "Set the font style for keywords.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "typeFontStyle": {
+              "type": "string",
+              "default": "italic",
+              "description": "Set the font style for types.",
               "enum": [
                 "none",
                 "italic",
@@ -571,6 +584,11 @@
                   "type": "string",
                   "format": "color-hex",
                   "description": "Overrides the color for keywords."
+                },
+                "type": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for types."
                 },
                 "namespace": {
                   "type": "string",

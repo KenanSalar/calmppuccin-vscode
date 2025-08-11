@@ -12,6 +12,7 @@ const customizableSyntaxKeys = [
   "comment",
   "variable",
   "keyword",
+  "type",
   "namespace",
   "namespaceAttribute",
   "module",

@@ -703,7 +703,6 @@
         "source.swift",
         "source.tf meta.template.expression",
         "source.toml keyword",
-        "string constant.other.placeholder",
         "string.quoted.double.class.other",
         "string.quoted.double.kotlin entity.string.template.element.kotlin",
         "string.quoted.interpolated.vala constant.character.escape.vala",
@@ -726,7 +725,13 @@
     },
     {
       "name": "parameter",
-      "scope": ["entity.name.variable.parameter", "variable.parameter", "variable.import.parameter"],
+      "scope": [
+        "meta.parens.block.c",
+        "meta.parens.c",
+        "entity.name.variable.parameter", 
+        "variable.parameter", 
+        "variable.import.parameter"
+      ],
       "settings": {
         "foreground": "{{parameter}}",
         "fontStyle": "{{parameterFontStyle}}"
@@ -760,6 +765,7 @@
         "source.cs entity.other.attribute-name",
         "constant.character.format.placeholder",
         "constant.other.placeholder",
+        "string constant.other.placeholder",
         "source.vue entity.other.attribute-name",
         "entity.other.attribute-name.mjml",
         "source.vue meta.directive punctuation.separator.key-value",
@@ -864,6 +870,8 @@
     {
       "name": "function, method",
       "scope": [
+        "meta.function-call.generic.python",
+        "meta.function-call",
         "variable.function",
         "support.type.property-name",
         "support.type.vendored.property-name",
@@ -872,7 +880,6 @@
         "markup.link",
         "support.type.vendored",
         "support.other.variable",
-        "meta.function-call.generic.python",
         "meta.method-call.groovy meta.method.groovy",
         "meta.class.body.groovy meta.method.body.java storage.type.groovy",
         "support.function.any-method",
@@ -988,23 +995,6 @@
         "keyword.other.using",
         "keyword.other.var",
         "keyword.package",
-        "keyword.type",
-        "keyword.type.bool",
-        "keyword.type.boolean",
-        "keyword.type.byte",
-        "keyword.type.char",
-        "keyword.type.char",
-        "keyword.type.character",
-        "keyword.type.decimal",
-        "keyword.type.double",
-        "keyword.type.float",
-        "keyword.type.int",
-        "keyword.type.long",
-        "keyword.type.object",
-        "keyword.type.primitive",
-        "keyword.type.short",
-        "keyword.type.string",
-        "keyword.type.void",
         "keyword.control.as",
         "keyword.control.as.ts",
         "markup.heading",
@@ -1022,7 +1012,6 @@
         "punctuation.separator.method",
         "punctuation.separator.namespace",
         "punctuation.separator.other.ruby",
-        "punctuation.separator.pointer-access",
         "punctuation.separator.slice",
         "sharing.modifier",
         "source.apex storage.type",
@@ -1049,7 +1038,6 @@
         "storage.type.accessor",
         "storage.type.accessor.get",
         "storage.type.accessor.set",
-        "storage.type.built-in",
         "storage.type.class",
         "storage.type.core.rust",
         "storage.type.enum",
@@ -1062,7 +1050,6 @@
         "storage.type.namespace.package",
         "storage.type.numeric",
         "storage.type.package",
-        "storage.type.primitive",
         "storage.type.struct",
         "storage.type.type",
         "storage.type.user-defined",
@@ -1070,7 +1057,6 @@
         "support.other.namespace.use",
         "support.type",
         "support.type.builtin",
-        "support.type.primitive",
         "support.type.sys-types",
         "text.pug meta.tag.other",
         "text.pug storage.type",
@@ -1104,11 +1090,39 @@
       }
     },
     {
+      "name": "type",
+      "scope": [
+        "keyword.type",
+        "keyword.type.bool",
+        "keyword.type.boolean",
+        "keyword.type.byte",
+        "keyword.type.char",
+        "keyword.type.character",
+        "keyword.type.decimal",
+        "keyword.type.double",
+        "keyword.type.float",
+        "keyword.type.int",
+        "keyword.type.long",
+        "keyword.type.object",
+        "keyword.type.primitive",
+        "keyword.type.short",
+        "keyword.type.string",
+        "keyword.type.void",
+        "storage.type.built-in.primitive",
+        "storage.type.primitive",
+        "support.type.primitive"
+      ],
+      "settings": {
+        "foreground": "{{type}}",
+        "fontStyle": "{{typeFontStyle}}"
+      }
+    },
+    {
       "name": "type parameter",
       "scope": ["entity.name.type.type-parameter", "variable.type.type-parameter", "meta.type.parameters entity.name.type"],
       "settings": {
         "foreground": "{{typeParameter}}",
-        "fontStyle": ""
+        "fontStyle": "{{typeParameterFontStyle}}"
       }
     },
     {
@@ -1116,7 +1130,7 @@
       "scope": ["variable.other.event"],
       "settings": {
         "foreground": "{{event}}",
-        "fontStyle": ""
+        "fontStyle": "{{eventFontStyle}}"
       }
     },
     {
@@ -1227,7 +1241,7 @@
       ],
       "settings": {
         "foreground": "{{string}}",
-        "fontStyle": ""
+        "fontStyle": "{{stringFontStyle}}"
       }
     },
     {
@@ -1362,7 +1376,8 @@
         "punctuation.definition.colon",
         "punctuation.separator.scope-resolution",
         "keyword.operator.ternary",
-        "punctuation.separator.period"
+        "punctuation.separator.period",
+        "punctuation.separator.pointer-access"
       ],
       "settings": {
         "foreground": "{{operator}}",
@@ -1410,12 +1425,15 @@
         "constant.other.symbol.hashkey.ruby",
         "constant.other.symbol.hashkey.ruby punctuation.definition.constant.ruby",
         "entity.name.type.annotation.kotlin",
+        "entity.other.attribute-name.pragma.preprocessor",
         "punctuation.definition.typeparameters",
         "comment.block.documentation.phpdoc.php keyword.other.type.php",
         "punctuation.definition.storage.type.objc",
         "punctuation.definition.directive",
         "punctuation.section.embedded",
         "punctuation.separator.inheritance",
+        "punctuation.separator.annotation",
+        "punctuation.separator.annotation.result",
         "markup punctuation.definition",
         "comment.block.documentation entity.name.type",
         "source.groovy storage.type",
@@ -1985,10 +2003,6 @@
       "foreground": "{{keyword}}",
       "fontStyle": "{{keywordFontStyle}}"
     },
-    "type": {
-      "foreground": "{{keyword}}",
-      "fontStyle": "{{keywordFontStyle}}"
-    },
     "controlKeyword": {
       "foreground": "{{keyword}}",
       "fontStyle": "{{keywordFontStyle}}"
@@ -2005,9 +2019,13 @@
       "foreground": "{{keyword}}",
       "fontStyle": "{{keywordFontStyle}}"
     },
+    "type": {
+      "foreground": "{{type}}",
+      "fontStyle": "{{typeFontStyle}}"
+    },
     "class.typeHint": {
-      "foreground": "{{keyword}}",
-      "fontStyle": "{{keywordFontStyle}}"
+      "foreground": "{{type}}",
+      "fontStyle": "{{typeFontStyle}}"
     },
     "namespace": {
       "foreground": "{{namespace}}",
