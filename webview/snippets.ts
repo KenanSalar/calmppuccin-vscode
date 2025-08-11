@@ -7,7 +7,67 @@ export type CodeSnippets = {
 // This keeps the HTML markup separate from the main application logic.
 export const codeSnippets: CodeSnippets = {
   c: `
+<span data-token="comment">// Header guard to prevent multiple inclusions</span>
+<span data-token="keyword">#ifndef</span> <span data-token="constant">MY_APP_H</span>
+<span data-token="keyword">#define</span> <span data-token="constant">MY_APP_H</span>
 
+<span data-token="keyword">#include</span> <span data-token="string">&lt;stdio.h&gt;</span>
+<span data-token="keyword">#include</span> <span data-token="string">&lt;stdlib.h&gt;</span>
+
+<span data-token="comment">// A preprocessor directive, can be seen as a form of "annotation"</span>
+<span data-token="keyword">#pragma</span> <span data-token="annotation">once</span>
+
+<span data-token="comment">// Enum for status codes</span>
+<span data-token="keyword">typedef</span> <span data-token="keyword">enum</span> <span data-token="punctuation">{</span>
+    <span data-token="enumMember">PENDING</span><span data-token="punctuation">,</span>
+    <span data-token="enumMember">COMPLETED</span>
+<span data-token="punctuation">}</span> <span data-token="enum">Status</span><span data-token="punctuation">;</span>
+
+<span data-token="comment">// Using a function pointer to simulate a delegate</span>
+<span data-token="keyword">typedef</span> <span data-token="keyword">void</span> <span data-token="punctuation">(</span><span data-token="operator">*</span><span data-token="delegate">UpdateHandler</span><span data-token="punctuation">)</span><span data-token="punctuation">(</span><span data-token="keyword">const</span> <span data-token="keyword">char</span><span data-token="operator">*</span> <span data-token="parameter">message</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+
+<span data-token="comment">// Struct for a Point (replaces C#'s record struct)</span>
+<span data-token="keyword">typedef</span> <span data-token="keyword">struct</span> <span data-token="punctuation">{</span>
+    <span data-token="keyword">int</span> <span data-token="fieldAndAttribute">x</span><span data-token="punctuation">;</span>
+    <span data-token="keyword">int</span> <span data-token="fieldAndAttribute">y</span><span data-token="punctuation">;</span>
+<span data-token="punctuation">}</span> <span data-token="struct">Point</span><span data-token="punctuation">;</span>
+
+<span data-token="comment">// A struct to hold "interface" functions (vtable)</span>
+<span data-token="keyword">typedef</span> <span data-token="keyword">struct</span> <span data-token="punctuation">{</span>
+    <span data-token="keyword">void</span> <span data-token="punctuation">(</span><span data-token="operator">*</span><span data-token="property">process</span><span data-token="punctuation">)</span><span data-token="punctuation">(</span><span data-token="keyword">void</span><span data-token="operator">*</span> <span data-token="parameter">self</span><span data-token="punctuation">,</span> <span data-token="keyword">int</span> <span data-token="parameter">data</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+<span data-token="punctuation">}</span> <span data-token="interface">IProcessable</span><span data-token="punctuation">;</span>
+
+<span data-token="comment">// A struct representing a data service</span>
+<span data-token="keyword">typedef</span> <span data-token="keyword">struct</span> <span data-token="punctuation">{</span>
+    <span data-token="keyword">const</span> <span data-token="keyword">char</span><span data-token="operator">*</span> <span data-token="propertyReadOnly">name</span><span data-token="punctuation">;</span> <span data-token="comment">// Read-only property</span>
+    <span data-token="delegate">UpdateHandler</span> <span data-token="event">on_update</span><span data-token="punctuation">;</span> <span data-token="comment">// Simulating an event</span>
+<span data-token="punctuation">}</span> <span data-token="class">DataService</span><span data-token="punctuation">;</span>
+
+<span data-token="comment">// A regular function to add two points (no operator overloading)</span>
+<span data-token="struct">Point</span> <span data-token="functionAndMethod">add_points</span><span data-token="punctuation">(</span><span data-token="struct">Point</span> <span data-token="parameter">a</span><span data-token="punctuation">,</span> <span data-token="struct">Point</span> <span data-token="parameter">b</span><span data-token="punctuation">)</span> <span data-token="punctuation">{</span>
+    <span data-token="struct">Point</span> <span data-token="variable">result</span> <span data-token="operator">=</span> <span data-token="punctuation">{</span> <span data-token="parameter">a</span><span data-token="punctuation">.</span><span data-token="fieldAndAttribute">x</span> <span data-token="operator">+</span> <span data-token="parameter">b</span><span data-token="punctuation">.</span><span data-token="fieldAndAttribute">x</span><span data-token="punctuation">,</span> <span data-token="parameter">a</span><span data-token="punctuation">.</span><span data-token="fieldAndAttribute">y</span> <span data-token="operator">+</span> <span data-token="parameter">b</span><span data-token="punctuation">.</span><span data-token="fieldAndAttribute">y</span> <span data-token="punctuation">}</span><span data-token="punctuation">;</span>
+    <span data-token="keyword">return</span> <span data-token="variable">result</span><span data-token="punctuation">;</span>
+<span data-token="punctuation">}</span>
+
+<span data-token="comment">// Main entry point</span>
+<span data-token="keyword">int</span> <span data-token="functionAndMethod">main</span><span data-token="punctuation">(</span><span data-token="keyword">void</span><span data-token="punctuation">)</span> <span data-token="punctuation">{</span>
+    <span data-token="constant">PI</span> <span data-token="operator">=</span> <span data-token="number">3.14</span><span data-token="punctuation">;</span>
+    <span data-token="struct">Point</span> <span data-token="variable">p1</span> <span data-token="operator">=</span> <span data-token="punctuation">{</span> <span data-token="number">10</span><span data-token="punctuation">,</span> <span data-token="number">20</span> <span data-token="punctuation">}</span><span data-token="punctuation">;</span>
+    <span data-token="struct">Point</span><span data-token="operator">*</span> <span data-token="variable">p2_ptr</span> <span data-token="operator">=</span> <span data-token="punctuation">(</span><span data-token="struct">Point</span><span data-token="operator">*</span><span data-token="punctuation">)</span><span data-token="functionAndMethod">malloc</span><span data-token="punctuation">(</span><span data-token="keyword">sizeof</span><span data-token="punctuation">(</span><span data-token="struct">Point</span><span data-token="punctuation">)</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+    <span data-token="variable">p2_ptr</span><span data-token="operator">-></span><span data-token="fieldAndAttribute">x</span> <span data-token="operator">=</span> <span data-token="number">5</span><span data-token="punctuation">;</span>
+    <span data-token="variable">p2_ptr</span><span data-token="operator">-></span><span data-token="fieldAndAttribute">y</span> <span data-token="operator">=</span> <span data-token="number">8</span><span data-token="punctuation">;</span>
+
+    <span data-token="struct">Point</span> <span data-token="variable">result</span> <span data-token="operator">=</span> <span data-token="functionAndMethod">add_points</span><span data-token="punctuation">(</span><span data-token="variable">p1</span><span data-token="punctuation">,</span> <span data-token="operator">*</span><span data-token="variable">p2_ptr</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+
+    <span data-token="comment">// String literal with format specifiers</span>
+    <span data-token="functionAndMethod">printf</span><span data-token="punctuation">(</span><span data-token="string">"Result: X=%d, Y=%d</span><span data-token="stringVerbatim">\\n</span><span data-token="string">"</span><span data-token="punctuation">,</span> <span data-token="variable">result</span><span data-token="punctuation">.</span><span data-token="fieldAndAttribute">x</span><span data-token="punctuation">,</span> <span data-token="variable">result</span><span data-token="punctuation">.</span><span data-token="fieldAndAttribute">y</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+    <span data-token="functionAndMethod">free</span><span data-token="punctuation">(</span><span data-token="variable">p2_ptr</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+    <span data-token="text">This is some plain text</span><span data-token="punctuation">.</span>
+
+    <span data-token="keyword">return</span> <span data-token="number">0</span><span data-token="punctuation">;</span>
+<span data-token="punctuation">}</span>
+
+<span data-token="keyword">#endif</span> <span data-token="comment">// MY_APP_H</span>
 `,
   "c++": `
 
@@ -50,7 +110,7 @@ export const codeSnippets: CodeSnippets = {
 <span data-token="comment">// Using primary constructors for dependency injection</span>
 <span data-token="keyword">public</span> <span data-token="keyword">class</span> <span data-token="class">DataService</span><span data-token="punctuation">&lt;</span><span data-token="typeParameter">T</span><span data-token="punctuation">&gt;</span><span data-token="punctuation">(</span><span data-token="interface">ILogger</span> <span data-token="parameter">logger</span><span data-token="punctuation">)</span> <span data-token="keyword">where</span> <span data-token="typeParameter">T</span> <span data-token="punctuation">:</span> <span data-token="keyword">struct</span>
 <span data-token="punctuation">{</span>
-    <span data-token="keyword">private readonly</span> <span data-token="struct">Guid</span> <span data-token="fieldAndAttribute">_id</span> <span data-token="operator">=</span> <span data-token="struct">Guid<span data-token="punctuation">.</span><span data-token="functionAndMethod">NewGuid</span><span data-token="punctuation">(</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
+    <span data-token="keyword">private readonly</span> <span data-token="struct">Guid</span> <span data-token="fieldAndAttribute">_id</span> <span data-token="operator">=</span> <span data-token="struct">Guid</span><span data-token="operator">.</span><span data-token="functionAndMethod">NewGuid</span><span data-token="punctuation">(</span><span data-token="punctuation">)</span><span data-token="punctuation">;</span>
     <span data-token="keyword">public</span> <span data-token="keyword">required</span> <span data-token="keyword">string</span> <span data-token="property">Name</span> <span data-token="punctuation">{</span> <span data-token="keyword">get</span><span data-token="punctuation">;</span> <span data-token="keyword">init</span><span data-token="punctuation">;</span> <span data-token="punctuation">}</span>
 
     <span data-token="keyword">public</span> <span data-token="keyword">void</span> <span data-token="functionAndMethod">Process</span><span data-token="punctuation">(</span><span data-token="typeParameter">T</span><span data-token="operator">?</span> <span data-token="parameter">data</span><span data-token="punctuation">)</span>
