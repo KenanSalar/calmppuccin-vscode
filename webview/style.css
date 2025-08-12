@@ -65,7 +65,7 @@ body {
 .controls-column,
 .preview-column {
   flex: 1 1 550px;
-  min-width: 360px;
+  min-width: 590px;
   display: flex;
   flex-direction: column;
   gap: var(--gap-size);
@@ -186,8 +186,9 @@ section.card.danger-zone button.reset-all-button:active::before {
 /* --- Form Controls & Settings Grid --- */
 #settings-container {
   display: grid;
-  grid-template-columns: auto repeat(2, 1fr);
-  gap: var(--gap-size);
+  /* This is the key change for responsive behavior */
+  grid-template-columns: auto minmax(180px, auto) minmax(240px, auto);
+  gap: 12px 18px;
   align-items: center;
 }
 
@@ -208,6 +209,7 @@ label {
 
 select {
   width: 100%;
+  min-width: 120px;
   height: var(--control-height);
   padding: 0 16px;
   background-color: var(--vscode-input-background);
@@ -235,93 +237,13 @@ select:hover {
   box-shadow: var(--shadow-medium);
 }
 
-select:focus {
-  border-color: var(--vscode-focus-border);
-  box-shadow: 0 0 0 2px var(--vscode-focus-border);
-}
-
-/* --- Color Input (Swatch + Hex) for Syntax --- */
-.color-input-wrapper {
-  display: grid;
-  grid-template-columns: var(--control-height) 1fr;
-  align-items: center;
-  border: 1px solid var(--vscode-input-border);
-  border-radius: var(--radius);
-  background-color: var(--vscode-input-background);
-  height: var(--control-height);
-  box-sizing: border-box;
-  overflow: hidden;
-  transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-}
-
-.color-input-wrapper:hover {
-  border-color: var(--dynamic-accent-color);
-  box-shadow: var(--shadow-medium);
-}
-
-.color-input-wrapper:focus-within {
-  border-color: var(--vscode-focus-border);
-  box-shadow: 0 0 0 2px var(--vscode-focus-border);
-}
-
-.color-swatch {
-  grid-column: 1;
-  grid-row: 1;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-  background-image: linear-gradient(45deg, #808080 25%, transparent 25%),
-    linear-gradient(-45deg, #808080 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #808080 75%),
-    linear-gradient(-45deg, transparent 75%, #808080 75%);
-  background-size: 12px 12px;
-  background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
-  border-right: 1px solid var(--vscode-input-border);
-}
-
-.hex-input-display {
-  grid-column: 2;
-  grid-row: 1;
-  background: none;
-  border: none;
-  color: var(--vscode-input-foreground);
-  font-family: var(--vscode-font-family);
-  font-size: 1em;
-  padding: 0 16px;
+/* --- Custom Accent Focus Color --- */
+select:focus,
+.syntax-picker-top-row:focus-within,
+.syntax-picker-wrapper:focus-within {
+  border-color: var(--dynamic-accent-color) !important;
+  box-shadow: 0 0 0 1px var(--dynamic-accent-color) !important;
   outline: none;
-  pointer-events: none;
-}
-
-input[type="color"] {
-  grid-column: 1;
-  grid-row: 1;
-  -webkit-appearance: none;
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  border: none;
-  cursor: pointer;
-  opacity: 0;
-}
-
-#custom-accent-picker {
-  opacity: 1;
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  border: none;
-  border-right: 1px solid var(--vscode-input-border);
-  cursor: pointer;
-  background-color: transparent;
-}
-#custom-accent-picker::-webkit-color-swatch-wrapper {
-  padding: 0;
-}
-#custom-accent-picker::-webkit-color-swatch {
-  border: none;
-  border-radius: 0;
 }
 
 /* --- Buttons --- */
@@ -401,41 +323,6 @@ input[type="color"] {
   height: 100%;
 }
 
-/* --- Pop-up Color Picker --- */
-.picker-popup {
-  position: absolute;
-  z-index: 1000;
-  background-color: var(--vscode-editor-widget-background);
-  border: 1px solid var(--vscode-editor-widget-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-strong);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.modal-hex-input {
-  width: 100%;
-  box-sizing: border-box;
-  height: var(--control-height);
-  padding: 0 16px;
-  background-color: var(--vscode-input-background);
-  color: var(--vscode-input-foreground);
-  border: 1px solid var(--vscode-input-border);
-  border-radius: var(--radius);
-  text-align: center;
-  font-family: var(--vscode-editor-font-family);
-  font-size: 1em;
-  transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.modal-hex-input:focus {
-  border-color: var(--vscode-focus-border);
-  outline: none;
-  box-shadow: 0 0 0 2px var(--vscode-focus-border);
-}
-
 /* --- Scrollbar Styling --- */
 ::-webkit-scrollbar {
   width: 10px;
@@ -474,9 +361,67 @@ input[type="color"] {
   .card-header {
     padding: 20px;
   }
+}
 
-  .modal-content {
-    margin: 20px;
-    padding: 24px;
-  }
+/* --- STYLES FOR BUILT-IN SYNTAX COLOR PICKER --- */
+.syntax-picker-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--vscode-input-border);
+  border-radius: var(--radius);
+  background-color: var(--vscode-input-background);
+  padding: 8px;
+  transition: all var(--transition-speed) ease;
+  min-width: 120px;
+}
+
+.syntax-picker-top-row {
+  display: grid;
+  grid-template-columns: var(--control-height) 1fr;
+  gap: 8px;
+  align-items: center;
+  height: var(--control-height);
+  /* This wrapper doesn't need styles, the one above does */
+  /* We add this just for the focus-within to work */
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  padding: 0;
+  background-color: var(--vscode-input-background);
+}
+
+.syntax-picker-wrapper input[type="color"],
+.syntax-picker-top-row input[type="color"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: var(--control-height);
+  height: var(--control-height);
+  padding: 0;
+  border: 1px solid var(--vscode-input-border);
+  cursor: pointer;
+  background-color: transparent;
+  border-radius: calc(var(--radius) / 2);
+}
+.syntax-picker-wrapper input[type="color"]::-webkit-color-swatch-wrapper,
+.syntax-picker-top-row input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+
+.syntax-picker-wrapper input[type="color"]::-webkit-color-swatch,
+.syntax-picker-top-row input[type="color"]::-webkit-color-swatch { border: none; border-radius: calc(var(--radius) / 2); }
+
+.syntax-picker-wrapper .hex-input-display,
+.syntax-picker-top-row .hex-input-display {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--vscode-input-foreground);
+  font-family: var(--vscode-editor-font-family);
+  font-size: 1em;
+  padding: 0 8px;
+  outline: none;
+  text-align: center;
+}
+
+.syntax-picker-wrapper input[type="range"] {
+  width: 100%;
+  margin: 0;
 }
