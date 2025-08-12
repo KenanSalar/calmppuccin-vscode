@@ -157,7 +157,6 @@
             "enumFontStyle": "none",
             "enumMemberFontStyle": "italic",
             "fieldAndAttributeFontStyle": "none",
-            "attributeBracketFontStyle": "italic",
             "propertyFontStyle": "none",
             "propertyReadOnlyFontStyle": "italic",
             "functionAndMethodFontStyle": "none",
@@ -348,18 +347,6 @@
               "type": "string",
               "default": "none",
               "description": "Set the font style for fields and attributes.",
-              "enum": [
-                "none",
-                "italic",
-                "bold",
-                "italic bold",
-                "underline"
-              ]
-            },
-            "attributeBracketFontStyle": {
-              "type": "string",
-              "default": "italic",
-              "description": "Set the font style for attribute brackets.",
               "enum": [
                 "none",
                 "italic",
@@ -644,11 +631,6 @@
                   "type": "string",
                   "format": "color-hex",
                   "description": "Overrides the color for fields and attributes."
-                },
-                "attributeBracket": {
-                  "type": "string",
-                  "format": "color-hex",
-                  "description": "Overrides the color for attribute brackets."
                 },
                 "property": {
                   "type": "string",

@@ -994,6 +994,8 @@
         "keyword.other.use",
         "keyword.other.using",
         "keyword.other.var",
+        "keyword.other.export",
+        "keyword.other.module",
         "keyword.package",
         "keyword.control.as",
         "keyword.control.as.ts",
@@ -1372,12 +1374,14 @@
         "keyword.operator.null-conditional",
         "keyword.operator.nullable-type",
         "keyword.operator.expression.pattern",
+        "keyword.operator.ternary",
         "punctuation.accessor",
         "punctuation.definition.colon",
+        "punctuation.separator.dot-access",
         "punctuation.separator.scope-resolution",
-        "keyword.operator.ternary",
         "punctuation.separator.period",
-        "punctuation.separator.pointer-access"
+        "punctuation.separator.pointer-access",
+        "storage.modifier.reference"
       ],
       "settings": {
         "foreground": "{{operator}}",
@@ -1387,7 +1391,8 @@
     {
       "name": "operator overload",
       "scope": [
-        "entity.name.function.member.overload"
+        "entity.name.function.member.overload",
+        "keyword.other.operator.overload"
       ],
       "settings": {
         "foreground": "{{operatorOverload}}",
@@ -2023,6 +2028,10 @@
       "foreground": "{{type}}",
       "fontStyle": "{{typeFontStyle}}"
     },
+    "templateType": {
+      "foreground": "{{type}}",
+      "fontStyle": "{{typeFontStyle}}"
+    },
     "class.typeHint": {
       "foreground": "{{type}}",
       "fontStyle": "{{typeFontStyle}}"
@@ -2100,8 +2109,8 @@
       "fontStyle": "{{fieldAndAttributeFontStyle}}"
     },
     "attributeBracket": {
-      "foreground": "{{attributeBracket}}",
-      "fontStyle": "{{attributeBracketFontStyle}}"
+      "foreground": "{{punctuation}}",
+      "fontStyle": "{{punctuationFontStyle}}"
     },
     "property": {
       "foreground": "{{property}}",
@@ -2164,6 +2173,14 @@
       "fontStyle": "{{operatorFontStyle}}"
     },
     "operator.overridden": {
+      "foreground": "{{operatorOverload}}",
+      "fontStyle": "{{operatorOverloadFontStyle}}"
+    },
+    "operatorOverload": {
+      "foreground": "{{operatorOverload}}",
+      "fontStyle": "{{operatorOverloadFontStyle}}"
+    },
+    "memberOperatorOverload": {
       "foreground": "{{operatorOverload}}",
       "fontStyle": "{{operatorOverloadFontStyle}}"
     },

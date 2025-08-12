@@ -24,7 +24,6 @@ const customizableSyntaxKeys = [
   "enum",
   "enumMember",
   "fieldAndAttribute",
-  "attributeBracket",
   "property",
   "propertyReadOnly",
   "functionAndMethod",
