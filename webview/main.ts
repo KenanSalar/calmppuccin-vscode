@@ -18,6 +18,11 @@ function initialize() {
   const resetAllContainer = document.getElementById("reset-all-container");
   const languageSelect = document.getElementById("language-select") as HTMLSelectElement;
 
+  // Declarations for the dialog elements
+  const dialogOverlay = document.getElementById("reset-dialog-overlay");
+  const confirmResetButton = document.getElementById("dialog-confirm-button");
+  const cancelResetButton = document.getElementById("dialog-cancel-button");
+
   if (
     !settingsContainer ||
     !accentContainer ||
@@ -28,9 +33,19 @@ function initialize() {
     !previewPane ||
     !resetAllContainer ||
     !codePreview ||
-    !languageSelect
-  )
+    !languageSelect ||
+    !dialogOverlay ||
+    !confirmResetButton ||
+    !cancelResetButton
+  ) {
+    console.error("A required element was not found in the webview DOM. Halting script execution.");
     return;
+  }
+
+  setTimeout(() => {
+    dialogOverlay.style.opacity = "";
+    dialogOverlay.style.pointerEvents = "";
+  }, 50);
 
   let previewState: { [key: string]: { color?: string; fontStyle?: string } } = {};
   let accentColorMap: { [key: string]: string } = {};
@@ -189,7 +204,6 @@ function initialize() {
           vscode.postMessage({ command: "resetFontStyle", key: fontStyleKey });
         });
 
-        // --- NEW LIBRARY-FREE PICKER LOGIC ---
         const wrapper = document.createElement("div");
         wrapper.className = "syntax-picker-wrapper";
 
@@ -219,7 +233,7 @@ function initialize() {
         alphaSlider.value = alphaInt.toString();
         hexInput.value = initialColor;
 
-        // This function ONLY updates the live preview inside the webview
+        // This function only updates the live preview inside the webview
         const updateLivePreview = () => {
           const newRgb = colorInput.value;
           const newAlphaInt = parseInt(alphaSlider.value);
@@ -287,10 +301,29 @@ function initialize() {
       resetAllButton.textContent = "Reset All Settings to Default";
       resetAllButton.className = "reset-all-button";
       resetAllButton.addEventListener("click", () => {
-        vscode.postMessage({ command: "resetAll" });
+        // Show the confirmation dialog
+        dialogOverlay.classList.remove("hidden");
       });
       resetAllContainer.appendChild(resetAllButton);
     }
+  });
+
+  // Event listeners for the confirmation dialog
+  cancelResetButton.addEventListener("click", () => {
+    dialogOverlay.classList.add("hidden");
+  });
+
+  dialogOverlay.addEventListener("click", (e) => {
+    // Hide the dialog if the user clicks on the overlay (background)
+    if (e.target === dialogOverlay) {
+      dialogOverlay.classList.add("hidden");
+    }
+  });
+
+  confirmResetButton.addEventListener("click", () => {
+    // Send the reset command and hide the dialog
+    vscode.postMessage({ command: "resetAll" });
+    dialogOverlay.classList.add("hidden");
   });
 }
 
