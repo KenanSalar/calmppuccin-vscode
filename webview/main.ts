@@ -15,7 +15,7 @@ function initialize() {
   const settingsContainer = document.getElementById("settings-container");
   const customAccentPickerContainer = document.getElementById("custom-accent-picker-container");
   const flavorTitle = document.getElementById("current-flavor");
-  const modal = document.getElementById("color-picker-modal");
+  const pickerPopup = document.getElementById("picker-popup");
   const iroPickerContainer = document.getElementById("iro-picker-container");
   const modalHexInput = document.getElementById("modal-hex-input") as HTMLInputElement;
   const customAccentPicker = document.getElementById("custom-accent-picker") as HTMLInputElement;
@@ -33,7 +33,6 @@ function initialize() {
     !accentContainer ||
     !customAccentPickerContainer ||
     !flavorTitle ||
-    !modal ||
     !iroPickerContainer ||
     !customAccentPicker ||
     !customAccentHexInput ||
@@ -53,16 +52,6 @@ function initialize() {
   const hexRegex = /^#([0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
   const hex6Regex = /^#[0-9a-fA-F]{6}$/;
   let activeColorPicker: iro.ColorPicker | null = null;
-
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) {
-      modal.style.display = "none";
-      if (activeColorPicker) {
-        (activeColorPicker.base as HTMLElement).remove();
-        activeColorPicker = null;
-      }
-    }
-  });
 
   /**
    * Updates the accent color CSS variable for live preview of borders.
@@ -99,35 +88,90 @@ function initialize() {
 
   const openColorPicker = (
     initialColor: string,
-    targetHexInput: HTMLInputElement,
+    targetElement: HTMLElement, // The element that was clicked
     onColorChange: (color: iro.Color) => void
   ) => {
     if (activeColorPicker) {
       (activeColorPicker.base as HTMLElement).remove();
+      activeColorPicker = null;
     }
-    modal.style.display = "flex";
+    if (!pickerPopup || !iroPickerContainer) return;
+
+    const pickerHeight = 350;
+    const pickerSpacing = 8;
+    const dangerZoneMargin = 20;
+    const rect = targetElement.getBoundingClientRect();
+    const dangerZone = document.querySelector(".danger-zone");
+
+    let openAbove = false;
+    if (dangerZone) {
+      // Checks if the picker's bottom edge would enter the buffer zone.
+      const dangerZoneTop = dangerZone.getBoundingClientRect().top;
+      const pickerBottomEdge = rect.bottom + pickerSpacing + pickerHeight;
+
+      if (pickerBottomEdge > dangerZoneTop - dangerZoneMargin) {
+        openAbove = true;
+      }
+    }
+
+    if (openAbove) {
+      // Open ABOVE the swatch
+      pickerPopup.style.top = `${rect.top + window.scrollY - pickerHeight - pickerSpacing}px`;
+    } else {
+      // Open BELOW the swatch
+      pickerPopup.style.top = `${rect.bottom + window.scrollY + pickerSpacing}px`;
+    }
+
+    pickerPopup.style.left = `${rect.left}px`;
+    pickerPopup.style.display = "flex";
+
     activeColorPicker = new (iro.ColorPicker as any)(iroPickerContainer, {
-      width: 240,
+      width: 200,
       color: initialColor,
       borderWidth: 1,
       borderColor: "var(--vscode-input-border)",
       layout: [
         { component: (iro.ui as any).Wheel },
+        { component: (iro.ui as any).Slider, options: { sliderType: "value" } },
         { component: (iro.ui as any).Slider, options: { sliderType: "alpha" } },
       ],
     });
+
+    const targetHexInput = targetElement.parentElement?.querySelector(".hex-input-display") as HTMLInputElement;
+
     activeColorPicker!.on("color:change", (color: iro.Color) => {
       const newHex = color.hex8String;
-      modalHexInput.value = newHex;
-      targetHexInput.value = newHex;
+      if (modalHexInput) modalHexInput.value = newHex;
+      if (targetHexInput) targetHexInput.value = newHex;
+      targetElement.style.backgroundColor = newHex;
     });
+
     activeColorPicker!.on("input:end", onColorChange);
-    modalHexInput.value = activeColorPicker!.color.hex8String;
-    modalHexInput.oninput = () => {
-      if (hexRegex.test(modalHexInput.value)) {
-        activeColorPicker!.color.hexString = modalHexInput.value;
+
+    if (modalHexInput) {
+      modalHexInput.value = activeColorPicker!.color.hex8String;
+      modalHexInput.oninput = () => {
+        if (hexRegex.test(modalHexInput.value)) {
+          activeColorPicker!.color.hexString = modalHexInput.value;
+        }
+      };
+    }
+
+    const closeListener = (event: MouseEvent) => {
+      const clickedSwatch = (event.target as HTMLElement).classList.contains("color-swatch");
+      if (!pickerPopup.contains(event.target as Node) && !clickedSwatch) {
+        pickerPopup.style.display = "none";
+        if (activeColorPicker) {
+          (activeColorPicker.base as HTMLElement).remove();
+          activeColorPicker = null;
+        }
+        document.removeEventListener("click", closeListener, true);
       }
     };
+
+    setTimeout(() => {
+      document.addEventListener("click", closeListener, true);
+    }, 100);
   };
 
   // Populate the language dropdown
@@ -137,7 +181,7 @@ function initialize() {
     option.textContent = lang;
     languageSelect.appendChild(option);
   }
-  
+
   // Set the dropdown's selected value to match the initial snippet
   languageSelect.value = "csharp";
   // Set the initial code snippet (C#)
@@ -283,9 +327,8 @@ function initialize() {
         colorInputWrapper.appendChild(colorSwatch);
         colorInputWrapper.appendChild(hexInput);
         colorSwatch.addEventListener("click", () => {
-          openColorPicker(hexInput.value, hexInput, (newColor) => {
+          openColorPicker(hexInput.value, colorSwatch, (newColor) => {
             const finalColor = newColor.hex8String;
-            colorSwatch.style.backgroundColor = finalColor;
             previewState[key].color = finalColor;
             updatePreviewPane();
             vscode.postMessage({ command: "updateSyntaxColor", flavor: activeFlavor, key, value: finalColor });

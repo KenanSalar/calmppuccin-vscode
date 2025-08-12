@@ -27,23 +27,21 @@
                 <input type="text" id="custom-accent-hex-input" class="hex-input-display" readonly />
               </div>
             </div>
-            </div>
+          </div>
         </section>
 
         <section class="card">
           <div class="card-header">
             <h3>Font Styles & Syntax Colors</h3>
           </div>
-          <div class="card-body" id="settings-container">
-            </div>
+          <div class="card-body" id="settings-container"></div>
         </section>
 
         <section class="card danger-zone">
           <div class="card-header">
             <h3>Danger Zone</h3>
           </div>
-          <div class="card-body" id="reset-all-container">
-            </div>
+          <div class="card-body" id="reset-all-container"></div>
         </section>
       </div>
 
@@ -65,11 +63,9 @@
       </div>
     </div>
 
-    <div id="color-picker-modal" class="modal-overlay" style="display: none">
-      <div class="modal-content">
-        <div id="iro-picker-container"></div>
-        <input type="text" id="modal-hex-input" class="modal-hex-input" />
-      </div>
+    <div id="picker-popup" class="picker-popup" style="display: none">
+      <div id="iro-picker-container"></div>
+      <input type="text" id="modal-hex-input" class="modal-hex-input" />
     </div>
 
     <script src="webview.js"></script>
