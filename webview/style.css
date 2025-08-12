@@ -382,8 +382,6 @@ select:focus,
   gap: 8px;
   align-items: center;
   height: var(--control-height);
-  /* This wrapper doesn't need styles, the one above does */
-  /* We add this just for the focus-within to work */
   border: 1px solid transparent;
   border-radius: var(--radius);
   padding: 0;
@@ -424,4 +422,101 @@ select:focus,
 .syntax-picker-wrapper input[type="range"] {
   width: 100%;
   margin: 0;
+}
+
+.syntax-picker-wrapper input[type="range"] {
+  width: 100%;
+  margin: 0;
+}
+
+/* --- Dialog Styles --- */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 200ms ease-in-out;
+  pointer-events: auto;
+}
+
+.dialog-overlay.hidden {
+  opacity: 0;
+  pointer-events: none; /* Prevents interaction when hidden */
+}
+
+.dialog-box {
+  background: var(--vscode-editor-background);
+  padding: 32px;
+  border-radius: var(--radius);
+  border: 1px solid var(--vscode-panel-border, #0000002a);
+  box-shadow: var(--shadow-strong);
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+  transform: scale(1);
+  transition: transform 200ms ease-in-out;
+}
+
+.dialog-overlay.hidden .dialog-box {
+  transform: scale(0.95);
+}
+
+.dialog-box h3 {
+  margin: 0 0 12px 0;
+  font-size: 1.6em;
+  font-weight: 600;
+  color: var(--vscode-side-bar-title-foreground, var(--vscode-foreground));
+}
+
+.dialog-box p {
+  margin: 0 0 28px 0;
+  color: var(--vscode-description-foreground);
+  line-height: 1.7;
+}
+
+.dialog-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dialog-button {
+  height: var(--control-height);
+  padding: 0 24px;
+  cursor: pointer;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  font-weight: 600;
+  font-size: 1em;
+  transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dialog-button.secondary {
+  background: var(--vscode-button-secondary-background);
+  color: var(--vscode-button-secondary-foreground);
+  border-color: var(--vscode-input-border);
+}
+
+.dialog-button.secondary:hover {
+  background: var(--vscode-button-secondary-hover-background);
+  border-color: var(--dynamic-accent-color);
+}
+
+.dialog-button.danger {
+  background-color: transparent;
+  color: var(--danger-color);
+  border-color: var(--danger-color-transparent);
+}
+
+.dialog-button.danger:hover {
+  background-color: var(--danger-color);
+  color: #ffffff;
+  border-color: var(--danger-color);
 }
