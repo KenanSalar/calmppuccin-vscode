@@ -401,51 +401,23 @@ input[type="color"] {
   height: 100%;
 }
 
-/* --- Color Picker Modal --- */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(10px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* --- Pop-up Color Picker --- */
+.picker-popup {
+  position: absolute;
   z-index: 1000;
-  animation: fadeIn var(--transition-speed) ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.modal-content {
   background-color: var(--vscode-editor-widget-background);
   border: 1px solid var(--vscode-editor-widget-border);
-  padding: 32px;
-  border-radius: calc(var(--radius) * 1.5);
+  border-radius: var(--radius);
   box-shadow: var(--shadow-strong);
-  animation: slideIn var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateY(20px) scale(0.98);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .modal-hex-input {
   width: 100%;
   box-sizing: border-box;
-  margin-top: 20px;
   height: var(--control-height);
   padding: 0 16px;
   background-color: var(--vscode-input-background);
