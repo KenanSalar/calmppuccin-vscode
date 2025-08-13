@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as C from "./constants";
 import palettes from "./palette";
 import { WebviewManager } from "./WebviewManager";
-import { ConfigurationService } from "./ConfigurationService";
+import { ConfigurationService, SyntaxOverrides } from "./ConfigurationService";
 
 /**
  * An array of syntax keys that are customizable in the UI.
@@ -118,7 +118,7 @@ export class SettingsPanel {
     const activeTheme = workbenchConfig.get<string>("colorTheme", "Calmppuccin Mocha");
     const activeFlavor = this._getFlavorFromTheme(activeTheme);
     const fontStyles = ConfigurationService.getFontStyles();
-    const syntaxOverrides = ConfigurationService.getSyntaxOverrides() as any; // Cast as any to handle index signature
+    const syntaxOverrides: SyntaxOverrides = ConfigurationService.getSyntaxOverrides() as SyntaxOverrides;
     const currentAccent = vscode.workspace
       .getConfiguration(C.EXTENSION_NAMESPACE)
       .get<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
