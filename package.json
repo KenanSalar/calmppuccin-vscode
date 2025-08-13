@@ -3,7 +3,7 @@
   "displayName": "Calmppuccin",
   "description": "Calmppuccin is a visually refined theme for Visual Studio Code, designed to offer a harmonious coding experience. Inspired by the popular Catppuccin theme, Calmppuccin takes the beloved pastel palette and transforms it into a gentler, less intense version, perfect for long coding sessions without eye strain.",
   "icon": "assets/images/logo/icon.png",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "publisher": "kenan-salar",
   "license": "MIT",
   "repository": {
@@ -145,17 +145,18 @@
             "commentFontStyle": "italic",
             "variableFontStyle": "none",
             "keywordFontStyle": "none",
+            "typeFontStyle": "italic",
             "namespaceFontStyle": "none",
             "namespaceAttributeFontStyle": "italic",
             "moduleFontStyle": "none",
             "annotationFontStyle": "italic",
+            "decoratorFontStyle": "italic",
             "classFontStyle": "none",
             "interfaceFontStyle": "none",
             "structFontStyle": "none",
             "enumFontStyle": "none",
             "enumMemberFontStyle": "italic",
             "fieldAndAttributeFontStyle": "none",
-            "attributeBracketFontStyle": "italic",
             "propertyFontStyle": "none",
             "propertyReadOnlyFontStyle": "italic",
             "functionAndMethodFontStyle": "none",
@@ -210,6 +211,18 @@
                 "underline"
               ]
             },
+            "typeFontStyle": {
+              "type": "string",
+              "default": "italic",
+              "description": "Set the font style for types.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
             "namespaceFontStyle": {
               "type": "string",
               "default": "none",
@@ -250,6 +263,18 @@
               "type": "string",
               "default": "italic",
               "description": "Set the font style for annotations.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "decoratorFontStyle": {
+              "type": "string",
+              "default": "italic",
+              "description": "Set the font style for decorators.",
               "enum": [
                 "none",
                 "italic",
@@ -322,18 +347,6 @@
               "type": "string",
               "default": "none",
               "description": "Set the font style for fields and attributes.",
-              "enum": [
-                "none",
-                "italic",
-                "bold",
-                "italic bold",
-                "underline"
-              ]
-            },
-            "attributeBracketFontStyle": {
-              "type": "string",
-              "default": "italic",
-              "description": "Set the font style for attribute brackets.",
               "enum": [
                 "none",
                 "italic",
@@ -559,6 +572,11 @@
                   "format": "color-hex",
                   "description": "Overrides the color for keywords."
                 },
+                "type": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for types."
+                },
                 "namespace": {
                   "type": "string",
                   "format": "color-hex",
@@ -575,6 +593,11 @@
                   "description": "Overrides the color for modules."
                 },
                 "annotation": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for annotations."
+                },
+                "decorator": {
                   "type": "string",
                   "format": "color-hex",
                   "description": "Overrides the color for annotations."
@@ -608,11 +631,6 @@
                   "type": "string",
                   "format": "color-hex",
                   "description": "Overrides the color for fields and attributes."
-                },
-                "attributeBracket": {
-                  "type": "string",
-                  "format": "color-hex",
-                  "description": "Overrides the color for attribute brackets."
                 },
                 "property": {
                   "type": "string",
@@ -713,8 +731,5 @@
     "typescript": "^5.9.2",
     "webpack": "^5.101.0",
     "webpack-cli": "^6.0.1"
-  },
-  "dependencies": {
-    "@jaames/iro": "^5.5.2"
   }
 }

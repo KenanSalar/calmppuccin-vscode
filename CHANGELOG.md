@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.5.6] - 2025-08-13
+
+- **Feature**: Removed the custom `iro` color picker and swapped it out for the standard one with a transparency slider.
+- **Feature**: More languages for the live preview, selectable via a new dropdown menu (initially C, C++, and Python).
+- **Feature**: A confirmation dialog before critical actions to prevent accidental data loss.
+- **Feature**: New color tokens to the theme for enhanced customization.
+- **Improvement**: You can now change types via the customization ui. Removed attribute bracket customization.
+- **Improvement**: Improved syntax highlighting for types, namespaces, modules, directives, and transitions.
+- **Fix**: Several minor UI behavior bugs.
+
 ## [1.5.5] - 2025-08-10
 
 - **Improvement**: The customization ui now displays the updated accent color.
