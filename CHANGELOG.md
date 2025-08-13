@@ -4,6 +4,7 @@
 
 - **Improvement**: Seperation of concerns with the `WebviewManager`. The `SettingsPanel` acts as a pure controller for settings logic now while the `WebviewManager` handles all view-related resonsibilities.
 - **Improvement**: Seperation of concerns with the ConfugurationService which acts as a single source of truth for all interactions with the vs code configuration api.
+- **Fix**: Eliminating `any` casts for improved type safety.
 
 ## [1.5.7] - 2025-08-13
 
