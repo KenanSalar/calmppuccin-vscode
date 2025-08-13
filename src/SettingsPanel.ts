@@ -12,17 +12,18 @@ const customizableSyntaxKeys = [
   "comment",
   "variable",
   "keyword",
+  "type",
   "namespace",
   "namespaceAttribute",
   "module",
   "annotation",
+  "decorator",
   "class",
   "interface",
   "struct",
   "enum",
   "enumMember",
   "fieldAndAttribute",
-  "attributeBracket",
   "property",
   "propertyReadOnly",
   "functionAndMethod",
@@ -236,11 +237,15 @@ export class SettingsPanel {
   private _getHtmlForWebview(extensionPath: string): string {
     const htmlPath = path.join(extensionPath, "webview", "index.html");
     let htmlContent = fs.readFileSync(htmlPath, "utf8");
+
+    // Create URIs for our local scripts and stylesheets
     const scriptUri = this._panel.webview.asWebviewUri(vscode.Uri.file(path.join(extensionPath, "dist", "webview.js")));
     const styleUri = this._panel.webview.asWebviewUri(vscode.Uri.file(path.join(extensionPath, "webview", "style.css")));
 
+    // Replace all placeholders in the HTML
     htmlContent = htmlContent.replace("webview.js", scriptUri.toString());
     htmlContent = htmlContent.replace("style.css", styleUri.toString());
+
     return htmlContent;
   }
 
