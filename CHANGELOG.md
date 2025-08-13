@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.5.7] - 2025-08-13
+
+- **Fix**: Corrected the naming of the Custom UI image.
+
 ## [1.5.6] - 2025-08-13
 
 - **Feature**: Removed the custom `iro` color picker and swapped it out for the standard one with a transparency slider.
