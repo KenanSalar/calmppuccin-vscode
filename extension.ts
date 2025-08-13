@@ -72,8 +72,8 @@ export function activate(context: vscode.ExtensionContext) {
       const config = vscode.workspace.getConfiguration(C.EXTENSION_NAMESPACE);
       const accentSetting = config.get<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
       const customAccent = config.get<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
-      const fontStyles = config.get<{ [key: string]: string }>("fontStyles");
-      const syntaxOverrides = config.get<object>("syntaxOverrides", {});
+      const fontStyles = config.get<{ [key: string]: string }>(C.CONFIG_KEY_FONT_STYLES);
+      const syntaxOverrides = config.get<object>(C.CONFIG_KEY_SYNTAX_OVERRIDES, {});
 
       const accentValue = accentSetting === "custom" ? customAccent : accentSetting;
 
@@ -99,16 +99,16 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
-  const customizeCommand = vscode.commands.registerCommand("calmppuccin.customize", () => {
+  const customizeCommand = vscode.commands.registerCommand(C.CUSTOMIZE_COMMAND_ID, () => {
     SettingsPanel.createOrShow(context);
   });
 
   const settingsChangeListener = vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
     if (
       event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACCENT}`) ||
-      event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.fontStyles`) ||
+      event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLES}`) ||
       event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_CUSTOM_ACCENT}`) ||
-      event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.syntaxOverrides`)
+      event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_SYNTAX_OVERRIDES}`)
     ) {
       vscode.commands.executeCommand(C.REGENERATE_COMMAND_ID);
     }

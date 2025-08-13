@@ -61,46 +61,46 @@ export class SettingsPanel {
         const config = vscode.workspace.getConfiguration(C.EXTENSION_NAMESPACE);
 
         switch (message.command) {
-          case "updateSetting": {
+          case C.WEBVIEW_COMMANDS.UPDATE_SETTING: {
             const { key, value } = message;
-            const fontStyles = config.get("fontStyles", {});
-            await config.update("fontStyles", { ...fontStyles, [key]: value }, vscode.ConfigurationTarget.Global);
+            const fontStyles = config.get(C.CONFIG_KEY_FONT_STYLES, {});
+            await config.update(C.CONFIG_KEY_FONT_STYLES, { ...fontStyles, [key]: value }, vscode.ConfigurationTarget.Global);
             return;
           }
-          case "resetFontStyle": {
+          case C.WEBVIEW_COMMANDS.RESET_FONT_STYLE: {
             const { key } = message;
-            const fontStyles = { ...config.get<any>("fontStyles", {}) };
+            const fontStyles = { ...config.get<any>(C.CONFIG_KEY_FONT_STYLES, {}) };
             delete fontStyles[key];
 
             // If the object is now empty, update with `undefined` to remove it from settings.json
             const finalFontStyles = Object.keys(fontStyles).length === 0 ? undefined : fontStyles;
 
-            await config.update("fontStyles", finalFontStyles, vscode.ConfigurationTarget.Global);
+            await config.update(C.CONFIG_KEY_FONT_STYLES, finalFontStyles, vscode.ConfigurationTarget.Global);
             return;
           }
-          case "updateAccent":
+          case C.WEBVIEW_COMMANDS.UPDATE_ACCENT:
             await config.update(C.CONFIG_KEY_ACCENT, message.value, vscode.ConfigurationTarget.Global);
             return;
-          case "updateCustomAccent":
+          case C.WEBVIEW_COMMANDS.UPDATE_CUSTOM_ACCENT:
             await config.update(C.CONFIG_KEY_CUSTOM_ACCENT, message.value, vscode.ConfigurationTarget.Global);
             return;
-          case "updateSyntaxColor": {
+          case C.WEBVIEW_COMMANDS.UPDATE_SYNTAX_COLOR: {
             const { flavor, key, value } = message;
             // Create a deep copy to safely mutate
-            const overrides = JSON.parse(JSON.stringify(config.get<any>("syntaxOverrides", {})));
+            const overrides = JSON.parse(JSON.stringify(config.get<any>(C.CONFIG_KEY_SYNTAX_OVERRIDES, {})));
 
             if (!overrides[flavor]) {
               overrides[flavor] = {};
             }
             overrides[flavor][key] = value;
 
-            await config.update("syntaxOverrides", overrides, vscode.ConfigurationTarget.Global);
+            await config.update(C.CONFIG_KEY_SYNTAX_OVERRIDES, overrides, vscode.ConfigurationTarget.Global);
             return;
           }
-          case "resetSyntaxColor": {
+          case C.WEBVIEW_COMMANDS.RESET_SYNTAX_COLOR: {
             const { flavor, key } = message;
             // Create a deep copy to safely mutate
-            const overrides = JSON.parse(JSON.stringify(config.get<any>("syntaxOverrides", {})));
+            const overrides = JSON.parse(JSON.stringify(config.get<any>(C.CONFIG_KEY_SYNTAX_OVERRIDES, {})));
 
             if (overrides[flavor]?.[key]) {
               delete overrides[flavor][key];
@@ -112,13 +112,13 @@ export class SettingsPanel {
               // If the object is empty, update with `undefined` to remove it from settings.json
               const finalOverrides = Object.keys(overrides).length === 0 ? undefined : overrides;
 
-              await config.update("syntaxOverrides", finalOverrides, vscode.ConfigurationTarget.Global);
+              await config.update(C.CONFIG_KEY_SYNTAX_OVERRIDES, finalOverrides, vscode.ConfigurationTarget.Global);
             }
             return;
           }
-          case "resetAll": {
-            await config.update("fontStyles", undefined, vscode.ConfigurationTarget.Global);
-            await config.update("syntaxOverrides", undefined, vscode.ConfigurationTarget.Global);
+          case C.WEBVIEW_COMMANDS.RESET_ALL: {
+            await config.update(C.CONFIG_KEY_FONT_STYLES, undefined, vscode.ConfigurationTarget.Global);
+            await config.update(C.CONFIG_KEY_SYNTAX_OVERRIDES, undefined, vscode.ConfigurationTarget.Global);
             await config.update(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT, vscode.ConfigurationTarget.Global);
             this._update();
             return;
@@ -138,8 +138,8 @@ export class SettingsPanel {
     }
 
     const panel = vscode.window.createWebviewPanel(
-      "calmppuccinSettings",
-      "Calmppuccin Settings",
+      C.WEBVIEW_COMMANDS.WEBVIEW_ID,
+      C.WEBVIEW_COMMANDS.WEBVIEW_TITLE,
       column || vscode.ViewColumn.One,
       {
         enableScripts: true,
@@ -175,7 +175,7 @@ export class SettingsPanel {
     if (!this._panel.visible) return;
 
     const webview = this._panel.webview;
-    this._panel.title = "Calmppuccin Customization";
+    this._panel.title = C.WEBVIEW_COMMANDS.WEBVIEW_TITLE;
     webview.html = this._getHtmlForWebview(this._context.extensionPath);
 
     const config = vscode.workspace.getConfiguration(C.EXTENSION_NAMESPACE);
@@ -185,8 +185,8 @@ export class SettingsPanel {
     const activeTheme = workbenchConfig.get<string>("colorTheme", "Calmppuccin Mocha");
     const activeFlavor = this._getFlavorFromTheme(activeTheme);
 
-    const fontStyles = config.get("fontStyles");
-    const syntaxOverrides = config.get<any>("syntaxOverrides", {});
+    const fontStyles = config.get(C.CONFIG_KEY_FONT_STYLES);
+    const syntaxOverrides = config.get<any>(C.CONFIG_KEY_SYNTAX_OVERRIDES, {});
     const currentAccent = config.get<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
     const customAccentColor = config.get<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
 
@@ -220,7 +220,7 @@ export class SettingsPanel {
     });
 
     webview.postMessage({
-      command: "loadSettings",
+      command: C.WEBVIEW_COMMANDS.LOAD_SETTINGS,
       settings: {
         activeFlavor,
         syntaxSettings,
