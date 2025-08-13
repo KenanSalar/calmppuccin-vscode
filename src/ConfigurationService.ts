@@ -1,6 +1,18 @@
 import * as vscode from "vscode";
 import * as C from "./constants";
 
+// Define a type for the font styles configuration object
+export interface FontStyles {
+  [key: string]: string;
+}
+
+// Define a type for the syntax overrides configuration object
+export interface SyntaxOverrides {
+  [flavor: string]: {
+    [token: string]: string;
+  };
+}
+
 export class ConfigurationService {
   /**
    * Gets the VS Code configuration object for the Calmppuccin extension.
@@ -52,8 +64,8 @@ export class ConfigurationService {
    * @param {string} key The font style key to reset.
    */
   public static async resetFontStyle(key: string) {
-    const fontStyles = { ...this.getFontStyles() };
-    delete (fontStyles as any)[key];
+    const fontStyles: FontStyles = { ...this.getFontStyles() };
+    delete fontStyles[key];
     const finalFontStyles = Object.keys(fontStyles).length === 0 ? undefined : fontStyles;
     await this.config.update(C.CONFIG_KEY_FONT_STYLES, finalFontStyles, vscode.ConfigurationTarget.Global);
   }
@@ -81,8 +93,10 @@ export class ConfigurationService {
    * @param {string} value The new hex color value.
    */
   public static async updateSyntaxColor(flavor: string, key: string, value: string) {
-    const overrides = JSON.parse(JSON.stringify(this.getSyntaxOverrides()));
-    if (!overrides[flavor]) overrides[flavor] = {};
+    const overrides: SyntaxOverrides = JSON.parse(JSON.stringify(this.getSyntaxOverrides()));
+    if (!overrides[flavor]) {
+      overrides[flavor] = {};
+    }
     overrides[flavor][key] = value;
     await this.config.update(C.CONFIG_KEY_SYNTAX_OVERRIDES, overrides, vscode.ConfigurationTarget.Global);
   }
@@ -93,10 +107,12 @@ export class ConfigurationService {
    * @param {string} key The syntax key.
    */
   public static async resetSyntaxColor(flavor: string, key: string) {
-    const overrides = JSON.parse(JSON.stringify(this.getSyntaxOverrides()));
+    const overrides: SyntaxOverrides = JSON.parse(JSON.stringify(this.getSyntaxOverrides()));
     if (overrides[flavor]?.[key]) {
       delete overrides[flavor][key];
-      if (Object.keys(overrides[flavor]).length === 0) delete overrides[flavor];
+      if (Object.keys(overrides[flavor]).length === 0) {
+        delete overrides[flavor];
+      }
       const finalOverrides = Object.keys(overrides).length === 0 ? undefined : overrides;
       await this.config.update(C.CONFIG_KEY_SYNTAX_OVERRIDES, finalOverrides, vscode.ConfigurationTarget.Global);
     }
