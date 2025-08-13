@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.5.8] - 2025-08-13
+
+- **Improvement**: Seperation of concerns with the `WebviewManager`. The `SettingsPanel` acts as a pure controller for settings logic now while the `WebviewManager` handles all view-related resonsibilities.
+
 ## [1.5.7] - 2025-08-13
 
 - **Fix**: Corrected the naming of the Custom UI image.
