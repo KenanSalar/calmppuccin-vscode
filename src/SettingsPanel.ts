@@ -17,6 +17,7 @@ const customizableSyntaxKeys = [
   "namespaceAttribute",
   "module",
   "annotation",
+  "directive",
   "decorator",
   "class",
   "interface",
