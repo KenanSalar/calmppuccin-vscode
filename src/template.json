@@ -1085,7 +1085,8 @@
         "keyword.control.case.shell",
         "keyword.control.esac.shell",
         "keyword.control.select.shell",
-        "entity.other.keyframe-offset"
+        "entity.other.keyframe-offset",
+        "keyword.other.important"
       ],
       "settings": {
         "foreground": "{{keyword}}",
