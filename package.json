@@ -150,6 +150,7 @@
             "namespaceAttributeFontStyle": "italic",
             "moduleFontStyle": "none",
             "annotationFontStyle": "italic",
+            "directiveFontStyle": "italic",
             "decoratorFontStyle": "italic",
             "classFontStyle": "none",
             "interfaceFontStyle": "none",
@@ -263,6 +264,18 @@
               "type": "string",
               "default": "italic",
               "description": "Set the font style for annotations.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "directivenFontStyle": {
+              "type": "string",
+              "default": "italic",
+              "description": "Set the font style for directives.",
               "enum": [
                 "none",
                 "italic",
@@ -596,6 +609,11 @@
                   "type": "string",
                   "format": "color-hex",
                   "description": "Overrides the color for annotations."
+                },
+                "directive": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for directives."
                 },
                 "decorator": {
                   "type": "string",

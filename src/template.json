@@ -795,6 +795,7 @@
       "scope": [
         "entity.name.namespace",
         "entity.name.type.namespace",
+        "entity.name.function.namespace-prefix",
         "support.other.namespace",
         "punctuation.separator.namespace.access"
       ],
@@ -910,7 +911,6 @@
         "entity.name.section",
         "entity.name.section.group-title.editorconfig",
         "entity.name.type.primitive",
-        "entity.other.attribute-name.pseudo-element",
         "keyword.contro.rust",
         "keyword.control punctuation.definition.function",
         "keyword.control.ahk2",
@@ -1084,7 +1084,8 @@
         "keyword.control.done.shell",
         "keyword.control.case.shell",
         "keyword.control.esac.shell",
-        "keyword.control.select.shell"
+        "keyword.control.select.shell",
+        "entity.other.keyframe-offset"
       ],
       "settings": {
         "foreground": "{{keyword}}",
@@ -1186,6 +1187,7 @@
     {
       "name": "string",
       "scope": [
+        "meta.at-rule.header",
         "string",
         "punctuation.definition.string",
         "source.css support.constant",
@@ -1313,16 +1315,11 @@
       }
     },
     {
-      "name": "razor directive",
-      "scope": ["keyword.control.cshtml.transition"],
-      "settings": {
-        "foreground": "{{directive}}",
-        "fontStyle": ""
-      }
-    },
-    {
-      "name": "razor directive italic",
+      "name": "directive",
       "scope": [
+        "keyword.control.at-rule",
+        "punctuation.definition.keyword.css",
+        "keyword.control.cshtml.transition",
         "keyword.control.razor.directive",
         "keyword.control.razor.directive.page",
         "keyword.control.razor.directive.inherits",
@@ -1333,7 +1330,7 @@
       ],
       "settings": {
         "foreground": "{{directive}}",
-        "fontStyle": "italic"
+        "fontStyle": "{{directiveFontStyle}}"
       }
     },
     {
@@ -1579,6 +1576,7 @@
       "scope": [
         "entity.other.attribute-name",
         "entity.other.attribute-name.pseudo-class",
+        "entity.other.attribute-name.pseudo-element",
         "meta.attribute.id entity.other.attribute-name",
         "entity.other.attribute",
         "punctuation.definition.attribute",
@@ -2270,7 +2268,7 @@
     },
     "razorDirective": {
       "foreground": "{{directive}}",
-      "fontStyle": "italic"
+      "fontStyle": "{{directiveFontStyle}}"
     },
     "razorDirectiveAttribute": {
       "foreground": "{{fieldAndAttribute}}",
