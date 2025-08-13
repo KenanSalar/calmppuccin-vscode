@@ -12,6 +12,9 @@ export const RELOAD_COMMAND_ID = "workbench.action.reloadWindow";
 export const ICON_THEME_KEY = "workbench.iconTheme";
 export const CATPPUCCIN_ICON_PACK_ID = "catppuccin-";
 export const PANEL_IS_OPEN_KEY = "calmppuccin.panelIsOpen";
+export const CONFIG_KEY_FONT_STYLES = "fontStyles";
+export const CONFIG_KEY_SYNTAX_OVERRIDES = "syntaxOverrides";
+export const CUSTOMIZE_COMMAND_ID = "calmppuccin.customize";
 
 // For build.ts
 export const THEMES_DIR = "themes";
@@ -33,3 +36,17 @@ export const RELOAD_ACTION = "Reload Window";
 export const REPORT_ISSUE_ACTION = "Report Issue";
 export const ERROR_MESSAGE_PREFIX = "Failed to update Calmppuccin themes. Error: ";
 export const REPO_ISSUES_URL = "https://github.com/KenanSalar/calmppuccin-vscode/issues";
+
+// For SettingsPanel.ts
+export const WEBVIEW_COMMANDS = {
+  UPDATE_SETTING: "updateSetting",
+  RESET_FONT_STYLE: "resetFontStyle",
+  UPDATE_ACCENT: "updateAccent",
+  UPDATE_CUSTOM_ACCENT: "updateCustomAccent",
+  UPDATE_SYNTAX_COLOR: "updateSyntaxColor",
+  RESET_SYNTAX_COLOR: "resetSyntaxColor",
+  RESET_ALL: "resetAll",
+  LOAD_SETTINGS: "loadSettings",
+  WEBVIEW_ID: "calmppuccinSettings",
+  WEBVIEW_TITLE: "Calmppuccin Customization",
+} as const;
