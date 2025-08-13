@@ -6,22 +6,49 @@ interface VsCodeApi {
 declare function acquireVsCodeApi(): VsCodeApi;
 const vscode = acquireVsCodeApi();
 
+const COMMANDS = {
+  UPDATE_SETTING: "updateSetting",
+  RESET_FONT_STYLE: "resetFontStyle",
+  UPDATE_ACCENT: "updateAccent",
+  UPDATE_CUSTOM_ACCENT: "updateCustomAccent",
+  UPDATE_SYNTAX_COLOR: "updateSyntaxColor",
+  RESET_SYNTAX_COLOR: "resetSyntaxColor",
+  RESET_ALL: "resetAll",
+  LOAD_SETTINGS: "loadSettings",
+};
+
+const DOM_IDS = {
+  ACCENT_CONTAINER: "accent-container",
+  SETTINGS_CONTAINER: "settings-container",
+  CUSTOM_ACCENT_PICKER_CONTAINER: "custom-accent-picker-container",
+  FLAVOR_TITLE: "current-flavor",
+  CUSTOM_ACCENT_PICKER: "custom-accent-picker",
+  CUSTOM_ACCENT_HEX_INPUT: "custom-accent-hex-input",
+  PREVIEW_PANE: "preview-pane",
+  CODE_PREVIEW: "code-preview",
+  RESET_ALL_CONTAINER: "reset-all-container",
+  LANGUAGE_SELECT: "language-select",
+  DIALOG_OVERLAY: "reset-dialog-overlay",
+  CONFIRM_RESET_BUTTON: "dialog-confirm-button",
+  CANCEL_RESET_BUTTON: "dialog-cancel-button",
+};
+
 function initialize() {
-  const accentContainer = document.getElementById("accent-container");
-  const settingsContainer = document.getElementById("settings-container");
-  const customAccentPickerContainer = document.getElementById("custom-accent-picker-container");
-  const flavorTitle = document.getElementById("current-flavor");
-  const customAccentPicker = document.getElementById("custom-accent-picker") as HTMLInputElement;
-  const customAccentHexInput = document.getElementById("custom-accent-hex-input") as HTMLInputElement;
-  const previewPane = document.getElementById("preview-pane");
-  const codePreview = document.getElementById("code-preview");
-  const resetAllContainer = document.getElementById("reset-all-container");
-  const languageSelect = document.getElementById("language-select") as HTMLSelectElement;
+  const accentContainer = document.getElementById(DOM_IDS.ACCENT_CONTAINER);
+  const settingsContainer = document.getElementById(DOM_IDS.SETTINGS_CONTAINER);
+  const customAccentPickerContainer = document.getElementById(DOM_IDS.CUSTOM_ACCENT_PICKER_CONTAINER);
+  const flavorTitle = document.getElementById(DOM_IDS.FLAVOR_TITLE);
+  const customAccentPicker = document.getElementById(DOM_IDS.CUSTOM_ACCENT_PICKER) as HTMLInputElement;
+  const customAccentHexInput = document.getElementById(DOM_IDS.CUSTOM_ACCENT_HEX_INPUT) as HTMLInputElement;
+  const previewPane = document.getElementById(DOM_IDS.PREVIEW_PANE);
+  const codePreview = document.getElementById(DOM_IDS.CODE_PREVIEW);
+  const resetAllContainer = document.getElementById(DOM_IDS.RESET_ALL_CONTAINER);
+  const languageSelect = document.getElementById(DOM_IDS.LANGUAGE_SELECT) as HTMLSelectElement;
 
   // Declarations for the dialog elements
-  const dialogOverlay = document.getElementById("reset-dialog-overlay");
-  const confirmResetButton = document.getElementById("dialog-confirm-button");
-  const cancelResetButton = document.getElementById("dialog-cancel-button");
+  const dialogOverlay = document.getElementById(DOM_IDS.DIALOG_OVERLAY);
+  const confirmResetButton = document.getElementById(DOM_IDS.CONFIRM_RESET_BUTTON);
+  const cancelResetButton = document.getElementById(DOM_IDS.CANCEL_RESET_BUTTON);
 
   if (
     !settingsContainer ||
@@ -94,7 +121,7 @@ function initialize() {
 
   window.addEventListener("message", (event) => {
     const message = event.data;
-    if (message.command === "loadSettings") {
+    if (message.command === COMMANDS.LOAD_SETTINGS) {
       const {
         activeFlavor,
         syntaxSettings,
@@ -141,7 +168,7 @@ function initialize() {
       accentSelect.addEventListener("change", (e) => {
         const newValue = (e.target as HTMLSelectElement).value;
         handleAccentChange(newValue);
-        vscode.postMessage({ command: "updateAccent", value: newValue });
+        vscode.postMessage({ command: COMMANDS.UPDATE_ACCENT, value: newValue });
       });
       accentSelectContainer.appendChild(accentLabel);
       accentSelectContainer.appendChild(accentSelect);
@@ -155,14 +182,14 @@ function initialize() {
         const newValue = (e.target as HTMLInputElement).value;
         customAccentHexInput.value = newValue;
         updateAccentColor(newValue);
-        vscode.postMessage({ command: "updateCustomAccent", value: newValue });
+        vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
       });
       customAccentHexInput.addEventListener("input", (e) => {
         const newValue = (e.target as HTMLInputElement).value;
         if (hex6Regex.test(newValue)) {
           customAccentPicker.value = newValue;
           updateAccentColor(newValue);
-          vscode.postMessage({ command: "updateCustomAccent", value: newValue });
+          vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
         }
       });
 
@@ -191,7 +218,7 @@ function initialize() {
           const newValue = (e.target as HTMLSelectElement).value;
           previewState[key].fontStyle = newValue;
           updatePreviewPane();
-          vscode.postMessage({ command: "updateSetting", key: fontStyleKey, value: newValue });
+          vscode.postMessage({ command: COMMANDS.UPDATE_SETTING, key: fontStyleKey, value: newValue });
         });
 
         const fontResetButton = document.createElement("button");
@@ -201,7 +228,7 @@ function initialize() {
           select.value = defaultFontStyle;
           previewState[key].fontStyle = defaultFontStyle;
           updatePreviewPane();
-          vscode.postMessage({ command: "resetFontStyle", key: fontStyleKey });
+          vscode.postMessage({ command: COMMANDS.RESET_FONT_STYLE, key: fontStyleKey });
         });
 
         const wrapper = document.createElement("div");
@@ -248,7 +275,7 @@ function initialize() {
         // This function ONLY sends the final color to VS Code
         const sendFinalColorToVSCode = () => {
           const finalColor = hexInput.value;
-          vscode.postMessage({ command: "updateSyntaxColor", flavor: activeFlavor, key, value: finalColor });
+          vscode.postMessage({ command: COMMANDS.UPDATE_SYNTAX_COLOR, flavor: activeFlavor, key, value: finalColor });
         };
 
         // Update the live preview instantly on the 'input' event
@@ -273,7 +300,7 @@ function initialize() {
 
           previewState[key].color = defaultColor;
           updatePreviewPane();
-          vscode.postMessage({ command: "resetSyntaxColor", flavor: activeFlavor, key });
+          vscode.postMessage({ command: COMMANDS.RESET_SYNTAX_COLOR, flavor: activeFlavor, key });
         });
 
         topRow.appendChild(colorInput);
@@ -322,7 +349,7 @@ function initialize() {
 
   confirmResetButton.addEventListener("click", () => {
     // Send the reset command and hide the dialog
-    vscode.postMessage({ command: "resetAll" });
+    vscode.postMessage({ command: COMMANDS.RESET_ALL });
     dialogOverlay.classList.add("hidden");
   });
 }
