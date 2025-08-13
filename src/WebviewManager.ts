@@ -28,9 +28,16 @@ export class WebviewManager {
     this._panel.webview.onDidReceiveMessage(messageHandler, null, this._disposables);
   }
 
-  public static createOrShow(context: vscode.ExtensionContext, messageHandler: (message: any) => void) {
+  public static createOrShow(
+    context: vscode.ExtensionContext,
+    messageHandler: (message: any) => void,
+    onReveal?: () => void
+  ) {
     if (WebviewManager.currentPanel) {
       WebviewManager.currentPanel._panel.reveal(vscode.ViewColumn.One);
+      if (onReveal) {
+        onReveal();
+      }
     } else {
       WebviewManager.currentPanel = new WebviewManager(context, messageHandler);
     }
