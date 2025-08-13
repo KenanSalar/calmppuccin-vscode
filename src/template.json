@@ -832,7 +832,13 @@
     },
     {
       "name": "struct",
-      "scope": ["variable.other.struct", "entity.name.type.struct", "entity.name.struct"],
+      "scope": [
+        "variable.other.struct", 
+        "entity.name.type.struct", 
+        "entity.name.struct", 
+        "entity.other.attribute-name.id",
+        "entity.other.attribute-name.id punctuation.definition.entity"
+      ],
       "settings": {
         "foreground": "{{struct}}",
         "fontStyle": "{{structFontStyle}}"
@@ -990,7 +996,6 @@
         "keyword.other.this",
         "keyword.other.type",
         "keyword.other.typedef",
-        "keyword.other.unit",
         "keyword.other.use",
         "keyword.other.using",
         "keyword.other.var",
@@ -1946,14 +1951,6 @@
       "settings": {
         "foreground": "{{constant}}",
         "fontStyle": "{{constantFontStyle}}"
-      }
-    },
-    {
-      "name": "css attribute id",
-      "scope": ["entity.other.attribute-name.id", "entity.other.attribute-name.id punctuation.definition.entity"],
-      "settings": {
-        "foreground": "{{cssAttributeId}}",
-        "fontStyle": ""
       }
     },
     {
