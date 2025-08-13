@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as C from "./constants";
-import palettes from "./palette";
+import palettes from "./palettes";
 import { WebviewManager } from "./WebviewManager";
 import { ConfigurationService, SyntaxOverrides } from "./ConfigurationService";
 
