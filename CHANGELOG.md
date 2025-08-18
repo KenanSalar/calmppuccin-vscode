@@ -2,6 +2,8 @@
 
 ## [1.5.8] - 2025-08-13
 
+- **Feature**: Added code snippets for various languages, including C, C++, C#, CSS, Go, HTML, Java, JavaScript, Kotlin, Lua, PHP, PowerShell, Python, R, Ruby, Rust, Shell (Bash), SQL, Swift, and TypeScript.
+- **Improvement**: Added many syntax highlighting tokens and semantic colors.
 - **Improvement**: Seperation of concerns with the `WebviewManager`. The `SettingsPanel` acts as a pure controller for settings logic now while the `WebviewManager` handles all view-related resonsibilities.
 - **Improvement**: Seperation of concerns with the ConfugurationService which acts as a single source of truth for all interactions with the vs code configuration api.
 - **Improvement**: Seperation of the `snippets.ts` file into language based snippet files for improved maintainability and scalability.

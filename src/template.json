@@ -824,7 +824,8 @@
         "support.class",
         "support.class.builtin",
         "entity.other.inherited-class",
-        "support.type.object.module.js"
+        "support.type.object.module.js",
+        "entity.name.type.record.java"
       ],
       "settings": {
         "foreground": "{{class}}",
@@ -926,6 +927,7 @@
         "keyword.control.await",
         "keyword.control.bash",
         "keyword.control.break",
+        "keyword.control.new",
         "keyword.control.c",
         "keyword.control.case",
         "keyword.control.catch",
@@ -1006,9 +1008,10 @@
         "keyword.other.var",
         "keyword.other.export",
         "keyword.other.module",
+        "keyword.other.package",
+        "keyword.other.import",
         "keyword.package",
         "keyword.control.as",
-        "keyword.control.as.ts",
         "markup.heading",
         "markup.heading punctuation.definition",
         "meta.expression.clojure",
