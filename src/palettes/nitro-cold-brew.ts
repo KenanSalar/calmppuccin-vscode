@@ -174,7 +174,7 @@ export default {
   keyword: "#ACA4D4",
   type: "#9D92D3",
   parameter: "#d6c6c3",
-  typeParameter: "#b9accb",
+  typeParameter: "#b9accb", // midpoint of type and parameter
   namespace: "#77B3AC",
   namespaceAttribute: "#77B3AC",
   module: "#77B3AC",
@@ -184,7 +184,7 @@ export default {
   decorator: "#7fbeb7",
   class: "#d8a98c",
   functionAndMethod: "#89abe2",
-  delegate: "#b0aab7",
+  delegate: "#939eda", // midpoint of function/method and type
   struct: "#e08aa2",
   interface: "#d6c59b",
   enum: "#d897a2",
@@ -195,7 +195,7 @@ export default {
   property: "#BD97E0",
   propertyReadOnly: "#BD97E0",
   extensionMethod: "#89abe2",
-  event: "#9dd3ba",
+  event: "#9db2d9", // midpoint of function/method and variable
   number: "#888AE2",
   constant: "#888AE2",
   operator: "#91d1b8",

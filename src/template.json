@@ -728,8 +728,8 @@
       "scope": [
         "meta.parens.block.c",
         "meta.parens.c",
-        "entity.name.variable.parameter", 
-        "variable.parameter", 
+        "entity.name.variable.parameter",
+        "variable.parameter",
         "variable.import.parameter"
       ],
       "settings": {
@@ -796,6 +796,7 @@
         "entity.name.namespace",
         "entity.name.type.namespace",
         "entity.name.function.namespace-prefix",
+        "entity.name.type.package",
         "support.other.namespace",
         "punctuation.separator.namespace.access"
       ],
@@ -917,6 +918,7 @@
         "entity.name.section",
         "entity.name.section.group-title.editorconfig",
         "entity.name.type.primitive",
+        "entity.name.type.any",
         "keyword.contro.rust",
         "keyword.control punctuation.definition.function",
         "keyword.control.ahk2",
@@ -975,6 +977,9 @@
         "keyword.control.while",
         "keyword.control.yield",
         "keyword.control.zsh",
+        "keyword.type.go",
+        "keyword.channel",
+        "keyword.function",
         "keyword.import",
         "keyword.keys",
         "keyword.local",
@@ -1026,7 +1031,6 @@
         "source.cpp storage.type.cpp",
         "source.css entity.name.tag.custom",
         "source.elm storage.type",
-        "source.go keyword.operator",
         "source.hlsl storage.type.basic",
         "source.hlsl support.type.other",
         "source.kotlin storage.type.import",
@@ -1061,6 +1065,7 @@
         "storage.type.type",
         "storage.type.user-defined",
         "storage.type.var",
+        "storage.type.error",
         "support.other.namespace.use",
         "support.type",
         "support.type.builtin",
@@ -1119,6 +1124,8 @@
         "keyword.type.void",
         "storage.type.built-in.primitive",
         "storage.type.primitive",
+        "storage.type.string.go",
+        "storage.type.numeric.go",
         "support.type.primitive"
       ],
       "settings": {
@@ -1384,6 +1391,8 @@
         "punctuation.separator.scope-resolution",
         "punctuation.separator.period",
         "punctuation.separator.pointer-access",
+        "keyword.operator.channel",
+        "source.go keyword.operator",
         "storage.modifier.reference"
       ],
       "settings": {
@@ -1507,7 +1516,6 @@
         "support.type.exception.python",
         "storage.modifier.super",
         "source.go keyword",
-        "keyword.function.go",
         "meta.separator",
         "keyword.other.fn.rust",
         "storage.modifier.static.rust",
@@ -2020,7 +2028,19 @@
       "foreground": "{{keyword}}",
       "fontStyle": "{{keywordFontStyle}}"
     },
+    "type.defaultLibrary.interface": {
+      "foreground": "{{keyword}}",
+      "fontStyle": "{{keywordFontStyle}}"
+    },
     "type": {
+      "foreground": "{{type}}",
+      "fontStyle": "{{typeFontStyle}}"
+    },
+    "type.defaultLibrary.number": {
+      "foreground": "{{type}}",
+      "fontStyle": "{{typeFontStyle}}"
+    },
+    "type.defaultLibrary.string": {
       "foreground": "{{type}}",
       "fontStyle": "{{typeFontStyle}}"
     },
@@ -2084,11 +2104,35 @@
       "foreground": "{{struct}}",
       "fontStyle": "{{structFontStyle}}"
     },
+    "type.definition.struct": {
+      "foreground": "{{struct}}",
+      "fontStyle": "{{structFontStyle}}"
+    },
+    "type.struct": {
+      "foreground": "{{struct}}",
+      "fontStyle": "{{structFontStyle}}"
+    },
     "interface": {
       "foreground": "{{interface}}",
       "fontStyle": "{{interfaceFontStyle}}"
     },
+    "type.definition.interface": {
+      "foreground": "{{interface}}",
+      "fontStyle": "{{interfaceFontStyle}}"
+    },
+    "type.interface": {
+      "foreground": "{{interface}}",
+      "fontStyle": "{{interfaceFontStyle}}"
+    },
     "enum": {
+      "foreground": "{{enum}}",
+      "fontStyle": "{{enumFontStyle}}"
+    },
+    "type.definition.number": {
+      "foreground": "{{enum}}",
+      "fontStyle": "{{enumFontStyle}}"
+    },
+    "type.definition.string": {
       "foreground": "{{enum}}",
       "fontStyle": "{{enumFontStyle}}"
     },
@@ -2148,7 +2192,19 @@
       "foreground": "{{delegate}}",
       "fontStyle": "{{delegateFontStyle}}"
     },
+    "type.definition.signature": {
+      "foreground": "{{delegate}}",
+      "fontStyle": "{{delegateFontStyle}}"
+    },
     "event": {
+      "foreground": "{{event}}",
+      "fontStyle": "{{eventFontStyle}}"
+    },
+    "variable.definition.chan": {
+      "foreground": "{{event}}",
+      "fontStyle": "{{eventFontStyle}}"
+    },
+    "variable.chan": {
       "foreground": "{{event}}",
       "fontStyle": "{{eventFontStyle}}"
     },
@@ -2185,6 +2241,10 @@
       "fontStyle": "{{punctuationFontStyle}}"
     },
     "constant": {
+      "foreground": "{{constant}}",
+      "fontStyle": "{{constantFontStyle}}"
+    },
+    "string.format": {
       "foreground": "{{constant}}",
       "fontStyle": "{{constantFontStyle}}"
     },
