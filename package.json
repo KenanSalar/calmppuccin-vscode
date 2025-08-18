@@ -162,8 +162,8 @@
             "propertyReadOnlyFontStyle": "italic",
             "functionAndMethodFontStyle": "none",
             "extensionMethodFontStyle": "italic",
-            "delegateFontStyle": "none",
-            "eventFontStyle": "none",
+            "delegateFontStyle": "italic",
+            "eventFontStyle": "italic",
             "parameterFontStyle": "italic",
             "typeParameterFontStyle": "none",
             "numberFontStyle": "none",
@@ -418,7 +418,7 @@
             },
             "delegateFontStyle": {
               "type": "string",
-              "default": "none",
+              "default": "italic",
               "description": "Set the font style for delegates.",
               "enum": [
                 "none",
@@ -430,7 +430,7 @@
             },
             "eventFontStyle": {
               "type": "string",
-              "default": "none",
+              "default": "italic",
               "description": "Set the font style for events.",
               "enum": [
                 "none",
