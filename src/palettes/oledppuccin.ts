@@ -191,7 +191,6 @@ export default {
   enumMember: "#bb858e",
   support: "#be9fb5",
   fieldAndAttribute: "#be9fb5",
-  attributeBracket: "#be9fb5",
   property: "#B693D8",
   propertyReadOnly: "#B693D8",
   extensionMethod: "#7d98c4",

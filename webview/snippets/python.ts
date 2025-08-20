@@ -1,7 +1,7 @@
 export const pythonSnippet = `
-<span data-token="keyword">from</span> <span data-token="namespace">enum</span> <span data-token="keyword">import</span> <span data-token="enum">Enum</span>
-<span data-token="keyword">from</span> <span data-token="namespace">dataclasses</span> <span data-token="keyword">import</span> <span data-token="functionAndMethod">dataclass</span>
-<span data-token="keyword">from</span> <span data-token="namespace">typing</span> <span data-token="keyword">import</span> <span data-token="class">TypeVar</span><span data-token="punctuation">,</span> <span data-token="class">Generic</span>
+<span data-token="keyword">from</span> <span data-token="module">enum</span> <span data-token="keyword">import</span> <span data-token="enum">Enum</span>
+<span data-token="keyword">from</span> <span data-token="module">dataclasses</span> <span data-token="keyword">import</span> <span data-token="functionAndMethod">dataclass</span>
+<span data-token="keyword">from</span> <span data-token="module">typing</span> <span data-token="keyword">import</span> <span data-token="class">TypeVar</span><span data-token="punctuation">,</span> <span data-token="class">Generic</span>
 
 <span data-token="comment"># Using an Enum for status codes</span>
 <span data-token="keyword">class</span> <span data-token="enum">Status</span><span data-token="punctuation">(</span><span data-token="enum">Enum</span><span data-token="punctuation">)</span><span data-token="punctuation">:</span>
