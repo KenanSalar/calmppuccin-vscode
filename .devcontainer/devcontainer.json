@@ -1,0 +1,55 @@
+{
+  "name": "Calmppuccin Dev Container",
+
+  // Tells VS Code to build the container from our Dockerfile
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
+  "runArgs": [
+    "--name", "calmppuccin-dev"
+  ],
+
+  // These settings are applied inside the container once it's running
+  "customizations": {
+    "vscode": {
+      // Automatically install these extensions inside the container for a better dev experience
+      "extensions": [
+        "dbaeumer.vscode-eslint", // Essential for linting TypeScript
+        "kenan-salar.calmppuccin-vscode",
+        "Catppuccin.catppuccin-vsc-icons",
+        "JeronimoEkerdt.color-picker-universal",
+        "usernamehw.errorlens",
+        "dsznajder.es7-react-js-snippets",
+        "ecmel.vscode-html-css",
+        "solnurkarim.html-to-css-autocompletion",
+        "kisstkondoros.vscode-gutter-preview",
+        "Zignd.html-css-class-completion",
+        "xabikos.JavaScriptSnippets",
+        "yycalm.linecount",
+        "yzhang.markdown-all-in-one",
+        "DavidAnson.vscode-markdownlint",
+        "christian-kohler.npm-intellisense",
+        "christian-kohler.path-intellisense",
+        "esbenp.prettier-vscode",
+        "albert.TabOut",
+        "Gruntfuggly.todo-tree",
+        "pflannery.vscode-versionlens",
+        "mkxml.vscode-filesize",
+        "mhutchie.git-graph",
+        "piotrpalarz.vscode-gitignore-generator",
+        "formulahendry.auto-close-tag",
+        "formulahendry.auto-rename-tag",
+        "jeff-hykin.better-dockerfile-syntax",
+        "alefragnani.Bookmarks"
+      ]
+    }
+  },
+
+  // This command runs after the container is created for the first time.
+  // It installs all the project's npm dependencies.
+  "postCreateCommand": "npm install",
+
+  // Tells VS Code to run as the non-root 'node' user defined in the Dockerfile
+  "remoteUser": "node"
+}
