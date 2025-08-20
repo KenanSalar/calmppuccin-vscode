@@ -1,0 +1,25 @@
+{
+  "name": "Calmppuccin Dev Container",
+
+  // Tells VS Code to build the container from our Dockerfile
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
+  // These settings are applied inside the container once it's running
+  "customizations": {
+    "vscode": {
+      // Automatically install these extensions inside the container for a better dev experience
+      "extensions": [
+        "dbaeumer.vscode-eslint" // Essential for linting TypeScript
+      ]
+    }
+  },
+
+  // This command runs after the container is created for the first time.
+  // It installs all the project's npm dependencies.
+  "postCreateCommand": "npm install",
+
+  // Tells VS Code to run as the non-root 'node' user defined in the Dockerfile
+  "remoteUser": "node"
+}
