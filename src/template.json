@@ -1394,6 +1394,7 @@
         "punctuation.separator.scope-resolution",
         "punctuation.separator.period",
         "punctuation.separator.pointer-access",
+        "punctuation.other.period",
         "keyword.operator.channel",
         "source.go keyword.operator",
         "storage.modifier.reference"
@@ -1432,7 +1433,9 @@
         "meta.structure.dictionary.value",
         "punctuation.parenthesis",
         "punctuation.squarebracket.open",
-        "punctuation.squarebracket.close"
+        "punctuation.squarebracket.close",
+        "punctuation.definition.bracket.curly.begin",
+        "punctuation.definition.bracket.curly.end"
       ],
       "settings": {
         "foreground": "{{punctuation}}",
@@ -1456,6 +1459,7 @@
         "punctuation.separator.annotation.result",
         "markup punctuation.definition",
         "comment.block.documentation entity.name.type",
+        "entity.name.type.instance.jsdoc",
         "source.groovy storage.type",
         "storage.type.annotation",
         "punctuation.definition.annotation",
@@ -2285,7 +2289,7 @@
     },
     "markupCommentPunctuation": {
       "foreground": "{{punctuation}}",
-      "fontStyle": "{{commentFontStyle}}"
+      "fontStyle": "{{punctuationFontStyle}}"
     },
     "markupOperator": {
       "foreground": "{{operator}}",
