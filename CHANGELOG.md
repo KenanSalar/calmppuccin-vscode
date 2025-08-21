@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.6.0] - 2025-08-13
+## [1.6.0] - 2025-08-13 // TODO
 
 - **Feature**: Added code snippets for various languages, including C, C++, C#, CSS, Go, HTML, Java, JavaScript, Kotlin, Lua, PHP, PowerShell, Python, R, Ruby, Rust, Shell (Bash), SQL, Swift, and TypeScript.
 - **Feature**: Added a Docker-based Dev Container for a consistent development environment. This ensures all contributors use the same version of Node.js and system dependencies, and simplifies the setup process.
@@ -10,6 +10,8 @@
 - **Improvement**: Seperation of concerns with the `WebviewManager`. The `SettingsPanel` acts as a pure controller for settings logic now while the `WebviewManager` handles all view-related resonsibilities.
 - **Improvement**: Seperation of concerns with the ConfugurationService which acts as a single source of truth for all interactions with the vs code configuration api.
 - **Improvement**: Seperation of the `snippets.ts` file into language based snippet files for improved maintainability and scalability.
+- **Improvement**: Improved code documentation.
+- **Improvement**: Removed the last any casts, the project should be fully type-safe now.
 - **Fix**: Eliminating `any` casts for improved type safety.
 
 ## [1.5.7] - 2025-08-13
