@@ -14,4 +14,3 @@ package-lock.json
 src/**
 tsconfig.json
 webpack.config.js
-webview/**
