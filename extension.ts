@@ -74,7 +74,7 @@ export function activate(context: vscode.ExtensionContext) {
       const fontStyles = ConfigurationService.getFontStyles();
       const syntaxOverrides = ConfigurationService.getSyntaxOverrides();
 
-      await buildAllFlavors(accentValue, fontStyles || {}, syntaxOverrides as any);
+      await buildAllFlavors(accentValue, fontStyles, syntaxOverrides);
 
       const selection = await vscode.window.showInformationMessage(C.INFO_MESSAGE, C.RELOAD_ACTION);
 

@@ -35,18 +35,18 @@ export class ConfigurationService {
 
   /**
    * Gets the user-defined font styles.
-   * @returns {{ [key: string]: string } | undefined} The font styles object.
+   * @returns {FontStyles} The font styles object.
    */
-  public static getFontStyles() {
-    return this.config.get<{ [key: string]: string }>(C.CONFIG_KEY_FONT_STYLES);
+  public static getFontStyles(): FontStyles {
+    return this.config.get<FontStyles>(C.CONFIG_KEY_FONT_STYLES, {});
   }
 
   /**
    * Gets the user-defined syntax color overrides.
-   * @returns {object} The syntax overrides object.
+   * @returns {SyntaxOverrides} The syntax overrides object.
    */
-  public static getSyntaxOverrides() {
-    return this.config.get<object>(C.CONFIG_KEY_SYNTAX_OVERRIDES, {});
+  public static getSyntaxOverrides(): SyntaxOverrides {
+    return this.config.get<SyntaxOverrides>(C.CONFIG_KEY_SYNTAX_OVERRIDES, {});
   }
 
   /**

@@ -6,20 +6,17 @@
 
 import * as fs from "fs-extra";
 import * as path from "path";
-import palette from "./src/palettes";
+import palette, { Palettes, Palette as PaletteType } from "./src/palettes"; // Import Palettes and Palette types
 import * as C from "./src/constants";
-
-type Palette = { [key: string]: string };
-type GenericSettings = { [key: string]: any };
-type SyntaxOverrides = { [flavor: string]: Palette };
+import { FontStyles, SyntaxOverrides } from "./src/ConfigurationService";
 
 const THEME_DIR = path.resolve(__dirname, "..", C.THEMES_DIR);
 const TEMPLATE_PATH = path.resolve(__dirname, "..", C.SRC_DIR, C.TEMPLATE_FILE);
-const FLAVORS = Object.keys(palette);
+const FLAVORS = Object.keys(palette) as Array<keyof Palettes>;
 
 export async function buildAllFlavors(
   accentIdentifier: string,
-  editorSettings: GenericSettings,
+  editorSettings: FontStyles,
   syntaxOverrides: SyntaxOverrides
 ): Promise<void> {
   await fs.emptyDir(THEME_DIR);
@@ -27,14 +24,14 @@ export async function buildAllFlavors(
   const templateStr = await fs.readFile(TEMPLATE_PATH, "utf-8");
 
   for (const flavor of FLAVORS) {
-    const basePalette = (palette as { [key: string]: any })[flavor];
+    const basePalette = palette[flavor];
     const flavorOverrides = syntaxOverrides[flavor] || {};
     const finalPalette = { ...basePalette, ...flavorOverrides };
     const accentColor = accentIdentifier.startsWith("#")
       ? accentIdentifier
       : finalPalette[accentIdentifier] || finalPalette[C.FALLBACK_ACCENT];
     const accentHexValue = accentColor.substring(1);
-    const resolvedPalette: Palette = {};
+    const resolvedPalette: { [key: string]: string } = {};
 
     for (const [key, value] of Object.entries(finalPalette)) {
       if (typeof value === "string" && value.startsWith(C.ACCENT_RECIPE_PREFIX)) {
@@ -45,7 +42,7 @@ export async function buildAllFlavors(
       }
     }
 
-    const replacements: GenericSettings = { ...resolvedPalette, accent: accentColor, ...editorSettings };
+    const replacements = { ...resolvedPalette, accent: accentColor, ...editorSettings };
     let themeContent = templateStr;
 
     for (const [key, value] of Object.entries(replacements)) {
@@ -70,7 +67,7 @@ export async function buildAllFlavors(
 /**
  * Reads the package.json to get the default font styles.
  */
-function getDefaultFontStyles() {
+function getDefaultFontStyles(): FontStyles {
   const packageJsonPath = path.resolve(__dirname, "..", "package.json");
   const packageJson = fs.readJsonSync(packageJsonPath);
   return packageJson?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.fontStyles`]?.default ?? {};
