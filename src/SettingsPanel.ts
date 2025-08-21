@@ -5,9 +5,8 @@
 
 import * as vscode from "vscode";
 import * as C from "./constants";
-import palettes, { Palettes } from "./palettes";
 import { WebviewManager } from "./WebviewManager";
-import { ConfigurationService, FontStyles, SyntaxOverrides } from "./ConfigurationService";
+import { ConfigurationService } from "./ConfigurationService";
 
 // #region Webview Message Types
 /** Defines a message to update a font style setting. */
@@ -36,51 +35,6 @@ type WebviewMessage =
   | ResetAllMessage;
 // #endregion
 
-/** An array of syntax keys that are customizable in the UI. */
-const customizableSyntaxKeys = [
-  "comment",
-  "variable",
-  "keyword",
-  "type",
-  "namespace",
-  "namespaceAttribute",
-  "module",
-  "annotation",
-  "directive",
-  "decorator",
-  "class",
-  "interface",
-  "struct",
-  "enum",
-  "enumMember",
-  "fieldAndAttribute",
-  "property",
-  "propertyReadOnly",
-  "functionAndMethod",
-  "extensionMethod",
-  "delegate",
-  "event",
-  "parameter",
-  "typeParameter",
-  "number",
-  "constant",
-  "operator",
-  "operatorOverload",
-  "punctuation",
-  "string",
-  "stringVerbatim",
-  "text",
-];
-
-/**
- * A type guard to check if a string is a valid flavor key from the palettes.
- * @param key The string to check.
- * @returns {boolean} True if the key is a valid flavor name.
- */
-function isFlavor(key: string): key is keyof Palettes {
-  return key in palettes;
-}
-
 /**
  * Manages the state and logic of the settings webview panel.
  * This class follows a singleton pattern to ensure only one panel exists.
@@ -95,7 +49,7 @@ export class SettingsPanel {
 
   /**
    * Creates a new settings panel or reveals the existing one.
-   * @param context The extension context from VS Code.
+   * @param {vscode.ExtensionContext} context The extension context from VS Code.
    */
   public static createOrShow(context: vscode.ExtensionContext) {
     if (!SettingsPanel._instance) {
@@ -146,91 +100,17 @@ export class SettingsPanel {
   }
 
   /**
-   * Parses the active VS Code theme name to determine the current Calmppuccin flavor.
-   * @param {string} themeName The full name of the active color theme.
-   * @returns {keyof Palettes} The corresponding flavor key (e.g., "mocha").
-   */
-  private _getFlavorFromTheme(themeName: string): keyof Palettes {
-    const calmppuccinPrefix = "calmppuccin ";
-    if (themeName.toLowerCase().startsWith(calmppuccinPrefix)) {
-      const flavor = themeName
-        .slice(calmppuccinPrefix.length)
-        .toLowerCase()
-        .replace(/ /g, "-")
-        // Normalize accented characters (like 'é' in 'Frappé') to their base character 'e'
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
-
-      if (isFlavor(flavor)) {
-        return flavor;
-      }
-    }
-    // Fallback to a default flavor if parsing fails.
-    return "mocha";
-  }
-
-  /**
-   * Gathers all current settings and posts them to the webview panel to update its state.
+   * Gathers all current settings via the ConfigurationService and posts them to the webview.
    */
   private _update() {
     if (!WebviewManager.currentPanel) return;
 
-    // --- 1. Get all necessary configurations ---
-    const workbenchConfig = vscode.workspace.getConfiguration("workbench");
-    const extensionConfig = vscode.extensions.getExtension("kenan-salar.calmppuccin-vscode")?.packageJSON;
-    const activeTheme = workbenchConfig.get<string>("colorTheme", "Calmppuccin Mocha");
+    // The ONLY responsibility of this method now is to get the complete settings payload and post it.
+    const settings = ConfigurationService.getWebViewSettings();
 
-    // Get strongly-typed settings from our centralized service
-    const activeFlavor = this._getFlavorFromTheme(activeTheme);
-    const fontStyles: FontStyles = ConfigurationService.getFontStyles();
-    const syntaxOverrides: SyntaxOverrides = ConfigurationService.getSyntaxOverrides();
-    const currentAccent = ConfigurationService.getAccent(); // Handles "custom" logic internally
-    const customAccentColor = vscode.workspace
-      .getConfiguration(C.EXTENSION_NAMESPACE)
-      .get<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
-
-    // Get default values from package.json for comparison and reset functionality
-    const defaultFontStyles =
-      extensionConfig?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLES}`]
-        ?.default ?? {};
-    const accentOptions =
-      extensionConfig?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACCENT}`]?.enum ??
-      [];
-
-    // --- 2. Prepare data specifically for the webview ---
-    const defaultPalette = palettes[activeFlavor];
-    const overridePalette = syntaxOverrides[activeFlavor] || {};
-    const activeThemeBackgroundColor = defaultPalette.crust;
-
-    // Create a map of accent names to their hex codes for the current flavor
-    const accentColorPalettes = accentOptions.reduce((acc: { [key: string]: string }, option: string) => {
-      if (defaultPalette[option]) {
-        acc[option] = defaultPalette[option];
-      }
-      return acc;
-    }, {});
-
-    // Combine default and overridden settings into a single structure for the UI
-    const syntaxSettings = customizableSyntaxKeys.map((key) => ({
-      key: key,
-      fontStyle: fontStyles[`${key}FontStyle`] ?? "none",
-      color: overridePalette[key] || defaultPalette[key],
-      defaultColor: defaultPalette[key],
-    }));
-
-    // --- 3. Post the complete settings payload to the webview ---
     WebviewManager.currentPanel.postMessage({
       command: C.WEBVIEW_COMMANDS.LOAD_SETTINGS,
-      settings: {
-        activeFlavor,
-        syntaxSettings,
-        currentAccent,
-        accentOptions,
-        customAccentColor,
-        defaultFontStyles,
-        activeThemeBackgroundColor,
-        accentColorPalettes,
-      },
+      settings: settings,
     });
   }
 }
