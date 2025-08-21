@@ -6,7 +6,7 @@
 
 import * as fs from "fs-extra";
 import * as path from "path";
-import palette from "./src/palette";
+import palette from "./src/palettes";
 import * as C from "./src/constants";
 
 type Palette = { [key: string]: string };

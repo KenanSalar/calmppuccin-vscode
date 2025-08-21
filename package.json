@@ -3,7 +3,7 @@
   "displayName": "Calmppuccin",
   "description": "Calmppuccin is a visually refined theme for Visual Studio Code, designed to offer a harmonious coding experience. Inspired by the popular Catppuccin theme, Calmppuccin takes the beloved pastel palette and transforms it into a gentler, less intense version, perfect for long coding sessions without eye strain.",
   "icon": "assets/images/logo/icon.png",
-  "version": "1.5.7",
+  "version": "1.6.0",
   "publisher": "kenan-salar",
   "license": "MIT",
   "repository": {
@@ -150,6 +150,7 @@
             "namespaceAttributeFontStyle": "italic",
             "moduleFontStyle": "none",
             "annotationFontStyle": "italic",
+            "directiveFontStyle": "italic",
             "decoratorFontStyle": "italic",
             "classFontStyle": "none",
             "interfaceFontStyle": "none",
@@ -161,8 +162,8 @@
             "propertyReadOnlyFontStyle": "italic",
             "functionAndMethodFontStyle": "none",
             "extensionMethodFontStyle": "italic",
-            "delegateFontStyle": "none",
-            "eventFontStyle": "none",
+            "delegateFontStyle": "italic",
+            "eventFontStyle": "italic",
             "parameterFontStyle": "italic",
             "typeParameterFontStyle": "none",
             "numberFontStyle": "none",
@@ -263,6 +264,18 @@
               "type": "string",
               "default": "italic",
               "description": "Set the font style for annotations.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "directivenFontStyle": {
+              "type": "string",
+              "default": "italic",
+              "description": "Set the font style for directives.",
               "enum": [
                 "none",
                 "italic",
@@ -405,7 +418,7 @@
             },
             "delegateFontStyle": {
               "type": "string",
-              "default": "none",
+              "default": "italic",
               "description": "Set the font style for delegates.",
               "enum": [
                 "none",
@@ -417,7 +430,7 @@
             },
             "eventFontStyle": {
               "type": "string",
-              "default": "none",
+              "default": "italic",
               "description": "Set the font style for events.",
               "enum": [
                 "none",
@@ -596,6 +609,11 @@
                   "type": "string",
                   "format": "color-hex",
                   "description": "Overrides the color for annotations."
+                },
+                "directive": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for directives."
                 },
                 "decorator": {
                   "type": "string",
