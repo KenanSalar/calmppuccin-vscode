@@ -1,12 +1,62 @@
+/**
+ * @file This script is the entry point for the settings webview UI.
+ * It handles all DOM manipulation, event listening, and communication with the VS Code extension host.
+ */
+
 import { codeSnippets } from "./snippets";
 
+// #region Type Definitions
+// These types are duplicated from the extension's backend to create a strict, type-safe contract
+// for communication between the webview (frontend) and the extension host (backend).
+
+/** The message payload received from the extension when settings are loaded. */
+type SettingsPayload = {
+  activeFlavor: string;
+  syntaxSettings: { key: string; fontStyle: string; color: string; defaultColor: string }[];
+  currentAccent: string;
+  accentOptions: string[];
+  customAccentColor: string;
+  activeThemeBackgroundColor: string;
+  accentColorPalettes: { [key: string]: string };
+  defaultFontStyles: { [key: string]: string };
+};
+
+/** A discriminated union of all possible messages that can be received *from* the extension. */
+type MessageFromExtension = {
+  command: "loadSettings";
+  settings: SettingsPayload;
+};
+
+/** A discriminated union of all possible messages that can be sent *to* the extension. */
+type MessageToExtension =
+  | { command: "updateSetting"; key: string; value: string }
+  | { command: "resetFontStyle"; key: string }
+  | { command: "updateAccent"; value: string }
+  | { command: "updateCustomAccent"; value: string }
+  | { command: "updateSyntaxColor"; flavor: string; key: string; value: string }
+  | { command: "resetSyntaxColor"; flavor: string; key: string }
+  | { command: "resetAll" };
+// #endregion
+
+/**
+ * @interface VsCodeApi
+ * Defines the shape of the VS Code API object provided by `acquireVsCodeApi`.
+ */
 interface VsCodeApi {
-  postMessage(message: any): void;
+  /**
+   * Posts a message from the webview to the extension host.
+   * @param {MessageToExtension} message The strongly-typed message object to send.
+   */
+  postMessage(message: MessageToExtension): void;
 }
+
+// This special function is provided by VS Code in the webview environment to allow communication back to the extension.
 declare function acquireVsCodeApi(): VsCodeApi;
 const vscode = acquireVsCodeApi();
 
-// A centralized object for all commands sent to and from the webview.
+/**
+ * A centralized object for all command identifiers sent to and from the webview.
+ */
 const COMMANDS = {
   UPDATE_SETTING: "updateSetting",
   RESET_FONT_STYLE: "resetFontStyle",
@@ -16,14 +66,14 @@ const COMMANDS = {
   RESET_SYNTAX_COLOR: "resetSyntaxColor",
   RESET_ALL: "resetAll",
   LOAD_SETTINGS: "loadSettings",
-};
+} as const;
 
 /**
  * Manages all UI elements, state, and interactions for the settings webview.
  * This class encapsulates all DOM manipulation and event handling, keeping the global scope clean.
  */
 class UIManager {
-  // A single object to hold references to all necessary DOM elements, queried once on instantiation.
+  /** A single object to hold references to all necessary DOM elements, queried once on instantiation for performance. */
   private readonly elements = {
     accentContainer: document.getElementById("accent-container")!,
     settingsContainer: document.getElementById("settings-container")!,
@@ -40,21 +90,21 @@ class UIManager {
     cancelResetButton: document.getElementById("dialog-cancel-button")!,
   };
 
-  // Holds the current styling state for the live preview pane.
+  /** Holds the current styling state (color and font style) for the live preview pane. */
   private previewState: { [key: string]: { color?: string; fontStyle?: string } } = {};
-  // Caches the accent color palette for the active theme flavor.
+  /** Caches the accent color palette for the active theme flavor. */
   private accentColorMap: { [key: string]: string } = {};
-  // Stores the name of the currently active theme flavor (e.g., "mocha").
+  /** Stores the name of the currently active theme flavor (e.g., "mocha"). */
   private activeFlavor = "mocha";
 
   private readonly fontStyleOptions = ["none", "italic", "bold", "italic bold", "underline"];
   private readonly hex6Regex = /^#[0-9a-fA-F]{6}$/;
 
   /**
-   * Main method to build the entire UI when settings are received from the extension.
-   * @param settings - The settings object from the VS Code extension.
+   * Builds the entire UI from scratch when settings are received from the extension.
+   * @param {SettingsPayload} settings The settings object from the VS Code extension host.
    */
-  public populateAllSettings(settings: any) {
+  public populateAllSettings(settings: SettingsPayload) {
     const {
       activeFlavor,
       syntaxSettings,
@@ -65,37 +115,38 @@ class UIManager {
       accentColorPalettes,
     } = settings;
 
-    // 1. Update internal state
+    // 1. Update internal state with the new settings.
     this.accentColorMap = accentColorPalettes;
     this.activeFlavor = activeFlavor;
     this.previewState = {};
 
-    // 2. Clear previous UI elements to ensure a clean slate
+    // 2. Clear previous UI elements to ensure a clean slate on theme change.
     this.elements.accentContainer.innerHTML = "";
     this.elements.settingsContainer.innerHTML = "";
     this.elements.resetAllContainer.innerHTML = "";
 
-    // 3. Set flavor-specific UI elements
+    // 3. Set flavor-specific UI elements.
     this.elements.flavorTitle.textContent = `Editing: ${
       this.activeFlavor.charAt(0).toUpperCase() + this.activeFlavor.slice(1)
     }`;
     this.elements.previewPane.style.backgroundColor = activeThemeBackgroundColor;
 
-    // 4. Build each section of the UI
+    // 4. Build each section of the UI dynamically.
     this._createAccentColorControls(currentAccent, accentOptions, customAccentColor);
     this._createSyntaxControls(syntaxSettings, settings.defaultFontStyles);
     this._createResetAllButton();
 
-    // 5. Apply the initial state to the UI
+    // 5. Apply the initial state to the UI.
     this.updatePreviewPane();
     this._handleAccentChange(currentAccent);
   }
 
   /**
-   * Sets up all initial event listeners for the webview.
+   * Sets up all initial event listeners for the webview's interactive elements.
+   * This method is called only once when the script is first loaded.
    */
   public initializeEventListeners() {
-    // Populate language selector and set up its change event
+    // Populate the language selector dropdown and set up its change event.
     for (const lang in codeSnippets) {
       const option = document.createElement("option");
       option.value = lang;
@@ -105,12 +156,12 @@ class UIManager {
     this.elements.languageSelect.value = "csharp";
     this.elements.codePreview.innerHTML = codeSnippets.csharp;
     this.elements.languageSelect.addEventListener("change", (e) => {
-      const selectedLanguage = (e.target as HTMLSelectElement).value;
+      const selectedLanguage = (e.target as HTMLSelectElement).value as keyof typeof codeSnippets;
       this.elements.codePreview.innerHTML = codeSnippets[selectedLanguage];
       this.updatePreviewPane();
     });
 
-    // Listen for changes on the custom accent color pickers
+    // Listen for changes on the custom accent color pickers.
     this.elements.customAccentPicker.addEventListener("input", (e) => {
       const newValue = (e.target as HTMLInputElement).value;
       this.elements.customAccentHexInput.value = newValue;
@@ -126,7 +177,7 @@ class UIManager {
       }
     });
 
-    // Set up listeners for the confirmation dialog
+    // Set up listeners for the confirmation dialog.
     this.elements.cancelResetButton.addEventListener("click", () => this.elements.dialogOverlay.classList.add("hidden"));
     this.elements.dialogOverlay.addEventListener("click", (e) => {
       if (e.target === this.elements.dialogOverlay) this.elements.dialogOverlay.classList.add("hidden");
@@ -136,8 +187,8 @@ class UIManager {
       this.elements.dialogOverlay.classList.add("hidden");
     });
 
-    // Primary listener for messages coming from the VS Code extension
-    window.addEventListener("message", (event) => {
+    // Primary listener for messages coming from the VS Code extension host.
+    window.addEventListener("message", (event: MessageEvent<MessageFromExtension>) => {
       const message = event.data;
       if (message.command === COMMANDS.LOAD_SETTINGS) {
         this.populateAllSettings(message.settings);
@@ -152,7 +203,7 @@ class UIManager {
   }
 
   /**
-   * Iterates through the previewState and applies the current color and font styles
+   * Iterates through the `previewState` object and applies the current color and font styles
    * to all matching tokens in the code preview pane.
    */
   public updatePreviewPane() {
@@ -174,7 +225,8 @@ class UIManager {
   }
 
   /**
-   * Helper method to create the Accent Color dropdown and the custom color picker.
+   * Dynamically creates the Accent Color dropdown and the custom color picker controls.
+   * @private
    */
   private _createAccentColorControls(currentAccent: string, accentOptions: string[], customAccentColor: string) {
     this.elements.accentContainer.appendChild(this.elements.customAccentPickerContainer);
@@ -213,23 +265,34 @@ class UIManager {
   }
 
   /**
-   * Helper method to create the grid of controls for font styles and syntax colors.
+   * Dynamically creates the grid of controls for font styles and syntax colors.
+   * @param {SettingsPayload["syntaxSettings"]} syntaxSettings An array of the syntax settings to build controls for.
+   * @param {SettingsPayload["defaultFontStyles"]} defaultFontStyles An object containing the default font styles.
+   * @private
    */
-  private _createSyntaxControls(syntaxSettings: any[], defaultFontStyles: any) {
-    syntaxSettings.forEach((setting: any) => {
+  private _createSyntaxControls(
+    syntaxSettings: SettingsPayload["syntaxSettings"],
+    defaultFontStyles: SettingsPayload["defaultFontStyles"]
+  ) {
+    // Loop through each customizable syntax item (e.g., comment, keyword, etc.).
+    syntaxSettings.forEach((setting) => {
       const { key, fontStyle, color, defaultColor } = setting;
       const fontStyleKey = `${key}FontStyle`;
       const defaultFontStyle = defaultFontStyles[fontStyleKey] || "none";
 
+      // Initialize the live preview state for this syntax token.
       this.previewState[key] = { color, fontStyle };
 
+      // Create and configure the label for this setting.
       const label = document.createElement("label");
       label.textContent = key.replace(/([A-Z])/g, " $1").trim() + ":";
       label.htmlFor = key;
 
+      // Create the individual UI controls for font style and color.
       const fontContainer = this._createFontStyleControl(key, fontStyle, defaultFontStyle, fontStyleKey);
       const colorContainer = this._createColorPickerControl(key, color, defaultColor);
 
+      // Add the new elements to the settings grid in the DOM.
       this.elements.settingsContainer.appendChild(label);
       this.elements.settingsContainer.appendChild(fontContainer);
       this.elements.settingsContainer.appendChild(colorContainer);
@@ -237,7 +300,9 @@ class UIManager {
   }
 
   /**
-   * Helper method that creates an individual font style dropdown with its reset button.
+   * Creates an individual font style dropdown control with its associated reset button.
+   * @returns {HTMLElement} The container element for the font style control.
+   * @private
    */
   private _createFontStyleControl(
     key: string,
@@ -280,7 +345,9 @@ class UIManager {
   }
 
   /**
-   * Helper method that creates an individual color picker with its alpha slider and reset button.
+   * Creates an individual color picker control with its alpha slider and reset button.
+   * @returns {HTMLElement} The container element for the color picker.
+   * @private
    */
   private _createColorPickerControl(key: string, color: string, defaultColor: string): HTMLElement {
     const container = document.createElement("div");
@@ -352,7 +419,8 @@ class UIManager {
   }
 
   /**
-   * Helper method to create the "Reset All" button in the Danger Zone.
+   * Creates the "Reset All" button in the Danger Zone.
+   * @private
    */
   private _createResetAllButton() {
     const resetAllButton = document.createElement("button");
@@ -366,6 +434,8 @@ class UIManager {
 
   /**
    * Handles the logic for showing/hiding the custom accent picker and updating the UI's accent color.
+   * @param {string} accentValue The newly selected accent value.
+   * @private
    */
   private _handleAccentChange(accentValue: string) {
     const isCustom = accentValue === "custom";
@@ -375,7 +445,9 @@ class UIManager {
   }
 
   /**
-   * Updates the --dynamic-accent-color CSS variable to change the UI's theme in real-time.
+   * Updates the `--dynamic-accent-color` CSS variable to change the UI's theme in real-time.
+   * @param {string} newColor The new hex color to apply.
+   * @private
    */
   private updateAccentColor(newColor: string) {
     document.documentElement.style.setProperty("--dynamic-accent-color", newColor);
@@ -391,4 +463,5 @@ function initialize() {
   uiManager.initializeEventListeners();
 }
 
+// Start the application.
 initialize();
