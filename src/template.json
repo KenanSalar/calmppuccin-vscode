@@ -1099,7 +1099,8 @@
         "keyword.control.esac.shell",
         "keyword.control.select.shell",
         "entity.other.keyframe-offset",
-        "keyword.other.important"
+        "keyword.other.important",
+        "keyword.hard"
       ],
       "settings": {
         "foreground": "{{keyword}}",
