@@ -25,7 +25,7 @@ type ResetSyntaxColorMessage = { command: "resetSyntaxColor"; flavor: string; ke
 type ResetAllMessage = { command: "resetAll" };
 
 /** A discriminated union of all possible messages that can be sent from the webview to the extension. */
-type WebviewMessage =
+export type WebviewMessage =
   | UpdateSettingMessage
   | ResetFontStyleMessage
   | UpdateAccentMessage
