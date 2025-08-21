@@ -6,38 +6,49 @@
 
 import * as fs from "fs-extra";
 import * as path from "path";
-import palette from "./src/palettes";
+import palette, { Palettes } from "./src/palettes";
 import * as C from "./src/constants";
-
-type Palette = { [key: string]: string };
-type GenericSettings = { [key: string]: any };
-type SyntaxOverrides = { [flavor: string]: Palette };
+import { FontStyles, SyntaxOverrides } from "./src/ConfigurationService";
 
 const THEME_DIR = path.resolve(__dirname, "..", C.THEMES_DIR);
 const TEMPLATE_PATH = path.resolve(__dirname, "..", C.SRC_DIR, C.TEMPLATE_FILE);
-const FLAVORS = Object.keys(palette);
+const FLAVORS = Object.keys(palette) as Array<keyof Palettes>;
 
+/**
+ * Generates all Calmppuccin theme files based on the template, palettes, and user settings.
+ * @param {string} accentIdentifier The name of the accent color (e.g., "sapphire") or a custom hex code.
+ * @param {FontStyles} editorSettings The user's configured font style settings.
+ * @param {SyntaxOverrides} syntaxOverrides The user's configured syntax color overrides.
+ * @returns {Promise<void>} A promise that resolves when all theme files have been written to disk.
+ */
 export async function buildAllFlavors(
   accentIdentifier: string,
-  editorSettings: GenericSettings,
+  editorSettings: FontStyles,
   syntaxOverrides: SyntaxOverrides
 ): Promise<void> {
+  // Ensure the output directory is clean and ready.
   await fs.emptyDir(THEME_DIR);
   await fs.ensureDir(THEME_DIR);
   const templateStr = await fs.readFile(TEMPLATE_PATH, "utf-8");
 
+  // Iterate over each flavor (latte, frappe, mocha, etc.) to generate a theme for it.
   for (const flavor of FLAVORS) {
-    const basePalette = (palette as { [key: string]: any })[flavor];
+    const basePalette = palette[flavor];
     const flavorOverrides = syntaxOverrides[flavor] || {};
+    // Merge the base flavor palette with any user-defined color overrides.
     const finalPalette = { ...basePalette, ...flavorOverrides };
+
+    // Resolve the accent color. If it's a hex code, use it directly. Otherwise, look it up in the palette.
     const accentColor = accentIdentifier.startsWith("#")
       ? accentIdentifier
       : finalPalette[accentIdentifier] || finalPalette[C.FALLBACK_ACCENT];
     const accentHexValue = accentColor.substring(1);
-    const resolvedPalette: Palette = {};
 
+    // Create the final resolved palette by processing color recipes (e.g., "{{accent}}2f").
+    const resolvedPalette: { [key: string]: string } = {};
     for (const [key, value] of Object.entries(finalPalette)) {
       if (typeof value === "string" && value.startsWith(C.ACCENT_RECIPE_PREFIX)) {
+        // This is a dynamic color. Construct it by combining the accent hex with a transparency value.
         const transparency = value.substring(C.ACCENT_RECIPE_PREFIX.length);
         resolvedPalette[key] = `#${accentHexValue}${transparency}`;
       } else {
@@ -45,10 +56,13 @@ export async function buildAllFlavors(
       }
     }
 
-    const replacements: GenericSettings = { ...resolvedPalette, accent: accentColor, ...editorSettings };
+    // Combine all colors, the resolved accent, and font styles into a single object for replacement.
+    const replacements = { ...resolvedPalette, accent: accentColor, ...editorSettings };
     let themeContent = templateStr;
 
+    // Replace all placeholders (e.g., "{{base}}", "{{mauve}}", "{{commentFontStyle}}") in the template.
     for (const [key, value] of Object.entries(replacements)) {
+      // Handle the special case for font styles where "none" should be an empty string.
       const finalValue = value === "none" ? "" : value;
       const placeholder = new RegExp(`\\{\\{${key}\\}\\}`, "g");
       themeContent = themeContent.replace(placeholder, finalValue as string);
@@ -59,6 +73,7 @@ export async function buildAllFlavors(
     themeJson.name = `Calmppuccin ${flavorDisplayName}`;
     themeJson.type = flavor === C.LIGHT_FLAVOR_NAME ? C.THEME_TYPE_LIGHT : C.THEME_TYPE_DARK;
 
+    // Write the generated theme object to a JSON file in the /themes directory.
     const themeFileName = `${C.THEME_FILE_PREFIX}-${flavor}-${C.THEME_FILE_SUFFIX}`;
     const themePath = path.join(THEME_DIR, themeFileName);
     await fs.writeJson(themePath, themeJson, { spaces: 2 });
@@ -68,16 +83,18 @@ export async function buildAllFlavors(
 }
 
 /**
- * Reads the package.json to get the default font styles.
+ * Reads the project's package.json to get the default font styles defined in the contribution points.
+ * @returns {FontStyles} The default font styles object.
  */
-function getDefaultFontStyles() {
+function getDefaultFontStyles(): FontStyles {
   const packageJsonPath = path.resolve(__dirname, "..", "package.json");
   const packageJson = fs.readJsonSync(packageJsonPath);
   return packageJson?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.fontStyles`]?.default ?? {};
 }
 
 /**
- * This check allows the script to be executed directly from the command line.
+ * This block allows the script to be executed directly from the command line (e.g., `node dist/build.js`),
+ * which is useful for development and testing purposes. It generates the themes using default values.
  */
 if (require.main === module) {
   const defaultFontStyles = getDefaultFontStyles();

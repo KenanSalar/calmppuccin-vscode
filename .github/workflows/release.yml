@@ -12,7 +12,7 @@ jobs:
   build-and-package:
     runs-on: ubuntu-latest
     steps:
-      # 1. Check out your repository's code
+      # 1. Checks out the repository's code
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -21,7 +21,6 @@ jobs:
         run: docker build -t calmppuccin-builder ./.devcontainer
 
       # 3. Run build and package commands *inside* the container
-      # This step only packages the extension, it does not publish it.
       - name: Build and Package Extension
         run: |
           docker run --rm \
@@ -47,7 +46,7 @@ jobs:
     
     runs-on: ubuntu-latest
     steps:
-      # 1. Download the .vsix file that was created in the previous job
+      # 1. Download the .vsix file that was generated in the previous job
       - name: Download VSIX Artifact
         uses: actions/download-artifact@v4
         with:
@@ -59,3 +58,19 @@ jobs:
         with:
           pat: ${{ secrets.VSCE_PAT }}
           packagePath: "*.vsix"
+
+      # 3. Get the version number from package.json
+      - name: Get Package Version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+
+      # 4. Create a GitHub Release and upload the .vsix file
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          # This creates a tag like "v1.6.1" based on your package.json version
+          tag_name: "v${{ steps.package-version.outputs.current-version }}"
+          # This sets the release title
+          name: "Release v${{ steps.package-version.outputs.current-version }}"
+          # This attaches the .vsix file to the release assets
+          files: "*.vsix"

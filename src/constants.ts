@@ -1,9 +1,9 @@
 /**
  * @file This file contains all the static string values for the extension.
- * This makes the code more maintainable by providing a single source of truth.
+ * This makes the code more maintainable by providing a single source of truth for reused strings.
  */
 
-// For extension.ts
+/** Constants primarily used in the main `extension.ts` file. */
 export const EXTENSION_NAMESPACE = "calmppuccin";
 export const CONFIG_KEY_ACCENT = "accent";
 export const CONFIG_KEY_CUSTOM_ACCENT = "customAccentColor";
@@ -16,7 +16,7 @@ export const CONFIG_KEY_FONT_STYLES = "fontStyles";
 export const CONFIG_KEY_SYNTAX_OVERRIDES = "syntaxOverrides";
 export const CUSTOMIZE_COMMAND_ID = "calmppuccin.customize";
 
-// For build.ts
+/** Constants used in the `build.ts` script for theme generation. */
 export const THEMES_DIR = "themes";
 export const SRC_DIR = "src";
 export const TEMPLATE_FILE = "template.json";
@@ -30,14 +30,18 @@ export const THEME_FILE_SUFFIX = "color-theme.json";
 export const THEME_TYPE_LIGHT = "light";
 export const THEME_TYPE_DARK = "dark";
 
-// User-facing messages
+/** User-facing messages and actions used in notifications and dialogs. */
 export const INFO_MESSAGE = "Calmppuccin theme updated. Reload to apply.";
 export const RELOAD_ACTION = "Reload Window";
 export const REPORT_ISSUE_ACTION = "Report Issue";
 export const ERROR_MESSAGE_PREFIX = "Failed to update Calmppuccin themes. Error: ";
 export const REPO_ISSUES_URL = "https://github.com/KenanSalar/calmppuccin-vscode/issues";
 
-// For SettingsPanel.ts
+/**
+ * Defines the command identifiers for communication between the webview and the extension.
+ * Using `as const` ensures that the properties are read-only and their values are treated as literal types,
+ * which provides stronger type-checking.
+ */
 export const WEBVIEW_COMMANDS = {
   UPDATE_SETTING: "updateSetting",
   RESET_FONT_STYLE: "resetFontStyle",
