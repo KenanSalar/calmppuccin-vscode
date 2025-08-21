@@ -11,6 +11,10 @@ assets/images/screenshots/**
 build.ts
 extension.ts
 package-lock.json
-src/**
+src/ConfigurationService.ts
+src/constants.ts
+src/palettes/**
+src/SettingsPanel.ts
+src/WebviewManager.ts
 tsconfig.json
 webpack.config.js
