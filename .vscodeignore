@@ -4,13 +4,10 @@
 .gitignore
 .vscode-test/**
 .vscode/**
+node_modules/**
 assets/images/customUI/**
 assets/images/preview/**
 assets/images/screenshots/**
-build.ts
-extension.ts
 package-lock.json
-src/**
 tsconfig.json
 webpack.config.js
-webview/**
