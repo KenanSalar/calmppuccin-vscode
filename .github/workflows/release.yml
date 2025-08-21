@@ -1,35 +1,61 @@
-name: Publish to VS Marketplace
+name: Build, Test, and Publish Extension
 
-# This workflow runs only when a push happens on the main branch.
+# This workflow runs on pushes to the main and dev branches
 on:
   push:
     branches:
       - main
+      - dev
 
 jobs:
-  publish:
-    # Using the latest version of Ubuntu as the operating system for the job.
+  # This job builds and packages the extension on pushes to EITHER main or dev
+  build-and-package:
     runs-on: ubuntu-latest
     steps:
-      # 1. Checks out the repository code so the workflow can access it.
-      - name: Checkout
+      # 1. Check out your repository's code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Set up Node.js, which is required to run npm and vsce.
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+      # 2. Build the Docker image using the Dockerfile from your dev container setup
+      - name: Build Dev Container Image
+        run: docker build -t calmppuccin-builder ./.devcontainer
 
-      # 3. Install all the dependencies from package-lock.json.
-      # Using 'npm ci' is faster and more reliable for CI environments than 'npm install'.
-      - name: Install dependencies
-        run: npm ci
+      # 3. Run build and package commands *inside* the container
+      # This step only packages the extension, it does not publish it.
+      - name: Build and Package Extension
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/workspaces/calmppuccin-vscode-g \
+            -w /workspaces/calmppuccin-vscode-g \
+            calmppuccin-builder \
+            bash -c "npm install && vsce package --no-dependencies"
       
-      # 4. Compile TypeScript files to JavaScript.
-      - name: Compile TypeScript
-        run: npm run compile
+      # 4. Upload the generated .vsix file as a build artifact
+      - name: Upload VSIX Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: calmppuccin-vsix
+          path: "*.vsix"
 
-      # 5. Publish the extension to the Marketplace.
-      - name: Publish to VS Marketplace
-        run: npm run publish:ci -- -p ${{ secrets.VSCE_PAT }}
+  # This job ONLY runs on a push to the 'main' branch
+  publish-to-marketplace:
+    # This condition ensures the job only runs for the main branch
+    if: github.ref == 'refs/heads/main'
+    
+    # It requires the 'build-and-package' job to have completed successfully
+    needs: build-and-package
+    
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Download the .vsix file that was created in the previous job
+      - name: Download VSIX Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: calmppuccin-vsix
+
+      # 2. Publish the extension to the VS Code Marketplace
+      - name: Publish to VS Code Marketplace
+        uses: HaaLeo/publish-vscode-extension@v1
+        with:
+          pat: ${{ secrets.VSCE_PAT }}
+          packagePath: "*.vsix"
