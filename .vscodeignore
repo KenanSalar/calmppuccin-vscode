@@ -5,4 +5,5 @@ assets/images/screenshots/**
 .gitignore
 .vscode/**
 .vscode-test/**
+.devcontainer/**
 vsc-extension-quickstart.md
