@@ -8,6 +8,3 @@ node_modules/**
 assets/images/customUI/**
 assets/images/preview/**
 assets/images/screenshots/**
-package-lock.json
-tsconfig.json
-webpack.config.js
