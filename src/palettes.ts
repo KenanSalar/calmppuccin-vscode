@@ -1,11 +1,11 @@
 // This file imports all the partial palettes and combines them into one object.
-interface Palette {
+export interface Palette {
   themeName: string;
   themeType: "light" | "dark";
   [colorName: string]: string;
 }
 
-interface Palettes {
+export interface Palettes {
   latte: Palette;
   frappe: Palette;
   macchiato: Palette;
