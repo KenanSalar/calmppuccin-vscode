@@ -2,7 +2,7 @@
 
 ## [1.6.0] - 2025-08-13 // TODO
 
-- **Feature**: Added code snippets for various languages, including C, C++, C#, CSS, Go, HTML, Java, JavaScript, Kotlin, Lua, PHP, PowerShell, Python, R, Ruby, Rust, Shell (Bash), SQL, Swift, and TypeScript.
+- **Feature**: Added code snippets for various languages, including C, C++, C#, CSS, Go, HTML, Java, JavaScript, Kotlin, Lua, PHP, Python, Rust, Shell (Bash), SQL, Swift, and TypeScript.
 - **Feature**: Added a Docker-based Dev Container for a consistent development environment. This ensures all contributors use the same version of Node.js and system dependencies, and simplifies the setup process.
 - **Feature**: Added unit tests for the project an ci/cd.
 - **Improvement**: The CI/CD workflow can now use the same Docker container, guaranteeing that the build and packaging environment is identical to the development environment.
