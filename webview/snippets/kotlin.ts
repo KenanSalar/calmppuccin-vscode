@@ -6,7 +6,7 @@ export const kotlinSnippet = `
 <span data-token="keyword">import</span> <span data-token="namespace">java.util.</span><span data-token="class">Date</span>
 
 <span data-token="comment">// A constant value</span>
-<span data-token="keyword">const</span> <span data-token="keyword">val</span> <span data-token="constant">APP_VERSION</span> <span data-token="operator">=</span> <span data-token="string">"2.0"</span>
+<span data-token="keyword">const</span> <span data-token="keyword">val</span> <span data-token="propertyReadOnly">APP_VERSION</span> <span data-token="operator">=</span> <span data-token="string">"2.0"</span>
 
 <span data-token="comment">// An enum class for status</span>
 <span data-token="keyword">enum</span> <span data-token="keyword">class</span> <span data-token="class">Status</span><span data-token="punctuation">(</span><span data-token="keyword">val</span> <span data-token="parameter">code</span><span data-token="punctuation">:</span> <span data-token="class">Int</span><span data-token="punctuation">)</span> <span data-token="punctuation">{</span>
@@ -40,9 +40,9 @@ export const kotlinSnippet = `
         <span data-token="comment">// A multiline string with a template expression</span>
         <span data-token="comment">// logMessage here doesn't give a color token but the language server colors it as a read only property</span>
         <span data-token="keyword">val</span> <span data-token="propertyReadOnly">logMessage</span> <span data-token="operator">=</span> <span data-token="string">"""
-            Processing data: "$<span class="parameter">data</span>"
-            App Version: $<span class="constant">APP_VERSION</span>
-            """</span><span data-token="punctuation">.</span><span data-token="functionAndMethod">trimIndent</span><span data-token="punctuation">(</span><span data-token="punctuation">)</span>
+            Processing data: "</span><span class="variable">$data</span><span data-token="string">"
+            App Version:</span> <span class="variable">$APP_VERSION</span>
+            <span data-token="string">"""</span><span data-token="punctuation">.</span><span data-token="functionAndMethod">trimIndent</span><span data-token="punctuation">(</span><span data-token="punctuation">)</span>
         
         <span data-token="property">onUpdate</span><span data-token="punctuation">?</span><span data-token="punctuation">.</span><span data-token="functionAndMethod">invoke</span><span data-token="punctuation">(</span><span data-token="constant">logMessage</span><span data-token="punctuation">)</span>
     <span data-token="punctuation">}</span>
