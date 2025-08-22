@@ -201,9 +201,9 @@ export class ConfigurationService {
     const extensionConfig = vscode.extensions.getExtension("kenan-salar.calmppuccin-vscode")?.packageJSON;
     const customizableSyntaxKeys = [
       "comment",
-      "variable",
       "keyword",
       "type",
+      "typeAlias",
       "namespace",
       "namespaceAttribute",
       "module",
@@ -218,6 +218,9 @@ export class ConfigurationService {
       "fieldAndAttribute",
       "property",
       "propertyReadOnly",
+      "variable",
+      "variableMutable",
+      "macro",
       "functionAndMethod",
       "extensionMethod",
       "delegate",

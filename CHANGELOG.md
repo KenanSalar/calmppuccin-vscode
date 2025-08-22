@@ -4,6 +4,7 @@
 
 - **Feature**: Added code snippets for various languages, including C, C++, C#, CSS, Go, HTML, Java, JavaScript, Kotlin, Lua, PHP, Python, Rust, Shell (Bash), SQL, Swift, and TypeScript.
 - **Feature**: Added a Docker-based Dev Container for a consistent development environment. This ensures all contributors use the same version of Node.js and system dependencies, and simplifies the setup process.
+- **Feature**: Added `CONTRIBUTING.md`.
 - **Feature**: Added unit tests for the project an ci/cd.
 - **Improvement**: The CI/CD workflow can now use the same Docker container, guaranteeing that the build and packaging environment is identical to the development environment.
 - **Improvement**: Added many syntax highlighting tokens and semantic colors.
@@ -11,8 +12,9 @@
 - **Improvement**: Seperation of concerns with the ConfugurationService which acts as a single source of truth for all interactions with the vs code configuration api.
 - **Improvement**: Seperation of the `snippets.ts` file into language based snippet files for improved maintainability and scalability.
 - **Improvement**: Improved code documentation.
-- **Improvement**: Removed the last any casts, the project should be fully type-safe now.
-- **Fix**: Eliminating `any` casts for improved type safety.
+- **Fix**: Removed all any casts, the project should be fully type-safe now.
+- **Fix**: Fixed C# and python snippets wrong colorization.
+- **Fix**: Removed all development related files that are not necessary from the .vsix package in the `.vscodeignore` file.
 
 ## [1.5.7] - 2025-08-13
 
