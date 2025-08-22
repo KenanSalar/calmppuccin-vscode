@@ -666,7 +666,6 @@
       "scope": [
         "entity.name",
         "entity.name.package.go",
-        "entity.name.package.kotlin",
         "entity.name.variable",
         "markup.code",
         "markup.fenced_code.block",
@@ -799,7 +798,8 @@
         "entity.name.function.namespace-prefix",
         "entity.name.type.package",
         "support.other.namespace",
-        "punctuation.separator.namespace.access"
+        "punctuation.separator.namespace.access",
+        "entity.name.package"
       ],
       "settings": {
         "foreground": "{{namespace}}",
@@ -1101,7 +1101,9 @@
         "keyword.control.select.shell",
         "entity.other.keyframe-offset",
         "keyword.other.important",
-        "keyword.hard"
+        "keyword.soft",
+        "keyword.hard",
+        "variable.language.this.kotlin"
       ],
       "settings": {
         "foreground": "{{keyword}}",
