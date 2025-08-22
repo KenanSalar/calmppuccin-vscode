@@ -716,7 +716,8 @@
         "variable.other",
         "variable.other.normal punctuation.definition.variable.shell",
         "variable.other.readwrite",
-        "variable.scss"
+        "variable.scss",
+        "variable.language.self.lua"
       ],
       "settings": {
         "foreground": "{{variable}}",
