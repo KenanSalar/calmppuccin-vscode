@@ -12,7 +12,7 @@ import { htmlSnippet } from "./snippets/html";
 import { javaSnippet } from "./snippets/java";
 import { javascriptSnippet } from "./snippets/javascript"; // TODO
 import { kotlinSnippet } from "./snippets/kotlin"; // TODO
-import { luaSnippet } from "./snippets/lua"; // TODO
+import { luaSnippet } from "./snippets/lua";
 import { phpSnippet } from "./snippets/php"; // TODO
 import { powershellSnippet } from "./snippets/powershell"; // TODO
 import { pythonSnippet } from "./snippets/python";
