@@ -669,7 +669,6 @@
         "entity.name.variable",
         "markup.code",
         "markup.fenced_code.block",
-        "meta.embedded.block variable punctuation.definition.variable.php",
         "meta.function-call.arguments.python",
         "meta.template.expression.kotlin",
         "meta.toc-list.id.html",
@@ -728,6 +727,7 @@
       "scope": [
         "meta.parens.block.c",
         "meta.parens.c",
+        "meta.function.parameters",
         "entity.name.variable.parameter",
         "variable.parameter",
         "variable.import.parameter"
@@ -783,7 +783,8 @@
         "constant.language.boolean",
         "onstant.language.undefined",
         "constant.language.null",
-        "meta.expression.implicit"
+        "meta.expression.implicit",
+        "constant.enum.php"
       ],
       "settings": {
         "foreground": "{{constant}}",
@@ -826,7 +827,8 @@
         "support.class.builtin",
         "entity.other.inherited-class",
         "support.type.object.module.js",
-        "entity.name.type.record.java"
+        "entity.name.type.record.java",
+        "entity.name.type.enum.php"
       ],
       "settings": {
         "foreground": "{{class}}",
@@ -862,7 +864,9 @@
         "entity.name.type.enummember",
         "entity.name.variable.enum-member",
         "entity.name.enumMember",
-        "entity.name.enummember"
+        "entity.name.enummember",
+        "constant.enum",
+        "meta.enum.body"
       ],
       "settings": {
         "foreground": "{{enumMember}}",
@@ -904,7 +908,9 @@
         "meta.group.simple.subexpression.powershell",
         "keyword.other.special-method",
         "entity.name.command.shell",
-        "support.function.magic"
+        "support.function.magic",
+        "meta.function-call.invoke punctuation.definition.variable",
+        "meta.function-call.invoke variable.other"
       ],
       "settings": {
         "foreground": "{{functionAndMethod}}",
@@ -1002,7 +1008,6 @@
         "keyword.other.substitution",
         "keyword.other.template",
         "keyword.other.this",
-        "keyword.other.type",
         "keyword.other.typedef",
         "keyword.other.use",
         "keyword.other.using",
@@ -1114,6 +1119,7 @@
       "name": "type",
       "scope": [
         "keyword.type",
+        "keyword.other.type",
         "keyword.type.bool",
         "keyword.type.boolean",
         "keyword.type.byte",
@@ -1492,8 +1498,6 @@
       "name": "support",
       "scope": [
         "entity.mime-type.apacheconf",
-        "entity.name.function.call.kotlin",
-        "entity.name.function.infix",
         "entity.name.scope-resolution.function.call",
         "entity.other",
         "keyword.language.gherkin.feature.scenario",
@@ -1605,7 +1609,8 @@
         "meta.attribute.id entity.other.attribute-name",
         "entity.other.attribute",
         "punctuation.definition.attribute",
-        "meta.attribute"
+        "meta.attribute",
+        "support.attribute"
       ],
       "settings": {
         "foreground": "{{fieldAndAttribute}}",
