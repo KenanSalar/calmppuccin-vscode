@@ -10,19 +10,15 @@ import { cssSnippet } from "./snippets/css";
 import { goSnippet } from "./snippets/go";
 import { htmlSnippet } from "./snippets/html";
 import { javaSnippet } from "./snippets/java";
-import { javascriptSnippet } from "./snippets/javascript"; // TODO
-import { kotlinSnippet } from "./snippets/kotlin"; // TODO
-import { luaSnippet } from "./snippets/lua"; // TODO
-import { phpSnippet } from "./snippets/php"; // TODO
-import { powershellSnippet } from "./snippets/powershell"; // TODO
+import { javascriptSnippet } from "./snippets/javascript";
+import { kotlinSnippet } from "./snippets/kotlin";
+import { luaSnippet } from "./snippets/lua";
+import { phpSnippet } from "./snippets/php";
 import { pythonSnippet } from "./snippets/python";
-import { rSnippet } from "./snippets/r"; // TODO
-import { rubySnippet } from "./snippets/ruby"; // TODO
-import { rustSnippet } from "./snippets/rust"; // TODO
-import { shellSnippet } from "./snippets/shell"; // TODO
-import { sqlSnippet } from "./snippets/sql"; // TODO
-import { swiftSnippet } from "./snippets/swift"; // TODO
-import { typescriptSnippet } from "./snippets/typescript"; // TODO
+import { rustSnippet } from "./snippets/rust";
+import { shellSnippet } from "./snippets/shell";
+import { sqlSnippet } from "./snippets/sql";
+import { typescriptSnippet } from "./snippets/typescript";
 
 /**
  * Defines the shape for the code snippets object.
@@ -48,13 +44,9 @@ export const codeSnippets: CodeSnippets = {
   kotlin: kotlinSnippet,
   lua: luaSnippet,
   php: phpSnippet,
-  powershell: powershellSnippet,
   python: pythonSnippet,
-  r: rSnippet,
-  ruby: rubySnippet,
   rust: rustSnippet,
   shell: shellSnippet,
   sql: sqlSnippet,
-  swift: swiftSnippet,
   typescript: typescriptSnippet,
 };
