@@ -666,11 +666,9 @@
       "scope": [
         "entity.name",
         "entity.name.package.go",
-        "entity.name.package.kotlin",
         "entity.name.variable",
         "markup.code",
         "markup.fenced_code.block",
-        "meta.embedded.block variable punctuation.definition.variable.php",
         "meta.function-call.arguments.python",
         "meta.template.expression.kotlin",
         "meta.toc-list.id.html",
@@ -716,7 +714,9 @@
         "variable.other",
         "variable.other.normal punctuation.definition.variable.shell",
         "variable.other.readwrite",
-        "variable.scss"
+        "variable.scss",
+        "variable.language.self.lua",
+        "source.sql"
       ],
       "settings": {
         "foreground": "{{variable}}",
@@ -728,6 +728,7 @@
       "scope": [
         "meta.parens.block.c",
         "meta.parens.c",
+        "meta.function.parameters",
         "entity.name.variable.parameter",
         "variable.parameter",
         "variable.import.parameter"
@@ -778,12 +779,12 @@
         "constant.other",
         "constant.other.caps",
         "constant.others",
-        "constant.numeric",
         "constant.language",
         "constant.language.boolean",
         "onstant.language.undefined",
         "constant.language.null",
-        "meta.expression.implicit"
+        "meta.expression.implicit",
+        "constant.enum.php"
       ],
       "settings": {
         "foreground": "{{constant}}",
@@ -798,7 +799,8 @@
         "entity.name.function.namespace-prefix",
         "entity.name.type.package",
         "support.other.namespace",
-        "punctuation.separator.namespace.access"
+        "punctuation.separator.namespace.access",
+        "entity.name.package"
       ],
       "settings": {
         "foreground": "{{namespace}}",
@@ -825,7 +827,8 @@
         "support.class.builtin",
         "entity.other.inherited-class",
         "support.type.object.module.js",
-        "entity.name.type.record.java"
+        "entity.name.type.record.java",
+        "entity.name.type.enum.php"
       ],
       "settings": {
         "foreground": "{{class}}",
@@ -861,7 +864,9 @@
         "entity.name.type.enummember",
         "entity.name.variable.enum-member",
         "entity.name.enumMember",
-        "entity.name.enummember"
+        "entity.name.enummember",
+        "constant.enum",
+        "meta.enum.body"
       ],
       "settings": {
         "foreground": "{{enumMember}}",
@@ -903,7 +908,9 @@
         "meta.group.simple.subexpression.powershell",
         "keyword.other.special-method",
         "entity.name.command.shell",
-        "support.function.magic"
+        "support.function.magic",
+        "meta.function-call.invoke punctuation.definition.variable",
+        "meta.function-call.invoke variable.other"
       ],
       "settings": {
         "foreground": "{{functionAndMethod}}",
@@ -989,7 +996,6 @@
         "keyword.operator.expression.new",
         "keyword.operator.expression.typeof",
         "keyword.operator.expression.pattern.if",
-        "keyword.operator.heredoc",
         "keyword.operator.new",
         "keyword.other.base",
         "keyword.other.class.fileds",
@@ -1001,7 +1007,6 @@
         "keyword.other.substitution",
         "keyword.other.template",
         "keyword.other.this",
-        "keyword.other.type",
         "keyword.other.typedef",
         "keyword.other.use",
         "keyword.other.using",
@@ -1100,7 +1105,17 @@
         "keyword.control.select.shell",
         "entity.other.keyframe-offset",
         "keyword.other.important",
-        "keyword.hard"
+        "keyword.soft",
+        "keyword.hard",
+        "variable.language.this.kotlin",
+        "keyword.other.sql",
+        "keyword.other.create",
+        "keyword.other.DML",
+        "keyword.other.alias",
+        "keyword.other.DDL",
+        "keyword.other.order",
+        "keyword.other.pgsql",
+        "keyword.other.data-integrity"
       ],
       "settings": {
         "foreground": "{{keyword}}",
@@ -1111,6 +1126,7 @@
       "name": "type",
       "scope": [
         "keyword.type",
+        "keyword.other.type",
         "keyword.type.bool",
         "keyword.type.boolean",
         "keyword.type.byte",
@@ -1130,7 +1146,8 @@
         "storage.type.primitive",
         "storage.type.string.go",
         "storage.type.numeric.go",
-        "support.type.primitive"
+        "support.type.primitive",
+        "storage.type.sql"
       ],
       "settings": {
         "foreground": "{{type}}",
@@ -1276,7 +1293,8 @@
         "source.zig keyword.constant.bool",
         "source.zig keyword.constant.default",
         "entity.name.type.numeric",
-        "entity.other.keyframe-offset.percentage"
+        "entity.other.keyframe-offset.percentage",
+        "constant.numeric"
       ],
       "settings": {
         "foreground": "{{number}}",
@@ -1398,7 +1416,10 @@
         "punctuation.other.period",
         "keyword.operator.channel",
         "source.go keyword.operator",
-        "storage.modifier.reference"
+        "storage.modifier.reference",
+        "keyword.operator.heredoc",
+        "keyword.operator.redirect",
+        "punctuation.definition.assignment"
       ],
       "settings": {
         "foreground": "{{operator}}",
@@ -1436,7 +1457,13 @@
         "punctuation.squarebracket.open",
         "punctuation.squarebracket.close",
         "punctuation.definition.bracket.curly.begin",
-        "punctuation.definition.bracket.curly.end"
+        "punctuation.definition.bracket.curly.end",
+        "punctuation.comma",
+        "punctuation.brackets.round",
+        "punctuation.brackets.curly",
+        "punctuation.brackets.angle",
+        "punctuation.brackets.square",
+        "punctuation.definition.bracket.named-array"
       ],
       "settings": {
         "foreground": "{{punctuation}}",
@@ -1489,8 +1516,6 @@
       "name": "support",
       "scope": [
         "entity.mime-type.apacheconf",
-        "entity.name.function.call.kotlin",
-        "entity.name.function.infix",
         "entity.name.scope-resolution.function.call",
         "entity.other",
         "keyword.language.gherkin.feature.scenario",
@@ -1597,12 +1622,15 @@
       "name": "Attributes",
       "scope": [
         "entity.other.attribute-name",
+        "entity.other.attribute-name.bracket",
         "entity.other.attribute-name.pseudo-class",
         "entity.other.attribute-name.pseudo-element",
         "meta.attribute.id entity.other.attribute-name",
         "entity.other.attribute",
         "punctuation.definition.attribute",
-        "meta.attribute"
+        "meta.attribute",
+        "punctuation.brackets.attribute",
+        "support.attribute"
       ],
       "settings": {
         "foreground": "{{fieldAndAttribute}}",
@@ -2024,7 +2052,7 @@
       "foreground": "{{keyword}}",
       "fontStyle": "{{keywordFontStyle}}"
     },
-    "macro": {
+    "keyword.controlFlow": {
       "foreground": "{{keyword}}",
       "fontStyle": "{{keywordFontStyle}}"
     },
@@ -2044,6 +2072,14 @@
       "foreground": "{{type}}",
       "fontStyle": "{{typeFontStyle}}"
     },
+    "builtinType": {
+      "foreground": "{{type}}",
+      "fontStyle": "{{typeFontStyle}}"
+    },
+    "selfTypeKeyword": {
+      "foreground": "{{type}}",
+      "fontStyle": "{{typeFontStyle}}"
+    },
     "type.defaultLibrary.number": {
       "foreground": "{{type}}",
       "fontStyle": "{{typeFontStyle}}"
@@ -2051,6 +2087,10 @@
     "type.defaultLibrary.string": {
       "foreground": "{{type}}",
       "fontStyle": "{{typeFontStyle}}"
+    },
+    "typeAlias": {
+      "foreground": "{{typeAlias}}",
+      "fontStyle": "{{typeAliasFontStyle}}"
     },
     "templateType": {
       "foreground": "{{type}}",
@@ -2087,6 +2127,14 @@
     "class.decorator": {
       "foreground": "{{decorator}}",
       "fontStyle": "{{decoratorFontStyle}}"
+    },
+    "macro": {
+      "foreground": "{{macro}}",
+      "fontStyle": "{{macroFontStyle}}"
+    },
+    "variable.macro": {
+      "foreground": "{{variable}}",
+      "fontStyle": "{{variableFontStyle}}"
     },
     "class": {
       "foreground": "{{class}}",
@@ -2157,8 +2205,16 @@
       "fontStyle": "{{fieldAndAttributeFontStyle}}"
     },
     "attributeBracket": {
-      "foreground": "{{punctuation}}",
-      "fontStyle": "{{punctuationFontStyle}}"
+      "foreground": "{{fieldAndAttribute}}",
+      "fontStyle": "{{fieldAndAttributeFontStyle}}"
+    },
+    "attributeBracket.attribute": {
+      "foreground": "{{fieldAndAttribute}}",
+      "fontStyle": "{{fieldAndAttributeFontStyle}}"
+    },
+    "derive.defaultLibrary.attribute": {
+      "foreground": "{{fieldAndAttribute}}",
+      "fontStyle": "{{fieldAndAttributeFontStyle}}"
     },
     "property": {
       "foreground": "{{property}}",
@@ -2216,6 +2272,14 @@
       "foreground": "{{event}}",
       "fontStyle": "{{eventFontStyle}}"
     },
+    "variable.declaration.mutable": {
+      "foreground": "{{variableMutable}}",
+      "fontStyle": "{{variableMutableFontStyle}}"
+    },
+    "variable.mutable": {
+      "foreground": "{{variableMutable}}",
+      "fontStyle": "{{variableMutableFontStyle}}"
+    },
     "parameter": {
       "foreground": "{{parameter}}",
       "fontStyle": "{{parameterFontStyle}}"
@@ -2248,7 +2312,19 @@
       "foreground": "{{punctuation}}",
       "fontStyle": "{{punctuationFontStyle}}"
     },
+    "formatSpecifier": {
+      "foreground": "{{punctuation}}",
+      "fontStyle": "{{punctuationFontStyle}}"
+    },
     "constant": {
+      "foreground": "{{constant}}",
+      "fontStyle": "{{constantFontStyle}}"
+    },
+    "const": {
+      "foreground": "{{constant}}",
+      "fontStyle": "{{constantFontStyle}}"
+    },
+    "const.constant": {
       "foreground": "{{constant}}",
       "fontStyle": "{{constantFontStyle}}"
     },

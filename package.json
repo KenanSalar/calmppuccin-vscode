@@ -143,9 +143,9 @@
           "description": "The raw JSON configuration for font styles. For a better experience, use the Customization UI.",
           "default": {
             "commentFontStyle": "italic",
-            "variableFontStyle": "none",
             "keywordFontStyle": "none",
             "typeFontStyle": "italic",
+            "typeAliasFontStyle": "italic",
             "namespaceFontStyle": "none",
             "namespaceAttributeFontStyle": "italic",
             "moduleFontStyle": "none",
@@ -160,6 +160,9 @@
             "fieldAndAttributeFontStyle": "none",
             "propertyFontStyle": "none",
             "propertyReadOnlyFontStyle": "italic",
+            "variableFontStyle": "none",
+            "variableMutableFontStyle": "italic",
+            "macroFontStyle": "none",
             "functionAndMethodFontStyle": "none",
             "extensionMethodFontStyle": "italic",
             "delegateFontStyle": "italic",
@@ -188,18 +191,6 @@
                 "underline"
               ]
             },
-            "variableFontStyle": {
-              "type": "string",
-              "default": "none",
-              "description": "Set the font style for variables.",
-              "enum": [
-                "none",
-                "italic",
-                "bold",
-                "italic bold",
-                "underline"
-              ]
-            },
             "keywordFontStyle": {
               "type": "string",
               "default": "none",
@@ -213,6 +204,18 @@
               ]
             },
             "typeFontStyle": {
+              "type": "string",
+              "default": "italic",
+              "description": "Set the font style for types.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "typeAliasFontStyle": {
               "type": "string",
               "default": "italic",
               "description": "Set the font style for types.",
@@ -384,6 +387,42 @@
               "type": "string",
               "default": "italic",
               "description": "Set the font style for read only properties.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "variableFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for variables.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "variableMutableFontStyle": {
+              "type": "string",
+              "default": "italic",
+              "description": "Set the font style for mutable variables.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "macroFontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for mutable variables.",
               "enum": [
                 "none",
                 "italic",
@@ -575,17 +614,17 @@
                   "format": "color-hex",
                   "description": "Overrides the color for comments."
                 },
-                "variable": {
-                  "type": "string",
-                  "format": "color-hex",
-                  "description": "Overrides the color for variables."
-                },
                 "keyword": {
                   "type": "string",
                   "format": "color-hex",
                   "description": "Overrides the color for keywords."
                 },
                 "type": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for types."
+                },
+                "typeAlias": {
                   "type": "string",
                   "format": "color-hex",
                   "description": "Overrides the color for types."
@@ -659,6 +698,21 @@
                   "type": "string",
                   "format": "color-hex",
                   "description": "Overrides the color for read-only properties."
+                },
+                "variable": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for variables."
+                },
+                "variableMutable": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for mutable variables."
+                },
+                "macro": {
+                  "type": "string",
+                  "format": "color-hex",
+                  "description": "Overrides the color for mutable variables."
                 },
                 "functionAndMethod": {
                   "type": "string",

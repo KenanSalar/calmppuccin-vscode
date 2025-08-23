@@ -172,6 +172,7 @@ export default {
   // Syntax colors
   keyword: "#BDB5EC",
   type: "#AEA3E9",
+  typeAlias: "#D87DC7",
   parameter: "#E4D0CA",
   typeParameter: "#c9b9d9", // midpoint of type and parameter
   namespace: "#80C5BD",
@@ -204,6 +205,8 @@ export default {
   comment: "#8c93b1",
   text: "#a0dbe9",
   variable: "#bcc7e6",
+  variableMutable: "#bcc7e6",
+  macro: "#DBB7A9",
   date: "#bcc7e6",
   info: "#799fdb",
   debug: "#D1A0FF",
