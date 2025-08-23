@@ -15,10 +15,9 @@ import { kotlinSnippet } from "./snippets/kotlin";
 import { luaSnippet } from "./snippets/lua";
 import { phpSnippet } from "./snippets/php";
 import { pythonSnippet } from "./snippets/python";
-import { rustSnippet } from "./snippets/rust"; // TODO
-import { shellSnippet } from "./snippets/shell"; // TODO
-import { sqlSnippet } from "./snippets/sql"; // TODO
-import { swiftSnippet } from "./snippets/swift"; // TODO
+import { rustSnippet } from "./snippets/rust";
+import { shellSnippet } from "./snippets/shell";
+import { sqlSnippet } from "./snippets/sql";
 import { typescriptSnippet } from "./snippets/typescript";
 
 /**
@@ -49,6 +48,5 @@ export const codeSnippets: CodeSnippets = {
   rust: rustSnippet,
   shell: shellSnippet,
   sql: sqlSnippet,
-  swift: swiftSnippet,
   typescript: typescriptSnippet,
 };
