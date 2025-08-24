@@ -1,29 +1,39 @@
+# A descriptive name for the entire workflow, which will appear in the GitHub Actions UI.
 name: Build, Test, and Publish Extension
 
-# This workflow runs on pushes to the main and dev branches
+# This section defines the triggers for the workflow.
 on:
   push:
+    # The workflow will run on any push to either the 'main' or 'dev' branches.
     branches:
       - main
       - dev
 
+# This section defines the jobs that will be executed as part of the workflow.
 jobs:
-  # This job tests, builds, and packages the extension on pushes to EITHER main or dev
+  # This job is responsible for testing, building, and packaging the extension.
+  # It runs on pushes to both 'main' and 'dev'.
   build-and-package:
     runs-on: ubuntu-latest
+    # This section defines outputs that can be passed from this job to other jobs.
+    outputs:
+      # We will pass the exact path of the generated .vsix file to the 'publish' job.
+      vsix_path: ${{ steps.package-extension.outputs.vsixPath }}
+      # We also pass the version number to be used for tagging and release naming.
+      version: ${{ steps.package-version.outputs.current-version }}
+      
     steps:
-      # 1. Checks out the repository's code
+      # Step 1: Checks out the repository's code so the workflow can access it.
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Build the Docker image using the Dockerfile from your dev container setup
-      # This ensures a consistent environment for all subsequent steps.
+      # Step 2: Builds the Docker image from the .devcontainer configuration.
+      # This ensures a consistent and reproducible environment for testing and building.
       - name: Build Dev Container Image
         run: docker build -t calmppuccin-builder ./.devcontainer
 
-      # 3. (NEW) Run unit and integration tests inside the container
-      # This step is the new quality gate. If 'npm test' fails, the workflow will stop here.
-      # It runs before the packaging step to ensure only tested code proceeds.
+      # Step 3: Runs the test suite inside the container.
+      # This is a critical quality gate. If 'npm test' fails, the entire workflow will stop.
       - name: Run Tests
         run: |
           docker run --rm \
@@ -32,59 +42,76 @@ jobs:
             calmppuccin-builder \
             bash -c "npm install && npm test"
 
-      # 4. Run build and package commands *inside* the container
-      # This step only runs if the tests in the previous step have passed.
+      # Step 4: Gets the version number from package.json before packaging.
+      # This is needed to construct the final .vsix filename.
+      - name: Get Package Version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+
+      # Step 5: Builds and packages the extension.
       - name: Build and Package Extension
+        id: package-extension # An ID is needed to reference its outputs.
         run: |
+          # Construct a predictable filename based on the version from the previous step.
+          VSIX_FILENAME="calmppuccin-vscode-${{ steps.package-version.outputs.current-version }}.vsix"
           docker run --rm \
             -v ${{ github.workspace }}:/workspaces/calmppuccin-vscode \
             -w /workspaces/calmppuccin-vscode \
             calmppuccin-builder \
-            bash -c "npm install && npm run package"
+            bash -c "npm install && npm run package && mv *.vsix $VSIX_FILENAME"
+          
+          # Set the exact filename as a job output to be used by the 'publish' job.
+          echo "vsixPath=$VSIX_FILENAME" >> $GITHUB_OUTPUT
       
-      # 5. Upload the generated .vsix file as a build artifact
-      # This artifact will be used by the publishing job.
+      # Step 6: Uploads the generated .vsix file as a build artifact.
+      # This allows it to be downloaded by the 'publish' job.
       - name: Upload VSIX Artifact
         uses: actions/upload-artifact@v4
         with:
           name: calmppuccin-vsix
-          path: "*.vsix"
+          path: ${{ steps.package-extension.outputs.vsixPath }}
 
-  # This job ONLY runs on a push to the 'main' branch
-  publish-to-marketplace:
-    # This condition ensures the job only runs for the main branch
+  # This job is responsible for publishing the extension to the marketplaces and creating a GitHub Release.
+  publish:
+    # This condition ensures the job ONLY runs for pushes to the 'main' branch.
     if: github.ref == 'refs/heads/main'
     
-    # It requires the 'build-and-package' job (including tests) to have completed successfully
+    # This job will only start after the 'build-and-package' job has completed successfully.
     needs: build-and-package
     
     runs-on: ubuntu-latest
     steps:
-      # 1. Download the .vsix file that was generated in the previous job
+      # Step 1: Downloads the .vsix artifact that was generated in the previous job.
       - name: Download VSIX Artifact
         uses: actions/download-artifact@v4
         with:
           name: calmppuccin-vsix
 
-      # 2. Publish the extension to the VS Code Marketplace
+      # Step 2: Publishes the extension to the official Microsoft VS Code Marketplace.
       - name: Publish to VS Code Marketplace
         uses: HaaLeo/publish-vscode-extension@v1
         with:
+          # A Personal Access Token for the marketplace, stored as a secret.
           pat: ${{ secrets.VSCE_PAT }}
-          packagePath: "*.vsix"
+          # Use the exact filename from the previous job's output to avoid errors.
+          packagePath: ${{ needs.build-and-package.outputs.vsix_path }}
 
-      # 3. Get the version number from package.json
-      - name: Get Package Version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@v1.3.1
+      # Step 3: Publishes the extension to the Open VSX Marketplace for VSCodium and other editors.
+      - name: Publish to Open VSX Marketplace
+        uses: HaaLeo/publish-vscode-extension@v1
+        with:
+          # A Personal Access Token for Open VSX, stored as a secret.
+          pat: ${{ secrets.OVSX_PAT }}
+          packagePath: ${{ needs.build-and-package.outputs.vsix_path }}
+          registryUrl: "https://open-vsx.org"
 
-      # 4. Create a GitHub Release and upload the .vsix file
+      # Step 4: Creates a new GitHub Release for the new version.
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          # This creates a tag like "v1.6.1" based on your package.json version
-          tag_name: "v${{ steps.package-version.outputs.current-version }}"
-          # This sets the release title
-          name: "Release v${{ steps.package-version.outputs.current-version }}"
-          # This attaches the .vsix file to the release assets
-          files: "*.vsix"
+          # Creates a git tag like "v1.6.0" based on the package.json version.
+          tag_name: "v${{ needs.build-and-package.outputs.version }}"
+          # Sets the title of the release.
+          name: "Release v${{ needs.build-and-package.outputs.version }}"
+          # Attaches the generated .vsix file to the release for manual download.
+          files: ${{ needs.build-and-package.outputs.vsix_path }}
