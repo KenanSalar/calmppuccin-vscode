@@ -1,330 +1,467 @@
+/**
+ * @file This script is the entry point for the settings webview UI.
+ * It handles all DOM manipulation, event listening, and communication with the VS Code extension host.
+ */
+
 import { codeSnippets } from "./snippets";
 
+// #region Type Definitions
+// These types are duplicated from the extension's backend to create a strict, type-safe contract
+// for communication between the webview (frontend) and the extension host (backend).
+
+/** The message payload received from the extension when settings are loaded. */
+type SettingsPayload = {
+  activeFlavor: string;
+  syntaxSettings: { key: string; fontStyle: string; color: string; defaultColor: string }[];
+  currentAccent: string;
+  accentOptions: string[];
+  customAccentColor: string;
+  activeThemeBackgroundColor: string;
+  accentColorPalettes: { [key: string]: string };
+  defaultFontStyles: { [key: string]: string };
+};
+
+/** A discriminated union of all possible messages that can be received *from* the extension. */
+type MessageFromExtension = {
+  command: "loadSettings";
+  settings: SettingsPayload;
+};
+
+/** A discriminated union of all possible messages that can be sent *to* the extension. */
+type MessageToExtension =
+  | { command: "updateSetting"; key: string; value: string }
+  | { command: "resetFontStyle"; key: string }
+  | { command: "updateAccent"; value: string }
+  | { command: "updateCustomAccent"; value: string }
+  | { command: "updateSyntaxColor"; flavor: string; key: string; value: string }
+  | { command: "resetSyntaxColor"; flavor: string; key: string }
+  | { command: "resetAll" };
+// #endregion
+
+/**
+ * @interface VsCodeApi
+ * Defines the shape of the VS Code API object provided by `acquireVsCodeApi`.
+ */
 interface VsCodeApi {
-  postMessage(message: any): void;
+  /**
+   * Posts a message from the webview to the extension host.
+   * @param {MessageToExtension} message The strongly-typed message object to send.
+   */
+  postMessage(message: MessageToExtension): void;
 }
+
+// This special function is provided by VS Code in the webview environment to allow communication back to the extension.
 declare function acquireVsCodeApi(): VsCodeApi;
 const vscode = acquireVsCodeApi();
 
-function initialize() {
-  const accentContainer = document.getElementById("accent-container");
-  const settingsContainer = document.getElementById("settings-container");
-  const customAccentPickerContainer = document.getElementById("custom-accent-picker-container");
-  const flavorTitle = document.getElementById("current-flavor");
-  const customAccentPicker = document.getElementById("custom-accent-picker") as HTMLInputElement;
-  const customAccentHexInput = document.getElementById("custom-accent-hex-input") as HTMLInputElement;
-  const previewPane = document.getElementById("preview-pane");
-  const codePreview = document.getElementById("code-preview");
-  const resetAllContainer = document.getElementById("reset-all-container");
-  const languageSelect = document.getElementById("language-select") as HTMLSelectElement;
+/**
+ * A centralized object for all command identifiers sent to and from the webview.
+ */
+const COMMANDS = {
+  UPDATE_SETTING: "updateSetting",
+  RESET_FONT_STYLE: "resetFontStyle",
+  UPDATE_ACCENT: "updateAccent",
+  UPDATE_CUSTOM_ACCENT: "updateCustomAccent",
+  UPDATE_SYNTAX_COLOR: "updateSyntaxColor",
+  RESET_SYNTAX_COLOR: "resetSyntaxColor",
+  RESET_ALL: "resetAll",
+  LOAD_SETTINGS: "loadSettings",
+} as const;
 
-  // Declarations for the dialog elements
-  const dialogOverlay = document.getElementById("reset-dialog-overlay");
-  const confirmResetButton = document.getElementById("dialog-confirm-button");
-  const cancelResetButton = document.getElementById("dialog-cancel-button");
+/**
+ * Manages all UI elements, state, and interactions for the settings webview.
+ * This class encapsulates all DOM manipulation and event handling, keeping the global scope clean.
+ */
+class UIManager {
+  /** A single object to hold references to all necessary DOM elements, queried once on instantiation for performance. */
+  private readonly elements = {
+    accentContainer: document.getElementById("accent-container")!,
+    settingsContainer: document.getElementById("settings-container")!,
+    customAccentPickerContainer: document.getElementById("custom-accent-picker-container")!,
+    flavorTitle: document.getElementById("current-flavor")!,
+    customAccentPicker: document.getElementById("custom-accent-picker") as HTMLInputElement,
+    customAccentHexInput: document.getElementById("custom-accent-hex-input") as HTMLInputElement,
+    previewPane: document.getElementById("preview-pane")!,
+    codePreview: document.getElementById("code-preview")!,
+    resetAllContainer: document.getElementById("reset-all-container")!,
+    languageSelect: document.getElementById("language-select") as HTMLSelectElement,
+    dialogOverlay: document.getElementById("reset-dialog-overlay")!,
+    confirmResetButton: document.getElementById("dialog-confirm-button")!,
+    cancelResetButton: document.getElementById("dialog-cancel-button")!,
+  };
 
-  if (
-    !settingsContainer ||
-    !accentContainer ||
-    !customAccentPickerContainer ||
-    !flavorTitle ||
-    !customAccentPicker ||
-    !customAccentHexInput ||
-    !previewPane ||
-    !resetAllContainer ||
-    !codePreview ||
-    !languageSelect ||
-    !dialogOverlay ||
-    !confirmResetButton ||
-    !cancelResetButton
-  ) {
-    console.error("A required element was not found in the webview DOM. Halting script execution.");
-    return;
+  /** Holds the current styling state (color and font style) for the live preview pane. */
+  private previewState: { [key: string]: { color?: string; fontStyle?: string } } = {};
+  /** Caches the accent color palette for the active theme flavor. */
+  private accentColorMap: { [key: string]: string } = {};
+  /** Stores the name of the currently active theme flavor (e.g., "mocha"). */
+  private activeFlavor = "mocha";
+
+  private readonly fontStyleOptions = ["none", "italic", "bold", "italic bold", "underline"];
+  private readonly hex6Regex = /^#[0-9a-fA-F]{6}$/;
+
+  /**
+   * Builds the entire UI from scratch when settings are received from the extension.
+   * @param {SettingsPayload} settings The settings object from the VS Code extension host.
+   */
+  public populateAllSettings(settings: SettingsPayload) {
+    const {
+      activeFlavor,
+      syntaxSettings,
+      currentAccent,
+      accentOptions,
+      customAccentColor,
+      activeThemeBackgroundColor,
+      accentColorPalettes,
+    } = settings;
+
+    // 1. Update internal state with the new settings.
+    this.accentColorMap = accentColorPalettes;
+    this.activeFlavor = activeFlavor;
+    this.previewState = {};
+
+    // 2. Clear previous UI elements to ensure a clean slate on theme change.
+    this.elements.accentContainer.innerHTML = "";
+    this.elements.settingsContainer.innerHTML = "";
+    this.elements.resetAllContainer.innerHTML = "";
+
+    // 3. Set flavor-specific UI elements.
+    this.elements.flavorTitle.textContent = `Editing: ${
+      this.activeFlavor.charAt(0).toUpperCase() + this.activeFlavor.slice(1)
+    }`;
+    this.elements.previewPane.style.backgroundColor = activeThemeBackgroundColor;
+
+    // 4. Build each section of the UI dynamically.
+    this._createAccentColorControls(currentAccent, accentOptions, customAccentColor);
+    this._createSyntaxControls(syntaxSettings, settings.defaultFontStyles);
+    this._createResetAllButton();
+
+    // 5. Apply the initial state to the UI.
+    this.updatePreviewPane();
+    this._handleAccentChange(currentAccent);
   }
 
-  setTimeout(() => {
-    dialogOverlay.style.opacity = "";
-    dialogOverlay.style.pointerEvents = "";
-  }, 50);
+  /**
+   * Sets up all initial event listeners for the webview's interactive elements.
+   * This method is called only once when the script is first loaded.
+   */
+  public initializeEventListeners() {
+    // Populate the language selector dropdown and set up its change event.
+    for (const lang in codeSnippets) {
+      const option = document.createElement("option");
+      option.value = lang;
+      option.textContent = lang;
+      this.elements.languageSelect.appendChild(option);
+    }
+    this.elements.languageSelect.value = "csharp";
+    this.elements.codePreview.innerHTML = codeSnippets.csharp;
+    this.elements.languageSelect.addEventListener("change", (e) => {
+      const selectedLanguage = (e.target as HTMLSelectElement).value as keyof typeof codeSnippets;
+      this.elements.codePreview.innerHTML = codeSnippets[selectedLanguage];
+      this.updatePreviewPane();
+    });
 
-  let previewState: { [key: string]: { color?: string; fontStyle?: string } } = {};
-  let accentColorMap: { [key: string]: string } = {};
+    // Listen for changes on the custom accent color pickers.
+    this.elements.customAccentPicker.addEventListener("input", (e) => {
+      const newValue = (e.target as HTMLInputElement).value;
+      this.elements.customAccentHexInput.value = newValue;
+      this.updateAccentColor(newValue);
+      vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
+    });
+    this.elements.customAccentHexInput.addEventListener("input", (e) => {
+      const newValue = (e.target as HTMLInputElement).value;
+      if (this.hex6Regex.test(newValue)) {
+        this.elements.customAccentPicker.value = newValue;
+        this.updateAccentColor(newValue);
+        vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
+      }
+    });
 
-  const fontStyleOptions = ["none", "italic", "bold", "italic bold", "underline"];
-  const hex6Regex = /^#[0-9a-fA-F]{6}$/;
+    // Set up listeners for the confirmation dialog.
+    this.elements.cancelResetButton.addEventListener("click", () => this.elements.dialogOverlay.classList.add("hidden"));
+    this.elements.dialogOverlay.addEventListener("click", (e) => {
+      if (e.target === this.elements.dialogOverlay) this.elements.dialogOverlay.classList.add("hidden");
+    });
+    this.elements.confirmResetButton.addEventListener("click", () => {
+      vscode.postMessage({ command: COMMANDS.RESET_ALL });
+      this.elements.dialogOverlay.classList.add("hidden");
+    });
 
-  function updateAccentColor(newColor: string) {
-    document.documentElement.style.setProperty("--dynamic-accent-color", newColor);
+    // Primary listener for messages coming from the VS Code extension host.
+    window.addEventListener("message", (event: MessageEvent<MessageFromExtension>) => {
+      const message = event.data;
+      if (message.command === COMMANDS.LOAD_SETTINGS) {
+        this.populateAllSettings(message.settings);
+      }
+    });
+
+    // Trigger the initial fade-in animation for the dialog overlay
+    setTimeout(() => {
+      this.elements.dialogOverlay.style.opacity = "";
+      this.elements.dialogOverlay.style.pointerEvents = "";
+    }, 50);
   }
 
-  function updatePreviewPane() {
-    for (const tokenKey in previewState) {
-      const elements = codePreview!.querySelectorAll(`[data-token="${tokenKey}"]`);
+  /**
+   * Iterates through the `previewState` object and applies the current color and font styles
+   * to all matching tokens in the code preview pane.
+   */
+  public updatePreviewPane() {
+    for (const tokenKey in this.previewState) {
+      const elements = this.elements.codePreview.querySelectorAll<HTMLElement>(`[data-token="${tokenKey}"]`);
       elements.forEach((el) => {
-        const element = el as HTMLElement;
-        const tokenStyle = previewState[tokenKey];
+        const tokenStyle = this.previewState[tokenKey];
         if (tokenStyle.color) {
-          element.style.color = tokenStyle.color;
+          el.style.color = tokenStyle.color;
         }
         if (tokenStyle.fontStyle) {
           const style = tokenStyle.fontStyle;
-          element.style.fontStyle = style.includes("italic") ? "italic" : "normal";
-          element.style.fontWeight = style.includes("bold") ? "bold" : "normal";
-          element.style.textDecoration = style.includes("underline") ? "underline" : "none";
+          el.style.fontStyle = style.includes("italic") ? "italic" : "normal";
+          el.style.fontWeight = style.includes("bold") ? "bold" : "normal";
+          el.style.textDecoration = style.includes("underline") ? "underline" : "none";
         }
       });
     }
   }
 
-  for (const lang in codeSnippets) {
-    const option = document.createElement("option");
-    option.value = lang;
-    option.textContent = lang;
-    languageSelect.appendChild(option);
+  /**
+   * Dynamically creates the Accent Color dropdown and the custom color picker controls.
+   * @private
+   */
+  private _createAccentColorControls(currentAccent: string, accentOptions: string[], customAccentColor: string) {
+    this.elements.accentContainer.appendChild(this.elements.customAccentPickerContainer);
+
+    const accentSelectContainer = document.createElement("div");
+    accentSelectContainer.style.display = "grid";
+    accentSelectContainer.style.gridTemplateColumns = "auto 1fr";
+    accentSelectContainer.style.gap = "10px 20px";
+    accentSelectContainer.style.alignItems = "center";
+
+    const accentLabel = document.createElement("label");
+    accentLabel.textContent = "Accent Color:";
+    const accentSelect = document.createElement("select");
+
+    accentOptions.forEach((option: string) => {
+      const optionElement = document.createElement("option");
+      optionElement.value = option;
+      optionElement.textContent = option;
+      if (currentAccent === option) optionElement.selected = true;
+      accentSelect.appendChild(optionElement);
+    });
+
+    accentSelect.addEventListener("change", (e) => {
+      const newValue = (e.target as HTMLSelectElement).value;
+      this._handleAccentChange(newValue);
+      vscode.postMessage({ command: COMMANDS.UPDATE_ACCENT, value: newValue });
+    });
+
+    accentSelectContainer.appendChild(accentLabel);
+    accentSelectContainer.appendChild(accentSelect);
+    this.elements.accentContainer.insertBefore(accentSelectContainer, this.elements.customAccentPickerContainer);
+
+    this.elements.customAccentPicker.value = customAccentColor;
+    this.elements.customAccentHexInput.value = customAccentColor;
+    this.elements.customAccentHexInput.maxLength = 7;
   }
 
-  languageSelect.value = "csharp";
-  codePreview.innerHTML = codeSnippets.csharp;
+  /**
+   * Dynamically creates the grid of controls for font styles and syntax colors.
+   * @param {SettingsPayload["syntaxSettings"]} syntaxSettings An array of the syntax settings to build controls for.
+   * @param {SettingsPayload["defaultFontStyles"]} defaultFontStyles An object containing the default font styles.
+   * @private
+   */
+  private _createSyntaxControls(
+    syntaxSettings: SettingsPayload["syntaxSettings"],
+    defaultFontStyles: SettingsPayload["defaultFontStyles"]
+  ) {
+    // Loop through each customizable syntax item (e.g., comment, keyword, etc.).
+    syntaxSettings.forEach((setting) => {
+      const { key, fontStyle, color, defaultColor } = setting;
+      const fontStyleKey = `${key}FontStyle`;
+      const defaultFontStyle = defaultFontStyles[fontStyleKey] || "none";
 
-  languageSelect.addEventListener("change", (e) => {
-    const selectedLanguage = (e.target as HTMLSelectElement).value;
-    codePreview.innerHTML = codeSnippets[selectedLanguage];
-    updatePreviewPane();
-  });
+      // Initialize the live preview state for this syntax token.
+      this.previewState[key] = { color, fontStyle };
 
-  window.addEventListener("message", (event) => {
-    const message = event.data;
-    if (message.command === "loadSettings") {
-      const {
-        activeFlavor,
-        syntaxSettings,
-        currentAccent,
-        accentOptions,
-        customAccentColor,
-        defaultFontStyles,
-        activeThemeBackgroundColor,
-        accentColorPalettes,
-      } = message.settings;
+      // Create and configure the label for this setting.
+      const label = document.createElement("label");
+      label.textContent = key.replace(/([A-Z])/g, " $1").trim() + ":";
+      label.htmlFor = key;
 
-      accentColorMap = accentColorPalettes;
-      accentContainer.innerHTML = "";
-      settingsContainer.innerHTML = "";
-      resetAllContainer.innerHTML = "";
-      accentContainer.appendChild(customAccentPickerContainer);
+      // Create the individual UI controls for font style and color.
+      const fontContainer = this._createFontStyleControl(key, fontStyle, defaultFontStyle, fontStyleKey);
+      const colorContainer = this._createColorPickerControl(key, color, defaultColor);
 
-      flavorTitle.textContent = `Editing: ${activeFlavor.charAt(0).toUpperCase() + activeFlavor.slice(1)}`;
-      previewPane.style.backgroundColor = activeThemeBackgroundColor;
+      // Add the new elements to the settings grid in the DOM.
+      this.elements.settingsContainer.appendChild(label);
+      this.elements.settingsContainer.appendChild(fontContainer);
+      this.elements.settingsContainer.appendChild(colorContainer);
+    });
+  }
 
-      const accentSelectContainer = document.createElement("div");
-      accentSelectContainer.style.display = "grid";
-      accentSelectContainer.style.gridTemplateColumns = "auto 1fr";
-      accentSelectContainer.style.gap = "10px 20px";
-      accentSelectContainer.style.alignItems = "center";
-      const accentLabel = document.createElement("label");
-      accentLabel.textContent = "Accent Color:";
-      const accentSelect = document.createElement("select");
-      accentOptions.forEach((option: string) => {
-        const optionElement = document.createElement("option");
-        optionElement.value = option;
-        optionElement.textContent = option;
-        if (currentAccent === option) optionElement.selected = true;
-        accentSelect.appendChild(optionElement);
-      });
-      const handleAccentChange = (value: string) => {
-        customAccentPickerContainer.style.display = value === "custom" ? "grid" : "none";
-        if (value === "custom") {
-          updateAccentColor(customAccentPicker.value);
-        } else {
-          updateAccentColor(accentColorMap[value]);
-        }
-      };
-      accentSelect.addEventListener("change", (e) => {
-        const newValue = (e.target as HTMLSelectElement).value;
-        handleAccentChange(newValue);
-        vscode.postMessage({ command: "updateAccent", value: newValue });
-      });
-      accentSelectContainer.appendChild(accentLabel);
-      accentSelectContainer.appendChild(accentSelect);
-      accentContainer.insertBefore(accentSelectContainer, customAccentPickerContainer);
+  /**
+   * Creates an individual font style dropdown control with its associated reset button.
+   * @returns {HTMLElement} The container element for the font style control.
+   * @private
+   */
+  private _createFontStyleControl(
+    key: string,
+    fontStyle: string,
+    defaultFontStyle: string,
+    fontStyleKey: string
+  ): HTMLElement {
+    const container = document.createElement("div");
+    container.className = "setting-with-reset";
 
-      customAccentPicker.value = customAccentColor;
-      customAccentHexInput.value = customAccentColor;
-      customAccentHexInput.maxLength = 7;
-      handleAccentChange(currentAccent);
-      customAccentPicker.addEventListener("input", (e) => {
-        const newValue = (e.target as HTMLInputElement).value;
-        customAccentHexInput.value = newValue;
-        updateAccentColor(newValue);
-        vscode.postMessage({ command: "updateCustomAccent", value: newValue });
-      });
-      customAccentHexInput.addEventListener("input", (e) => {
-        const newValue = (e.target as HTMLInputElement).value;
-        if (hex6Regex.test(newValue)) {
-          customAccentPicker.value = newValue;
-          updateAccentColor(newValue);
-          vscode.postMessage({ command: "updateCustomAccent", value: newValue });
-        }
-      });
+    const select = document.createElement("select");
+    select.id = key;
+    this.fontStyleOptions.forEach((option) => {
+      const opt = document.createElement("option");
+      opt.value = option;
+      opt.textContent = option;
+      if (fontStyle === option) opt.selected = true;
+      select.appendChild(opt);
+    });
+    select.addEventListener("change", (e) => {
+      const newValue = (e.target as HTMLSelectElement).value;
+      this.previewState[key].fontStyle = newValue;
+      this.updatePreviewPane();
+      vscode.postMessage({ command: COMMANDS.UPDATE_SETTING, key: fontStyleKey, value: newValue });
+    });
 
-      previewState = {};
-      syntaxSettings.forEach((setting: any) => {
-        const { key, fontStyle, color, defaultColor } = setting;
-        const fontStyleKey = `${key}FontStyle`;
-        const defaultFontStyle = defaultFontStyles[fontStyleKey] || "none";
+    const resetButton = document.createElement("button");
+    resetButton.textContent = "Reset";
+    resetButton.className = "reset-button";
+    resetButton.addEventListener("click", () => {
+      select.value = defaultFontStyle;
+      this.previewState[key].fontStyle = defaultFontStyle;
+      this.updatePreviewPane();
+      vscode.postMessage({ command: COMMANDS.RESET_FONT_STYLE, key: fontStyleKey });
+    });
 
-        previewState[key] = { color: color, fontStyle: fontStyle };
+    container.appendChild(select);
+    container.appendChild(resetButton);
+    return container;
+  }
 
-        const label = document.createElement("label");
-        label.textContent = key.replace(/([A-Z])/g, " $1").trim() + ":";
-        label.htmlFor = key;
+  /**
+   * Creates an individual color picker control with its alpha slider and reset button.
+   * @returns {HTMLElement} The container element for the color picker.
+   * @private
+   */
+  private _createColorPickerControl(key: string, color: string, defaultColor: string): HTMLElement {
+    const container = document.createElement("div");
+    container.className = "setting-with-reset";
 
-        const select = document.createElement("select");
-        select.id = key;
-        fontStyleOptions.forEach((option) => {
-          const opt = document.createElement("option");
-          opt.value = option;
-          opt.textContent = option;
-          if (fontStyle === option) opt.selected = true;
-          select.appendChild(opt);
-        });
-        select.addEventListener("change", (e) => {
-          const newValue = (e.target as HTMLSelectElement).value;
-          previewState[key].fontStyle = newValue;
-          updatePreviewPane();
-          vscode.postMessage({ command: "updateSetting", key: fontStyleKey, value: newValue });
-        });
+    const wrapper = document.createElement("div");
+    wrapper.className = "syntax-picker-wrapper";
+    const topRow = document.createElement("div");
+    topRow.className = "syntax-picker-top-row";
+    const colorInput = document.createElement("input");
+    colorInput.type = "color";
+    const hexInput = document.createElement("input");
+    hexInput.type = "text";
+    hexInput.className = "hex-input-display";
+    hexInput.readOnly = true;
+    const alphaSlider = document.createElement("input");
+    alphaSlider.type = "range";
+    alphaSlider.min = "0";
+    alphaSlider.max = "255";
+    alphaSlider.step = "1";
 
-        const fontResetButton = document.createElement("button");
-        fontResetButton.textContent = "Reset";
-        fontResetButton.className = "reset-button";
-        fontResetButton.addEventListener("click", () => {
-          select.value = defaultFontStyle;
-          previewState[key].fontStyle = defaultFontStyle;
-          updatePreviewPane();
-          vscode.postMessage({ command: "resetFontStyle", key: fontStyleKey });
-        });
+    const initialColor = color || "#ffffffff";
+    const rgb = initialColor.substring(0, 7);
+    const alphaHex = initialColor.length === 9 ? initialColor.substring(7, 9) : "ff";
+    colorInput.value = rgb;
+    alphaSlider.value = parseInt(alphaHex, 16).toString();
+    hexInput.value = initialColor;
 
-        const wrapper = document.createElement("div");
-        wrapper.className = "syntax-picker-wrapper";
+    const updateLivePreview = () => {
+      const newRgb = colorInput.value;
+      const newAlphaHex = parseInt(alphaSlider.value).toString(16).padStart(2, "0");
+      const finalColor = `${newRgb}${newAlphaHex}`;
+      hexInput.value = finalColor;
+      this.previewState[key].color = finalColor;
+      this.updatePreviewPane();
+    };
 
-        const topRow = document.createElement("div");
-        topRow.className = "syntax-picker-top-row";
+    const sendFinalColorToVSCode = () => {
+      vscode.postMessage({ command: COMMANDS.UPDATE_SYNTAX_COLOR, flavor: this.activeFlavor, key, value: hexInput.value });
+    };
 
-        const colorInput = document.createElement("input");
-        colorInput.type = "color";
+    colorInput.addEventListener("input", updateLivePreview);
+    alphaSlider.addEventListener("input", updateLivePreview);
+    colorInput.addEventListener("change", sendFinalColorToVSCode);
+    alphaSlider.addEventListener("change", sendFinalColorToVSCode);
 
-        const hexInput = document.createElement("input");
-        hexInput.type = "text";
-        hexInput.className = "hex-input-display";
-        hexInput.readOnly = true;
+    const resetButton = document.createElement("button");
+    resetButton.textContent = "Reset";
+    resetButton.className = "reset-button";
+    resetButton.addEventListener("click", () => {
+      const defaultRgb = defaultColor.substring(0, 7);
+      const defaultAlphaHex = defaultColor.length === 9 ? defaultColor.substring(7, 9) : "ff";
+      colorInput.value = defaultRgb;
+      alphaSlider.value = parseInt(defaultAlphaHex, 16).toString();
+      hexInput.value = defaultColor;
+      this.previewState[key].color = defaultColor;
+      this.updatePreviewPane();
+      vscode.postMessage({ command: COMMANDS.RESET_SYNTAX_COLOR, flavor: this.activeFlavor, key });
+    });
 
-        const alphaSlider = document.createElement("input");
-        alphaSlider.type = "range";
-        alphaSlider.min = "0";
-        alphaSlider.max = "255";
-        alphaSlider.step = "1";
+    topRow.appendChild(colorInput);
+    topRow.appendChild(hexInput);
+    wrapper.appendChild(topRow);
+    wrapper.appendChild(alphaSlider);
+    container.appendChild(wrapper);
+    container.appendChild(resetButton);
 
-        const initialColor = color || "#ffffffff";
-        const rgb = initialColor.substring(0, 7);
-        const alphaHex = initialColor.length === 9 ? initialColor.substring(7, 9) : "ff";
-        const alphaInt = parseInt(alphaHex, 16);
+    return container;
+  }
 
-        colorInput.value = rgb;
-        alphaSlider.value = alphaInt.toString();
-        hexInput.value = initialColor;
+  /**
+   * Creates the "Reset All" button in the Danger Zone.
+   * @private
+   */
+  private _createResetAllButton() {
+    const resetAllButton = document.createElement("button");
+    resetAllButton.textContent = "Reset All Settings to Default";
+    resetAllButton.className = "reset-all-button";
+    resetAllButton.addEventListener("click", () => {
+      this.elements.dialogOverlay.classList.remove("hidden");
+    });
+    this.elements.resetAllContainer.appendChild(resetAllButton);
+  }
 
-        // This function only updates the live preview inside the webview
-        const updateLivePreview = () => {
-          const newRgb = colorInput.value;
-          const newAlphaInt = parseInt(alphaSlider.value);
-          const newAlphaHex = newAlphaInt.toString(16).padStart(2, "0");
-          const finalColor = `${newRgb}${newAlphaHex}`;
+  /**
+   * Handles the logic for showing/hiding the custom accent picker and updating the UI's accent color.
+   * @param {string} accentValue The newly selected accent value.
+   * @private
+   */
+  private _handleAccentChange(accentValue: string) {
+    const isCustom = accentValue === "custom";
+    this.elements.customAccentPickerContainer.style.display = isCustom ? "grid" : "none";
+    const newColor = isCustom ? this.elements.customAccentPicker.value : this.accentColorMap[accentValue];
+    this.updateAccentColor(newColor);
+  }
 
-          hexInput.value = finalColor;
-          previewState[key].color = finalColor;
-          updatePreviewPane();
-        };
-
-        // This function ONLY sends the final color to VS Code
-        const sendFinalColorToVSCode = () => {
-          const finalColor = hexInput.value;
-          vscode.postMessage({ command: "updateSyntaxColor", flavor: activeFlavor, key, value: finalColor });
-        };
-
-        // Update the live preview instantly on the 'input' event
-        colorInput.addEventListener("input", updateLivePreview);
-        alphaSlider.addEventListener("input", updateLivePreview);
-
-        // Send the final value to VS Code only on the 'change' event (when the user releases the mouse)
-        colorInput.addEventListener("change", sendFinalColorToVSCode);
-        alphaSlider.addEventListener("change", sendFinalColorToVSCode);
-
-        const colorResetButton = document.createElement("button");
-        colorResetButton.textContent = "Reset";
-        colorResetButton.className = "reset-button";
-        colorResetButton.addEventListener("click", () => {
-          const defaultRgb = defaultColor.substring(0, 7);
-          const defaultAlphaHex = defaultColor.length === 9 ? defaultColor.substring(7, 9) : "ff";
-          const defaultAlphaInt = parseInt(defaultAlphaHex, 16);
-
-          colorInput.value = defaultRgb;
-          alphaSlider.value = defaultAlphaInt.toString();
-          hexInput.value = defaultColor;
-
-          previewState[key].color = defaultColor;
-          updatePreviewPane();
-          vscode.postMessage({ command: "resetSyntaxColor", flavor: activeFlavor, key });
-        });
-
-        topRow.appendChild(colorInput);
-        topRow.appendChild(hexInput);
-        wrapper.appendChild(topRow);
-        wrapper.appendChild(alphaSlider);
-
-        settingsContainer.appendChild(label);
-        const fontContainer = document.createElement("div");
-        fontContainer.className = "setting-with-reset";
-        fontContainer.appendChild(select);
-        fontContainer.appendChild(fontResetButton);
-        settingsContainer.appendChild(fontContainer);
-        const colorContainer = document.createElement("div");
-        colorContainer.className = "setting-with-reset";
-        colorContainer.appendChild(wrapper);
-        colorContainer.appendChild(colorResetButton);
-        settingsContainer.appendChild(colorContainer);
-      });
-
-      updatePreviewPane();
-      handleAccentChange(currentAccent);
-
-      const resetAllButton = document.createElement("button");
-      resetAllButton.textContent = "Reset All Settings to Default";
-      resetAllButton.className = "reset-all-button";
-      resetAllButton.addEventListener("click", () => {
-        // Show the confirmation dialog
-        dialogOverlay.classList.remove("hidden");
-      });
-      resetAllContainer.appendChild(resetAllButton);
-    }
-  });
-
-  // Event listeners for the confirmation dialog
-  cancelResetButton.addEventListener("click", () => {
-    dialogOverlay.classList.add("hidden");
-  });
-
-  dialogOverlay.addEventListener("click", (e) => {
-    // Hide the dialog if the user clicks on the overlay (background)
-    if (e.target === dialogOverlay) {
-      dialogOverlay.classList.add("hidden");
-    }
-  });
-
-  confirmResetButton.addEventListener("click", () => {
-    // Send the reset command and hide the dialog
-    vscode.postMessage({ command: "resetAll" });
-    dialogOverlay.classList.add("hidden");
-  });
+  /**
+   * Updates the `--dynamic-accent-color` CSS variable to change the UI's theme in real-time.
+   * @param {string} newColor The new hex color to apply.
+   * @private
+   */
+  private updateAccentColor(newColor: string) {
+    document.documentElement.style.setProperty("--dynamic-accent-color", newColor);
+  }
 }
 
+/**
+ * Main entry point for the webview script.
+ * This function instantiates the UIManager and sets up all event listeners.
+ */
+function initialize() {
+  const uiManager = new UIManager();
+  uiManager.initializeEventListeners();
+}
+
+// Start the application.
 initialize();
