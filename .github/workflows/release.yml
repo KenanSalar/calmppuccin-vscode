@@ -70,14 +70,18 @@ jobs:
       - name: Find VSIX file
         id: find_vsix
         run: echo "vsix_path=$(ls *.vsix)" >> $GITHUB_OUTPUT
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+        
+      - name: Install vsce
+        run: npm install -g @vscode/vsce
 
       # 3. Publish the extension to the VS Code Marketplace
       - name: Publish to VS Code Marketplace
-        uses: HaaLeo/publish-vscode-extension@v1
-        with:
-          pat: ${{ secrets.VSCE_PAT }}
-          packagePath: ${{ steps.find_vsix.outputs.vsix_path }}
-          registryUrl: "https://marketplace.visualstudio.com"
+        run: vsce publish -p ${{ secrets.VSCE_PAT }} --packagePath ${{ steps.find_vsix.outputs.vsix_path }}
 
       # 4. Get the version number from package.json
       - name: Get Package Version
