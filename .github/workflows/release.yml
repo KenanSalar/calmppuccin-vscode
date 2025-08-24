@@ -87,7 +87,7 @@ jobs:
 
       # Publish the extension to the VS Code Marketplace
       - name: Publish to VS Code Marketplace
-        run: vsce publish -p ${{ secrets.VSCE_PAT }} --packagePath ${{ steps.find_vsix.outputs.vsix_path }}
+        run: vsce publish -p ${{ secrets.VSCE_PAT }} --packagePath ${{ needs.build-and-package.outputs.vsix_path }}
 
       # Create a GitHub Release and upload the .vsix file
       - name: Create GitHub Release
