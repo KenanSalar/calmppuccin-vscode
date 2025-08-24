@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.6.1] - 2025-08-24
+
+- **Fix**: Typos, one of them prevented users to override the directive font style via the customization webview.
+
 ## [1.6.0] - 2025-08-24
 
 - **Feature**: Added code snippets for various languages, including C, C++, C#, CSS, Go, HTML, Java, JavaScript, Kotlin, Lua, PHP, Python, Rust, Shell (Bash), SQL, and TypeScript.
