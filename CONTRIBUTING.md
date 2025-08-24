@@ -184,6 +184,24 @@ For the specific task of creating and testing a new code snippet, it is recommen
 
 All other tasks, especially building and packaging, should still be done inside the dev container to ensure consistency.
 
+### Running Tests
+
+This project includes a comprehensive suite of unit and integration tests to ensure quality and prevent regressions. All contributions should pass the existing tests.
+
+- To run the entire test suite once, use the following command:
+
+```bash
+npm test
+```
+
+- To run tests in watch mode, which is useful when you are actively developing a feature and want immediate feedback, use:
+
+```bash
+npm test -- --watch
+```
+
+- To run tests via the UI, you can use the Test Explorer view in the VS Code sidebar. The integrated Jest extension also provides "play" buttons directly in the editor gutter next to each test suite and individual test, allowing you to run specific tests on-demand.
+
 ### Building and Packaging
 
 The theme files and the final extension package (`.vsix`) are generated from the source code.
