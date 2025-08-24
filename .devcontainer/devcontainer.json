@@ -1,15 +1,12 @@
 {
+  "$schema": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json",
   "name": "Calmppuccin Dev Container",
 
   // Tells VS Code to build the container from our Dockerfile
   "build": {
     "dockerfile": "Dockerfile"
   },
-
-  "runArgs": [
-    "--name", "calmppuccin-dev"
-  ],
-
+  "runArgs": ["--name", "calmppuccin-dev"],
   // These settings are applied inside the container once it's running
   "customizations": {
     "vscode": {
@@ -45,11 +42,10 @@
       ]
     }
   },
-
-  // This command runs after the container is created for the first time.
-  // It installs all the project's npm dependencies.
+  // Mount the user's local .gitconfig and GPG socket directory
+  "mounts": [],
   "postCreateCommand": "npm install",
-
+  "postStartCommand": "bash .devcontainer/post-start.sh",
   // Tells VS Code to run as the non-root 'node' user defined in the Dockerfile
   "remoteUser": "node"
 }
