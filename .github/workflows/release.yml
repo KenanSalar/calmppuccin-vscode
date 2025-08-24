@@ -14,6 +14,9 @@ jobs:
   # This job tests, builds, and packages the extension on pushes to EITHER main or dev
   build-and-package:
     runs-on: ubuntu-latest
+    outputs:
+      vsix_path: ${{ steps.find_vsix.outputs.vsix_path }}
+      version: ${{ steps.get_version.outputs.current-version }}
     steps:
       # 1. Checks out the repository's code
       - name: Checkout repository
@@ -34,6 +37,10 @@ jobs:
             calmppuccin-builder \
             bash -c "npm install && npm test"
 
+      - name: Get Package Version
+        id: get_version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+
       # 4. Run build and package commands *inside* the container
       # This step only runs if the tests in the previous step have passed.
       - name: Build and Package Extension
@@ -43,7 +50,11 @@ jobs:
             -w /workspaces/calmppuccin-vscode \
             calmppuccin-builder \
             bash -c "npm install && npm run package"
-      
+
+      - name: Find VSIX file
+        id: find_vsix
+        run: echo "vsix_path=$(ls *.vsix)" >> $GITHUB_OUTPUT
+
       # 5. Upload the generated .vsix file as a build artifact
       # This artifact will be used by the publishing job.
       - name: Upload VSIX Artifact
@@ -60,41 +71,28 @@ jobs:
     needs: build-and-package
     runs-on: ubuntu-latest
     steps:
-      # 1. Download the .vsix file that was generated in the previous job
+      # Download the .vsix file that was generated in the previous job
       - name: Download VSIX Artifact
         uses: actions/download-artifact@v4
         with:
           name: calmppuccin-vsix
 
-      # 2. This step finds the exact name of the downloaded .vsix file.
-      - name: Find VSIX file
-        id: find_vsix
-        run: echo "vsix_path=$(ls *.vsix)" >> $GITHUB_OUTPUT
-      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-        
+          node-version: "22"
+
       - name: Install vsce
         run: npm install -g @vscode/vsce
 
-      # 3. Publish the extension to the VS Code Marketplace
+      # Publish the extension to the VS Code Marketplace
       - name: Publish to VS Code Marketplace
-        run: vsce publish -p ${{ secrets.VSCE_PAT }} --packagePath ${{ steps.find_vsix.outputs.vsix_path }}
+        run: vsce publish -p ${{ secrets.VSCE_PAT }} --packagePath ${{ needs.build-and-package.outputs.vsix_path }}
 
-      # 4. Get the version number from package.json
-      - name: Get Package Version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@v1.3.1
-
-      # 5. Create a GitHub Release and upload the .vsix file
+      # Create a GitHub Release and upload the .vsix file
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          # This creates a tag like "v1.6.1" based on your package.json version
-          tag_name: "v${{ steps.package-version.outputs.current-version }}"
-          # This sets the release title
-          name: "Release v${{ steps.package-version.outputs.current-version }}"
-          # This attaches the .vsix file to the release assets
-          files: ${{ steps.find_vsix.outputs.vsix_path }}
+          tag_name: "v${{ needs.build-and-package.outputs.version }}"
+          name: "Release v${{ needs.build-and-package.outputs.version }}"
+          files: ${{ needs.build-and-package.outputs.vsix_path }}
