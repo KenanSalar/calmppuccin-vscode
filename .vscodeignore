@@ -4,12 +4,15 @@
 .gitignore
 .vscode-test/**
 .vscode/**
-node_modules/**
 assets/images/customUI/**
 assets/images/preview/**
 assets/images/screenshots/**
+node_modules/**
+test/**
+coverage/**
 build.ts
 extension.ts
+jest.config.ts
 package-lock.json
 src/ConfigurationService.ts
 src/constants.ts
