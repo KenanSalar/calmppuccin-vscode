@@ -3,7 +3,7 @@
   "displayName": "Calmppuccin",
   "description": "Calmppuccin is a visually refined theme for Visual Studio Code, designed to offer a harmonious coding experience. Inspired by the popular Catppuccin theme, Calmppuccin takes the beloved pastel palette and transforms it into a gentler, less intense version, perfect for long coding sessions without eye strain.",
   "icon": "assets/images/logo/icon.png",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "publisher": "kenan-salar",
   "license": "MIT",
   "repository": {
@@ -275,7 +275,7 @@
                 "underline"
               ]
             },
-            "directivenFontStyle": {
+            "directiveFontStyle": {
               "type": "string",
               "default": "italic",
               "description": "Set the font style for directives.",
@@ -422,7 +422,7 @@
             "macroFontStyle": {
               "type": "string",
               "default": "none",
-              "description": "Set the font style for mutable variables.",
+              "description": "Set the font style for macros.",
               "enum": [
                 "none",
                 "italic",
@@ -712,7 +712,7 @@
                 "macro": {
                   "type": "string",
                   "format": "color-hex",
-                  "description": "Overrides the color for mutable variables."
+                  "description": "Overrides the color for macros."
                 },
                 "functionAndMethod": {
                   "type": "string",
