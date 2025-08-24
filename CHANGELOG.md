@@ -1,11 +1,11 @@
 # Changelog
 
-## [1.6.0] - 2025-08-13 // TODO
+## [1.6.0] - 2025-08-24
 
 - **Feature**: Added code snippets for various languages, including C, C++, C#, CSS, Go, HTML, Java, JavaScript, Kotlin, Lua, PHP, Python, Rust, Shell (Bash), SQL, and TypeScript.
 - **Feature**: Added a Docker/Podman-based Dev Container for a consistent development environment. This ensures all contributors use the same version of Node.js and system dependencies, and simplifies the setup process.
 - **Feature**: Added `CONTRIBUTING.md`.
-- **Feature**: Added unit tests for the project an ci/cd.
+- **Feature**: Added unit tests for the project and ci/cd.
 - **Improvement**: The CI/CD workflow can now use the same Docker container, guaranteeing that the build and packaging environment is identical to the development environment.
 - **Improvement**: Added many syntax highlighting tokens and semantic colors.
 - **Improvement**: Seperation of concerns with the `WebviewManager`. The `SettingsPanel` acts as a pure controller for settings logic now while the `WebviewManager` handles all view-related resonsibilities.
