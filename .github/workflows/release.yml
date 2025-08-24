@@ -1,35 +1,90 @@
-name: Publish to VS Marketplace
+name: Build, Test, and Publish Extension
 
-# This workflow runs only when a push happens on the main branch.
+# This workflow runs on pushes to the main and dev branches
 on:
   push:
     branches:
       - main
+      - dev
 
 jobs:
-  publish:
-    # Using the latest version of Ubuntu as the operating system for the job.
+  # This job tests, builds, and packages the extension on pushes to EITHER main or dev
+  build-and-package:
     runs-on: ubuntu-latest
     steps:
-      # 1. Checks out the repository code so the workflow can access it.
-      - name: Checkout
+      # 1. Checks out the repository's code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Set up Node.js, which is required to run npm and vsce.
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+      # 2. Build the Docker image using the Dockerfile from your dev container setup
+      # This ensures a consistent environment for all subsequent steps.
+      - name: Build Dev Container Image
+        run: docker build -t calmppuccin-builder ./.devcontainer
 
-      # 3. Install all the dependencies from package-lock.json.
-      # Using 'npm ci' is faster and more reliable for CI environments than 'npm install'.
-      - name: Install dependencies
-        run: npm ci
+      # 3. (NEW) Run unit and integration tests inside the container
+      # This step is the new quality gate. If 'npm test' fails, the workflow will stop here.
+      # It runs before the packaging step to ensure only tested code proceeds.
+      - name: Run Tests
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/workspaces/calmppuccin-vscode \
+            -w /workspaces/calmppuccin-vscode \
+            calmppuccin-builder \
+            bash -c "npm install && npm test"
+
+      # 4. Run build and package commands *inside* the container
+      # This step only runs if the tests in the previous step have passed.
+      - name: Build and Package Extension
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/workspaces/calmppuccin-vscode \
+            -w /workspaces/calmppuccin-vscode \
+            calmppuccin-builder \
+            bash -c "npm install && npm run package"
       
-      # 4. Compile TypeScript files to JavaScript.
-      - name: Compile TypeScript
-        run: npm run compile
+      # 5. Upload the generated .vsix file as a build artifact
+      # This artifact will be used by the publishing job.
+      - name: Upload VSIX Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: calmppuccin-vsix
+          path: "*.vsix"
 
-      # 5. Publish the extension to the Marketplace.
-      - name: Publish to VS Marketplace
-        run: npm run publish:ci -- -p ${{ secrets.VSCE_PAT }}
+  # This job ONLY runs on a push to the 'main' branch
+  publish-to-marketplace:
+    # This condition ensures the job only runs for the main branch
+    if: github.ref == 'refs/heads/main'
+    
+    # It requires the 'build-and-package' job (including tests) to have completed successfully
+    needs: build-and-package
+    
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Download the .vsix file that was generated in the previous job
+      - name: Download VSIX Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: calmppuccin-vsix
+
+      # 2. Publish the extension to the VS Code Marketplace
+      - name: Publish to VS Code Marketplace
+        uses: HaaLeo/publish-vscode-extension@v1
+        with:
+          pat: ${{ secrets.VSCE_PAT }}
+          packagePath: "*.vsix"
+
+      # 3. Get the version number from package.json
+      - name: Get Package Version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+
+      # 4. Create a GitHub Release and upload the .vsix file
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          # This creates a tag like "v1.6.1" based on your package.json version
+          tag_name: "v${{ steps.package-version.outputs.current-version }}"
+          # This sets the release title
+          name: "Release v${{ steps.package-version.outputs.current-version }}"
+          # This attaches the .vsix file to the release assets
+          files: "*.vsix"

@@ -1,0 +1,472 @@
+/**
+ * @file This file contains the unit tests for the ConfigurationService.
+ * It verifies that the service correctly interacts with the mocked VS Code
+ * configuration API to retrieve settings under various conditions.
+ */
+
+import * as vscode from "vscode";
+import { ConfigurationService } from "../../src/ConfigurationService";
+import * as C from "../../src/constants";
+
+// Cast the imported vscode object to its mocked type at the top level.
+// This gives us type-safe access to Jest's mock functions like .mockReturnValue()
+// and makes it available to all describe blocks in this file.
+const mockedVscode = vscode as jest.Mocked<typeof vscode>;
+
+/**
+ * Test suite for the main ConfigurationService methods.
+ */
+describe("ConfigurationService", () => {
+  // A variable to hold the mock configuration object for each test.
+  let mockConfiguration: { get: jest.Mock; update: jest.Mock };
+
+  /**
+   * This function runs before each test in this suite.
+   * Its purpose is to reset the state and ensure tests are isolated.
+   */
+  beforeEach(() => {
+    // jest.clearAllMocks() resets the call history of all mocks.
+    // This prevents a call in one test from affecting the assertions in another.
+    jest.clearAllMocks();
+
+    // Create a fresh, blank mock for the configuration object for each test.
+    // The specific behavior (e.g., what .get() returns) will be defined in each test.
+    mockConfiguration = {
+      get: jest.fn(),
+      update: jest.fn(),
+    };
+
+    // Configure the global vscode mock to return our test-specific mockConfiguration.
+    (mockedVscode.workspace.getConfiguration as jest.Mock).mockReturnValue(mockConfiguration);
+  });
+
+  /**
+   * @description Tests that getAccent() returns the default accent color
+   * if no user setting is found in the configuration.
+   * @precondition The mocked `getConfiguration().get()` is set up to simulate
+   * the real API's behavior by returning the default value passed to it.
+   * @assertion It should return the `DEFAULT_ACCENT` constant ("sapphire").
+   */
+  it("getAccent() should return the default accent color when no user setting is present", () => {
+    // Arrange: Configure the mock for this specific test case.
+    // We simulate the behavior of the real get() method, which returns the
+    // second argument if the first (the key) is not found.
+    mockConfiguration.get.mockImplementation((_key, defaultValue) => defaultValue);
+
+    // Act: Call the method we are testing.
+    const accent = ConfigurationService.getAccent();
+
+    // Assert: Verify the outcome.
+    expect(accent).toBe(C.DEFAULT_ACCENT);
+
+    // Also, verify that the underlying VS Code API was called with the correct parameters.
+    expect(mockConfiguration.get).toHaveBeenCalledWith(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
+  });
+
+  /**
+   * @description Tests that getAccent() returns a user-defined accent color
+   * when it is present in the configuration.
+   * @precondition The mocked `getConfiguration().get()` is set up to return a
+   * specific string ("mauve"), simulating a user's setting.
+   * @assertion It should return the exact string that the mock was configured to return.
+   */
+  it("getAccent() should return the user-configured accent color when present", () => {
+    // Arrange: Define a test value and configure the mock to return it.
+    const userAccent = "mauve";
+    mockConfiguration.get.mockReturnValue(userAccent);
+
+    // Act: Call the method.
+    const accent = ConfigurationService.getAccent();
+
+    // Assert: Verify that the service returned the user's value.
+    expect(accent).toBe(userAccent);
+
+    // Verify that the get method was still called with the correct default value as a fallback.
+    expect(mockConfiguration.get).toHaveBeenCalledWith(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
+  });
+
+  /**
+   * @description Tests that getAccent() returns the custom hex color when the
+   * accent setting is explicitly set to "custom".
+   * @precondition The mocked `getConfiguration().get()` is configured to return
+   * "custom" for the first call (the accent setting) and a specific hex code
+   * for the second call (the custom accent color setting).
+   * @assertion It should return the exact hex code, not the word "custom".
+   */
+  it('getAccent() should return the customAccentColor when accent is "custom"', () => {
+    // Arrange: Define the custom hex color we expect.
+    const customHexColor = "#abcdef";
+
+    // Arrange: Configure the mock to handle two different calls to .get().
+    // This simulates a more complex user configuration.
+    mockConfiguration.get.mockImplementation((key: string) => {
+      if (key === C.CONFIG_KEY_ACCENT) {
+        // When asked for the main accent, return "custom".
+        return "custom";
+      }
+      if (key === C.CONFIG_KEY_CUSTOM_ACCENT) {
+        // When asked for the custom color, return our test hex code.
+        return customHexColor;
+      }
+      return undefined; // Default return for any other key.
+    });
+
+    // Act: Call the method.
+    const accent = ConfigurationService.getAccent();
+
+    // Assert: Verify that the final result is the hex code.
+    expect(accent).toBe(customHexColor);
+
+    // Assert that the API was called twice with the correct keys.
+    expect(mockConfiguration.get).toHaveBeenCalledWith(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
+    expect(mockConfiguration.get).toHaveBeenCalledWith(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
+  });
+
+  /**
+   * @description Tests that updateFontStyle correctly merges a new style with existing settings.
+   * @precondition The mocked `getConfiguration().get()` is set up to return a pre-existing
+   * set of font styles.
+   * @assertion The `update` method should be called with an object that contains both
+   * the old and the new font styles.
+   */
+  it("updateFontStyle() should correctly add a new font style to the configuration", async () => {
+    // 1. Arrange
+    const existingFontStyles = { keywordFontStyle: "bold" };
+    const newKey = "commentFontStyle";
+    const newValue = "italic";
+
+    // Simulate existing settings being returned by .get()
+    mockConfiguration.get.mockReturnValue(existingFontStyles);
+
+    // The expected result after the update: the new style merged with the old ones.
+    const expectedUpdatedStyles = {
+      keywordFontStyle: "bold", // The existing style
+      commentFontStyle: "italic", // The new style
+    };
+
+    // 2. Act
+    // Call the method to test the "write" operation.
+    await ConfigurationService.updateFontStyle(newKey, newValue);
+
+    // 3. Assert
+    // Verify that the update method on the configuration was called with the correct parameters.
+    expect(mockConfiguration.update).toHaveBeenCalledWith(
+      C.CONFIG_KEY_FONT_STYLES, // The setting key to update
+      expectedUpdatedStyles, // The new, merged object
+      vscode.ConfigurationTarget.Global // The configuration scope
+    );
+  });
+
+  /**
+   * @description Tests that resetFontStyle removes a single key from the font styles object
+   * while leaving other keys intact.
+   * @precondition The mocked `getConfiguration().get()` returns an object with multiple font styles.
+   * @assertion The `update` method should be called with an object that no longer
+   * contains the reset key, but still contains the other keys.
+   */
+  it("resetFontStyle() should remove a specific font style from the configuration", async () => {
+    // 1. Arrange
+    const existingFontStyles = {
+      keywordFontStyle: "bold",
+      commentFontStyle: "italic", // This is the style we will reset
+    };
+    const keyToReset = "commentFontStyle";
+
+    // Simulate the user having multiple styles configured.
+    mockConfiguration.get.mockReturnValue(existingFontStyles);
+
+    // This is the state we expect after the reset operation.
+    const expectedUpdatedStyles = {
+      keywordFontStyle: "bold", // This style should remain.
+    };
+
+    // 2. Act
+    await ConfigurationService.resetFontStyle(keyToReset);
+
+    // 3. Assert
+    // Verify that the update method was called with the correctly modified object.
+    expect(mockConfiguration.update).toHaveBeenCalledWith(
+      C.CONFIG_KEY_FONT_STYLES,
+      expectedUpdatedStyles,
+      vscode.ConfigurationTarget.Global
+    );
+  });
+
+  /**
+   * @description Tests the edge case where resetting the last remaining font style
+   * removes the entire 'fontStyles' setting from the configuration.
+   * @precondition The mocked `getConfiguration().get()` returns an object with only one style.
+   * @assertion The `update` method should be called with `undefined` as the value,
+   * which tells VS Code to remove the setting from settings.json.
+   */
+  it("resetFontStyle() should remove the entire setting if the last style is reset", async () => {
+    // 1. Arrange
+    const existingFontStyles = {
+      commentFontStyle: "italic", // This is the only style.
+    };
+    const keyToReset = "commentFontStyle";
+
+    mockConfiguration.get.mockReturnValue(existingFontStyles);
+
+    // 2. Act
+    await ConfigurationService.resetFontStyle(keyToReset);
+
+    // 3. Assert
+    // Verify that the update method was called with 'undefined' to clear the setting.
+    expect(mockConfiguration.update).toHaveBeenCalledWith(
+      C.CONFIG_KEY_FONT_STYLES,
+      undefined, // The key assertion for this test.
+      vscode.ConfigurationTarget.Global
+    );
+  });
+
+  /**
+   * @description Tests that updateSyntaxColor correctly adds a new color override to a nested object.
+   * @precondition The mocked `getConfiguration().get()` returns an existing syntax override object.
+   * @assertion The `update` method should be called with a new object that includes both
+   * the original overrides and the newly added color override.
+   */
+  it("updateSyntaxColor() should add a new color override for a specific flavor", async () => {
+    // 1. Arrange
+    const existingOverrides = {
+      // Simulate that the user has already customized the 'latte' theme.
+      latte: {
+        keyword: "#ff0000",
+      },
+    };
+    const flavorToUpdate = "mocha";
+    const keyToUpdate = "comment";
+    const newValue = "#00ff00";
+
+    // Simulate the get() method returning the existing user settings.
+    mockConfiguration.get.mockReturnValue(existingOverrides);
+
+    // This is the final, deeply merged object we expect to be written back.
+    const expectedUpdatedOverrides = {
+      latte: {
+        keyword: "#ff0000", // This should remain untouched.
+      },
+      mocha: {
+        comment: "#00ff00", // This is the new override.
+      },
+    };
+
+    // 2. Act
+    // Call the method to add the new syntax color.
+    await ConfigurationService.updateSyntaxColor(flavorToUpdate, keyToUpdate, newValue);
+
+    // 3. Assert
+    // Verify that the update method was called with the correctly merged nested object.
+    expect(mockConfiguration.update).toHaveBeenCalledWith(
+      C.CONFIG_KEY_SYNTAX_OVERRIDES,
+      expectedUpdatedOverrides,
+      vscode.ConfigurationTarget.Global
+    );
+  });
+
+  /**
+   * @description Tests that resetAll() correctly clears all user-defined settings
+   * by calling the update method with the appropriate values.
+   * @precondition The `update` method on the mock configuration is spied on.
+   * @assertion The `update` method should be called exactly three times: twice with
+   * `undefined` to clear the object-based settings, and once with the default
+   * accent color to reset the accent.
+   */
+  it("resetAll() should call the update method with undefined for all settings", async () => {
+    // 1. Arrange (No specific arrangement is needed as we are just calling the method)
+
+    // 2. Act
+    // Call the method that resets all configuration.
+    await ConfigurationService.resetAll();
+
+    // 3. Assert
+    // Verify that the update method was called three times in total.
+    expect(mockConfiguration.update).toHaveBeenCalledTimes(3);
+
+    // Verify that the 'fontStyles' setting was cleared.
+    expect(mockConfiguration.update).toHaveBeenCalledWith(
+      C.CONFIG_KEY_FONT_STYLES,
+      undefined,
+      vscode.ConfigurationTarget.Global
+    );
+
+    // Verify that the 'syntaxOverrides' setting was cleared.
+    expect(mockConfiguration.update).toHaveBeenCalledWith(
+      C.CONFIG_KEY_SYNTAX_OVERRIDES,
+      undefined,
+      vscode.ConfigurationTarget.Global
+    );
+
+    // Verify that the 'accent' setting was reset to its default value.
+    expect(mockConfiguration.update).toHaveBeenCalledWith(
+      C.CONFIG_KEY_ACCENT,
+      C.DEFAULT_ACCENT,
+      vscode.ConfigurationTarget.Global
+    );
+  });
+
+  /**
+   * @description Tests that resetSyntaxColor correctly removes a single color override
+   * while leaving other overrides for the same flavor and other flavors intact.
+   * @precondition The mocked `getConfiguration().get()` returns a nested object with
+   * multiple existing syntax overrides.
+   * @assertion The `update` method should be called with a new object that is missing
+   * only the specified override.
+   */
+  it("resetSyntaxColor() should remove a specific color override from a flavor", async () => {
+    // 1. Arrange
+    const existingOverrides = {
+      latte: {
+        keyword: "#ff0000",
+      },
+      mocha: {
+        comment: "#00ff00", // This is the override we will reset.
+        string: "#0000ff", // This override should remain.
+      },
+    };
+    const flavorToReset = "mocha";
+    const keyToReset = "comment";
+
+    // Simulate the get() method returning the existing user settings.
+    mockConfiguration.get.mockReturnValue(existingOverrides);
+
+    // This is the final state we expect to be written back to the settings.
+    const expectedUpdatedOverrides = {
+      latte: {
+        keyword: "#ff0000", // Should be untouched.
+      },
+      mocha: {
+        string: "#0000ff", // Should remain.
+      },
+    };
+
+    // 2. Act
+    // Call the method to reset the specific syntax color.
+    await ConfigurationService.resetSyntaxColor(flavorToReset, keyToReset);
+
+    // 3. Assert
+    // Verify that the update method was called with the correctly modified nested object.
+    expect(mockConfiguration.update).toHaveBeenCalledWith(
+      C.CONFIG_KEY_SYNTAX_OVERRIDES,
+      expectedUpdatedOverrides,
+      vscode.ConfigurationTarget.Global
+    );
+  });
+
+  /**
+   * @description Tests the edge case where resetting the last remaining color override for a flavor
+   * removes the entire flavor object from the configuration.
+   * @precondition The mocked `getConfiguration().get()` returns an object with one flavor
+   * containing a single override, alongside another flavor with its own overrides.
+   * @assertion The `update` method should be called with a new object that no longer
+   * contains the key for the flavor whose last override was removed.
+   */
+  it("resetSyntaxColor() should remove the entire flavor object if the last override is reset", async () => {
+    // 1. Arrange
+    const existingOverrides = {
+      latte: {
+        keyword: "#ff0000", // This flavor should remain untouched.
+      },
+      mocha: {
+        comment: "#00ff00", // This is the single, last override for this flavor.
+      },
+    };
+    const flavorToReset = "mocha";
+    const keyToReset = "comment";
+
+    // Simulate the get() method returning the existing user settings.
+    mockConfiguration.get.mockReturnValue(existingOverrides);
+
+    // This is the final state we expect. The 'mocha' object should be gone entirely.
+    const expectedUpdatedOverrides = {
+      latte: {
+        keyword: "#ff0000",
+      },
+    };
+
+    // 2. Act
+    // Call the method to reset the last syntax color for the 'mocha' flavor.
+    await ConfigurationService.resetSyntaxColor(flavorToReset, keyToReset);
+
+    // 3. Assert
+    // Verify that the update method was called with the correctly pruned object.
+    expect(mockConfiguration.update).toHaveBeenCalledWith(
+      C.CONFIG_KEY_SYNTAX_OVERRIDES,
+      expectedUpdatedOverrides,
+      vscode.ConfigurationTarget.Global
+    );
+  });
+});
+
+/**
+ * @description Test suite for the getWebViewSettings method.
+ */
+describe("ConfigurationService.getWebViewSettings", () => {
+  // No need to redefine mockedVscode here, it's available from the top level.
+
+  beforeEach(() => {
+    // We still want to clear mocks between these tests too.
+    jest.clearAllMocks();
+  });
+
+  /**
+   * @description Tests that getWebViewSettings correctly orchestrates calls to other
+   * methods and assembles the complete settings payload for the webview.
+   * @precondition Mocks are set up for getAccent, getFontStyles, getSyntaxOverrides,
+   * getActiveFlavor, and the vscode.extensions API.
+   * @assertion The returned object should have the correct structure and contain
+   * the exact data provided by the mocks.
+   */
+  it("should correctly assemble the settings payload", () => {
+    // 1. Arrange: Set up all the mock data we'll need for the payload.
+    const mockAccent = "lavender";
+    const mockFontStyles = { commentFontStyle: "italic", keywordFontStyle: "bold" };
+    const mockSyntaxOverrides = { mocha: { comment: "#ff0000" } };
+    const mockActiveFlavor = "mocha";
+
+    // Mock the return value of the real package.json structure
+    (mockedVscode.extensions.getExtension as jest.Mock).mockReturnValue({
+      packageJSON: {
+        contributes: {
+          configuration: {
+            properties: {
+              "calmppuccin.fontStyles": {
+                default: { commentFontStyle: "italic", keywordFontStyle: "none" },
+              },
+              "calmppuccin.accent": {
+                enum: ["rosewater", "flamingo", "lavender"],
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Use jest.spyOn to mock other methods *within* the ConfigurationService.
+    // This isolates our test to only the logic inside getWebViewSettings itself.
+    jest.spyOn(ConfigurationService, "getAccent").mockReturnValue(mockAccent);
+    jest.spyOn(ConfigurationService, "getFontStyles").mockReturnValue(mockFontStyles);
+    jest.spyOn(ConfigurationService, "getSyntaxOverrides").mockReturnValue(mockSyntaxOverrides);
+
+    // We can't spy on getActiveFlavor because it's private, so we mock its dependency.
+    (mockedVscode.workspace.getConfiguration as jest.Mock).mockReturnValue({
+      get: jest.fn().mockReturnValue("Calmppuccin Mocha"),
+    });
+
+    // 2. Act: Call the method we are testing.
+    const settings = ConfigurationService.getWebViewSettings();
+
+    // 3. Assert: Verify that the assembled object is correct.
+    expect(settings.activeFlavor).toBe(mockActiveFlavor);
+    expect(settings.currentAccent).toBe(mockAccent);
+    expect(settings.accentOptions).toEqual(["rosewater", "flamingo", "lavender"]);
+
+    // Check that syntaxSettings are correctly merged and calculated.
+    // We'll check the 'comment' setting as an example.
+    const commentSetting = settings.syntaxSettings.find((s) => s.key === "comment");
+    expect(commentSetting).toBeDefined();
+    expect(commentSetting?.fontStyle).toBe("italic"); // From mockFontStyles
+    expect(commentSetting?.color).toBe("#ff0000"); // From mockSyntaxOverrides
+    expect(commentSetting?.defaultColor).toBeDefined(); // Should be read from the palette
+  });
+});
