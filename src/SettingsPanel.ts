@@ -70,7 +70,7 @@ export class SettingsPanel {
    * Handles incoming messages from the webview panel.
    * @param {WebviewMessage} message The deserialized message object sent from the webview.
    */
-  private async _handleMessage(message: WebviewMessage) {
+  public async _handleMessage(message: WebviewMessage) {
     // The 'command' property is used as a discriminator for the message type.
     // TypeScript correctly infers the shape of 'message' in each case block.
     switch (message.command) {

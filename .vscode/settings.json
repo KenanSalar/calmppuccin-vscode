@@ -5,7 +5,7 @@
   // This setting will run all tests once on startup and then only re-run tests on file changes.
   // It's more stable than the default full watch mode which can sometimes cause issues.
   "jest.runMode": {
-    "type": "watch",
+    "type": "on-demand",
     "onStartup": "none"
   },
   "testing.automaticallyOpenTestResults": "neverOpen"

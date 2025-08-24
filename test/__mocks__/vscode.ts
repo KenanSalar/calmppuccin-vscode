@@ -15,7 +15,6 @@ export const workspace = {
 
 /**
  * Mocks the `vscode.ConfigurationTarget` enum.
- * We only need to provide the values our code actually uses.
  */
 export const ConfigurationTarget = {
   Global: 1,
@@ -48,8 +47,6 @@ export const commands = {
  * Mocks the `vscode.Uri` class and its static methods.
  */
 export const Uri = {
-  // The `parse` method is often used to create Uri objects from strings.
-  // We simulate a simplified version that returns an object with an `fsPath`.
   parse: jest.fn((str: string) => ({ fsPath: str })),
 };
 
@@ -57,6 +54,5 @@ export const Uri = {
  * Mocks the `vscode.ExtensionMode` enum.
  */
 export const ExtensionMode = {
-  // We only need to mock the 'Test' mode for our test environment.
   Test: 1,
 };
