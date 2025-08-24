@@ -38,7 +38,8 @@
         "formulahendry.auto-close-tag",
         "formulahendry.auto-rename-tag",
         "jeff-hykin.better-dockerfile-syntax",
-        "alefragnani.Bookmarks"
+        "alefragnani.Bookmarks",
+        "Orta.vscode-jest"
       ]
     }
   },
