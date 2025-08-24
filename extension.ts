@@ -8,7 +8,7 @@ import * as vscode from "vscode";
 import { buildAllFlavors } from "./build";
 import * as C from "./src/constants";
 import { SettingsPanel } from "./src/SettingsPanel";
-import { ConfigurationService } from "./src/ConfigurationService"; 
+import { ConfigurationService } from "./src/ConfigurationService";
 
 /**
  * Maps Calmppuccin theme flavors to their corresponding Catppuccin Icon flavors.

@@ -43,7 +43,13 @@
     }
   },
   // Mount the user's local .gitconfig and GPG socket directory
-  "mounts": [],
+  "mounts": [
+    "type=volume,source=devcontainer-home,target=/home/node",
+    "source=${localWorkspaceFolder}/.devcontainer/git/.gitconfig.project,target=/home/node/.gitconfig.project,type=bind,consistency=cached"
+  ],
+  "containerEnv": {
+    "GIT_CONFIG_SYSTEM": "/home/node/.gitconfig.project"
+  },
   "postCreateCommand": "npm install",
   "postStartCommand": "bash .devcontainer/post-start.sh",
   // Tells VS Code to run as the non-root 'node' user defined in the Dockerfile
