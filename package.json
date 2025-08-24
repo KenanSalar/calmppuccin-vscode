@@ -793,7 +793,7 @@
     "build-themes": "npm run compile && node ./dist/build.js",
     "package": "npm run build-themes && npx vsce package --no-dependencies",
     "publish:ci": "npm run build-themes && npx vsce publish --no-dependencies",
-    "test": "jest"
+    "test": "jest --config jest.config.ts"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
@@ -805,6 +805,7 @@
     "jest-environment-jsdom": "^30.0.5",
     "ts-jest": "^29.4.1",
     "ts-loader": "^9.5.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5.9.2",
     "webpack": "^5.101.0",
     "webpack-cli": "^6.0.1"
