@@ -54,6 +54,119 @@ Before you begin, please make sure you have the following installed on your syst
 
 Once you are inside the dev container, your environment is ready.
 
+### Git Configuration (one-time)
+
+The dev container persists your home directory, so these settings survive rebuilds.
+
+1. Set your Git identity inside the container:
+
+    ```bash
+    git config --global user.name "Your Name"
+    git config --global user.email "your@email.com"
+    ```
+
+2. (Optional) Verify:
+
+    ```bash
+    git config --global --get user.name
+    git config --global --get user.email
+    ```
+
+Notes:
+
+- Project-level Git defaults (like signing preference) are provided by the container and do not overwrite your personal identity.
+- You only need to run the commands above once per machine. They will persist across container rebuilds.
+
+### Optional: GPG Signing
+
+Signed commits are optional in this project by default. If you prefer to sign your commits, choose one of the following paths.
+
+#### A) Generate a new key inside the container (simplest)
+
+1. Create a key:
+
+    ```bash
+    gpg --full-generate-key
+    ```
+
+    - Recommended: key type ed25519
+    - Use the same name and email as your Git identity
+
+2. Find your key ID:
+
+    ```bash
+    gpg --list-secret-keys --keyid-format LONG
+    ```
+
+3. Tell Git to use it:
+
+    ```bash
+    git config --global user.signingkey <YOUR_KEY_ID>
+    git config --global commit.gpgsign true
+    ```
+
+4. Make pinentry work nicely in the terminal (once):
+
+    ```bash
+    echo "pinentry-program /usr/bin/pinentry-curses" >> ~/.gnupg/gpg-agent.conf
+    gpgconf --reload gpg-agent
+    ```
+
+5. Test:
+
+    ```bash
+    echo test | gpg --clearsign
+    git commit --allow-empty -m "signed commit"
+    git log --show-signature -1
+    ```
+
+#### B) Import an existing key from your host
+
+1. On your host machine, export your secret key (keep this file safe and delete after use):
+
+    ```bash
+    gpg --export-secret-keys --armor <YOUR_KEY_ID> > ~/secret.asc
+    ```
+
+2. Copy it into the running container (replace the container name if needed):
+
+    - Docker:
+
+      ```bash
+      docker cp ~/secret.asc calmppuccin-dev:/home/node/secret.asc
+      ```
+
+    - Podman:
+
+      ```bash
+      podman cp ~/secret.asc calmppuccin-dev:/home/node/secret.asc
+      ```
+
+3. Inside the container, import and trust it:
+
+    ```bash
+    gpg --import ~/secret.asc
+    gpg --edit-key <YOUR_KEY_ID>   # then type: trust -> 5 -> y -> quit
+    rm -f ~/secret.asc
+    git config --global user.signingkey <YOUR_KEY_ID>
+    git config --global commit.gpgsign true
+    echo "pinentry-program /usr/bin/pinentry-curses" >> ~/.gnupg/gpg-agent.conf
+    gpgconf --reload gpg-agent
+    ```
+
+4. Test:
+
+    ```bash
+    echo test | gpg --clearsign
+    git commit --allow-empty -m "signed commit"
+    git log --show-signature -1
+    ```
+
+Notes:
+
+- Your Git and GPG setup is stored under `/home/node` in a persistent volume and will survive container rebuilds.
+- If you ever need to reset your container’s personal settings, remove the volume for this project and reopen in container; otherwise, no action is required.
+
 ### Debugging
 
 To see your changes live, you can launch a debugging session.
