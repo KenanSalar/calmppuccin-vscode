@@ -2,9 +2,8 @@
 # This image comes with Node.js, npm, TypeScript, and many useful tools pre-installed.
 FROM mcr.microsoft.com/devcontainers/typescript-node:22
 
-# The base image already has a non-root user named 'node'.
-# Add any extra OS-level dependencies here if needed in the future.
-# For example: RUN sudo apt-get update && sudo apt-get install -y some-tool
+# Install git, gnupg, and sudo for GPG forwarding and permissions
+RUN apt-get update && apt-get install -y gnupg pinentry-curses
 
 # Install the VS Code Extension command-line tool (vsce) globally.
 # This is essential for packaging the extension into a .vsix file.
