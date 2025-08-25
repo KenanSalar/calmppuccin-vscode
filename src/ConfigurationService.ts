@@ -237,14 +237,12 @@ export class ConfigurationService {
       "text",
     ];
 
-    // Get strongly-typed settings using existing methods
     const activeFlavor = this.getActiveFlavor();
     const fontStyles = this.getFontStyles();
     const syntaxOverrides = this.getSyntaxOverrides();
-    const currentAccent = this.getAccent();
+    const currentAccent = this.config.get<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
     const customAccentColor = this.config.get<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
 
-    // Get default values from package.json
     const defaultFontStyles =
       extensionConfig?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLES}`]
         ?.default ?? {};
