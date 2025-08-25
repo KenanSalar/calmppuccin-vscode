@@ -56,14 +56,24 @@ export class ConfigurationService {
   }
 
   /**
-   * Gets the currently configured accent color, resolving the 'custom' option to its hex value.
+   * Gets the currently configured accent color.
+   * This method resolves the 'custom' option to its validated hex value,
+   * ensuring a valid color is always returned for theme generation.
    * @returns {string} The active accent color value (e.g., "sapphire" or a hex code like "#89b4fa").
    */
   public static getAccent(): string {
     const accentSetting = this.config.get<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
-    // If the user has selected "custom", we fetch the value from the custom accent color setting.
+
+    // If the user has selected "custom", the corresponding hex code must be fetched and validated.
     if (accentSetting === "custom") {
-      return this.config.get<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
+      const customColor = this.config.get<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
+
+      // A simple regex to validate that the color is a 6-digit hex code.
+      const hex6Regex = /^#([A-Fa-f0-9]{6})$/;
+
+      // If the stored custom color is valid, use it. Otherwise, fall back to the default
+      // custom color to prevent errors during theme generation.
+      return hex6Regex.test(customColor) ? customColor : C.DEFAULT_CUSTOM_ACCENT;
     }
     return accentSetting;
   }
@@ -237,14 +247,12 @@ export class ConfigurationService {
       "text",
     ];
 
-    // Get strongly-typed settings using existing methods
     const activeFlavor = this.getActiveFlavor();
     const fontStyles = this.getFontStyles();
     const syntaxOverrides = this.getSyntaxOverrides();
-    const currentAccent = this.getAccent();
+    const currentAccent = this.config.get<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
     const customAccentColor = this.config.get<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
 
-    // Get default values from package.json
     const defaultFontStyles =
       extensionConfig?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLES}`]
         ?.default ?? {};

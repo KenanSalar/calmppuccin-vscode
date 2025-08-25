@@ -442,15 +442,35 @@ describe("ConfigurationService.getWebViewSettings", () => {
       },
     });
 
-    // Use jest.spyOn to mock other methods *within* the ConfigurationService.
-    // This isolates our test to only the logic inside getWebViewSettings itself.
-    jest.spyOn(ConfigurationService, "getAccent").mockReturnValue(mockAccent);
+    // Spy on other public methods of the ConfigurationService that getWebViewSettings
+    // depends on. This provides controlled return values for these dependencies,
+    // isolating the test to the logic within getWebViewSettings itself.
     jest.spyOn(ConfigurationService, "getFontStyles").mockReturnValue(mockFontStyles);
     jest.spyOn(ConfigurationService, "getSyntaxOverrides").mockReturnValue(mockSyntaxOverrides);
 
-    // We can't spy on getActiveFlavor because it's private, so we mock its dependency.
-    (mockedVscode.workspace.getConfiguration as jest.Mock).mockReturnValue({
-      get: jest.fn().mockReturnValue("Calmppuccin Mocha"),
+    // Since `getActiveFlavor` is a private method, it cannot be spied on directly.
+    // Instead, its underlying dependency, the `vscode.workspace.getConfiguration` API, is mocked.
+    // The mock is implemented as a function to dynamically return different configuration
+    // objects based on the `section` argument.
+    (mockedVscode.workspace.getConfiguration as jest.Mock).mockImplementation((section: string) => {
+      // Handle requests for the 'workbench' configuration, used for getting the active theme.
+      if (section === "workbench") {
+        return {
+          // Return a mock object that provides a simulated theme name.
+          get: jest.fn().mockReturnValue("Calmppuccin Mocha"),
+          update: jest.fn(),
+        };
+      }
+      // Handle requests for the extension's specific configuration.
+      if (section === C.EXTENSION_NAMESPACE) {
+        return {
+          // Return a mock object that provides the test-specific accent color.
+          get: jest.fn().mockReturnValue(mockAccent),
+          update: jest.fn(),
+        };
+      }
+      // A generic empty mock is returned for any other unhandled configuration sections.
+      return { get: jest.fn(), update: jest.fn() };
     });
 
     // 2. Act: Call the method we are testing.
