@@ -23,19 +23,61 @@ jest.mock("../../build");
 describe("Extension Integration Tests", () => {
   // A variable to hold the mock ExtensionContext for each test.
   let mockContext: vscode.ExtensionContext;
+  
+  // This will hold the mock specifically for the 'calmppuccin' configuration section.
+  let mockCalmppuccinConfiguration: { get: jest.Mock; update: jest.Mock };
 
   /**
    * This function runs before each test in this suite.
-   * Its purpose is to reset all mocks and create a fresh, type-safe
-   * mock of the VS Code ExtensionContext.
+   * It resets all mocks and sets up a sophisticated mock for the VS Code
+   * configuration API that can handle different configuration sections.
    */
   beforeEach(() => {
     // Reset the state of all mocks to ensure tests are isolated.
     jest.clearAllMocks();
 
+    // --- Create separate mocks for each configuration section ---
+
+    // 1. Mock for the 'calmppuccin' extension settings. This will be returned
+    // when the code calls `getConfiguration('calmppuccin')`.
+    mockCalmppuccinConfiguration = {
+      get: jest.fn(),
+      update: jest.fn(),
+    };
+
+    // 2. Mock for the 'workbench' settings. This is necessary because the new
+    // lazy-activation logic in `extension.ts` checks the current theme by calling
+    // `getConfiguration('workbench').get('colorTheme')`.
+    const mockWorkbenchConfiguration = {
+      get: jest.fn((key: string) => {
+        // If the test asks for the current color theme, we simulate that a
+        // Calmppuccin theme is already active. This ensures that the
+        // `ensureListenersAreActive` function is called during activation.
+        if (key === "colorTheme") {
+          return "Calmppuccin Mocha";
+        }
+        return undefined;
+      }),
+      update: jest.fn(),
+    };
+
+    // --- Make the main getConfiguration mock intelligent ---
+
+    // This is the key change to fix the test. Instead of returning a single, static object,
+    // this mock implementation now inspects the 'section' argument and returns the
+    // appropriate mock object for either 'calmppuccin' or 'workbench'.
+    (mockedVscode.workspace.getConfiguration as jest.Mock).mockImplementation((section: string) => {
+      if (section === C.EXTENSION_NAMESPACE) {
+        return mockCalmppuccinConfiguration;
+      }
+      if (section === "workbench") {
+        return mockWorkbenchConfiguration;
+      }
+      // Provide a default fallback to prevent errors if other sections are ever requested.
+      return { get: jest.fn(), update: jest.fn() };
+    });
+
     // Create a complete, type-safe mock of the ExtensionContext.
-    // This satisfies all the properties that the 'activate' function uses,
-    // preventing TypeScript errors without needing 'as any' or 'as unknown'.
     mockContext = {
       subscriptions: [],
       globalState: {
@@ -74,13 +116,9 @@ describe("Extension Integration Tests", () => {
    */
   it("should trigger the theme build process when the regenerateThemes command is executed", async () => {
     // 1. Arrange: Set up spies and mock return values.
-
-    // Create a spy on the buildAllFlavors function to track its calls.
     const buildSpy = jest.spyOn(build, "buildAllFlavors");
 
-    // Spy on the ConfigurationService methods that the command depends on.
-    // This isolates our test from the service's internal logic, which is
-    // already tested in its own unit test file.
+    // We still need to spy on these because the command's callback uses them directly.
     jest.spyOn(ConfigurationService, "getAccent").mockReturnValue("sapphire");
     jest.spyOn(ConfigurationService, "getFontStyles").mockReturnValue({});
     jest.spyOn(ConfigurationService, "getSyntaxOverrides").mockReturnValue({});
@@ -89,16 +127,13 @@ describe("Extension Integration Tests", () => {
     let commandCallback: () => Promise<void> = async () => {};
     (mockedVscode.commands.registerCommand as jest.Mock).mockImplementation(
       (command: string, callback: () => Promise<void>) => {
-        // We only care about the command we're testing.
         if (command === C.REGENERATE_COMMAND_ID) {
           commandCallback = callback;
         }
-        // The real API returns a disposable, so our mock should too.
         return { dispose: () => {} };
       }
     );
 
-    // Mock the user interaction to prevent the test from hanging.
     (mockedVscode.window.showInformationMessage as jest.Mock).mockResolvedValue("Reload Window");
 
     // 2. Act:
@@ -108,9 +143,7 @@ describe("Extension Integration Tests", () => {
     await commandCallback();
 
     // 3. Assert:
-    // Verify that our build function was called, confirming the command is wired up correctly.
     expect(buildSpy).toHaveBeenCalledTimes(1);
-    // Verify that the user was prompted to reload the window after the build.
     expect(mockedVscode.window.showInformationMessage).toHaveBeenCalled();
   });
 
@@ -124,35 +157,31 @@ describe("Extension Integration Tests", () => {
    */
   it("should trigger regenerateThemes command on configuration change", () => {
     // 1. Arrange
-
-    // Capture the listener function that is passed to onDidChangeConfiguration.
     let listener: (event: vscode.ConfigurationChangeEvent) => void = () => {};
     (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation((callback) => {
       listener = callback;
-      // The real API returns a disposable, so our mock should too.
       return { dispose: () => {} };
     });
 
-    // Create a mock event object that simulates a change to our accent color setting.
     const mockEvent: vscode.ConfigurationChangeEvent = {
       affectsConfiguration: jest.fn((section: string) => {
-        // We only care if the changed section is one of ours.
+        // This simulates a user changing the accent color in their settings.
         return section === `${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACCENT}`;
       }),
     };
 
-    // Spy on executeCommand to verify it gets called.
     const executeCommandSpy = mockedVscode.commands.executeCommand;
 
     // 2. Act
-    // Run the extension's activate function to register the listener.
+    // Running activate now correctly sets up the listeners because our beforeEach
+    // mock simulates that a Calmppuccin theme is already active.
     activate(mockContext);
 
-    // Simulate a user changing a setting by manually calling the captured listener.
+    // Manually trigger the configuration change event.
     listener(mockEvent);
 
     // 3. Assert
-    // Verify that the correct command was executed as a result of the event.
+    // Verify that the listener, now correctly registered, executed the command.
     expect(executeCommandSpy).toHaveBeenCalledWith(C.REGENERATE_COMMAND_ID);
   });
 });
