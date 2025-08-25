@@ -61,6 +61,15 @@
     "relaxing theme"
   ],
   "main": "./dist/extension.js",
+  "activationEvents": [
+    "onCommand:calmppuccin.customize",
+    "onColorTheme:Calmppuccin Macchiato",
+    "onColorTheme:Calmppuccin Mocha",
+    "onColorTheme:Calmppuccin Nitro Cold Brew",
+    "onColorTheme:Calmppuccin Oledppuccin",
+    "onColorTheme:Calmppuccin Frappé",
+    "onColorTheme:Calmppuccin Latte"
+  ],
   "contributes": {
     "commands": [
       {
