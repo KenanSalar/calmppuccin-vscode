@@ -3,6 +3,10 @@
 ## [1.6.2] - 2025-08-25
 
 - **Performance Improvement**: The extension has been refactored to use a lazy activation strategy. It will no longer run on every startup, reducing its impact on VS Code's launch time. The extension now activates only when a user selects a Calmppuccin theme or opens the customization UI, ensuring it uses zero resources until it's actually needed.
+- **Fix**: Corrected the extension manifest (`package.json`) by adding the necessary `activationEvents` to support the new lazy-loading strategy. This resolves a critical error that prevented the extension from being packaged.
+- **Fix**: Resolved a UI bug in the customization panel where the "custom" accent color option was not correctly selected in the dropdown after reloading the window.
+- **Internal**: Adapted the integration tests to support and verify the new lazy-activation logic, ensuring the stability of the new performance improvements.
+- **Internal**: Fixed a failing unit test for the `ConfigurationService` by creating a more robust mock that correctly simulates the API for different configuration sections.
 
 ## [1.6.1] - 2025-08-24
 
