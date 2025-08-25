@@ -168,12 +168,27 @@ class UIManager {
       this.updateAccentColor(newValue);
       vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
     });
+    
     this.elements.customAccentHexInput.addEventListener("input", (e) => {
-      const newValue = (e.target as HTMLInputElement).value;
+      const inputElement = e.target as HTMLInputElement;
+      const newValue = inputElement.value;
+
+      // Validate the input against a 6-digit hex regex.
       if (this.hex6Regex.test(newValue)) {
+        // If valid, remove any error styling.
+        inputElement.style.borderColor = "";
+        inputElement.style.outlineColor = "";
+
+        // Sync the color picker swatch with the typed value.
         this.elements.customAccentPicker.value = newValue;
+        // Update the live UI accent color.
         this.updateAccentColor(newValue);
+        // Send the valid color to the extension host to be saved.
         vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
+      } else {
+        // If invalid, apply error styling for immediate user feedback.
+        inputElement.style.borderColor = "var(--danger-color)";
+        inputElement.style.outlineColor = "var(--danger-color)";
       }
     });
 
@@ -364,7 +379,6 @@ class UIManager {
     const hexInput = document.createElement("input");
     hexInput.type = "text";
     hexInput.className = "hex-input-display";
-    hexInput.readOnly = true;
     const alphaSlider = document.createElement("input");
     alphaSlider.type = "range";
     alphaSlider.min = "0";
