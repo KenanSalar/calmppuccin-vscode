@@ -9,6 +9,7 @@
 - **Fix**: Resolved a UI bug in the customization panel where the "custom" accent color option was not correctly selected in the dropdown after reloading the window.
 - **Internal**: Adapted the integration tests to support and verify the new lazy-activation logic, ensuring the stability of the new performance improvements.
 - **Internal**: Fixed a failing unit test for the `ConfigurationService` by creating a more robust mock that correctly simulates the API for different configuration sections.
+- **Internal**: Added a new suite of unit tests that automatically validates the `package.json` manifest. This will prevent configuration errors like typos or missing default values and ensure the extension's activation events remain in sync with its themes.
 
 ## [1.6.1] - 2025-08-24
 
