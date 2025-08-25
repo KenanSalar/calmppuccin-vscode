@@ -138,7 +138,9 @@
         "calmppuccin.customAccentColor": {
           "type": "string",
           "default": "#89b4fa",
-          "description": "The custom accent color (hex code) to use when 'custom' is selected in the Accent Color dropdown."
+          "description": "The custom accent color (hex code) to use when 'custom' is selected in the Accent Color dropdown.",
+          "pattern": "^#([A-Fa-f0-9]{6})$",
+          "patternErrorMessage": "Please enter a valid 6-digit hex color code (e.g., #89b4fa)."
         },
         "calmppuccin.openCustomizationUI": {
           "type": "null",
