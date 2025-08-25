@@ -3,7 +3,7 @@
   "displayName": "Calmppuccin",
   "description": "Calmppuccin is a visually refined theme for Visual Studio Code, designed to offer a harmonious coding experience. Inspired by the popular Catppuccin theme, Calmppuccin takes the beloved pastel palette and transforms it into a gentler, less intense version, perfect for long coding sessions without eye strain.",
   "icon": "assets/images/logo/icon.png",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "publisher": "kenan-salar",
   "license": "MIT",
   "repository": {
@@ -60,10 +60,16 @@
     "relaxing",
     "relaxing theme"
   ],
-  "activationEvents": [
-    "onStartupFinished"
-  ],
   "main": "./dist/extension.js",
+  "activationEvents": [
+    "onCommand:calmppuccin.customize",
+    "onColorTheme:Calmppuccin Macchiato",
+    "onColorTheme:Calmppuccin Mocha",
+    "onColorTheme:Calmppuccin Nitro Cold Brew",
+    "onColorTheme:Calmppuccin Oledppuccin",
+    "onColorTheme:Calmppuccin Frappé",
+    "onColorTheme:Calmppuccin Latte"
+  ],
   "contributes": {
     "commands": [
       {
@@ -132,7 +138,9 @@
         "calmppuccin.customAccentColor": {
           "type": "string",
           "default": "#89b4fa",
-          "description": "The custom accent color (hex code) to use when 'custom' is selected in the Accent Color dropdown."
+          "description": "The custom accent color (hex code) to use when 'custom' is selected in the Accent Color dropdown.",
+          "pattern": "^#([A-Fa-f0-9]{6})$",
+          "patternErrorMessage": "Please enter a valid 6-digit hex color code (e.g., #89b4fa)."
         },
         "calmppuccin.openCustomizationUI": {
           "type": "null",
