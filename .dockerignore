@@ -1,0 +1,27 @@
+# Git and VS Code version control/metadata
+.git
+.github
+.vscode-test/
+
+# Node.js dependencies
+node_modules
+
+# Build artifacts and generated files
+dist/
+themes/
+coverage/
+*.vsix
+
+# Assets folder
+assets/*
+
+# Project documentation and configuration files
+README.md
+CHANGELOG.md
+CONTRIBUTING.md
+LICENSE.md
+.gitignore
+.gitattributes
+jest.config.ts
+tsconfig.json
+webpack.config.js
