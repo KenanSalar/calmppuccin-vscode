@@ -245,7 +245,9 @@ class UIManager {
       const optionElement = document.createElement("option");
       optionElement.value = option;
       optionElement.textContent = option;
-      if (currentAccent === option) optionElement.selected = true;
+      if (currentAccent === option) {
+        optionElement.selected = true;
+      }
       accentSelect.appendChild(optionElement);
     });
 
