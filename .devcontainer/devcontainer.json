@@ -4,7 +4,8 @@
 
   // Tells VS Code to build the container from our Dockerfile
   "build": {
-    "dockerfile": "Dockerfile"
+    "dockerfile": "Dockerfile",
+    "context": ".."
   },
   "runArgs": ["--name", "calmppuccin-dev"],
   // These settings are applied inside the container once it's running
