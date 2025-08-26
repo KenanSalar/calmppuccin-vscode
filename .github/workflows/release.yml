@@ -29,7 +29,6 @@ jobs:
         
       # Builds the Docker image. Caching is now optimized within the Dockerfile.
       - name: Build Dev Container Image
-        id: docker_build
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -41,8 +40,7 @@ jobs:
 
       # Runs tests inside the self-contained Docker image.
       - name: Run Tests
-        run: |
-          docker run --rm calmppuccin-builder npm test
+        run: docker run --rm --workdir /workspaces/calmppuccin-vscode calmppuccin-builder npm test
 
       - name: Get Package Version
         id: get_version
@@ -51,7 +49,7 @@ jobs:
       # Builds and packages the extension, then copies the .vsix file out of the container.
       - name: Build and Package Extension
         run: |
-          docker run --name builder-container calmppuccin-builder npm run package
+          docker run --name builder-container --workdir /workspaces/calmppuccin-vscode calmppuccin-builder npm run package
           docker cp builder-container:/workspaces/calmppuccin-vscode/calmppuccin-vscode-*.vsix .
           docker rm builder-container
 
