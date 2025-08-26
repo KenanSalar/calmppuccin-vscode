@@ -51,6 +51,7 @@ jobs:
         run: |
           set -euo pipefail
           docker run --rm \
+            -u 0 \
             -v "$PWD":/out \
             --workdir /workspaces/calmppuccin-vscode \
             calmppuccin-builder \
