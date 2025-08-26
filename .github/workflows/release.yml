@@ -7,7 +7,6 @@ on:
       - main
       - dev
 
-# Add actions: write permission to allow saving the cache
 permissions:
   contents: write
   actions: write
@@ -28,6 +27,41 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # This is the key change: We now cache the entire Docker image based on the Dockerfile's content.
+      - name: Cache Docker Image
+        uses: actions/cache@v4
+        with:
+          path: /tmp/docker-image.tar
+          key: ${{ runner.os }}-docker-${{ hashFiles('./.devcontainer/Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-docker-
+
+      # Load the cached image if it exists.
+      - name: Load Docker Image from Cache
+        run: |
+          if [ -f /tmp/docker-image.tar ]; then
+            echo "Loading Docker image from cache..."
+            docker load < /tmp/docker-image.tar
+          else
+            echo "No cached Docker image found."
+          fi
+
+      # Build the Docker image, which will be fast if the image was loaded from cache.
+      - name: Build Dev Container Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./.devcontainer
+          tags: calmppuccin-builder:latest
+          load: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+
+      # Save the new or updated image to the cache path.
+      - name: Save Docker Image to Cache
+        run: |
+          echo "Saving Docker image to cache..."
+          docker save calmppuccin-builder:latest > /tmp/docker-image.tar
+
       # Cache the project's node_modules directory.
       - name: Cache node modules
         id: cache-npm
@@ -37,16 +71,6 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-
-      # Builds the Docker image using a unified 'gha' cache scope.
-      - name: Build Dev Container Image
-        uses: docker/build-push-action@v6
-        with:
-          context: ./.devcontainer
-          tags: calmppuccin-builder:latest
-          load: true
-          cache-from: type=gha,scope=dev-container-cache
-          cache-to: type=gha,mode=max,scope=dev-container-cache
 
       # Installs only new dependencies, using the cache if available.
       - name: Install Dependencies
