@@ -27,7 +27,6 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       # Caches Docker layers based on the Dockerfile's content.
-      # This cache is only invalidated if the Dockerfile itself changes.
       - name: Cache Docker layers
         uses: actions/cache@v4
         with:
@@ -37,7 +36,6 @@ jobs:
             ${{ runner.os }}-buildx-
 
       # Caches the project's node_modules directory.
-      # The cache is only invalidated if the package-lock.json file changes.
       - name: Cache node modules
         id: cache-npm
         uses: actions/cache@v4
@@ -63,16 +61,11 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-      # Installs only new dependencies, as existing ones are restored from the cache.
+      # Installs only new dependencies, using the cache if available.
       - name: Install Dependencies
-        run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/workspaces/calmppuccin-vscode \
-            -w /workspaces/calmppuccin-vscode \
-            calmppuccin-builder \
-            bash -c "npm install"
+        run: npm install
 
-      # Runs unit and integration tests inside the consistent container environment.
+      # Runs tests inside the container, using the already-installed node_modules.
       - name: Run Tests
         run: |
           docker run --rm \
@@ -85,7 +78,7 @@ jobs:
         id: get_version
         uses: martinbeentjes/npm-get-version-action@v1.3.1
 
-      # Builds and packages the extension into a .vsix file inside the container.
+      # Builds and packages the extension inside the container.
       - name: Build and Package Extension
         run: |
           docker run --rm \
@@ -98,7 +91,7 @@ jobs:
         id: find_vsix
         run: echo "vsix_path=$(ls *.vsix)" >> $GITHUB_OUTPUT
 
-      # Uploads the generated .vsix file as a build artifact for the publishing job.
+      # Uploads the generated .vsix file as a build artifact.
       - name: Upload VSIX Artifact
         uses: actions/upload-artifact@v4
         with:
