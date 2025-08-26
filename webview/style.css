@@ -192,6 +192,10 @@ section.card.danger-zone button.reset-all-button:active::before {
   align-items: center;
 }
 
+#settings-container.view-brackets {
+  grid-template-columns: auto 1fr;
+}
+
 label {
   font-weight: 500;
   color: var(--vscode-description-foreground);
@@ -519,4 +523,21 @@ select:focus,
   background-color: var(--danger-color);
   color: #ffffff;
   border-color: var(--danger-color);
+}
+
+#language-select,
+#settings-view-select {
+  height: calc(var(--control-height) - 10px);
+  padding: 0 30px 0 12px;
+  min-width: 120px;
+  background-color: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: calc(var(--radius) - 4px);
+  color: var(--vscode-input-foreground);
+  font-weight: 500;
+}
+
+#language-select:hover,
+#settings-view-select:hover {
+  border-color: var(--dynamic-accent-color);
 }
