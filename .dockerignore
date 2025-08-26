@@ -22,6 +22,3 @@ CONTRIBUTING.md
 LICENSE.md
 .gitignore
 .gitattributes
-jest.config.ts
-tsconfig.json
-webpack.config.js
