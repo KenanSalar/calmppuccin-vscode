@@ -43,9 +43,9 @@ jobs:
           context: ./.devcontainer
           tags: calmppuccin-builder:latest
           load: true
-          # Using the 'gha' cache backend for better performance on GitHub runners
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # Use the 'gha' cache backend and share it across branches
+          cache-from: type=gha,scope=${{ github.workflow }}
+          cache-to: type=gha,mode=max,scope=${{ github.workflow }}
 
       # Installs only new dependencies, using the cache if available.
       - name: Install Dependencies
