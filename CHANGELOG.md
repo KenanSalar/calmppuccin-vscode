@@ -7,6 +7,7 @@
 - **Feature**: The Customization UI now features a view selector to switch between "Syntax", "Brackets", and "JSON" settings. This organizes the panel and provides dedicated live previews for each category.
 - **Feature**: Added unit tests for the webview.
 - **Improvement**: Cached github workflow for the npm dependencies and docker image so that the pipline is significant faster.
+- **Improvement**: Docker caching for github actions.
 - **Fix**: Updated the extension's configuration schema (package.json). VS Code will now correctly validate 8-digit hex codes with alpha channels when a user edits their settings.json manually.
 - **Fix**: Corrected a CSS grid layout issue that caused the bracket color settings to be displayed in a disorganized manner.
 - **Fix**: Updated the webview unit tests to align with the new data structures, resolving a test failure caused by the recent feature addition.
