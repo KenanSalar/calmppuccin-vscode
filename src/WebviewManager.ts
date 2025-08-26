@@ -11,7 +11,7 @@ import { WebviewMessage } from "./SettingsPanel";
 import { WebViewSettings } from "./ConfigurationService";
 
 /** Defines the shape of messages sent from the extension *to* the webview. */
-type MessageToWebview = {
+export type MessageToWebview = {
   command: "loadSettings";
   settings: WebViewSettings;
 };
