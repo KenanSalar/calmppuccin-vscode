@@ -184,7 +184,16 @@
             "punctuationFontStyle": "none",
             "stringFontStyle": "none",
             "stringVerbatimFontStyle": "italic",
-            "textFontStyle": "none"
+            "textFontStyle": "none",
+            "jsonLvl0FontStyle": "none",
+            "jsonLvl1FontStyle": "none",
+            "jsonLvl2FontStyle": "none",
+            "jsonLvl3FontStyle": "none",
+            "jsonLvl4FontStyle": "none",
+            "jsonLvl5FontStyle": "none",
+            "jsonLvl6FontStyle": "none",
+            "jsonLvl7FontStyle": "none",
+            "jsonLvl8FontStyle": "none"
           },
           "properties": {
             "commentFontStyle": {
@@ -606,6 +615,114 @@
                 "italic bold",
                 "underline"
               ]
+            },
+            "jsonLvl0FontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for json lvl 0.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "jsonLvl1FontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for json lvl 1.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "jsonLvl2FontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for json lvl 2.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "jsonLvl3FontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for json lvl 3.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "jsonLvl4FontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for json lvl 4.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "jsonLvl5FontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for json lvl 5.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "jsonLvl6FontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for json lvl 6.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "jsonLvl7FontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for json lvl 7.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
+            },
+            "jsonLvl8FontStyle": {
+              "type": "string",
+              "default": "none",
+              "description": "Set the font style for json lvl 8.",
+              "enum": [
+                "none",
+                "italic",
+                "bold",
+                "italic bold",
+                "underline"
+              ]
             }
           }
         },
@@ -820,6 +937,96 @@
                   "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
                   "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for plain text."
+                },
+                "uiBracket1": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
+                  "description": "Overrides the color for the first bracket pair."
+                },
+                "uiBracket2": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
+                  "description": "Overrides the color for the second bracket pair."
+                },
+                "uiBracket3": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
+                  "description": "Overrides the color for the third bracket pair."
+                },
+                "uiBracket4": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
+                  "description": "Overrides the color for the fourth bracket pair."
+                },
+                "uiBracket5": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
+                  "description": "Overrides the color for the fifth bracket pair."
+                },
+                "uiBracket6": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
+                  "description": "Overrides the color for the sixth bracket pair."
+                },
+                "jsonLvl0": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
+                  "description": "Overrides the color for the top-level JSON keys."
+                },
+                "jsonLvl1": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
+                  "description": "Overrides the color for the second-level JSON keys."
+                },
+                "jsonLvl2": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
+                  "description": "Overrides the color for the third-level JSON keys."
+                },
+                "jsonLvl3": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
+                  "description": "Overrides the color for the fourth-level JSON keys."
+                },
+                "jsonLvl4": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
+                  "description": "Overrides the color for the fifth-level JSON keys."
+                },
+                "jsonLvl5": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
+                  "description": "Overrides the color for the sixth-level JSON keys."
+                },
+                "jsonLvl6": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
+                  "description": "Overrides the color for the seventh-level JSON keys."
+                },
+                "jsonLvl7": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
+                  "description": "Overrides the color for the eighth-level JSON keys."
+                },
+                "jsonLvl8": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
+                  "description": "Overrides the color for the ninth-level JSON keys."
                 }
               }
             }

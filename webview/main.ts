@@ -9,10 +9,20 @@ import { codeSnippets } from "./snippets";
 // These types are duplicated from the extension's backend to create a strict, type-safe contract
 // for communication between the webview (frontend) and the extension host (backend).
 
+/** A single setting item for the webview. */
+type WebviewSetting = {
+  key: string;
+  fontStyle?: string;
+  color?: string;
+  defaultColor: string;
+};
+
 /** The message payload received from the extension when settings are loaded. */
 type SettingsPayload = {
   activeFlavor: string;
-  syntaxSettings: { key: string; fontStyle: string; color: string; defaultColor: string }[];
+  syntaxSettings: WebviewSetting[];
+  bracketSettings: WebviewSetting[];
+  jsonSettings: WebviewSetting[];
   currentAccent: string;
   accentOptions: string[];
   customAccentColor: string;
@@ -86,11 +96,14 @@ export class UIManager {
     codePreview: document.getElementById("code-preview")!,
     resetAllContainer: document.getElementById("reset-all-container")!,
     languageSelect: document.getElementById("language-select") as HTMLSelectElement,
+    settingsViewSelect: document.getElementById("settings-view-select") as HTMLSelectElement,
     dialogOverlay: document.getElementById("reset-dialog-overlay")!,
     confirmResetButton: document.getElementById("dialog-confirm-button")!,
     cancelResetButton: document.getElementById("dialog-cancel-button")!,
   };
 
+  /** Holds the current settings payload from the extension. */
+  private settings: SettingsPayload | null = null;
   /** Holds the current styling state (color and font style) for the live preview pane. */
   private previewState: { [key: string]: { color?: string; fontStyle?: string } } = {};
   /** Caches the accent color palette for the active theme flavor. */
@@ -107,9 +120,9 @@ export class UIManager {
    * @param {SettingsPayload} settings The settings object from the VS Code extension host.
    */
   public populateAllSettings(settings: SettingsPayload) {
+    this.settings = settings;
     const {
       activeFlavor,
-      syntaxSettings,
       currentAccent,
       accentOptions,
       customAccentColor,
@@ -124,7 +137,6 @@ export class UIManager {
 
     // 2. Clear previous UI elements to ensure a clean slate on theme change.
     this.elements.accentContainer.innerHTML = "";
-    this.elements.settingsContainer.innerHTML = "";
     this.elements.resetAllContainer.innerHTML = "";
 
     // 3. Set flavor-specific UI elements.
@@ -135,11 +147,10 @@ export class UIManager {
 
     // 4. Build each section of the UI dynamically.
     this._createAccentColorControls(currentAccent, accentOptions, customAccentColor);
-    this._createSyntaxControls(syntaxSettings, settings.defaultFontStyles);
     this._createResetAllButton();
+    this._handleViewChange(); // This will now render the correct initial view based on the dropdown
 
     // 5. Apply the initial state to the UI.
-    this.updatePreviewPane();
     this._handleAccentChange(currentAccent);
   }
 
@@ -150,10 +161,12 @@ export class UIManager {
   public initializeEventListeners() {
     // Populate the language selector dropdown and set up its change event.
     for (const lang in codeSnippets) {
-      const option = document.createElement("option");
-      option.value = lang;
-      option.textContent = lang;
-      this.elements.languageSelect.appendChild(option);
+      if (lang !== "brackets" && lang !== "json") {
+        const option = document.createElement("option");
+        option.value = lang;
+        option.textContent = lang;
+        this.elements.languageSelect.appendChild(option);
+      }
     }
     this.elements.languageSelect.value = "csharp";
     this.elements.codePreview.innerHTML = codeSnippets.csharp;
@@ -161,6 +174,11 @@ export class UIManager {
       const selectedLanguage = (e.target as HTMLSelectElement).value as keyof typeof codeSnippets;
       this.elements.codePreview.innerHTML = codeSnippets[selectedLanguage];
       this.updatePreviewPane();
+    });
+
+    // Listen for changes on the settings view dropdown.
+    this.elements.settingsViewSelect.addEventListener("change", () => {
+      this._handleViewChange();
     });
 
     // Listen for changes on the custom accent color pickers.
@@ -242,6 +260,27 @@ export class UIManager {
   }
 
   /**
+   * Handles the logic for showing/hiding the custom accent picker and updating the UI's accent color.
+   * @param {string} accentValue The newly selected accent value.
+   * @private
+   */
+  private _handleAccentChange(accentValue: string) {
+    const isCustom = accentValue === "custom";
+    this.elements.customAccentPickerContainer.style.display = isCustom ? "grid" : "none";
+    const newColor = isCustom ? this.elements.customAccentPicker.value : this.accentColorMap[accentValue];
+    this.updateAccentColor(newColor);
+  }
+
+  /**
+   * Updates the `--dynamic-accent-color` CSS variable to change the UI's theme in real-time.
+   * @param {string} newColor The new hex color to apply.
+   * @private
+   */
+  private updateAccentColor(newColor: string) {
+    document.documentElement.style.setProperty("--dynamic-accent-color", newColor);
+  }
+
+  /**
    * Dynamically creates the Accent Color dropdown and the custom color picker controls.
    * @private
    */
@@ -284,17 +323,60 @@ export class UIManager {
   }
 
   /**
+   * Handles the change of the settings view dropdown, rebuilding the settings grid and updating the preview.
+   * @private
+   */
+  private _handleViewChange() {
+    if (!this.settings) return;
+    const { defaultFontStyles } = this.settings;
+    const selectedView = this.elements.settingsViewSelect.value;
+
+    // Clear the container and reset its classes to the default
+    this.elements.settingsContainer.innerHTML = "";
+    this.elements.settingsContainer.className = "card-body";
+    (document.getElementById("settings-container") as HTMLElement).id = "settings-container"; // Ensure base ID is present
+
+    switch (selectedView) {
+      case "syntax":
+        // Uses the default 3-column layout, no extra class needed.
+        this._createSyntaxControls(this.settings.syntaxSettings, defaultFontStyles, true);
+        this.elements.languageSelect.style.display = ""; // Show language selector
+        this.elements.languageSelect.value = "csharp";
+        this.elements.codePreview.innerHTML = codeSnippets.csharp;
+        break;
+      case "brackets":
+        // Add a class to switch to a 2-column layout.
+        this.elements.settingsContainer.classList.add("view-brackets");
+        // Create controls without font styles.
+        this._createSyntaxControls(this.settings.bracketSettings, {}, false);
+        this.elements.languageSelect.style.display = "none"; // Hide language selector
+        this.elements.codePreview.innerHTML = codeSnippets.brackets;
+        break;
+      case "json":
+        // Uses the default 3-column layout.
+        this._createSyntaxControls(this.settings.jsonSettings, defaultFontStyles, true);
+        this.elements.languageSelect.style.display = "none"; // Hide language selector
+        this.elements.codePreview.innerHTML = codeSnippets.json;
+        break;
+    }
+    // Update the preview pane after changing the view and its content
+    this.updatePreviewPane();
+  }
+
+  /**
    * Dynamically creates the grid of controls for font styles and syntax colors.
-   * @param {SettingsPayload["syntaxSettings"]} syntaxSettings An array of the syntax settings to build controls for.
-   * @param {SettingsPayload["defaultFontStyles"]} defaultFontStyles An object containing the default font styles.
+   * @param {WebviewSetting[]} settings An array of the syntax settings to build controls for.
+   * @param {{ [key: string]: string }} defaultFontStyles An object containing the default font styles.
+   * @param {boolean} includeFontStyles Whether to include font style controls.
    * @private
    */
   private _createSyntaxControls(
-    syntaxSettings: SettingsPayload["syntaxSettings"],
-    defaultFontStyles: SettingsPayload["defaultFontStyles"]
+    settings: WebviewSetting[],
+    defaultFontStyles: { [key: string]: string },
+    includeFontStyles: boolean
   ) {
     // Loop through each customizable syntax item (e.g., comment, keyword, etc.).
-    syntaxSettings.forEach((setting) => {
+    settings.forEach((setting) => {
       const { key, fontStyle, color, defaultColor } = setting;
       const fontStyleKey = `${key}FontStyle`;
       const defaultFontStyle = defaultFontStyles[fontStyleKey] || "none";
@@ -307,13 +389,18 @@ export class UIManager {
       label.textContent = key.replace(/([A-Z])/g, " $1").trim() + ":";
       label.htmlFor = key;
 
-      // Create the individual UI controls for font style and color.
-      const fontContainer = this._createFontStyleControl(key, fontStyle, defaultFontStyle, fontStyleKey);
-      const colorContainer = this._createColorPickerControl(key, color, defaultColor);
+      let fontContainer: HTMLElement | null = null;
+      if (includeFontStyles && fontStyle !== undefined) {
+        fontContainer = this._createFontStyleControl(key, fontStyle, defaultFontStyle, fontStyleKey);
+      }
+
+      const colorContainer = this._createColorPickerControl(key, color || "", defaultColor);
 
       // Add the new elements to the settings grid in the DOM.
       this.elements.settingsContainer.appendChild(label);
-      this.elements.settingsContainer.appendChild(fontContainer);
+      if (fontContainer) {
+        this.elements.settingsContainer.appendChild(fontContainer);
+      }
       this.elements.settingsContainer.appendChild(colorContainer);
     });
   }
@@ -501,27 +588,6 @@ export class UIManager {
       this.elements.dialogOverlay.classList.remove("hidden");
     });
     this.elements.resetAllContainer.appendChild(resetAllButton);
-  }
-
-  /**
-   * Handles the logic for showing/hiding the custom accent picker and updating the UI's accent color.
-   * @param {string} accentValue The newly selected accent value.
-   * @private
-   */
-  private _handleAccentChange(accentValue: string) {
-    const isCustom = accentValue === "custom";
-    this.elements.customAccentPickerContainer.style.display = isCustom ? "grid" : "none";
-    const newColor = isCustom ? this.elements.customAccentPicker.value : this.accentColorMap[accentValue];
-    this.updateAccentColor(newColor);
-  }
-
-  /**
-   * Updates the `--dynamic-accent-color` CSS variable to change the UI's theme in real-time.
-   * @param {string} newColor The new hex color to apply.
-   * @private
-   */
-  private updateAccentColor(newColor: string) {
-    document.documentElement.style.setProperty("--dynamic-accent-color", newColor);
   }
 }
 

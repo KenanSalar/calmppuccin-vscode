@@ -21,6 +21,11 @@ const htmlFixture = `
     <input type="color" id="custom-accent-picker" />
     <input type="text" id="custom-accent-hex-input" />
   </div>
+  <select id="settings-view-select">
+    <option value="syntax">Syntax</option>
+    <option value="brackets">Brackets</option>
+    <option value="json">JSON</option>
+  </select>
   <div id="settings-container"></div>
   <div id="reset-all-container"></div>
   <div class="preview-container">
@@ -42,16 +47,15 @@ const mockSettingsPayload = {
     { key: "comment", fontStyle: "italic", color: "#858aa0", defaultColor: "#858aa0" },
     { key: "keyword", fontStyle: "none", color: "#B2AADD", defaultColor: "#B2AADD" },
   ],
+  bracketSettings: [{ key: "uiBracket1", color: "#6cb3c0", defaultColor: "#6cb3c0" }],
+  jsonSettings: [{ key: "jsonLvl0", fontStyle: "none", color: "#8eb4f0", defaultColor: "#8eb4f0" }],
   currentAccent: "sapphire",
   accentOptions: ["sapphire", "mauve", "custom"],
   customAccentColor: "#89b4fa",
   activeThemeBackgroundColor: "#1d1d2c",
   accentColorPalettes: { sapphire: "#70b7d8", mauve: "#ba9ae2" },
-  defaultFontStyles: { commentFontStyle: "italic", keywordFontStyle: "none" },
+  defaultFontStyles: { commentFontStyle: "italic", keywordFontStyle: "none", jsonLvl0FontStyle: "none" },
 };
-
-// Add a helper function to normalize whitespace for robust string comparison
-const normalize = (str: string) => str.replace(/\s+/g, " ").trim();
 
 describe("UIManager Unit Tests", () => {
   let uiManager: UIManager;
@@ -70,7 +74,8 @@ describe("UIManager Unit Tests", () => {
 
     // Assert
     const languageSelect = document.getElementById("language-select") as HTMLSelectElement;
-    const expectedOptions = Object.keys(codeSnippets).length;
+    // We filter out brackets and json from the main language selector
+    const expectedOptions = Object.keys(codeSnippets).length - 2;
     expect(languageSelect.options.length).toBe(expectedOptions);
     expect(languageSelect.value).toBe("csharp");
 
@@ -105,6 +110,7 @@ describe("UIManager Unit Tests", () => {
     expect(flavorTitle?.textContent).toBe("Editing: Mocha");
 
     const settingsContainer = document.getElementById("settings-container");
+    // Should render the 'syntax' view by default
     const expectedChildren = mockSettingsPayload.syntaxSettings.length * 3;
     expect(settingsContainer?.children.length).toBe(expectedChildren);
 
