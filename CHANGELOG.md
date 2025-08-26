@@ -4,8 +4,9 @@
 
 - **Feature**: Added `.dockerignore` file
 - **Feature**: The hex code input fields for syntax colors in the Customization UI are now fully interactive. Users can type or paste a hex code, including an 8-digit code with transparency, and the color picker, alpha slider, and live preview will update in real-time.
+- **Feature**: Added unit tests for the webview.
 - **Improvement**: Cached github workflow for the npm dependencies and docker image so that the pipline is significant faster.
-- **Fix**: Updated the extension's configuration schema (package.json). VS Code will now correctly validate 8-digit hex codes with alpha channels when a user edits their settings.json manually
+- **Fix**: Updated the extension's configuration schema (package.json). VS Code will now correctly validate 8-digit hex codes with alpha channels when a user edits their settings.json manually.
 
 ## [1.6.2] - 2025-08-25
 
@@ -27,7 +28,7 @@
 - **Feature**: Added code snippets for various languages, including C, C++, C#, CSS, Go, HTML, Java, JavaScript, Kotlin, Lua, PHP, Python, Rust, Shell (Bash), SQL, and TypeScript.
 - **Feature**: Added a Docker/Podman-based Dev Container for a consistent development environment. This ensures all contributors use the same version of Node.js and system dependencies, and simplifies the setup process.
 - **Feature**: Added `CONTRIBUTING.md`.
-- **Feature**: Added unit tests for the project and ci/cd.
+- **Feature**: Added unit and integration tests for the project and ci/cd.
 - **Improvement**: The CI/CD workflow can now use the same Docker container, guaranteeing that the build and packaging environment is identical to the development environment.
 - **Improvement**: Added many syntax highlighting tokens and semantic colors.
 - **Improvement**: Seperation of concerns with the `WebviewManager`. The `SettingsPanel` acts as a pure controller for settings logic now while the `WebviewManager` handles all view-related resonsibilities.
