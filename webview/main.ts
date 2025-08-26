@@ -52,7 +52,6 @@ interface VsCodeApi {
 
 // This special function is provided by VS Code in the webview environment to allow communication back to the extension.
 declare function acquireVsCodeApi(): VsCodeApi;
-const vscode = acquireVsCodeApi();
 
 /**
  * A centralized object for all command identifiers sent to and from the webview.
@@ -72,7 +71,9 @@ const COMMANDS = {
  * Manages all UI elements, state, and interactions for the settings webview.
  * This class encapsulates all DOM manipulation and event handling, keeping the global scope clean.
  */
-class UIManager {
+export class UIManager {
+  private readonly vscode = acquireVsCodeApi();
+
   /** A single object to hold references to all necessary DOM elements, queried once on instantiation for performance. */
   private readonly elements = {
     accentContainer: document.getElementById("accent-container")!,
@@ -167,7 +168,7 @@ class UIManager {
       const newValue = (e.target as HTMLInputElement).value;
       this.elements.customAccentHexInput.value = newValue;
       this.updateAccentColor(newValue);
-      vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
+      this.vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
     });
 
     this.elements.customAccentHexInput.addEventListener("input", (e) => {
@@ -185,7 +186,7 @@ class UIManager {
         // Update the live UI accent color.
         this.updateAccentColor(newValue);
         // Send the valid color to the extension host to be saved.
-        vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
+        this.vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
       } else {
         // If invalid, apply error styling for immediate user feedback.
         inputElement.style.borderColor = "var(--danger-color)";
@@ -199,7 +200,7 @@ class UIManager {
       if (e.target === this.elements.dialogOverlay) this.elements.dialogOverlay.classList.add("hidden");
     });
     this.elements.confirmResetButton.addEventListener("click", () => {
-      vscode.postMessage({ command: COMMANDS.RESET_ALL });
+      this.vscode.postMessage({ command: COMMANDS.RESET_ALL });
       this.elements.dialogOverlay.classList.add("hidden");
     });
 
@@ -270,7 +271,7 @@ class UIManager {
     accentSelect.addEventListener("change", (e) => {
       const newValue = (e.target as HTMLSelectElement).value;
       this._handleAccentChange(newValue);
-      vscode.postMessage({ command: COMMANDS.UPDATE_ACCENT, value: newValue });
+      this.vscode.postMessage({ command: COMMANDS.UPDATE_ACCENT, value: newValue });
     });
 
     accentSelectContainer.appendChild(accentLabel);
@@ -344,7 +345,7 @@ class UIManager {
       const newValue = (e.target as HTMLSelectElement).value;
       this.previewState[key].fontStyle = newValue;
       this.updatePreviewPane();
-      vscode.postMessage({ command: COMMANDS.UPDATE_SETTING, key: fontStyleKey, value: newValue });
+      this.vscode.postMessage({ command: COMMANDS.UPDATE_SETTING, key: fontStyleKey, value: newValue });
     });
 
     const resetButton = document.createElement("button");
@@ -354,7 +355,7 @@ class UIManager {
       select.value = defaultFontStyle;
       this.previewState[key].fontStyle = defaultFontStyle;
       this.updatePreviewPane();
-      vscode.postMessage({ command: COMMANDS.RESET_FONT_STYLE, key: fontStyleKey });
+      this.vscode.postMessage({ command: COMMANDS.RESET_FONT_STYLE, key: fontStyleKey });
     });
 
     container.appendChild(select);
@@ -410,7 +411,12 @@ class UIManager {
 
     // --- Helper function to send the final color to the extension backend ---
     const sendFinalColorToVSCode = () => {
-      vscode.postMessage({ command: COMMANDS.UPDATE_SYNTAX_COLOR, flavor: this.activeFlavor, key, value: hexInput.value });
+      this.vscode.postMessage({
+        command: COMMANDS.UPDATE_SYNTAX_COLOR,
+        flavor: this.activeFlavor,
+        key,
+        value: hexInput.value,
+      });
     };
 
     // --- Event Listeners ---
@@ -469,7 +475,7 @@ class UIManager {
       hexInput.value = defaultColor;
       this.previewState[key].color = defaultColor;
       this.updatePreviewPane();
-      vscode.postMessage({ command: COMMANDS.RESET_SYNTAX_COLOR, flavor: this.activeFlavor, key });
+      this.vscode.postMessage({ command: COMMANDS.RESET_SYNTAX_COLOR, flavor: this.activeFlavor, key });
     });
 
     // --- DOM Assembly ---
@@ -519,14 +525,18 @@ class UIManager {
   }
 }
 
-/**
- * Main entry point for the webview script.
- * This function instantiates the UIManager and sets up all event listeners.
- */
-function initialize() {
-  const uiManager = new UIManager();
-  uiManager.initializeEventListeners();
-}
+// This conditional check ensures this block of code ONLY runs in the browser/webview context
+// and is completely ignored when the file is imported by Jest.
+if (typeof process === "undefined" || process.env.JEST_WORKER_ID === undefined) {
+  /**
+   * Main entry point for the webview script.
+   * This function instantiates the UIManager and sets up all event listeners.
+   */
+  function initialize() {
+    const uiManager = new UIManager();
+    uiManager.initializeEventListeners();
+  }
 
-// Start the application.
-initialize();
+  // Start the application.
+  initialize();
+}
