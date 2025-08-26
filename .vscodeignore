@@ -2,6 +2,7 @@
 .gitattributes
 .github/**
 .gitignore
+.dockerignore
 .vscode-test/**
 .vscode/**
 assets/images/customUI/**
@@ -13,6 +14,7 @@ coverage/**
 build.ts
 extension.ts
 jest.config.ts
+local-ci.sh
 package-lock.json
 src/ConfigurationService.ts
 src/constants.ts
