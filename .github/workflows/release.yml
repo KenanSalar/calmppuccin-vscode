@@ -23,11 +23,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Sets up Docker Buildx for more advanced features like caching.
+      # Sets up Docker Buildx for caching
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        
-      # Builds the Docker image. Caching is now optimized within the Dockerfile.
+
+      # Optimize Docker build caching
       - name: Build Dev Container Image
         uses: docker/build-push-action@v6
         with:
@@ -38,7 +38,7 @@ jobs:
           cache-from: type=gha,scope=dev-container-cache
           cache-to: type=gha,mode=max,scope=dev-container-cache
 
-      # Runs tests inside the self-contained Docker image.
+      # Run tests inside the built Docker container
       - name: Run Tests
         run: docker run --rm --workdir /workspaces/calmppuccin-vscode calmppuccin-builder npm test
 
@@ -46,7 +46,7 @@ jobs:
         id: get_version
         uses: martinbeentjes/npm-get-version-action@v1.3.1
 
-      # Builds and packages the extension, then copies the .vsix file out of the container.
+      # Build/package the extension, copy .vsix out of the container
       - name: Build and Package Extension
         run: |
           set -euo pipefail
@@ -64,7 +64,7 @@ jobs:
           VSIX=$(ls -1 *.vsix)
           echo "vsix_path=${VSIX}" >> "$GITHUB_OUTPUT"
 
-      # Uploads the generated .vsix file as a build artifact.
+      # Upload the .vsix as a build artifact
       - name: Upload VSIX Artifact
         uses: actions/upload-artifact@v4
         with:
