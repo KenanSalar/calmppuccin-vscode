@@ -26,12 +26,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Caches Docker layers based on the Dockerfile's content.
+      # Caches Docker layers based on the Dockerfile's and package-lock's content.
       - name: Cache Docker layers
         uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ hashFiles('./.devcontainer/Dockerfile') }}
+          key: ${{ runner.os }}-buildx-${{ hashFiles('./.devcontainer/Dockerfile', '**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-buildx-
 
