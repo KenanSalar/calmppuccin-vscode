@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.6.3] - 2025-08-26
+
+- **Feature**: Added `.dockerignore` file
+- **Improvement**: Cached github workflow for the npm dependencies and docker image so that the pipline is significant faster.
+
 ## [1.6.2] - 2025-08-25
 
 - **Performance Improvement**: The extension has been refactored to use a lazy activation strategy. It will no longer run on every startup, reducing its impact on VS Code's launch time. The extension now activates only when a user selects a Calmppuccin theme or opens the customization UI, ensuring it uses zero resources until it's actually needed.
