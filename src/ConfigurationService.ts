@@ -21,10 +21,20 @@ export interface SyntaxOverrides {
   };
 }
 
+/** Defines a single setting item for the webview. */
+export interface WebviewSetting {
+  key: string;
+  fontStyle?: string;
+  color?: string;
+  defaultColor: string;
+}
+
 /** Defines the complete data payload required by the settings webview. */
 export interface WebViewSettings {
   activeFlavor: keyof Palettes;
-  syntaxSettings: { key: string; fontStyle: string; color: string; defaultColor: string }[];
+  syntaxSettings: WebviewSetting[];
+  bracketSettings: WebviewSetting[];
+  jsonSettings: WebviewSetting[];
   currentAccent: string;
   accentOptions: string[];
   customAccentColor: string;
@@ -246,6 +256,18 @@ export class ConfigurationService {
       "stringVerbatim",
       "text",
     ];
+    const customizableBracketKeys = ["uiBracket1", "uiBracket2", "uiBracket3", "uiBracket4", "uiBracket5", "uiBracket6"];
+    const customizableJsonKeys = [
+      "jsonLvl0",
+      "jsonLvl1",
+      "jsonLvl2",
+      "jsonLvl3",
+      "jsonLvl4",
+      "jsonLvl5",
+      "jsonLvl6",
+      "jsonLvl7",
+      "jsonLvl8",
+    ];
 
     const activeFlavor = this.getActiveFlavor();
     const fontStyles = this.getFontStyles();
@@ -278,9 +300,24 @@ export class ConfigurationService {
       defaultColor: defaultPalette[key],
     }));
 
+    const bracketSettings = customizableBracketKeys.map((key) => ({
+      key: key,
+      color: overridePalette[key] || defaultPalette[key],
+      defaultColor: defaultPalette[key],
+    }));
+
+    const jsonSettings = customizableJsonKeys.map((key) => ({
+      key: key,
+      fontStyle: fontStyles[`${key}FontStyle`] ?? "none",
+      color: overridePalette[key] || defaultPalette[key],
+      defaultColor: defaultPalette[key],
+    }));
+
     return {
       activeFlavor,
       syntaxSettings,
+      bracketSettings,
+      jsonSettings,
       currentAccent,
       accentOptions,
       customAccentColor,

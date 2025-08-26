@@ -19,6 +19,8 @@ import { rustSnippet } from "./snippets/rust";
 import { shellSnippet } from "./snippets/shell";
 import { sqlSnippet } from "./snippets/sql";
 import { typescriptSnippet } from "./snippets/typescript";
+import { bracketsSnippet } from "./snippets/brackets";
+import { jsonSnippet } from "./snippets/json";
 
 /**
  * Defines the shape for the code snippets object.
@@ -49,4 +51,6 @@ export const codeSnippets: CodeSnippets = {
   shell: shellSnippet,
   sql: sqlSnippet,
   typescript: typescriptSnippet,
+  brackets: bracketsSnippet,
+  json: jsonSnippet,
 };
