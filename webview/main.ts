@@ -99,6 +99,7 @@ class UIManager {
 
   private readonly fontStyleOptions = ["none", "italic", "bold", "italic bold", "underline"];
   private readonly hex6Regex = /^#[0-9a-fA-F]{6}$/;
+  private readonly hex8Regex = /^#([0-9a-fA-F]{6})([0-9a-fA-F]{2})?$/;
 
   /**
    * Builds the entire UI from scratch when settings are received from the extension.
@@ -168,7 +169,7 @@ class UIManager {
       this.updateAccentColor(newValue);
       vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
     });
-    
+
     this.elements.customAccentHexInput.addEventListener("input", (e) => {
       const inputElement = e.target as HTMLInputElement;
       const newValue = inputElement.value;
@@ -379,37 +380,84 @@ class UIManager {
     const hexInput = document.createElement("input");
     hexInput.type = "text";
     hexInput.className = "hex-input-display";
+    hexInput.maxLength = 9; // Allow for #RRGGBBAA
     const alphaSlider = document.createElement("input");
     alphaSlider.type = "range";
     alphaSlider.min = "0";
     alphaSlider.max = "255";
     alphaSlider.step = "1";
 
-    const initialColor = color || "#ffffffff";
-    const rgb = initialColor.substring(0, 7);
-    const alphaHex = initialColor.length === 9 ? initialColor.substring(7, 9) : "ff";
-    colorInput.value = rgb;
-    alphaSlider.value = parseInt(alphaHex, 16).toString();
+    // --- Set initial values from settings ---
+    const initialColor = color || defaultColor || "#ffffffff";
+    const initialRgb = initialColor.substring(0, 7);
+    const initialAlphaHex = initialColor.length === 9 ? initialColor.substring(7, 9) : "ff";
+    colorInput.value = initialRgb;
+    alphaSlider.value = parseInt(initialAlphaHex, 16).toString();
     hexInput.value = initialColor;
 
-    const updateLivePreview = () => {
+    // --- Helper function to update the UI from the color picker & slider ---
+    const updateFromPickers = () => {
       const newRgb = colorInput.value;
-      const newAlphaHex = parseInt(alphaSlider.value).toString(16).padStart(2, "0");
+      const newAlpha = parseInt(alphaSlider.value);
+      const newAlphaHex = newAlpha.toString(16).padStart(2, "0");
+
       const finalColor = `${newRgb}${newAlphaHex}`;
+
       hexInput.value = finalColor;
       this.previewState[key].color = finalColor;
       this.updatePreviewPane();
     };
 
+    // --- Helper function to send the final color to the extension backend ---
     const sendFinalColorToVSCode = () => {
       vscode.postMessage({ command: COMMANDS.UPDATE_SYNTAX_COLOR, flavor: this.activeFlavor, key, value: hexInput.value });
     };
 
-    colorInput.addEventListener("input", updateLivePreview);
-    alphaSlider.addEventListener("input", updateLivePreview);
+    // --- Event Listeners ---
+
+    // Listen for changes on the color swatch and alpha slider
+    colorInput.addEventListener("input", updateFromPickers);
+    alphaSlider.addEventListener("input", updateFromPickers);
     colorInput.addEventListener("change", sendFinalColorToVSCode);
     alphaSlider.addEventListener("change", sendFinalColorToVSCode);
 
+    // --- Add event listener for the text input ---
+    hexInput.addEventListener("input", () => {
+      const typedValue = hexInput.value;
+      const match = typedValue.match(this.hex8Regex);
+
+      if (match) {
+        // If the typed value is a valid hex code
+        hexInput.style.borderColor = "";
+        hexInput.style.outlineColor = "";
+
+        const rgb = match[1] ? `#${match[1]}` : "#000000";
+        const alphaHex = match[2] ?? "ff"; // Default to 'ff' (opaque) if alpha is not provided
+        const alphaDecimal = parseInt(alphaHex, 16);
+
+        // Update the color picker and slider to match the typed input
+        colorInput.value = rgb;
+        alphaSlider.value = alphaDecimal.toString();
+
+        // Update the live preview
+        this.previewState[key].color = typedValue;
+        this.updatePreviewPane();
+      } else {
+        // If the typed value is invalid, show an error state
+        hexInput.style.borderColor = "var(--danger-color)";
+        hexInput.style.outlineColor = "var(--danger-color)";
+      }
+    });
+
+    // --- NEW: Send the final value to the backend when the user is done editing ---
+    hexInput.addEventListener("change", () => {
+      // Only send the message if the final value is valid
+      if (this.hex8Regex.test(hexInput.value)) {
+        sendFinalColorToVSCode();
+      }
+    });
+
+    // --- Reset Button Logic ---
     const resetButton = document.createElement("button");
     resetButton.textContent = "Reset";
     resetButton.className = "reset-button";
@@ -424,6 +472,7 @@ class UIManager {
       vscode.postMessage({ command: COMMANDS.RESET_SYNTAX_COLOR, flavor: this.activeFlavor, key });
     });
 
+    // --- DOM Assembly ---
     topRow.appendChild(colorInput);
     topRow.appendChild(hexInput);
     wrapper.appendChild(topRow);
