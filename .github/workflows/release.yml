@@ -36,16 +36,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # Builds the Docker image using an action that supports the GitHub Actions cache backend.
+      # Builds the Docker image using the 'gha' cache backend for optimal performance.
       - name: Build Dev Container Image
         uses: docker/build-push-action@v6
         with:
           context: ./.devcontainer
           tags: calmppuccin-builder:latest
           load: true
-          # Use the 'gha' cache backend and share it across branches
-          cache-from: type=gha,scope=${{ github.workflow }}
-          cache-to: type=gha,mode=max,scope=${{ github.workflow }}
+          cache-from: |
+            type=gha,scope=${{ github.ref_name }}
+            type=gha,scope=dev
+          cache-to: type=gha,mode=max,scope=${{ github.ref_name }}
 
       # Installs only new dependencies, using the cache if available.
       - name: Install Dependencies
