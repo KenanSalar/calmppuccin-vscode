@@ -3,7 +3,9 @@
 ## [1.6.3] - 2025-08-26
 
 - **Feature**: Added `.dockerignore` file
+- **Feature**: The hex code input fields for syntax colors in the Customization UI are now fully interactive. Users can type or paste a hex code, including an 8-digit code with transparency, and the color picker, alpha slider, and live preview will update in real-time.
 - **Improvement**: Cached github workflow for the npm dependencies and docker image so that the pipline is significant faster.
+- **Fix**: Updated the extension's configuration schema (package.json). VS Code will now correctly validate 8-digit hex codes with alpha channels when a user edits their settings.json manually
 
 ## [1.6.2] - 2025-08-25
 
