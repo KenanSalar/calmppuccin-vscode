@@ -7,8 +7,10 @@ on:
       - main
       - dev
 
+# Add actions: write permission to allow saving the cache
 permissions:
   contents: write
+  actions: write
 
 jobs:
   # This job tests, builds, and packages the extension.
@@ -36,17 +38,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # Builds the Docker image using the 'gha' cache backend for optimal performance.
+      # Builds the Docker image using a unified 'gha' cache scope.
       - name: Build Dev Container Image
         uses: docker/build-push-action@v6
         with:
           context: ./.devcontainer
           tags: calmppuccin-builder:latest
           load: true
-          cache-from: |
-            type=gha,scope=${{ github.ref_name }}
-            type=gha,scope=dev
-          cache-to: type=gha,mode=max,scope=${{ github.ref_name }}
+          cache-from: type=gha,scope=dev-container-cache
+          cache-to: type=gha,mode=max,scope=dev-container-cache
 
       # Installs only new dependencies, using the cache if available.
       - name: Install Dependencies
