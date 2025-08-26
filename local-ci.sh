@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# This is a linux script which works for me on fedora kde
+# This is a linux script which works for me on fedora kde 
 
 set -euo pipefail
 
