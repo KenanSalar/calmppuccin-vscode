@@ -1,42 +1,38 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Exit immediately if a command exits with a non-zero status.
-set -e
+# This is a linux which works for me on fedora kde
 
-# Define names for our Docker image and the temporary container
+set -euo pipefail
+
 IMAGE_NAME="calmppuccin-builder:local"
-CONTAINER_NAME="builder-container"
+CONTAINER_NAME="calmppuccin-builder-local"
+WORKDIR="/workspaces/calmppuccin-vscode"
 
-echo "--- Cleaning up previous run (if any) ---"
-# Forcefully remove the container if it exists, and ignore errors if it doesn't.
-docker rm -f $CONTAINER_NAME > /dev/null 2>&1 || true
+log() { printf "\n--- %s ---\n" "$*"; }
 
-echo ""
-echo "--- Building Docker Image ---"
-docker build -t $IMAGE_NAME -f ./.devcontainer/Dockerfile .
+log "Cleaning up previous run (if any)"
+docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
 
-echo ""
-echo "--- Running Tests Inside the Container ---"
-# This container is temporary and is removed automatically with --rm
-docker run --rm $IMAGE_NAME npm test
+log "Building Docker Image"
+docker build -t "$IMAGE_NAME" -f ./.devcontainer/Dockerfile .
 
-echo ""
-echo "--- Building and Packaging the Extension ---"
-# Give the temporary container a name so we can copy the file from it
-docker run --name $CONTAINER_NAME $IMAGE_NAME npm run package
+log "Running Tests Inside the Container"
+docker run --rm --workdir "$WORKDIR" "$IMAGE_NAME" npm test
 
-echo ""
-echo "--- Copying .vsix file from Container ---"
-# First, find the exact name of the .vsix file inside the container
-VSIX_FILE=$(docker exec $CONTAINER_NAME find /workspaces/calmppuccin-vscode -name "*.vsix" -print -quit)
+log "Building and Packaging the Extension (bind-mounting host to collect VSIX)"
+mkdir -p ./out
 
-# Now, copy the file using its exact name
-docker cp "${CONTAINER_NAME}:${VSIX_FILE}" .
+docker run --rm \
+  -v "$PWD/out":/out \
+  --workdir "$WORKDIR" \
+  "$IMAGE_NAME" \
+  sh -lc 'npm run package && cp /workspaces/calmppuccin-vscode/calmppuccin-vscode-*.vsix /out/'
 
-echo ""
-echo "--- Cleaning up Container ---"
-docker rm -f $CONTAINER_NAME
+ls -l ./out
+
+log "Moving VSIX next to this script"
+cp ./out/*.vsix .
+ls -l ./*.vsix
 
 echo ""
 echo "✅ CI pipeline test finished successfully."
-ls ./*.vsix

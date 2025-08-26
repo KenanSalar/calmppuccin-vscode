@@ -49,13 +49,19 @@ jobs:
       # Builds and packages the extension, then copies the .vsix file out of the container.
       - name: Build and Package Extension
         run: |
-          docker run --name builder-container --workdir /workspaces/calmppuccin-vscode calmppuccin-builder npm run package
-          docker cp builder-container:/workspaces/calmppuccin-vscode/calmppuccin-vscode-*.vsix .
-          docker rm builder-container
+          set -euo pipefail
+          docker run --rm \
+            -v "$PWD":/out \
+            --workdir /workspaces/calmppuccin-vscode \
+            calmppuccin-builder \
+            sh -lc 'npm run package && cp /workspaces/calmppuccin-vscode/*.vsix /out/'
 
       - name: Find VSIX file
         id: find_vsix
-        run: echo "vsix_path=$(ls *.vsix)" >> $GITHUB_OUTPUT
+        run: |
+          set -euo pipefail
+          VSIX=$(ls -1 *.vsix)
+          echo "vsix_path=${VSIX}" >> "$GITHUB_OUTPUT"
 
       # Uploads the generated .vsix file as a build artifact.
       - name: Upload VSIX Artifact
