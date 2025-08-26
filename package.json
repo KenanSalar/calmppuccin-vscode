@@ -3,7 +3,7 @@
   "displayName": "Calmppuccin",
   "description": "Calmppuccin is a visually refined theme for Visual Studio Code, designed to offer a harmonious coding experience. Inspired by the popular Catppuccin theme, Calmppuccin takes the beloved pastel palette and transforms it into a gentler, less intense version, perfect for long coding sessions without eye strain.",
   "icon": "assets/images/logo/icon.png",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "publisher": "kenan-salar",
   "license": "MIT",
   "repository": {
@@ -138,9 +138,9 @@
         "calmppuccin.customAccentColor": {
           "type": "string",
           "default": "#89b4fa",
-          "description": "The custom accent color (hex code) to use when 'custom' is selected in the Accent Color dropdown.",
           "pattern": "^#([A-Fa-f0-9]{6})$",
-          "patternErrorMessage": "Please enter a valid 6-digit hex color code (e.g., #89b4fa)."
+          "patternErrorMessage": "Please enter a valid 6-digit hex color code (e.g., #89b4fa).",
+          "description": "The custom accent color (hex code) to use when 'custom' is selected in the Accent Color dropdown."
         },
         "calmppuccin.openCustomizationUI": {
           "type": "null",
@@ -619,172 +619,206 @@
               "properties": {
                 "comment": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for comments."
                 },
                 "keyword": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for keywords."
                 },
                 "type": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for types."
                 },
                 "typeAlias": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for types."
                 },
                 "namespace": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for namespaces."
                 },
                 "namespaceAttribute": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for namespace attributes."
                 },
                 "module": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for modules."
                 },
                 "annotation": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for annotations."
                 },
                 "directive": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for directives."
                 },
                 "decorator": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for annotations."
                 },
                 "class": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for classes."
                 },
                 "interface": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for interfaces."
                 },
                 "struct": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for structs."
                 },
                 "enum": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for enums."
                 },
                 "enumMember": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for enum members."
                 },
                 "fieldAndAttribute": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for fields and attributes."
                 },
                 "property": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for properties."
                 },
                 "propertyReadOnly": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for read-only properties."
                 },
                 "variable": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for variables."
                 },
                 "variableMutable": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for mutable variables."
                 },
                 "macro": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for macros."
                 },
                 "functionAndMethod": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for functions and methods."
                 },
                 "extensionMethod": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for extension methods."
                 },
                 "delegate": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for delegates."
                 },
                 "event": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for events."
                 },
                 "parameter": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for parameters."
                 },
                 "typeParameter": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for type parameters."
                 },
                 "number": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for numbers."
                 },
                 "constant": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for constants."
                 },
                 "operator": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for operators."
                 },
                 "punctuation": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for punctuation."
                 },
                 "string": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for strings."
                 },
                 "stringVerbatim": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for verbatim strings."
                 },
                 "text": {
                   "type": "string",
-                  "format": "color-hex",
+                  "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+                  "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for plain text."
                 }
               }
