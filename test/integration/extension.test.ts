@@ -63,9 +63,6 @@ describe("Extension Integration Tests", () => {
 
     // --- Make the main getConfiguration mock intelligent ---
 
-    // This is the key change to fix the test. Instead of returning a single, static object,
-    // this mock implementation now inspects the 'section' argument and returns the
-    // appropriate mock object for either 'calmppuccin' or 'workbench'.
     (mockedVscode.workspace.getConfiguration as jest.Mock).mockImplementation((section: string) => {
       if (section === C.EXTENSION_NAMESPACE) {
         return mockCalmppuccinConfiguration;

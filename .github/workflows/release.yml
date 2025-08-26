@@ -26,16 +26,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Caches Docker layers based on the Dockerfile's and package-lock's content.
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ hashFiles('./.devcontainer/Dockerfile', '**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      # Caches the project's node_modules directory.
+      # Cache the project's node_modules directory.
       - name: Cache node modules
         id: cache-npm
         uses: actions/cache@v4
@@ -45,21 +36,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # Builds the Docker image using an action that supports caching.
+      # Builds the Docker image using an action that supports the GitHub Actions cache backend.
       - name: Build Dev Container Image
         uses: docker/build-push-action@v6
         with:
           context: ./.devcontainer
           tags: calmppuccin-builder:latest
           load: true
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-
-      # This is a necessary workaround to persist the cache correctly for the next run.
-      - name: Move Docker cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          # Using the 'gha' cache backend for better performance on GitHub runners
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       # Installs only new dependencies, using the cache if available.
       - name: Install Dependencies
