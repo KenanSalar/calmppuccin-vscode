@@ -14,6 +14,7 @@ themes/
 coverage/
 *.vsix
 local-ci.sh
+out/
 
 
 assets/*
