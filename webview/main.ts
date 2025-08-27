@@ -4,49 +4,8 @@
  */
 
 import { codeSnippets } from "./snippets";
-
-// #region Type Definitions
-// These types are duplicated from the extension's backend to create a strict, type-safe contract
-// for communication between the webview (frontend) and the extension host (backend).
-
-/** A single setting item for the webview. */
-type WebviewSetting = {
-  key: string;
-  fontStyle?: string;
-  color?: string;
-  defaultColor: string;
-};
-
-/** The message payload received from the extension when settings are loaded. */
-type SettingsPayload = {
-  activeFlavor: string;
-  syntaxSettings: WebviewSetting[];
-  bracketSettings: WebviewSetting[];
-  jsonSettings: WebviewSetting[];
-  currentAccent: string;
-  accentOptions: string[];
-  customAccentColor: string;
-  activeThemeBackgroundColor: string;
-  accentColorPalettes: { [key: string]: string };
-  defaultFontStyles: { [key: string]: string };
-};
-
-/** A discriminated union of all possible messages that can be received *from* the extension. */
-type MessageFromExtension = {
-  command: "loadSettings";
-  settings: SettingsPayload;
-};
-
-/** A discriminated union of all possible messages that can be sent *to* the extension. */
-type MessageToExtension =
-  | { command: "updateSetting"; key: string; value: string }
-  | { command: "resetFontStyle"; key: string }
-  | { command: "updateAccent"; value: string }
-  | { command: "updateCustomAccent"; value: string }
-  | { command: "updateSyntaxColor"; flavor: string; key: string; value: string }
-  | { command: "resetSyntaxColor"; flavor: string; key: string }
-  | { command: "resetAll" };
-// #endregion
+// Import the shared types from the new central location.
+import { SettingsPayload, MessageToWebview, MessageToExtension, WebviewSetting } from "../types/webview";
 
 /**
  * @interface VsCodeApi
@@ -223,7 +182,7 @@ export class UIManager {
     });
 
     // Primary listener for messages coming from the VS Code extension host.
-    window.addEventListener("message", (event: MessageEvent<MessageFromExtension>) => {
+    window.addEventListener("message", (event: MessageEvent<MessageToWebview>) => {
       const message = event.data;
       if (message.command === COMMANDS.LOAD_SETTINGS) {
         this.populateAllSettings(message.settings);

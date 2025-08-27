@@ -6,8 +6,9 @@
 
 import * as vscode from "vscode";
 import * as fs from "fs";
-// Import the class and necessary types to be tested.
-import { WebviewManager, MessageToWebview } from "../../src/WebviewManager";
+// Import the shared types from their new, correct location.
+import { MessageToWebview } from "../../types/webview";
+import { WebviewManager } from "../../src/WebviewManager";
 import * as C from "../../src/constants";
 
 // --- Mocking Dependencies ---

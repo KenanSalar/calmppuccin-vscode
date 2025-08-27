@@ -10,6 +10,7 @@ assets/images/preview/**
 assets/images/screenshots/**
 node_modules/**
 test/**
+types/**
 coverage/**
 out/
 build.ts
