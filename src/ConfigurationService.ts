@@ -7,8 +7,9 @@
 import * as vscode from "vscode";
 import * as C from "./constants";
 import palettes, { Palettes } from "./palettes";
+import { CUSTOMIZABLE_BRACKET_KEYS, CUSTOMIZABLE_JSON_KEYS, CUSTOMIZABLE_SYNTAX_KEYS } from "./constants";
+import { SettingsPayload, WebviewSetting } from "../types/webview";
 
-// #region Exported Types
 /** Defines the shape of the font styles configuration object in settings.json. */
 export interface FontStyles {
   [key: string]: string;
@@ -20,29 +21,6 @@ export interface SyntaxOverrides {
     [token: string]: string;
   };
 }
-
-/** Defines a single setting item for the webview. */
-export interface WebviewSetting {
-  key: string;
-  fontStyle?: string;
-  color?: string;
-  defaultColor: string;
-}
-
-/** Defines the complete data payload required by the settings webview. */
-export interface WebViewSettings {
-  activeFlavor: keyof Palettes;
-  syntaxSettings: WebviewSetting[];
-  bracketSettings: WebviewSetting[];
-  jsonSettings: WebviewSetting[];
-  currentAccent: string;
-  accentOptions: string[];
-  customAccentColor: string;
-  defaultFontStyles: { [key: string]: string };
-  activeThemeBackgroundColor: string;
-  accentColorPalettes: { [key: string]: string };
-}
-// #endregion
 
 /**
  * A type guard to check if a string is a valid flavor key from the palettes.
@@ -215,59 +193,10 @@ export class ConfigurationService {
 
   /**
    * Gathers all settings required by the webview into a single object.
-   * @returns {WebViewSettings} The complete settings payload for the webview.
+   * @returns {SettingsPayload} The complete settings payload for the webview.
    */
-  public static getWebViewSettings(): WebViewSettings {
+  public static getWebViewSettings(): SettingsPayload {
     const extensionConfig = vscode.extensions.getExtension("kenan-salar.calmppuccin-vscode")?.packageJSON;
-    const customizableSyntaxKeys = [
-      "comment",
-      "keyword",
-      "type",
-      "typeAlias",
-      "namespace",
-      "namespaceAttribute",
-      "module",
-      "annotation",
-      "directive",
-      "decorator",
-      "class",
-      "interface",
-      "struct",
-      "enum",
-      "enumMember",
-      "fieldAndAttribute",
-      "property",
-      "propertyReadOnly",
-      "variable",
-      "variableMutable",
-      "macro",
-      "functionAndMethod",
-      "extensionMethod",
-      "delegate",
-      "event",
-      "parameter",
-      "typeParameter",
-      "number",
-      "constant",
-      "operator",
-      "operatorOverload",
-      "punctuation",
-      "string",
-      "stringVerbatim",
-      "text",
-    ];
-    const customizableBracketKeys = ["uiBracket1", "uiBracket2", "uiBracket3", "uiBracket4", "uiBracket5", "uiBracket6"];
-    const customizableJsonKeys = [
-      "jsonLvl0",
-      "jsonLvl1",
-      "jsonLvl2",
-      "jsonLvl3",
-      "jsonLvl4",
-      "jsonLvl5",
-      "jsonLvl6",
-      "jsonLvl7",
-      "jsonLvl8",
-    ];
 
     const activeFlavor = this.getActiveFlavor();
     const fontStyles = this.getFontStyles();
@@ -293,25 +222,31 @@ export class ConfigurationService {
       return acc;
     }, {});
 
-    const syntaxSettings = customizableSyntaxKeys.map((key) => ({
-      key: key,
-      fontStyle: fontStyles[`${key}FontStyle`] ?? "none",
-      color: overridePalette[key] || defaultPalette[key],
-      defaultColor: defaultPalette[key],
-    }));
+    const syntaxSettings = CUSTOMIZABLE_SYNTAX_KEYS.map(
+      (key): WebviewSetting => ({
+        key: key,
+        fontStyle: fontStyles[`${key}FontStyle`] ?? "none",
+        color: overridePalette[key] || defaultPalette[key],
+        defaultColor: defaultPalette[key],
+      })
+    );
 
-    const bracketSettings = customizableBracketKeys.map((key) => ({
-      key: key,
-      color: overridePalette[key] || defaultPalette[key],
-      defaultColor: defaultPalette[key],
-    }));
+    const bracketSettings = CUSTOMIZABLE_BRACKET_KEYS.map(
+      (key): WebviewSetting => ({
+        key: key,
+        color: overridePalette[key] || defaultPalette[key],
+        defaultColor: defaultPalette[key],
+      })
+    );
 
-    const jsonSettings = customizableJsonKeys.map((key) => ({
-      key: key,
-      fontStyle: fontStyles[`${key}FontStyle`] ?? "none",
-      color: overridePalette[key] || defaultPalette[key],
-      defaultColor: defaultPalette[key],
-    }));
+    const jsonSettings = CUSTOMIZABLE_JSON_KEYS.map(
+      (key): WebviewSetting => ({
+        key: key,
+        fontStyle: fontStyles[`${key}FontStyle`] ?? "none",
+        color: overridePalette[key] || defaultPalette[key],
+        defaultColor: defaultPalette[key],
+      })
+    );
 
     return {
       activeFlavor,

@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.6.3] - 2025-08-27
+## [1.7.0] - 2025-08-27
 
 - **Feature**: Added `.dockerignore` file
 - **Feature**: The hex code input fields for syntax colors in the Customization UI are now fully interactive. Users can type or paste a hex code, including an 8-digit code with transparency, and the color picker, alpha slider, and live preview will update in real-time.
@@ -8,6 +8,7 @@
 - **Feature**: Added unit tests for the webview.
 - **Improvement**: Cached github workflow for the npm dependencies and docker image so that the pipline is faster.
 - **Internal Refactor**: Centralized the type definitions for communication between the extension and the Customization UI into a single, shared `types/webview.ts` file. This creates a stricter and more maintainable contract, reducing code duplication and improving overall reliability.
+- **Internal Refactor**: Centralized the lists of customizable syntax, bracket, and JSON keys by moving them from `ConfigurationService.ts` to `constants.ts`, further simplifying the configuration logic.
 - **Chore**: Removed an unused import from the `WebviewManager` to improve code cleanliness.
 - **Fix**: Updated the extension's configuration schema (package.json). VS Code will now correctly validate 8-digit hex codes with alpha channels when a user edits their settings.json manually.
 - **Fix**: Corrected a CSS grid layout issue that caused the bracket color settings to be displayed in a disorganized manner.
