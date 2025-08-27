@@ -24,7 +24,7 @@
               <label for="custom-accent-hex-input">Custom Color:</label>
               <div class="syntax-picker-top-row">
                 <input type="color" id="custom-accent-picker" />
-                <input type="text" id="custom-accent-hex-input" class="hex-input-display" readonly />
+                <input type="text" id="custom-accent-hex-input" class="hex-input-display" />
               </div>
             </div>
           </div>
@@ -33,6 +33,13 @@
         <section class="card">
           <div class="card-header">
             <h3>Font Styles & Syntax Colors</h3>
+            <div class="language-selector-container">
+              <select id="settings-view-select">
+                <option value="syntax">Syntax</option>
+                <option value="brackets">Brackets</option>
+                <option value="json">JSON</option>
+              </select>
+            </div>
           </div>
           <div class="card-body" id="settings-container"></div>
         </section>

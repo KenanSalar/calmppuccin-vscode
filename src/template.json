@@ -1724,7 +1724,8 @@
       "name": "JSON Key - Level 0",
       "scope": ["source.json meta.structure.dictionary.json support.type.property-name.json"],
       "settings": {
-        "foreground": "{{jsonLvl0}}"
+        "foreground": "{{jsonLvl0}}",
+        "fontStyle": "{{jsonLvl0FontStyle}}"
       }
     },
     {
@@ -1733,7 +1734,8 @@
         "source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json"
       ],
       "settings": {
-        "foreground": "{{jsonLvl1}}"
+        "foreground": "{{jsonLvl1}}",
+        "fontStyle": "{{jsonLvl1FontStyle}}"
       }
     },
     {
@@ -1742,7 +1744,8 @@
         "source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json"
       ],
       "settings": {
-        "foreground": "{{jsonLvl2}}"
+        "foreground": "{{jsonLvl2}}",
+        "fontStyle": "{{jsonLvl2FontStyle}}"
       }
     },
     {
@@ -1751,7 +1754,8 @@
         "source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json"
       ],
       "settings": {
-        "foreground": "{{jsonLvl3}}"
+        "foreground": "{{jsonLvl3}}",
+        "fontStyle": "{{jsonLvl3FontStyle}}"
       }
     },
     {
@@ -1760,7 +1764,8 @@
         "source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json"
       ],
       "settings": {
-        "foreground": "{{jsonLvl4}}"
+        "foreground": "{{jsonLvl4}}",
+        "fontStyle": "{{jsonLvl4FontStyle}}"
       }
     },
     {
@@ -1769,7 +1774,8 @@
         "source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json"
       ],
       "settings": {
-        "foreground": "{{jsonLvl5}}"
+        "foreground": "{{jsonLvl5}}",
+        "fontStyle": "{{jsonLvl5FontStyle}}"
       }
     },
     {
@@ -1778,7 +1784,8 @@
         "source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json"
       ],
       "settings": {
-        "foreground": "{{jsonLvl6}}"
+        "foreground": "{{jsonLvl6}}",
+        "fontStyle": "{{jsonLvl6FontStyle}}"
       }
     },
     {
@@ -1787,7 +1794,8 @@
         "source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json"
       ],
       "settings": {
-        "foreground": "{{jsonLvl7}}"
+        "foreground": "{{jsonLvl7}}",
+        "fontStyle": "{{jsonLvl7FontStyle}}"
       }
     },
     {
@@ -1796,7 +1804,8 @@
         "source.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json meta.structure.dictionary.value.json meta.structure.dictionary.json support.type.property-name.json"
       ],
       "settings": {
-        "foreground": "{{jsonLvl8}}"
+        "foreground": "{{jsonLvl8}}",
+        "fontStyle": "{{jsonLvl8FontStyle}}"
       }
     },
     {

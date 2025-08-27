@@ -1,6 +1,6 @@
 name: Build, Test, and Publish Extension
 
-# This workflow runs on pushes to the main and dev branches
+# This workflow runs on pushes to the main and dev branches.
 on:
   push:
     branches:
@@ -9,69 +9,75 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
-  # This job tests, builds, and packages the extension on pushes to EITHER main or dev
+  # This job tests, builds, and packages the extension.
   build-and-package:
     runs-on: ubuntu-latest
     outputs:
       vsix_path: ${{ steps.find_vsix.outputs.vsix_path }}
       version: ${{ steps.get_version.outputs.current-version }}
     steps:
-      # 1. Checks out the repository's code
+      # Checks out the repository's code.
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Build the Docker image using the Dockerfile from your dev container setup
-      # This ensures a consistent environment for all subsequent steps.
-      - name: Build Dev Container Image
-        run: docker build -t calmppuccin-builder ./.devcontainer
+      # Sets up Docker Buildx for caching
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      # 3. Run unit and integration tests inside the container
-      # It runs before the packaging step to ensure only tested code proceeds.
+      # Optimize Docker build caching
+      - name: Build Dev Container Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./.devcontainer/Dockerfile
+          tags: calmppuccin-builder:latest
+          load: true
+          cache-from: type=gha,scope=dev-container-cache
+          cache-to: type=gha,mode=max,scope=dev-container-cache
+
+      # Run tests inside the built Docker container
       - name: Run Tests
-        run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/workspaces/calmppuccin-vscode \
-            -w /workspaces/calmppuccin-vscode \
-            calmppuccin-builder \
-            bash -c "npm install && npm test"
+        run: docker run --rm --workdir /workspaces/calmppuccin-vscode calmppuccin-builder npm test
 
       - name: Get Package Version
         id: get_version
         uses: martinbeentjes/npm-get-version-action@v1.3.1
 
-      # 4. Run build and package commands *inside* the container
-      # This step only runs if the tests in the previous step have passed.
+      # Build/package the extension, copy .vsix out of the container
       - name: Build and Package Extension
         run: |
+          set -euo pipefail
           docker run --rm \
-            -v ${{ github.workspace }}:/workspaces/calmppuccin-vscode \
-            -w /workspaces/calmppuccin-vscode \
+            -u 0 \
+            -v "$PWD":/out \
+            --workdir /workspaces/calmppuccin-vscode \
             calmppuccin-builder \
-            bash -c "npm install && npm run package"
+            sh -lc 'npm run package && cp /workspaces/calmppuccin-vscode/*.vsix /out/'
 
       - name: Find VSIX file
         id: find_vsix
-        run: echo "vsix_path=$(ls *.vsix)" >> $GITHUB_OUTPUT
+        run: |
+          set -euo pipefail
+          VSIX=$(ls -1 *.vsix)
+          echo "vsix_path=${VSIX}" >> "$GITHUB_OUTPUT"
 
-      # 5. Upload the generated .vsix file as a build artifact
-      # This artifact will be used by the publishing job.
+      # Upload the .vsix as a build artifact
       - name: Upload VSIX Artifact
         uses: actions/upload-artifact@v4
         with:
           name: calmppuccin-vsix
           path: "*.vsix"
 
-  # This job ONLY runs on a push to the 'main' branch
+  # This job ONLY runs on a push to the 'main' branch to publish the extension.
   publish-to-marketplace:
-    # This condition ensures the job only runs for the main branch
     if: github.ref == 'refs/heads/main'
-    # It requires the 'build-and-package' job (including tests) to have completed successfully
     needs: build-and-package
     runs-on: ubuntu-latest
     steps:
-      # Download the .vsix file that was generated in the previous job
+      # Downloads the .vsix file that was generated in the previous job.
       - name: Download VSIX Artifact
         uses: actions/download-artifact@v4
         with:
@@ -85,11 +91,11 @@ jobs:
       - name: Install vsce
         run: npm install -g @vscode/vsce
 
-      # Publish the extension to the VS Code Marketplace
+      # Publishes the extension to the VS Code Marketplace.
       - name: Publish to VS Code Marketplace
         run: vsce publish -p ${{ secrets.VSCE_PAT }} --packagePath ${{ needs.build-and-package.outputs.vsix_path }}
 
-      # Create a GitHub Release and upload the .vsix file
+      # Creates a new GitHub Release and attaches the .vsix file.
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:

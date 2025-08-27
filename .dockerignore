@@ -1,0 +1,21 @@
+# Git and VS Code version control/metadata
+.git
+.github
+.gitignore
+.gitattributes
+.vscode-test/
+
+# Node.js dependencies
+node_modules
+
+# Build artifacts and generated files
+dist/
+themes/
+coverage/
+*.vsix
+local-ci.sh
+out/
+
+
+assets/*
+!assets/images/logo/icon.png
