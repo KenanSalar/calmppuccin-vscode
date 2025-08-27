@@ -7,14 +7,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
 import * as C from "./constants";
-import { WebviewMessage } from "./SettingsPanel";
-import { WebViewSettings } from "./ConfigurationService";
-
-/** Defines the shape of messages sent from the extension *to* the webview. */
-type MessageToWebview = {
-  command: "loadSettings";
-  settings: WebViewSettings;
-};
+import { MessageToExtension, MessageToWebview } from "../types/webview";
 
 /**
  * Manages the lifecycle and communication of the Calmppuccin settings webview panel.
@@ -31,9 +24,9 @@ export class WebviewManager {
   /**
    * Creates a new WebviewManager instance. This is private to enforce the singleton pattern.
    * @param {vscode.ExtensionContext} context The extension's context.
-   * @param {(message: WebviewMessage) => void} messageHandler The callback function to handle messages received from the webview.
+   * @param {(message: MessageToExtension) => void} messageHandler The callback function to handle messages received from the webview.
    */
-  private constructor(context: vscode.ExtensionContext, messageHandler: (message: WebviewMessage) => void) {
+  private constructor(context: vscode.ExtensionContext, messageHandler: (message: MessageToExtension) => void) {
     this._panel = vscode.window.createWebviewPanel(
       C.WEBVIEW_COMMANDS.WEBVIEW_ID,
       C.WEBVIEW_COMMANDS.WEBVIEW_TITLE,
@@ -59,12 +52,12 @@ export class WebviewManager {
   /**
    * The static method to either create a new webview panel or show the existing one.
    * @param {vscode.ExtensionContext} context The extension's context.
-   * @param {(message: WebviewMessage) => void} messageHandler The callback for messages from the webview.
+   * @param {(message: MessageToExtension) => void} messageHandler The callback for messages from the webview.
    * @param {() => void} [onReveal] An optional callback to run when an existing panel is revealed.
    */
   public static createOrShow(
     context: vscode.ExtensionContext,
-    messageHandler: (message: WebviewMessage) => void,
+    messageHandler: (message: MessageToExtension) => void,
     onReveal?: () => void
   ) {
     if (WebviewManager.currentPanel) {
