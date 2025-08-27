@@ -7,33 +7,7 @@ import * as vscode from "vscode";
 import * as C from "./constants";
 import { WebviewManager } from "./WebviewManager";
 import { ConfigurationService } from "./ConfigurationService";
-
-// #region Webview Message Types
-/** Defines a message to update a font style setting. */
-type UpdateSettingMessage = { command: "updateSetting"; key: string; value: string };
-/** Defines a message to reset a font style setting to its default. */
-type ResetFontStyleMessage = { command: "resetFontStyle"; key: string };
-/** Defines a message to update the active accent color. */
-type UpdateAccentMessage = { command: "updateAccent"; value: string };
-/** Defines a message to update the custom accent color hex code. */
-type UpdateCustomAccentMessage = { command: "updateCustomAccent"; value: string };
-/** Defines a message to update a specific syntax color for a flavor. */
-type UpdateSyntaxColorMessage = { command: "updateSyntaxColor"; flavor: string; key: string; value: string };
-/** Defines a message to reset a specific syntax color for a flavor. */
-type ResetSyntaxColorMessage = { command: "resetSyntaxColor"; flavor: string; key: string };
-/** Defines a message to reset all extension settings to their defaults. */
-type ResetAllMessage = { command: "resetAll" };
-
-/** A discriminated union of all possible messages that can be sent from the webview to the extension. */
-export type WebviewMessage =
-  | UpdateSettingMessage
-  | ResetFontStyleMessage
-  | UpdateAccentMessage
-  | UpdateCustomAccentMessage
-  | UpdateSyntaxColorMessage
-  | ResetSyntaxColorMessage
-  | ResetAllMessage;
-// #endregion
+import { MessageToExtension } from "../types/webview";
 
 /**
  * Manages the state and logic of the settings webview panel.
@@ -68,9 +42,9 @@ export class SettingsPanel {
 
   /**
    * Handles incoming messages from the webview panel.
-   * @param {WebviewMessage} message The deserialized message object sent from the webview.
+   * @param {MessageToExtension} message The deserialized message object sent from the webview.
    */
-  public async _handleMessage(message: WebviewMessage) {
+  public async _handleMessage(message: MessageToExtension) {
     // The 'command' property is used as a discriminator for the message type.
     // TypeScript correctly infers the shape of 'message' in each case block.
     switch (message.command) {

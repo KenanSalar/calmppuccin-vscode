@@ -5,7 +5,9 @@
  */
 
 import * as vscode from "vscode";
-import { SettingsPanel, WebviewMessage } from "../../src/SettingsPanel";
+import { SettingsPanel } from "../../src/SettingsPanel";
+// Import the shared types from their new, correct location.
+import { MessageToExtension as WebviewMessage } from "../../types/webview";
 import { ConfigurationService } from "../../src/ConfigurationService";
 import * as C from "../../src/constants";
 
