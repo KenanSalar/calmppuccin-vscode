@@ -2,6 +2,8 @@ name: Publish Dev Container
 
 # Defines the trigger for this workflow.
 on:
+  # This trigger allows to run the workflow manually from the Actions tab.
+  workflow_dispatch:
   # Runs on pushes to the 'dev' branch.
   push:
     branches:
