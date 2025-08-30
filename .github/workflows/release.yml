@@ -56,8 +56,8 @@ jobs:
           file: ./.devcontainer/Dockerfile
           tags: ghcr.io/${{ steps.set_owner.outputs.owner_lc }}/calmppuccin-builder:latest
           push: true
-          cache-from: type=gha,scope=${{ github.workflow }}
-          cache-to: type=gha,scope=${{ github.workflow }},mode=max
+          cache-from: type=gha,scope=builder-cache
+          cache-to: type=gha,scope=builder-cache,mode=max
           
       - name: Pull Dev Container Image
         run: docker pull ghcr.io/${{ steps.set_owner.outputs.owner_lc }}/calmppuccin-builder:latest
