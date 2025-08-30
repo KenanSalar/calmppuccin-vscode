@@ -1,52 +1,55 @@
 name: Build, Test, and Publish Extension
 
-# This workflow runs on pushes to the main and dev branches.
+# Defines the trigger for this workflow.
 on:
+  # Runs on pushes to the 'main' and 'dev' branches.
   push:
     branches:
       - main
       - dev
 
+# Defines the permissions required by the jobs.
 permissions:
   contents: write
   actions: write
+  # 'packages: read' is required to pull images from GHCR.
+  packages: read
 
 jobs:
-  # This job tests, builds, and packages the extension.
+  # This job tests, builds, and packages the extension inside the dev container.
   build-and-package:
     runs-on: ubuntu-latest
+    # Defines outputs that can be used by dependent jobs.
     outputs:
       vsix_path: ${{ steps.find_vsix.outputs.vsix_path }}
       version: ${{ steps.get_version.outputs.current-version }}
     steps:
-      # Checks out the repository's code.
+      # Fetches the repository source code.
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Sets up Docker Buildx for caching
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # Optimize Docker build caching
-      - name: Build Dev Container Image
-        uses: docker/build-push-action@v6
+      # Authenticates to the GitHub Container Registry.
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
         with:
-          context: .
-          file: ./.devcontainer/Dockerfile
-          tags: calmppuccin-builder:latest
-          load: true
-          cache-from: type=gha,scope=dev-container-cache
-          cache-to: type=gha,mode=max,scope=dev-container-cache
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Run tests inside the built Docker container
+      # Pulls the pre-built container image from GHCR to ensure a consistent environment.
+      - name: Pull Dev Container Image
+        run: docker pull ghcr.io/${{ github.repository_owner }}/calmppuccin-builder:latest
+
+      # Runs the test suite inside the dev container.
       - name: Run Tests
-        run: docker run --rm --workdir /workspaces/calmppuccin-vscode calmppuccin-builder npm test
+        run: docker run --rm --workdir /workspaces/calmppuccin-vscode ghcr.io/${{ github.repository_owner }}/calmppuccin-builder:latest npm test
 
+      # Extracts the extension version from package.json to use for tagging the release.
       - name: Get Package Version
         id: get_version
         uses: martinbeentjes/npm-get-version-action@v1.3.1
 
-      # Build/package the extension, copy .vsix out of the container
+      # Runs the package script inside the container and copies the resulting .vsix file to the runner.
       - name: Build and Package Extension
         run: |
           set -euo pipefail
@@ -54,9 +57,10 @@ jobs:
             -u 0 \
             -v "$PWD":/out \
             --workdir /workspaces/calmppuccin-vscode \
-            calmppuccin-builder \
+            ghcr.io/${{ github.repository_owner }}/calmppuccin-builder:latest \
             sh -lc 'npm run package && cp /workspaces/calmppuccin-vscode/*.vsix /out/'
 
+      # Finds the exact filename of the generated .vsix file for use in later steps.
       - name: Find VSIX file
         id: find_vsix
         run: |
@@ -64,38 +68,42 @@ jobs:
           VSIX=$(ls -1 *.vsix)
           echo "vsix_path=${VSIX}" >> "$GITHUB_OUTPUT"
 
-      # Upload the .vsix as a build artifact
+      # Uploads the .vsix file as an artifact to be used in the publish job.
       - name: Upload VSIX Artifact
         uses: actions/upload-artifact@v4
         with:
           name: calmppuccin-vsix
           path: "*.vsix"
 
-  # This job ONLY runs on a push to the 'main' branch to publish the extension.
+  # This job publishes the extension to the marketplace and creates a GitHub release.
   publish-to-marketplace:
+    # Ensures this job only runs on pushes to the 'main' branch.
     if: github.ref == 'refs/heads/main'
+    # Specifies that this job depends on the successful completion of 'build-and-package'.
     needs: build-and-package
     runs-on: ubuntu-latest
     steps:
-      # Downloads the .vsix file that was generated in the previous job.
+      # Downloads the .vsix file created in the previous job.
       - name: Download VSIX Artifact
         uses: actions/download-artifact@v4
         with:
           name: calmppuccin-vsix
 
+      # Sets up a Node.js environment on the runner.
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22"
 
+      # Installs the VS Code Extension Manager tool on the runner.
       - name: Install vsce
         run: npm install -g @vscode/vsce
 
-      # Publishes the extension to the VS Code Marketplace.
+      # Publishes the extension to the VS Code Marketplace using a secret token.
       - name: Publish to VS Code Marketplace
         run: vsce publish -p ${{ secrets.VSCE_PAT }} --packagePath ${{ needs.build-and-package.outputs.vsix_path }}
 
-      # Creates a new GitHub Release and attaches the .vsix file.
+      # Creates a new release on GitHub and attaches the .vsix file.
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
