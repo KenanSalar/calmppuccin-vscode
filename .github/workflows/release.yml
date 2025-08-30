@@ -15,8 +15,6 @@ permissions:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
-    env:
-      OWNER_LC: ${{ toLower(github.repository_owner) }}
     outputs:
       vsix_path: ${{ steps.find_vsix.outputs.vsix_path }}
       version: ${{ steps.get_version.outputs.current-version }}
@@ -32,6 +30,10 @@ jobs:
             container_files:
               - '.devcontainer/**'
               - 'package-lock.json'
+
+      - name: Set lowercase OWNER
+        id: set_owner
+        run: echo "OWNER_LC=$(echo '${GITHUB_REPOSITORY_OWNER}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
