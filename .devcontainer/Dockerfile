@@ -7,7 +7,7 @@ USER node
 WORKDIR /workspaces/calmppuccin-vscode
 
 # Global CLI tools for packaging
-RUN npm install -g @vscode/vsce
+
 
 # Copy deps files and install dependencies
 COPY --chown=node:node package*.json ./
