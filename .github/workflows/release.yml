@@ -16,7 +16,7 @@ jobs:
   build-and-publish:
     runs-on: ubuntu-latest
     env:
-      OWNER_LC: ${{ github.repository_owner.lowercase }}
+      OWNER_LC: ${{ toLower(github.repository_owner) }}
     outputs:
       vsix_path: ${{ steps.find_vsix.outputs.vsix_path }}
       version: ${{ steps.get_version.outputs.current-version }}
