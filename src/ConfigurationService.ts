@@ -6,17 +6,17 @@
 
 import * as vscode from "vscode";
 import * as C from "./constants";
-import palettes, { Palettes } from "./palettes";
+import palettes, { IPalettes as IPalettes } from "./palettes";
 import { CUSTOMIZABLE_BRACKET_KEYS, CUSTOMIZABLE_JSON_KEYS, CUSTOMIZABLE_SYNTAX_KEYS } from "./constants";
-import { SettingsPayload, WebviewSetting } from "../types/webview";
+import { ISettingsPayload, IWebviewSetting } from "../types/webview";
 
 /** Defines the shape of the font styles configuration object in settings.json. */
-export interface FontStyles {
+export interface IFontStyles {
   [key: string]: string;
 }
 
 /** Defines the shape of the syntax color overrides object in settings.json. */
-export interface SyntaxOverrides {
+export interface ISyntaxOverrides {
   [flavor: string]: {
     [token: string]: string;
   };
@@ -27,7 +27,7 @@ export interface SyntaxOverrides {
  * @param key The string to check.
  * @returns {boolean} True if the key is a valid flavor name.
  */
-function isFlavor(key: string): key is keyof Palettes {
+function isFlavor(key: string): key is keyof IPalettes {
   return key in palettes;
 }
 
@@ -68,18 +68,18 @@ export class ConfigurationService {
 
   /**
    * Gets the user-defined font styles from settings.json.
-   * @returns {FontStyles} The font styles object. Returns an empty object if not set.
+   * @returns {IFontStyles} The font styles object. Returns an empty object if not set.
    */
-  public static getFontStyles(): FontStyles {
-    return this.config.get<FontStyles>(C.CONFIG_KEY_FONT_STYLES, {});
+  public static getFontStyles(): IFontStyles {
+    return this.config.get<IFontStyles>(C.CONFIG_KEY_FONT_STYLES, {});
   }
 
   /**
    * Gets the user-defined syntax color overrides from settings.json.
-   * @returns {SyntaxOverrides} The syntax overrides object. Returns an empty object if not set.
+   * @returns {ISyntaxOverrides} The syntax overrides object. Returns an empty object if not set.
    */
-  public static getSyntaxOverrides(): SyntaxOverrides {
-    return this.config.get<SyntaxOverrides>(C.CONFIG_KEY_SYNTAX_OVERRIDES, {});
+  public static getSyntaxOverrides(): ISyntaxOverrides {
+    return this.config.get<ISyntaxOverrides>(C.CONFIG_KEY_SYNTAX_OVERRIDES, {});
   }
 
   /**
@@ -97,7 +97,7 @@ export class ConfigurationService {
    * @param {string} key The font style key to reset.
    */
   public static async resetFontStyle(key: string) {
-    const fontStyles: FontStyles = { ...this.getFontStyles() };
+    const fontStyles: IFontStyles = { ...this.getFontStyles() };
     delete fontStyles[key];
     // If the fontStyles object is empty after deletion, set it to 'undefined'.
     // This completely removes the "calmppuccin.fontStyles" entry from settings.json.
@@ -130,7 +130,7 @@ export class ConfigurationService {
   public static async updateSyntaxColor(flavor: string, key: string, value: string) {
     // We deep-clone the settings object because the object returned by .get() is read-only.
     // This creates a mutable copy that we can safely modify before updating the configuration.
-    const overrides: SyntaxOverrides = JSON.parse(JSON.stringify(this.getSyntaxOverrides()));
+    const overrides: ISyntaxOverrides = JSON.parse(JSON.stringify(this.getSyntaxOverrides()));
     if (!overrides[flavor]) {
       overrides[flavor] = {};
     }
@@ -144,7 +144,7 @@ export class ConfigurationService {
    * @param {string} key The syntax key.
    */
   public static async resetSyntaxColor(flavor: string, key: string) {
-    const overrides: SyntaxOverrides = JSON.parse(JSON.stringify(this.getSyntaxOverrides()));
+    const overrides: ISyntaxOverrides = JSON.parse(JSON.stringify(this.getSyntaxOverrides()));
     if (overrides[flavor]?.[key]) {
       delete overrides[flavor][key];
       // If a flavor object becomes empty, remove it entirely.
@@ -168,10 +168,10 @@ export class ConfigurationService {
 
   /**
    * Parses the active VS Code theme name to determine the current Calmppuccin flavor.
-   * @returns {keyof Palettes} The corresponding flavor key (e.g., "mocha").
+   * @returns {keyof IPalettes} The corresponding flavor key (e.g., "mocha").
    * @private
    */
-  private static getActiveFlavor(): keyof Palettes {
+  private static getActiveFlavor(): keyof IPalettes {
     const workbenchConfig = vscode.workspace.getConfiguration("workbench");
     const themeName = workbenchConfig.get<string>("colorTheme", "");
     const calmppuccinPrefix = "calmppuccin ";
@@ -193,9 +193,9 @@ export class ConfigurationService {
 
   /**
    * Gathers all settings required by the webview into a single object.
-   * @returns {SettingsPayload} The complete settings payload for the webview.
+   * @returns {ISettingsPayload} The complete settings payload for the webview.
    */
-  public static getWebViewSettings(): SettingsPayload {
+  public static getWebViewSettings(): ISettingsPayload {
     const extensionConfig = vscode.extensions.getExtension("kenan-salar.calmppuccin-vscode")?.packageJSON;
 
     const activeFlavor = this.getActiveFlavor();
@@ -223,7 +223,7 @@ export class ConfigurationService {
     }, {});
 
     const syntaxSettings = CUSTOMIZABLE_SYNTAX_KEYS.map(
-      (key): WebviewSetting => ({
+      (key): IWebviewSetting => ({
         key: key,
         fontStyle: fontStyles[`${key}FontStyle`] ?? "none",
         color: overridePalette[key] || defaultPalette[key],
@@ -232,7 +232,7 @@ export class ConfigurationService {
     );
 
     const bracketSettings = CUSTOMIZABLE_BRACKET_KEYS.map(
-      (key): WebviewSetting => ({
+      (key): IWebviewSetting => ({
         key: key,
         color: overridePalette[key] || defaultPalette[key],
         defaultColor: defaultPalette[key],
@@ -240,7 +240,7 @@ export class ConfigurationService {
     );
 
     const jsonSettings = CUSTOMIZABLE_JSON_KEYS.map(
-      (key): WebviewSetting => ({
+      (key): IWebviewSetting => ({
         key: key,
         fontStyle: fontStyles[`${key}FontStyle`] ?? "none",
         color: overridePalette[key] || defaultPalette[key],
