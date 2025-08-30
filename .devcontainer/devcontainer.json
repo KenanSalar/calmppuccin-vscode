@@ -43,7 +43,8 @@
         "Orta.vscode-jest",
         "redhat.vscode-yaml",
         "ms-vsliveshare.vsliveshare",
-        "quentinguidee.gitignore-ultimate"
+        "quentinguidee.gitignore-ultimate",
+        "github.vscode-github-actions"
       ]
     }
   },
