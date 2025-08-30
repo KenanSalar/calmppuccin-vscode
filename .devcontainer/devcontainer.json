@@ -13,7 +13,7 @@
     "vscode": {
       // Automatically install these extensions inside the container for a better dev experience
       "extensions": [
-        "dbaeumer.vscode-eslint", // Essential for linting TypeScript
+        "dbaeumer.vscode-eslint",
         "kenan-salar.calmppuccin-vscode",
         "Catppuccin.catppuccin-vsc-icons",
         "JeronimoEkerdt.color-picker-universal",
@@ -40,7 +40,11 @@
         "formulahendry.auto-rename-tag",
         "jeff-hykin.better-dockerfile-syntax",
         "alefragnani.Bookmarks",
-        "Orta.vscode-jest"
+        "Orta.vscode-jest",
+        "redhat.vscode-yaml",
+        "ms-vsliveshare.vsliveshare",
+        "quentinguidee.gitignore-ultimate",
+        "github.vscode-github-actions"
       ]
     }
   },

@@ -30,8 +30,9 @@ docker run --rm \
 
 ls -l ./out
 
-log "Moving VSIX next to this script"
-cp ./out/*.vsix .
+log "Moving VSIX to root and cleaning up"
+mv ./out/*.vsix .
+rm -r ./out
 ls -l ./*.vsix
 
 echo ""

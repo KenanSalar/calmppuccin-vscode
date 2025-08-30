@@ -6,7 +6,7 @@
 // #region Payloads & Data Structures
 
 /** A single setting item for the webview. */
-export interface WebviewSetting {
+export interface IWebviewSetting {
   key: string;
   fontStyle?: string;
   color?: string;
@@ -14,11 +14,11 @@ export interface WebviewSetting {
 }
 
 /** The complete data payload sent from the extension to the webview upon loading. */
-export interface SettingsPayload {
+export interface ISettingsPayload {
   activeFlavor: string;
-  syntaxSettings: WebviewSetting[];
-  bracketSettings: WebviewSetting[];
-  jsonSettings: WebviewSetting[];
+  syntaxSettings: IWebviewSetting[];
+  bracketSettings: IWebviewSetting[];
+  jsonSettings: IWebviewSetting[];
   currentAccent: string;
   accentOptions: string[];
   customAccentColor: string;
@@ -44,7 +44,7 @@ export type MessageToExtension =
 /** A discriminated union of all possible messages that can be sent FROM the extension TO the webview. */
 export type MessageToWebview = {
   command: "loadSettings";
-  settings: SettingsPayload;
+  settings: ISettingsPayload;
 };
 
 // #endregion
