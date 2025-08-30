@@ -5,13 +5,13 @@
 
 import { codeSnippets } from "./snippets";
 // Import the shared types from the new central location.
-import { SettingsPayload, MessageToWebview, MessageToExtension, WebviewSetting } from "../types/webview";
+import { ISettingsPayload, MessageToWebview, MessageToExtension, IWebviewSetting } from "../types/webview";
 
 /**
- * @interface VsCodeApi
+ * @interface IVsCodeApi
  * Defines the shape of the VS Code API object provided by `acquireVsCodeApi`.
  */
-interface VsCodeApi {
+interface IVsCodeApi {
   /**
    * Posts a message from the webview to the extension host.
    * @param {MessageToExtension} message The strongly-typed message object to send.
@@ -20,7 +20,7 @@ interface VsCodeApi {
 }
 
 // This special function is provided by VS Code in the webview environment to allow communication back to the extension.
-declare function acquireVsCodeApi(): VsCodeApi;
+declare function acquireVsCodeApi(): IVsCodeApi;
 
 /**
  * A centralized object for all command identifiers sent to and from the webview.
@@ -62,7 +62,7 @@ export class UIManager {
   };
 
   /** Holds the current settings payload from the extension. */
-  private settings: SettingsPayload | null = null;
+  private settings: ISettingsPayload | null = null;
   /** Holds the current styling state (color and font style) for the live preview pane. */
   private previewState: { [key: string]: { color?: string; fontStyle?: string } } = {};
   /** Caches the accent color palette for the active theme flavor. */
@@ -76,9 +76,9 @@ export class UIManager {
 
   /**
    * Builds the entire UI from scratch when settings are received from the extension.
-   * @param {SettingsPayload} settings The settings object from the VS Code extension host.
+   * @param {ISettingsPayload} settings The settings object from the VS Code extension host.
    */
-  public populateAllSettings(settings: SettingsPayload) {
+  public populateAllSettings(settings: ISettingsPayload) {
     this.settings = settings;
     const {
       activeFlavor,
@@ -324,13 +324,13 @@ export class UIManager {
 
   /**
    * Dynamically creates the grid of controls for font styles and syntax colors.
-   * @param {WebviewSetting[]} settings An array of the syntax settings to build controls for.
+   * @param {IWebviewSetting[]} settings An array of the syntax settings to build controls for.
    * @param {{ [key: string]: string }} defaultFontStyles An object containing the default font styles.
    * @param {boolean} includeFontStyles Whether to include font style controls.
    * @private
    */
   private _createSyntaxControls(
-    settings: WebviewSetting[],
+    settings: IWebviewSetting[],
     defaultFontStyles: { [key: string]: string },
     includeFontStyles: boolean
   ) {

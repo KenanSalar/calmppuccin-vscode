@@ -6,25 +6,25 @@
 
 import * as fs from "fs-extra";
 import * as path from "path";
-import palette, { Palettes } from "./src/palettes";
+import palette, { IPalettes } from "./src/palettes";
 import * as C from "./src/constants";
-import { FontStyles, SyntaxOverrides } from "./src/ConfigurationService";
+import { IFontStyles, ISyntaxOverrides } from "./src/ConfigurationService";
 
 const THEME_DIR = path.resolve(__dirname, "..", C.THEMES_DIR);
 const TEMPLATE_PATH = path.resolve(__dirname, "..", C.SRC_DIR, C.TEMPLATE_FILE);
-const FLAVORS = Object.keys(palette) as Array<keyof Palettes>;
+const FLAVORS = Object.keys(palette) as Array<keyof IPalettes>;
 
 /**
  * Generates all Calmppuccin theme files based on the template, palettes, and user settings.
  * @param {string} accentIdentifier The name of the accent color (e.g., "sapphire") or a custom hex code.
- * @param {FontStyles} editorSettings The user's configured font style settings.
- * @param {SyntaxOverrides} syntaxOverrides The user's configured syntax color overrides.
+ * @param {IFontStyles} editorSettings The user's configured font style settings.
+ * @param {ISyntaxOverrides} syntaxOverrides The user's configured syntax color overrides.
  * @returns {Promise<void>} A promise that resolves when all theme files have been written to disk.
  */
 export async function buildAllFlavors(
   accentIdentifier: string,
-  editorSettings: FontStyles,
-  syntaxOverrides: SyntaxOverrides
+  editorSettings: IFontStyles,
+  syntaxOverrides: ISyntaxOverrides
 ): Promise<void> {
   // Ensure the output directory is clean and ready.
   await fs.emptyDir(THEME_DIR);
@@ -84,9 +84,9 @@ export async function buildAllFlavors(
 
 /**
  * Reads the project's package.json to get the default font styles defined in the contribution points.
- * @returns {FontStyles} The default font styles object.
+ * @returns {IFontStyles} The default font styles object.
  */
-function getDefaultFontStyles(): FontStyles {
+function getDefaultFontStyles(): IFontStyles {
   const packageJsonPath = path.resolve(__dirname, "..", "package.json");
   const packageJson = fs.readJsonSync(packageJsonPath);
   return packageJson?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.fontStyles`]?.default ?? {};
