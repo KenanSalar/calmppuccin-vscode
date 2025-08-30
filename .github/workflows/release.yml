@@ -15,9 +15,8 @@ permissions:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
-    # Define an environment variable for the job, making it available to all steps.
     env:
-      OWNER_LC: ${{ toLowerCase(github.repository_owner) }}
+      OWNER_LC: ${{ github.repository_owner.lowercase }}
     outputs:
       vsix_path: ${{ steps.find_vsix.outputs.vsix_path }}
       version: ${{ steps.get_version.outputs.current-version }}
@@ -50,7 +49,6 @@ jobs:
         with:
           context: .
           file: ./.devcontainer/Dockerfile
-          # Use the environment variable for the tag.
           tags: ghcr.io/${{ env.OWNER_LC }}/calmppuccin-builder:latest
           push: true
           
