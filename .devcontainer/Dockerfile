@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/typescript-node:22
+FROM mcr.microsoft.com/devcontainers/typescript-node:20
 
 USER root
 RUN apt-get update && apt-get install -y gnupg pinentry-curses
@@ -7,7 +7,7 @@ USER node
 WORKDIR /workspaces/calmppuccin-vscode
 
 # Global CLI tools for packaging
-
+RUN npm install -g @vscode/vsce
 
 # Copy deps files and install dependencies
 COPY --chown=node:node package*.json ./
