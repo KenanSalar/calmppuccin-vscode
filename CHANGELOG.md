@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.1] - 2025-08-30
+
+- **Improvement**: Updated github workflow
+
 ## [1.7.0] - 2025-08-27
 
 - **Feature**: Added `.dockerignore` file
@@ -13,7 +17,7 @@
 - **Fix**: Updated the extension's configuration schema (package.json). VS Code will now correctly validate 8-digit hex codes with alpha channels when a user edits their settings.json manually.
 - **Fix**: Corrected a CSS grid layout issue that caused the bracket color settings to be displayed in a disorganized manner.
 - **Fix**: Updated the webview unit tests to align with the new data structures, resolving a test failure caused by the recent feature addition.
-- - **Fix**: Updated the unit and integration tests (`SettingsPanel.test.ts`, `WebviewManager.test.ts`) to use the new shared type definitions, resolving all compilation errors and ensuring the test suite passes.
+- **Fix**: Updated the unit and integration tests (`SettingsPanel.test.ts`, `WebviewManager.test.ts`) to use the new shared type definitions, resolving all compilation errors and ensuring the test suite passes.
 
 ## [1.6.2] - 2025-08-25
 
