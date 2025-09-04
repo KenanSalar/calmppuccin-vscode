@@ -115,4 +115,4 @@ export const CUSTOMIZABLE_JSON_KEYS = [
   "jsonLvl7",
   "jsonLvl8",
 ];
-export const CUSTOMIZABLE_UI_KEYS = ["base", "mantle", "crust"];
+export const CUSTOMIZABLE_UI_KEYS = ["base", "mantle", "crust", "uiText"];

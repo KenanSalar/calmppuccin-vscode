@@ -13,7 +13,7 @@ export const uiSnippet = `
     background-color: var(--base-color, #11111a); /* Fallback BG */
   }
 
-  /* Red Area: Title Bar at the top */
+  /* Base: Title Bar at the top */
   .ui-layout-titlebar {
     flex-shrink: 0;
     height: 30px; /* Represents the title bar area */
@@ -28,7 +28,7 @@ export const uiSnippet = `
     height: 100%;
   }
 
-  /* Red Area: Activity Bar on the far left */
+  /* Base: Activity Bar on the far left */
   .ui-layout-activitybar {
     flex-shrink: 0;
     width: 48px; /* Standard VS Code activity bar width */
@@ -36,12 +36,32 @@ export const uiSnippet = `
     transition: background-color 250ms ease;
   }
 
-  /* Blue Area: Sidebar next to the activity bar */
+  /* Mantle: Sidebar next to the activity bar */
   .ui-layout-sidebar {
     flex-shrink: 0;
     width: 150px; /* Visual representation of the sidebar */
     background-color: var(--mantle-color, #171724);
     transition: background-color 250ms ease;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+  
+  /* Styling for the file list items */
+  .ui-layout-file {
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    background-color: rgba(0,0,0,0.1); /* Slight background to look like a bar */
+  }
+
+  /* Text inside the file list items */
+  .ui-layout-file-text {
+    color: var(--uiText-color, #c6d0f5); /* Use uiText color */
+    font-size: 0.9em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 250ms ease;
   }
 
   /* Wrapper for the tab bar and editor pane */
@@ -51,7 +71,7 @@ export const uiSnippet = `
     flex-direction: column;
   }
 
-  /* Blue Area: Tab bar above the editor */
+  /* Mantle: Tab bar above the editor */
   .ui-layout-tabbar {
     flex-shrink: 0;
     height: 35px; /* Standard VS Code tab bar height */
@@ -59,7 +79,7 @@ export const uiSnippet = `
     transition: background-color 250ms ease;
   }
 
-  /* Green Area: Main editor content area */
+  /* Crust: Main editor content area */
   .ui-layout-editor {
     flex-grow: 1;
     background-color: var(--crust-color, #1d1d2c);
@@ -86,7 +106,11 @@ export const uiSnippet = `
   <div class="ui-layout-main-area">
     <div class="ui-layout-activitybar" data-token="base"></div>
     
-    <div class="ui-layout-sidebar" data-token="mantle"></div>
+    <div class="ui-layout-sidebar" data-token="mantle">
+      <div class="ui-layout-file-text" data-token="uiText">file-one.ts</div>
+      <div class="ui-layout-file-text" data-token="uiText">another-file.js</div>
+      <div class="ui-layout-file-text" data-token="uiText">styles.css</div>
+    </div>
     
     <div class="ui-layout-editor-wrapper">
       <div class="ui-layout-tabbar" data-token="mantle"></div>
