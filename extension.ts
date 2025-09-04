@@ -73,7 +73,8 @@ export function activate(context: vscode.ExtensionContext) {
       const accentValue = ConfigurationService.getAccent();
       const fontStyles = ConfigurationService.getFontStyles();
       const syntaxOverrides = ConfigurationService.getSyntaxOverrides();
-      await buildAllFlavors(accentValue, fontStyles, syntaxOverrides);
+      const uiOverrides = ConfigurationService.getUiOverrides();
+      await buildAllFlavors(accentValue, fontStyles, syntaxOverrides, uiOverrides);
       const selection = await vscode.window.showInformationMessage(C.INFO_MESSAGE, C.RELOAD_ACTION);
       if (selection === C.RELOAD_ACTION) {
         vscode.commands.executeCommand(C.RELOAD_COMMAND_ID);
@@ -120,7 +121,8 @@ export function activate(context: vscode.ExtensionContext) {
         event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACCENT}`) ||
         event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLES}`) ||
         event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_CUSTOM_ACCENT}`) ||
-        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_SYNTAX_OVERRIDES}`)
+        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_SYNTAX_OVERRIDES}`) ||
+        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_UI_OVERRIDES}`)
       ) {
         vscode.commands.executeCommand(C.REGENERATE_COMMAND_ID);
       }
