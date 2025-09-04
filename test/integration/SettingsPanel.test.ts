@@ -160,6 +160,51 @@ describe("SettingsPanel Integration Tests", () => {
   });
 
   /**
+   * @description Tests that an 'updateUiColor' message from the webview
+   * correctly triggers the ConfigurationService.updateUiColor method.
+   */
+  it("should call updateUiColor on the ConfigurationService when receiving an updateUiColor message", async () => {
+    // 1. Arrange
+    const panel = new (SettingsPanel as any)(mockContext);
+    const updateUiColorSpy = jest.spyOn(ConfigurationService, "updateUiColor");
+    const mockMessage: WebviewMessage = {
+      command: "updateUiColor",
+      flavor: "latte",
+      key: "base",
+      value: "#ffffff",
+    };
+
+    // 2. Act
+    await panel._handleMessage(mockMessage);
+
+    // 3. Assert
+    expect(updateUiColorSpy).toHaveBeenCalledTimes(1);
+    expect(updateUiColorSpy).toHaveBeenCalledWith("latte", "base", "#ffffff");
+  });
+
+  /**
+   * @description Tests that a 'resetUiColor' message from the webview
+   * correctly triggers the ConfigurationService.resetUiColor method.
+   */
+  it("should call resetUiColor on the ConfigurationService when receiving a resetUiColor message", async () => {
+    // 1. Arrange
+    const panel = new (SettingsPanel as any)(mockContext);
+    const resetUiColorSpy = jest.spyOn(ConfigurationService, "resetUiColor");
+    const mockMessage: WebviewMessage = {
+      command: "resetUiColor",
+      flavor: "mocha",
+      key: "crust",
+    };
+
+    // 2. Act
+    await panel._handleMessage(mockMessage);
+
+    // 3. Assert
+    expect(resetUiColorSpy).toHaveBeenCalledTimes(1);
+    expect(resetUiColorSpy).toHaveBeenCalledWith("mocha", "crust");
+  });
+
+  /**
    * @description Tests that a 'resetAll' message from the webview
    * correctly triggers the ConfigurationService.resetAll method.
    * @precondition The ConfigurationService is mocked.

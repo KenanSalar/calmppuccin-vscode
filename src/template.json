@@ -350,7 +350,7 @@
     "merge.incomingContentBackground": "{{uiMergeIncomingContentBackground}}",
     "merge.incomingHeaderBackground": "{{uiMergeIncomingHeaderBackground}}",
 
-    "minimap.background": "{{uiMinimapBackground}}",
+    "minimap.background": "{{crust}}9d",
     "minimap.findMatchHighlight": "{{uiMatchHighlight}}",
     "minimap.selectionHighlight": "{{uiMinimapSelectionHighlight}}",
     "minimap.selectionOccurrenceHighlight": "{{uiMinimapSelectionHighlight}}",

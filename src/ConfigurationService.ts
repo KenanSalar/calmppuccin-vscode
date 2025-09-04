@@ -7,7 +7,12 @@
 import * as vscode from "vscode";
 import * as C from "./constants";
 import palettes, { IPalettes as IPalettes } from "./palettes";
-import { CUSTOMIZABLE_BRACKET_KEYS, CUSTOMIZABLE_JSON_KEYS, CUSTOMIZABLE_SYNTAX_KEYS } from "./constants";
+import {
+  CUSTOMIZABLE_BRACKET_KEYS,
+  CUSTOMIZABLE_JSON_KEYS,
+  CUSTOMIZABLE_SYNTAX_KEYS,
+  CUSTOMIZABLE_UI_KEYS,
+} from "./constants";
 import { ISettingsPayload, IWebviewSetting } from "../types/webview";
 
 /** Defines the shape of the font styles configuration object in settings.json. */
@@ -17,6 +22,13 @@ export interface IFontStyles {
 
 /** Defines the shape of the syntax color overrides object in settings.json. */
 export interface ISyntaxOverrides {
+  [flavor: string]: {
+    [token: string]: string;
+  };
+}
+
+/** Defines the shape of the UI color overrides object in settings.json. */
+export interface IUiOverrides {
   [flavor: string]: {
     [token: string]: string;
   };
@@ -80,6 +92,14 @@ export class ConfigurationService {
    */
   public static getSyntaxOverrides(): ISyntaxOverrides {
     return this.config.get<ISyntaxOverrides>(C.CONFIG_KEY_SYNTAX_OVERRIDES, {});
+  }
+
+  /**
+   * Gets the user-defined UI color overrides from settings.json.
+   * @returns {IUiOverrides} The UI overrides object. Returns an empty object if not set.
+   */
+  public static getUiOverrides(): IUiOverrides {
+    return this.config.get<IUiOverrides>(C.CONFIG_KEY_UI_OVERRIDES, {});
   }
 
   /**
@@ -158,11 +178,44 @@ export class ConfigurationService {
   }
 
   /**
+   * Updates a specific UI color override for a given flavor.
+   * @param {string} flavor The theme flavor.
+   * @param {string} key The UI key (e.g., "base").
+   * @param {string} value The new hex color value.
+   */
+  public static async updateUiColor(flavor: string, key: string, value: string) {
+    const overrides: IUiOverrides = JSON.parse(JSON.stringify(this.getUiOverrides()));
+    if (!overrides[flavor]) {
+      overrides[flavor] = {};
+    }
+    overrides[flavor][key] = value;
+    await this.config.update(C.CONFIG_KEY_UI_OVERRIDES, overrides, vscode.ConfigurationTarget.Global);
+  }
+
+  /**
+   * Resets a specific UI color override for a given flavor.
+   * @param {string} flavor The theme flavor.
+   * @param {string} key The UI key.
+   */
+  public static async resetUiColor(flavor: string, key: string) {
+    const overrides: IUiOverrides = JSON.parse(JSON.stringify(this.getUiOverrides()));
+    if (overrides[flavor]?.[key]) {
+      delete overrides[flavor][key];
+      if (Object.keys(overrides[flavor]).length === 0) {
+        delete overrides[flavor];
+      }
+      const finalOverrides = Object.keys(overrides).length === 0 ? undefined : overrides;
+      await this.config.update(C.CONFIG_KEY_UI_OVERRIDES, finalOverrides, vscode.ConfigurationTarget.Global);
+    }
+  }
+
+  /**
    * Resets all user-defined settings for the extension to their default values.
    */
   public static async resetAll() {
     await this.config.update(C.CONFIG_KEY_FONT_STYLES, undefined, vscode.ConfigurationTarget.Global);
     await this.config.update(C.CONFIG_KEY_SYNTAX_OVERRIDES, undefined, vscode.ConfigurationTarget.Global);
+    await this.config.update(C.CONFIG_KEY_UI_OVERRIDES, undefined, vscode.ConfigurationTarget.Global);
     await this.config.update(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT, vscode.ConfigurationTarget.Global);
   }
 
@@ -201,6 +254,7 @@ export class ConfigurationService {
     const activeFlavor = this.getActiveFlavor();
     const fontStyles = this.getFontStyles();
     const syntaxOverrides = this.getSyntaxOverrides();
+    const uiOverrides = this.getUiOverrides();
     const currentAccent = this.config.get<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
     const customAccentColor = this.config.get<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
 
@@ -212,7 +266,8 @@ export class ConfigurationService {
       [];
 
     const defaultPalette = palettes[activeFlavor];
-    const overridePalette = syntaxOverrides[activeFlavor] || {};
+    const overrideSyntaxPalette = syntaxOverrides[activeFlavor] || {};
+    const overrideUiPalette = uiOverrides[activeFlavor] || {};
     const activeThemeBackgroundColor = defaultPalette.crust;
 
     const accentColorPalettes = accentOptions.reduce((acc: { [key: string]: string }, option: string) => {
@@ -226,7 +281,7 @@ export class ConfigurationService {
       (key): IWebviewSetting => ({
         key: key,
         fontStyle: fontStyles[`${key}FontStyle`] ?? "none",
-        color: overridePalette[key] || defaultPalette[key],
+        color: overrideSyntaxPalette[key] || defaultPalette[key],
         defaultColor: defaultPalette[key],
       })
     );
@@ -234,7 +289,7 @@ export class ConfigurationService {
     const bracketSettings = CUSTOMIZABLE_BRACKET_KEYS.map(
       (key): IWebviewSetting => ({
         key: key,
-        color: overridePalette[key] || defaultPalette[key],
+        color: overrideSyntaxPalette[key] || defaultPalette[key],
         defaultColor: defaultPalette[key],
       })
     );
@@ -243,7 +298,15 @@ export class ConfigurationService {
       (key): IWebviewSetting => ({
         key: key,
         fontStyle: fontStyles[`${key}FontStyle`] ?? "none",
-        color: overridePalette[key] || defaultPalette[key],
+        color: overrideSyntaxPalette[key] || defaultPalette[key],
+        defaultColor: defaultPalette[key],
+      })
+    );
+
+    const uiSettings = CUSTOMIZABLE_UI_KEYS.map(
+      (key): IWebviewSetting => ({
+        key: key,
+        color: overrideUiPalette[key] || defaultPalette[key],
         defaultColor: defaultPalette[key],
       })
     );
@@ -253,6 +316,7 @@ export class ConfigurationService {
       syntaxSettings,
       bracketSettings,
       jsonSettings,
+      uiSettings,
       currentAccent,
       accentOptions,
       customAccentColor,
