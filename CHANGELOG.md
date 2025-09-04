@@ -1,7 +1,11 @@
 # Changelog
 
-## [1.7.1] - 2025-08-30
+## [1.7.1] - 2025-09-04
 
+- **Feature**: Added UI color customization. Users can now change the `base`, `mantle`, and `crust` colors for each theme flavor via the new "UI" tab in the customization panel.
+- **Feature**: The Customization UI now includes a new live preview that visually represents the core VS Code layout, allowing users to see their `base`, `mantle`, and `crust` color changes instantly.
+- **Improvement**: The editor minimap background is now derived from the `crust` color with transparency, ensuring it always stays in sync with the editor's background.
+- **Internal**: Updated unit and integration tests to cover the new UI customization functionality, ensuring stability and correctness.
 - **Improvement**: Updated github workflow
 
 ## [1.7.0] - 2025-08-27

@@ -23,6 +23,7 @@ const htmlFixture = `
   </div>
   <select id="settings-view-select">
     <option value="syntax">Syntax</option>
+    <option value="ui">UI</option>
     <option value="brackets">Brackets</option>
     <option value="json">JSON</option>
   </select>
@@ -49,6 +50,11 @@ const mockSettingsPayload = {
   ],
   bracketSettings: [{ key: "uiBracket1", color: "#6cb3c0", defaultColor: "#6cb3c0" }],
   jsonSettings: [{ key: "jsonLvl0", fontStyle: "none", color: "#8eb4f0", defaultColor: "#8eb4f0" }],
+  uiSettings: [
+    { key: "base", color: "#11111a", defaultColor: "#11111a" },
+    { key: "mantle", color: "#171724", defaultColor: "#171724" },
+    { key: "crust", color: "#1d1d2c", defaultColor: "#1d1d2c" },
+  ],
   currentAccent: "sapphire",
   accentOptions: ["sapphire", "mauve", "custom"],
   customAccentColor: "#89b4fa",
@@ -75,7 +81,7 @@ describe("UIManager Unit Tests", () => {
     // Assert
     const languageSelect = document.getElementById("language-select") as HTMLSelectElement;
     // We filter out brackets and json from the main language selector
-    const expectedOptions = Object.keys(codeSnippets).length - 2;
+    const expectedOptions = Object.keys(codeSnippets).length - 3;
     expect(languageSelect.options.length).toBe(expectedOptions);
     expect(languageSelect.value).toBe("csharp");
 
