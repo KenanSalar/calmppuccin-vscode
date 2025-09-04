@@ -14,6 +14,7 @@ export const CATPPUCCIN_ICON_PACK_ID = "catppuccin-";
 export const PANEL_IS_OPEN_KEY = "calmppuccin.panelIsOpen";
 export const CONFIG_KEY_FONT_STYLES = "fontStyles";
 export const CONFIG_KEY_SYNTAX_OVERRIDES = "syntaxOverrides";
+export const CONFIG_KEY_UI_OVERRIDES = "uiOverrides";
 export const CUSTOMIZE_COMMAND_ID = "calmppuccin.customize";
 
 /** Constants used in the `build.ts` script for theme generation. */
@@ -49,6 +50,8 @@ export const WEBVIEW_COMMANDS = {
   UPDATE_CUSTOM_ACCENT: "updateCustomAccent",
   UPDATE_SYNTAX_COLOR: "updateSyntaxColor",
   RESET_SYNTAX_COLOR: "resetSyntaxColor",
+  UPDATE_UI_COLOR: "updateUiColor",
+  RESET_UI_COLOR: "resetUiColor",
   RESET_ALL: "resetAll",
   LOAD_SETTINGS: "loadSettings",
   WEBVIEW_ID: "calmppuccinSettings",
@@ -112,3 +115,4 @@ export const CUSTOMIZABLE_JSON_KEYS = [
   "jsonLvl7",
   "jsonLvl8",
 ];
+export const CUSTOMIZABLE_UI_KEYS = ["base", "mantle", "crust"];

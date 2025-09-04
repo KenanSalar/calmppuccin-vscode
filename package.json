@@ -3,7 +3,7 @@
   "displayName": "Calmppuccin",
   "description": "Calmppuccin is a visually refined theme for Visual Studio Code, designed to offer a harmonious coding experience. Inspired by the popular Catppuccin theme, Calmppuccin takes the beloved pastel palette and transforms it into a gentler, less intense version, perfect for long coding sessions without eye strain.",
   "icon": "assets/images/logo/icon.png",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "publisher": "kenan-salar",
   "license": "MIT",
   "repository": {
@@ -1027,6 +1027,36 @@
                   "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
                   "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
                   "description": "Overrides the color for the ninth-level JSON keys."
+                }
+              }
+            }
+          }
+        },
+        "calmppuccin.uiOverrides": {
+          "type": "object",
+          "default": {},
+          "description": "Override specific UI colors for each Calmppuccin flavor. Use the Customization UI for a better experience.",
+          "patternProperties": {
+            "^(latte|frappe|macchiato|mocha|nitro-cold-brew|oledppuccin)$": {
+              "type": "object",
+              "properties": {
+                "base": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6})$",
+                  "patternErrorMessage": "Please enter a valid 6-digit hex color code (e.g., #RRGGBB).",
+                  "description": "Overrides the color for the base background."
+                },
+                "mantle": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6})$",
+                  "patternErrorMessage": "Please enter a valid 6-digit hex color code (e.g., #RRGGBB).",
+                  "description": "Overrides the color for the mantle background."
+                },
+                "crust": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6})$",
+                  "patternErrorMessage": "Please enter a valid 6-digit hex color code (e.g., #RRGGBB).",
+                  "description": "Overrides the color for the crust background."
                 }
               }
             }
