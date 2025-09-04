@@ -1,52 +1,74 @@
-name: Build, Test, and Publish Extension
+name: Build, Test, and Release Extension
 
-# This workflow runs on pushes to the main and dev branches.
 on:
   push:
     branches:
       - main
       - dev
+  workflow_dispatch:
 
 permissions:
   contents: write
   actions: write
+  packages: write
 
 jobs:
-  # This job tests, builds, and packages the extension.
-  build-and-package:
+  # Build, test, and package the extension
+  build_and_test:
     runs-on: ubuntu-latest
+    # Define job outputs for the release job
     outputs:
       vsix_path: ${{ steps.find_vsix.outputs.vsix_path }}
       version: ${{ steps.get_version.outputs.current-version }}
     steps:
-      # Checks out the repository's code.
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Sets up Docker Buildx for caching
+      - name: Check for changes in container definition
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            container_files:
+              - '.devcontainer/**'
+              - 'package-lock.json'
+
+      - name: Set lowercase OWNER
+        id: set_owner 
+        run: echo "owner_lc=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Optimize Docker build caching
-      - name: Build Dev Container Image
+      # Build image only on 'dev' if container files change
+      - name: Build and push new container image
+        if: steps.filter.outputs.container_files == 'true' && github.ref == 'refs/heads/dev'
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./.devcontainer/Dockerfile
-          tags: calmppuccin-builder:latest
-          load: true
-          cache-from: type=gha,scope=dev-container-cache
-          cache-to: type=gha,mode=max,scope=dev-container-cache
+          tags: ghcr.io/${{ steps.set_owner.outputs.owner_lc }}/calmppuccin-builder:latest
+          push: true
+          cache-from: type=gha,scope=builder-cache
+          cache-to: type=gha,scope=builder-cache,mode=max
+          
+      - name: Pull Dev Container Image
+        run: docker pull ghcr.io/${{ steps.set_owner.outputs.owner_lc }}/calmppuccin-builder:latest
 
-      # Run tests inside the built Docker container
       - name: Run Tests
-        run: docker run --rm --workdir /workspaces/calmppuccin-vscode calmppuccin-builder npm test
+        run: docker run --rm --workdir /workspaces/calmppuccin-vscode ghcr.io/${{ steps.set_owner.outputs.owner_lc }}/calmppuccin-builder:latest npm test
 
       - name: Get Package Version
         id: get_version
         uses: martinbeentjes/npm-get-version-action@v1.3.1
 
-      # Build/package the extension, copy .vsix out of the container
       - name: Build and Package Extension
         run: |
           set -euo pipefail
@@ -54,7 +76,7 @@ jobs:
             -u 0 \
             -v "$PWD":/out \
             --workdir /workspaces/calmppuccin-vscode \
-            calmppuccin-builder \
+            ghcr.io/${{ steps.set_owner.outputs.owner_lc }}/calmppuccin-builder:latest \
             sh -lc 'npm run package && cp /workspaces/calmppuccin-vscode/*.vsix /out/'
 
       - name: Find VSIX file
@@ -63,42 +85,48 @@ jobs:
           set -euo pipefail
           VSIX=$(ls -1 *.vsix)
           echo "vsix_path=${VSIX}" >> "$GITHUB_OUTPUT"
+          echo "Found VSIX: ${VSIX}"
 
-      # Upload the .vsix as a build artifact
+      # Upload VSIX as an artifact for the release job
       - name: Upload VSIX Artifact
         uses: actions/upload-artifact@v4
         with:
           name: calmppuccin-vsix
           path: "*.vsix"
 
-  # This job ONLY runs on a push to the 'main' branch to publish the extension.
-  publish-to-marketplace:
-    if: github.ref == 'refs/heads/main'
-    needs: build-and-package
+  # Download artifact and publish the release
+  release:
     runs-on: ubuntu-latest
+    # Run this job only on the 'main' branch
+    if: github.ref == 'refs/heads/main'
+    # Requires the 'build_and_test' job to succeed
+    needs: build_and_test
     steps:
-      # Downloads the .vsix file that was generated in the previous job.
+      # Download the VSIX package from the previous job
       - name: Download VSIX Artifact
         uses: actions/download-artifact@v4
         with:
           name: calmppuccin-vsix
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
+      - name: Display structure of downloaded files
+        run: ls -R
 
-      - name: Install vsce
-        run: npm install -g @vscode/vsce
+      - name: Publish to VS Code Marketplace and Create Release
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          VERSION="${{ needs.build_and_test.outputs.version }}"
+          VSIX_PATH="${{ needs.build_and_test.outputs.vsix_path }}"
+          
+          echo "Version: ${VERSION}"
+          echo "VSIX Path: ${VSIX_PATH}"
 
-      # Publishes the extension to the VS Code Marketplace.
-      - name: Publish to VS Code Marketplace
-        run: vsce publish -p ${{ secrets.VSCE_PAT }} --packagePath ${{ needs.build-and-package.outputs.vsix_path }}
-
-      # Creates a new GitHub Release and attaches the .vsix file.
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: "v${{ needs.build-and-package.outputs.version }}"
-          name: "Release v${{ needs.build-and-package.outputs.version }}"
-          files: ${{ needs.build-and-package.outputs.vsix_path }}
+          npm install -g @vscode/vsce
+          vsce publish --packagePath "${VSIX_PATH}"
+          gh release create "v${VERSION}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Release v${VERSION}" \
+            --notes "New release." \
+            "${VSIX_PATH}"

@@ -111,7 +111,6 @@ export default {
   uiMergeCurrentHeaderBackground: "#95ce8f66",
   uiMergeIncomingContentBackground: "#799fdb33",
   uiMergeIncomingHeaderBackground: "#799fdb66",
-  uiMinimapBackground: "#24273a9d",
   uiMatchHighlight: "#7ac3cf4d",
   uiMinimapSelectionHighlight: "#585b70bf",
   uiMinimapWarning: "#e2a47dbf",

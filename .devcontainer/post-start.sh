@@ -1,4 +1,5 @@
 #!/bin/bash
+# works on linux (i only used it on fedora kde)
 set -e
 
 GPG_DIR=~/.gnupg

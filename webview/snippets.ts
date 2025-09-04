@@ -21,6 +21,7 @@ import { sqlSnippet } from "./snippets/sql";
 import { typescriptSnippet } from "./snippets/typescript";
 import { bracketsSnippet } from "./snippets/brackets";
 import { jsonSnippet } from "./snippets/json";
+import { uiSnippet } from "./snippets/ui";
 
 /**
  * Defines the shape for the code snippets object.
@@ -53,4 +54,5 @@ export const codeSnippets: CodeSnippets = {
   typescript: typescriptSnippet,
   brackets: bracketsSnippet,
   json: jsonSnippet,
+  ui: uiSnippet,
 };

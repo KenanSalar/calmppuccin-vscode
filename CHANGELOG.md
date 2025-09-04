@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.1] - 2025-09-04
+
+- **Feature**: Added UI color customization. Users can now change the `base`, `mantle`, `crust` and `uiText` colors for each theme flavor via the new "UI" tab in the customization panel.
+- **Feature**: The Customization UI now includes a new live preview that visually represents the core VS Code layout, allowing users to see their `base`, `mantle`, and `crust` color changes instantly.
+- **Improvement**: The editor minimap background is now derived from the `crust` color with transparency, ensuring it always stays in sync with the editor's background.
+- **Internal**: Updated unit and integration tests to cover the new UI customization functionality, ensuring stability and correctness.
+- **Improvement**: Updated github workflow
+
 ## [1.7.0] - 2025-08-27
 
 - **Feature**: Added `.dockerignore` file
@@ -13,7 +21,7 @@
 - **Fix**: Updated the extension's configuration schema (package.json). VS Code will now correctly validate 8-digit hex codes with alpha channels when a user edits their settings.json manually.
 - **Fix**: Corrected a CSS grid layout issue that caused the bracket color settings to be displayed in a disorganized manner.
 - **Fix**: Updated the webview unit tests to align with the new data structures, resolving a test failure caused by the recent feature addition.
-- - **Fix**: Updated the unit and integration tests (`SettingsPanel.test.ts`, `WebviewManager.test.ts`) to use the new shared type definitions, resolving all compilation errors and ensuring the test suite passes.
+- **Fix**: Updated the unit and integration tests (`SettingsPanel.test.ts`, `WebviewManager.test.ts`) to use the new shared type definitions, resolving all compilation errors and ensuring the test suite passes.
 
 ## [1.6.2] - 2025-08-25
 

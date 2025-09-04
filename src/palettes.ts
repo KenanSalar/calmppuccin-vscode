@@ -4,10 +4,10 @@
  */
 
 /**
- * @interface Palette
+ * @interface IPalette
  * Defines the structure for a single theme flavor's color palette.
  */
-export interface Palette {
+export interface IPalette {
   /** The display name of the theme (e.g., "Calmppuccin Mocha"). */
   themeName: string;
   /** The UI theme type, used by VS Code to determine workbench styling. */
@@ -17,17 +17,17 @@ export interface Palette {
 }
 
 /**
- * @interface Palettes
+ * @interface IPalettes
  * Defines the main object that aggregates all individual flavor palettes.
  * Each key corresponds to a specific Calmppuccin flavor.
  */
-export interface Palettes {
-  latte: Palette;
-  frappe: Palette;
-  macchiato: Palette;
-  mocha: Palette;
-  "nitro-cold-brew": Palette;
-  oledppuccin: Palette;
+export interface IPalettes {
+  latte: IPalette;
+  frappe: IPalette;
+  macchiato: IPalette;
+  mocha: IPalette;
+  "nitro-cold-brew": IPalette;
+  oledppuccin: IPalette;
 }
 
 // Import the raw color objects for each individual flavor.
@@ -40,10 +40,10 @@ import oledppuccin from "./palettes/oledppuccin";
 
 /**
  * The main palettes object that assembles all imported flavors.
- * This constant is strongly typed with the `Palettes` interface to ensure
+ * This constant is strongly typed with the `IPalettes` interface to ensure
  * all required flavors are present.
  */
-const palettes: Palettes = {
+const palettes: IPalettes = {
   latte,
   frappe,
   macchiato,

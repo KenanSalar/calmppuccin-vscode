@@ -5,13 +5,13 @@
 
 import { codeSnippets } from "./snippets";
 // Import the shared types from the new central location.
-import { SettingsPayload, MessageToWebview, MessageToExtension, WebviewSetting } from "../types/webview";
+import { ISettingsPayload, MessageToWebview, MessageToExtension, IWebviewSetting } from "../types/webview";
 
 /**
- * @interface VsCodeApi
+ * @interface IVsCodeApi
  * Defines the shape of the VS Code API object provided by `acquireVsCodeApi`.
  */
-interface VsCodeApi {
+interface IVsCodeApi {
   /**
    * Posts a message from the webview to the extension host.
    * @param {MessageToExtension} message The strongly-typed message object to send.
@@ -20,7 +20,7 @@ interface VsCodeApi {
 }
 
 // This special function is provided by VS Code in the webview environment to allow communication back to the extension.
-declare function acquireVsCodeApi(): VsCodeApi;
+declare function acquireVsCodeApi(): IVsCodeApi;
 
 /**
  * A centralized object for all command identifiers sent to and from the webview.
@@ -32,6 +32,8 @@ const COMMANDS = {
   UPDATE_CUSTOM_ACCENT: "updateCustomAccent",
   UPDATE_SYNTAX_COLOR: "updateSyntaxColor",
   RESET_SYNTAX_COLOR: "resetSyntaxColor",
+  UPDATE_UI_COLOR: "updateUiColor",
+  RESET_UI_COLOR: "resetUiColor",
   RESET_ALL: "resetAll",
   LOAD_SETTINGS: "loadSettings",
 } as const;
@@ -62,7 +64,7 @@ export class UIManager {
   };
 
   /** Holds the current settings payload from the extension. */
-  private settings: SettingsPayload | null = null;
+  private settings: ISettingsPayload | null = null;
   /** Holds the current styling state (color and font style) for the live preview pane. */
   private previewState: { [key: string]: { color?: string; fontStyle?: string } } = {};
   /** Caches the accent color palette for the active theme flavor. */
@@ -76,9 +78,9 @@ export class UIManager {
 
   /**
    * Builds the entire UI from scratch when settings are received from the extension.
-   * @param {SettingsPayload} settings The settings object from the VS Code extension host.
+   * @param {ISettingsPayload} settings The settings object from the VS Code extension host.
    */
-  public populateAllSettings(settings: SettingsPayload) {
+  public populateAllSettings(settings: ISettingsPayload) {
     this.settings = settings;
     const {
       activeFlavor,
@@ -120,7 +122,7 @@ export class UIManager {
   public initializeEventListeners() {
     // Populate the language selector dropdown and set up its change event.
     for (const lang in codeSnippets) {
-      if (lang !== "brackets" && lang !== "json") {
+      if (lang !== "brackets" && lang !== "json" && lang !== "ui") {
         const option = document.createElement("option");
         option.value = lang;
         option.textContent = lang;
@@ -206,7 +208,14 @@ export class UIManager {
       elements.forEach((el) => {
         const tokenStyle = this.previewState[tokenKey];
         if (tokenStyle.color) {
-          el.style.color = tokenStyle.color;
+          if (["base", "mantle", "crust"].includes(tokenKey)) {
+            el.style.backgroundColor = tokenStyle.color;
+            if (tokenKey === "crust") {
+              this.elements.previewPane.style.backgroundColor = tokenStyle.color;
+            }
+          } else {
+            el.style.color = tokenStyle.color;
+          }
         }
         if (tokenStyle.fontStyle) {
           const style = tokenStyle.fontStyle;
@@ -303,6 +312,12 @@ export class UIManager {
         this.elements.languageSelect.value = "csharp";
         this.elements.codePreview.innerHTML = codeSnippets.csharp;
         break;
+      case "ui":
+        this.elements.settingsContainer.classList.add("view-brackets");
+        this._createSyntaxControls(this.settings.uiSettings, {}, false);
+        this.elements.languageSelect.style.display = "none";
+        this.elements.codePreview.innerHTML = codeSnippets.ui;
+        break;
       case "brackets":
         // Add a class to switch to a 2-column layout.
         this.elements.settingsContainer.classList.add("view-brackets");
@@ -324,13 +339,13 @@ export class UIManager {
 
   /**
    * Dynamically creates the grid of controls for font styles and syntax colors.
-   * @param {WebviewSetting[]} settings An array of the syntax settings to build controls for.
+   * @param {IWebviewSetting[]} settings An array of the syntax settings to build controls for.
    * @param {{ [key: string]: string }} defaultFontStyles An object containing the default font styles.
    * @param {boolean} includeFontStyles Whether to include font style controls.
    * @private
    */
   private _createSyntaxControls(
-    settings: WebviewSetting[],
+    settings: IWebviewSetting[],
     defaultFontStyles: { [key: string]: string },
     includeFontStyles: boolean
   ) {
@@ -433,6 +448,11 @@ export class UIManager {
     alphaSlider.min = "0";
     alphaSlider.max = "255";
     alphaSlider.step = "1";
+    const isUiColor = ["base", "mantle", "crust"].includes(key);
+    if (isUiColor) {
+      alphaSlider.style.display = "none";
+      hexInput.maxLength = 7;
+    }
 
     // --- Set initial values from settings ---
     const initialColor = color || defaultColor || "#ffffffff";
@@ -440,7 +460,7 @@ export class UIManager {
     const initialAlphaHex = initialColor.length === 9 ? initialColor.substring(7, 9) : "ff";
     colorInput.value = initialRgb;
     alphaSlider.value = parseInt(initialAlphaHex, 16).toString();
-    hexInput.value = initialColor;
+    hexInput.value = isUiColor ? initialRgb : initialColor;
 
     // --- Helper function to update the UI from the color picker & slider ---
     const updateFromPickers = () => {
@@ -448,7 +468,7 @@ export class UIManager {
       const newAlpha = parseInt(alphaSlider.value);
       const newAlphaHex = newAlpha.toString(16).padStart(2, "0");
 
-      const finalColor = `${newRgb}${newAlphaHex}`;
+      const finalColor = isUiColor ? newRgb : `${newRgb}${newAlphaHex}`;
 
       hexInput.value = finalColor;
       this.previewState[key].color = finalColor;
@@ -457,8 +477,9 @@ export class UIManager {
 
     // --- Helper function to send the final color to the extension backend ---
     const sendFinalColorToVSCode = () => {
+      const command = isUiColor ? COMMANDS.UPDATE_UI_COLOR : COMMANDS.UPDATE_SYNTAX_COLOR;
       this.vscode.postMessage({
-        command: COMMANDS.UPDATE_SYNTAX_COLOR,
+        command: command,
         flavor: this.activeFlavor,
         key,
         value: hexInput.value,
@@ -476,7 +497,8 @@ export class UIManager {
     // --- Add event listener for the text input ---
     hexInput.addEventListener("input", () => {
       const typedValue = hexInput.value;
-      const match = typedValue.match(this.hex8Regex);
+      const regex = isUiColor ? this.hex6Regex : this.hex8Regex;
+      const match = typedValue.match(regex);
 
       if (match) {
         // If the typed value is a valid hex code
@@ -489,7 +511,9 @@ export class UIManager {
 
         // Update the color picker and slider to match the typed input
         colorInput.value = rgb;
-        alphaSlider.value = alphaDecimal.toString();
+        if (!isUiColor) {
+          alphaSlider.value = alphaDecimal.toString();
+        }
 
         // Update the live preview
         this.previewState[key].color = typedValue;
@@ -503,8 +527,9 @@ export class UIManager {
 
     // --- NEW: Send the final value to the backend when the user is done editing ---
     hexInput.addEventListener("change", () => {
+      const regex = isUiColor ? this.hex6Regex : this.hex8Regex;
       // Only send the message if the final value is valid
-      if (this.hex8Regex.test(hexInput.value)) {
+      if (regex.test(hexInput.value)) {
         sendFinalColorToVSCode();
       }
     });
@@ -518,10 +543,11 @@ export class UIManager {
       const defaultAlphaHex = defaultColor.length === 9 ? defaultColor.substring(7, 9) : "ff";
       colorInput.value = defaultRgb;
       alphaSlider.value = parseInt(defaultAlphaHex, 16).toString();
-      hexInput.value = defaultColor;
+      hexInput.value = isUiColor ? defaultRgb : defaultColor;
       this.previewState[key].color = defaultColor;
       this.updatePreviewPane();
-      this.vscode.postMessage({ command: COMMANDS.RESET_SYNTAX_COLOR, flavor: this.activeFlavor, key });
+      const command = isUiColor ? COMMANDS.RESET_UI_COLOR : COMMANDS.RESET_SYNTAX_COLOR;
+      this.vscode.postMessage({ command, flavor: this.activeFlavor, key });
     });
 
     // --- DOM Assembly ---
