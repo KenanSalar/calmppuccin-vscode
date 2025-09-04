@@ -268,7 +268,7 @@ describe("ConfigurationService", () => {
    * @description Tests that resetAll() correctly clears all user-defined settings
    * by calling the update method with the appropriate values.
    * @precondition The `update` method on the mock configuration is spied on.
-   * @assertion The `update` method should be called exactly three times: twice with
+   * @assertion The `update` method should be called exactly four times: three times with
    * `undefined` to clear the object-based settings, and once with the default
    * accent color to reset the accent.
    */
@@ -280,8 +280,8 @@ describe("ConfigurationService", () => {
     await ConfigurationService.resetAll();
 
     // 3. Assert
-    // Verify that the update method was called three times in total.
-    expect(mockConfiguration.update).toHaveBeenCalledTimes(3);
+    // Verify that the update method was called four times in total.
+    expect(mockConfiguration.update).toHaveBeenCalledTimes(4);
 
     // Verify that the 'fontStyles' setting was cleared.
     expect(mockConfiguration.update).toHaveBeenCalledWith(
@@ -293,6 +293,13 @@ describe("ConfigurationService", () => {
     // Verify that the 'syntaxOverrides' setting was cleared.
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_SYNTAX_OVERRIDES,
+      undefined,
+      vscode.ConfigurationTarget.Global
+    );
+
+    // Verify that the 'uiOverrides' setting was cleared.
+    expect(mockConfiguration.update).toHaveBeenCalledWith(
+      C.CONFIG_KEY_UI_OVERRIDES,
       undefined,
       vscode.ConfigurationTarget.Global
     );
@@ -422,6 +429,7 @@ describe("ConfigurationService.getWebViewSettings", () => {
     const mockAccent = "lavender";
     const mockFontStyles = { commentFontStyle: "italic", keywordFontStyle: "bold" };
     const mockSyntaxOverrides = { mocha: { comment: "#ff0000" } };
+    const mockUiOverrides = { mocha: { base: "#000000" } };
     const mockActiveFlavor = "mocha";
 
     // Mock the return value of the real package.json structure
@@ -447,6 +455,7 @@ describe("ConfigurationService.getWebViewSettings", () => {
     // isolating the test to the logic within getWebViewSettings itself.
     jest.spyOn(ConfigurationService, "getFontStyles").mockReturnValue(mockFontStyles);
     jest.spyOn(ConfigurationService, "getSyntaxOverrides").mockReturnValue(mockSyntaxOverrides);
+    jest.spyOn(ConfigurationService, "getUiOverrides").mockReturnValue(mockUiOverrides);
 
     // Since `getActiveFlavor` is a private method, it cannot be spied on directly.
     // Instead, its underlying dependency, the `vscode.workspace.getConfiguration` API, is mocked.
@@ -488,5 +497,11 @@ describe("ConfigurationService.getWebViewSettings", () => {
     expect(commentSetting?.fontStyle).toBe("italic"); // From mockFontStyles
     expect(commentSetting?.color).toBe("#ff0000"); // From mockSyntaxOverrides
     expect(commentSetting?.defaultColor).toBeDefined(); // Should be read from the palette
+
+    // Check that uiSettings are correctly merged and calculated
+    const baseSetting = settings.uiSettings.find((s) => s.key === "base");
+    expect(baseSetting).toBeDefined();
+    expect(baseSetting?.color).toBe("#000000"); // From mockUiOverrides
+    expect(baseSetting?.defaultColor).toBeDefined();
   });
 });

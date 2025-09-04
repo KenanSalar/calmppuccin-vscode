@@ -6,25 +6,27 @@
 
 import * as fs from "fs-extra";
 import * as path from "path";
-import palette, { Palettes } from "./src/palettes";
+import palette, { IPalettes } from "./src/palettes";
 import * as C from "./src/constants";
-import { FontStyles, SyntaxOverrides } from "./src/ConfigurationService";
+import { IFontStyles, ISyntaxOverrides, IUiOverrides } from "./src/ConfigurationService";
 
 const THEME_DIR = path.resolve(__dirname, "..", C.THEMES_DIR);
 const TEMPLATE_PATH = path.resolve(__dirname, "..", C.SRC_DIR, C.TEMPLATE_FILE);
-const FLAVORS = Object.keys(palette) as Array<keyof Palettes>;
+const FLAVORS = Object.keys(palette) as Array<keyof IPalettes>;
 
 /**
  * Generates all Calmppuccin theme files based on the template, palettes, and user settings.
  * @param {string} accentIdentifier The name of the accent color (e.g., "sapphire") or a custom hex code.
- * @param {FontStyles} editorSettings The user's configured font style settings.
- * @param {SyntaxOverrides} syntaxOverrides The user's configured syntax color overrides.
+ * @param {IFontStyles} editorSettings The user's configured font style settings.
+ * @param {ISyntaxOverrides} syntaxOverrides The user's configured syntax color overrides.
+ * @param {IUiOverrides} uiOverrides The user's configured UI color overrides.
  * @returns {Promise<void>} A promise that resolves when all theme files have been written to disk.
  */
 export async function buildAllFlavors(
   accentIdentifier: string,
-  editorSettings: FontStyles,
-  syntaxOverrides: SyntaxOverrides
+  editorSettings: IFontStyles,
+  syntaxOverrides: ISyntaxOverrides,
+  uiOverrides: IUiOverrides
 ): Promise<void> {
   // Ensure the output directory is clean and ready.
   await fs.emptyDir(THEME_DIR);
@@ -34,9 +36,10 @@ export async function buildAllFlavors(
   // Iterate over each flavor (latte, frappe, mocha, etc.) to generate a theme for it.
   for (const flavor of FLAVORS) {
     const basePalette = palette[flavor];
-    const flavorOverrides = syntaxOverrides[flavor] || {};
+    const flavorSyntaxOverrides = syntaxOverrides[flavor] || {};
+    const flavorUiOverrides = uiOverrides[flavor] || {};
     // Merge the base flavor palette with any user-defined color overrides.
-    const finalPalette = { ...basePalette, ...flavorOverrides };
+    const finalPalette = { ...basePalette, ...flavorSyntaxOverrides, ...flavorUiOverrides };
 
     // Resolve the accent color. If it's a hex code, use it directly. Otherwise, look it up in the palette.
     const accentColor = accentIdentifier.startsWith("#")
@@ -84,9 +87,9 @@ export async function buildAllFlavors(
 
 /**
  * Reads the project's package.json to get the default font styles defined in the contribution points.
- * @returns {FontStyles} The default font styles object.
+ * @returns {IFontStyles} The default font styles object.
  */
-function getDefaultFontStyles(): FontStyles {
+function getDefaultFontStyles(): IFontStyles {
   const packageJsonPath = path.resolve(__dirname, "..", "package.json");
   const packageJson = fs.readJsonSync(packageJsonPath);
   return packageJson?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.fontStyles`]?.default ?? {};
@@ -98,5 +101,5 @@ function getDefaultFontStyles(): FontStyles {
  */
 if (require.main === module) {
   const defaultFontStyles = getDefaultFontStyles();
-  buildAllFlavors(C.DEFAULT_ACCENT, defaultFontStyles, {});
+  buildAllFlavors(C.DEFAULT_ACCENT, defaultFontStyles, {}, {});
 }

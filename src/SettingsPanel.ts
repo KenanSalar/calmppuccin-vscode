@@ -66,6 +66,12 @@ export class SettingsPanel {
       case C.WEBVIEW_COMMANDS.RESET_SYNTAX_COLOR:
         await ConfigurationService.resetSyntaxColor(message.flavor, message.key);
         return;
+      case C.WEBVIEW_COMMANDS.UPDATE_UI_COLOR:
+        await ConfigurationService.updateUiColor(message.flavor, message.key, message.value);
+        return;
+      case C.WEBVIEW_COMMANDS.RESET_UI_COLOR:
+        await ConfigurationService.resetUiColor(message.flavor, message.key);
+        return;
       case C.WEBVIEW_COMMANDS.RESET_ALL:
         await ConfigurationService.resetAll();
         this._update();
