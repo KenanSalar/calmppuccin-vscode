@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "--- Setting up Bash with ble.sh, fzf, eza, Atuin, and Starship ---"
+echo "--- Setting up Bash with ble.sh, fzf, eza, zoxide, Atuin, and Starship ---"
 
 BASH_RC=/home/node/.bashrc
 BLESH_DIR="/home/node/.local/share/blesh"
@@ -20,7 +20,7 @@ fi
 
 # --- Create .bashrc configuration ---
 cat <<'EOF' > "$BASH_RC"
-# ~/.bashrc: Integration for ble.sh, fzf, eza, atuin, and starship
+# ~/.bashrc: Integration for ble.sh, fzf, eza, zoxide atuin, and starship
 
 # ---Set up the PATH ---
 export PATH="$HOME/.atuin/bin:$PATH"
@@ -52,6 +52,10 @@ source "/usr/share/doc/fzf/examples/completion.bash" 2> /dev/null
 eval "$(atuin init bash)"
 ble-bind -m emacs -f up '__atuin_history'
 ble-bind -m vi_imap -f up '__atuin_history'
+
+# Zoxide Integration
+# A smarter 'cd' command that learns your habits.
+eval "$(zoxide init bash)"
 
 # --- Configure ble.sh Features ---
 bleopt complete_auto_complete=1
