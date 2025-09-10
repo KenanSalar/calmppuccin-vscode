@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "--- Setting up Bash with ble.sh, fzf, eza, Atuin, and Starship ---"
+echo "--- Setting up Bash with ble.sh, fzf, eza, zoxide, Atuin, and Starship ---"
 
 BASH_RC=/home/node/.bashrc
 BLESH_DIR="/home/node/.local/share/blesh"
@@ -20,7 +20,7 @@ fi
 
 # --- Create .bashrc configuration ---
 cat <<'EOF' > "$BASH_RC"
-# ~/.bashrc: Integration for ble.sh, fzf, eza, atuin, and starship
+# ~/.bashrc: Integration for ble.sh, fzf, eza, zoxide atuin, and starship
 
 # ---Set up the PATH ---
 export PATH="$HOME/.atuin/bin:$PATH"
