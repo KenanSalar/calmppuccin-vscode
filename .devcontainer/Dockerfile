@@ -1,8 +1,24 @@
 FROM mcr.microsoft.com/devcontainers/typescript-node:22
 
 USER root
-RUN apt-get update && apt-get install -y gnupg pinentry-curses
-USER node
+# Install build tools for ble.sh, plus fzf and other utilities.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    make \
+    gawk \
+    gnupg \
+    pinentry-curses \
+    fzf \
+    git
+
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates wget gpg
+# Add eza's apt repository and install eza
+RUN mkdir -p /etc/apt/keyrings \
+    && wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | gpg --dearmor -o /etc/apt/keyrings/eza-archive-keyring.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/eza-archive-keyring.gpg] http://deb.gierens.de stable main" > /etc/apt/sources.list.d/eza.list \
+    && chmod 644 /etc/apt/keyrings/eza-archive-keyring.gpg /etc/apt/sources.list.d/eza.list \
+    && apt-get update \
+    && apt-get install -y eza
 
 WORKDIR /workspaces/calmppuccin-vscode
 

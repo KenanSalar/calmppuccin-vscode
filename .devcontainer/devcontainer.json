@@ -1,13 +1,12 @@
 {
   "$schema": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json",
   "name": "Calmppuccin Dev Container",
-
   // Tells VS Code to build the container from our Dockerfile
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".."
   },
-  "runArgs": ["--name", "calmppuccin-dev"],
+  "runArgs": ["--name", "calmppuccin-dev", "--hostname", "${localEnv:USER:localEnv:USERNAME:hacker-rank}-dc"],
   // These settings are applied inside the container once it's running
   "customizations": {
     "vscode": {
@@ -43,20 +42,17 @@
         "Orta.vscode-jest",
         "redhat.vscode-yaml",
         "ms-vsliveshare.vsliveshare",
-        "quentinguidee.gitignore-ultimate"
+        "quentinguidee.gitignore-ultimate",
+        "timonwong.shellcheck",
+        "rogalmic.bash-debug"
       ]
     }
   },
-  // Mount the user's local .gitconfig and GPG socket directory
-  "mounts": [
-    "type=volume,source=devcontainer-home,target=/home/node",
-    "source=${localWorkspaceFolder}/.devcontainer/git/.gitconfig.project,target=/home/node/.gitconfig.project,type=bind,consistency=cached"
-  ],
   "containerEnv": {
     "GIT_CONFIG_SYSTEM": "/home/node/.gitconfig.project"
   },
-  "postCreateCommand": "npm install",
-  "postStartCommand": "bash .devcontainer/post-start.sh",
+  "postCreateCommand": "bash .devcontainer/scripts/run-all.sh",
+  "postAttachCommand": "until find /home/node/.vscode-server/extensions/ -name 'extension.js' -path '*/github.copilot-*/dist/*' | grep -q .; do echo 'Waiting for Copilot to install...'; sleep 1; done",
   // Tells VS Code to run as the non-root 'node' user defined in the Dockerfile
   "remoteUser": "node"
 }
