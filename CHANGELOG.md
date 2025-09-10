@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.7.2] - 2025-09-10
+
+- **Feature**: Devcontainer now uses ble.sh with atuin, starship, fzf and eza.
+- **Chore**: Updated dependencies
+- **Chore**: Deleted local-ci.sh because it's not needed anymore
+
 ## [1.7.1] - 2025-09-04
 
 - **Feature**: Added UI color customization. Users can now change the `base`, `mantle`, `crust` and `uiText` colors for each theme flavor via the new "UI" tab in the customization panel.
