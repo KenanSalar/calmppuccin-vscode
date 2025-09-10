@@ -9,7 +9,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg \
     pinentry-curses \
     fzf \
-    git
+    git \
+    zoxide
 
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates wget gpg
 # Add eza's apt repository and install eza

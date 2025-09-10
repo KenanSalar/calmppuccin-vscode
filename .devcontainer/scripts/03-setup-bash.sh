@@ -53,6 +53,10 @@ eval "$(atuin init bash)"
 ble-bind -m emacs -f up '__atuin_history'
 ble-bind -m vi_imap -f up '__atuin_history'
 
+# Zoxide Integration
+# A smarter 'cd' command that learns your habits.
+eval "$(zoxide init bash)"
+
 # --- Configure ble.sh Features ---
 bleopt complete_auto_complete=1
 bleopt complete_auto_delay=0
