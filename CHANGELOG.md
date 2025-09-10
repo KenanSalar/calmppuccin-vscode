@@ -2,7 +2,7 @@
 
 ## [1.7.2] - 2025-09-10
 
-- **Feature**: Devcontainer now uses ble.sh with atuin, starship, fzf and eza.
+- **Feature**: Devcontainer now uses ble.sh with atuin, starship, fzf, zoxide and eza.
 - **Chore**: Updated dependencies
 - **Chore**: Deleted local-ci.sh because it's not needed anymore
 
