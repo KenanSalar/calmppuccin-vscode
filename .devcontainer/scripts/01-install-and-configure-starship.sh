@@ -16,18 +16,11 @@ cat <<'EOF' > /home/node/.config/starship.toml
 "$schema" = 'https://starship.rs/config-schema.json'
 
 format = """
-[](fg:red)\
-$os\
-[](fg:red bg:maroon)\
 $username\
-[](fg:maroon bg:flamingo)\
 $hostname\
-[](fg:flamingo bg:peach)\
 $directory\
-[](fg:peach bg:yellow)\
 $git_branch\
 $git_status\
-[](fg:yellow bg:green)\
 $package\
 $bun\
 $cmake\
@@ -71,14 +64,10 @@ $solidity\
 $swift\
 $vlang\
 $zig\
-[](fg:green bg:sapphire)\
 $aws\
 $azure\
-[](fg:sapphire bg:blue)\
 $docker_context\
-[](fg:blue bg:lavender)\
 $time\
-[](fg:lavender)\
 $cmd_duration\
 $line_break\
 $character"""
@@ -86,9 +75,9 @@ $character"""
 palette = 'catppuccin_mocha'
 
 [os]
-disabled = false
-style = "bg:red fg:crust"
-format = "[$symbol ]($style)"
+disabled = true
+style = "bg:os_bg fg:blue"
+format = "[$symbol]($style)"
 
 [os.symbols]
 Windows = ""
@@ -113,284 +102,287 @@ RedHatEnterprise = "󱄛"
 
 [username]
 show_always = true
-style_user = "bg:maroon fg:crust"
-style_root = "bg:maroon fg:crust"
-format = "[ $user ]($style)"
+style_user = "fg:text"
+style_root = "fg:text"
+format = "[$user]($style)"
 
 [hostname]
 ssh_only = false
-ssh_symbol = "🌐@"
+ssh_symbol = "🌐"
 disabled = false
-style = "fg:crust bg:flamingo"
-format = "[ $ssh_symbol$hostname ]($style)"
+style = "fg:maroon"
+format = "[$ssh_symbol@$hostname]($style)"
 
 [directory]
-style = "bg:peach fg:crust"
-format = "[ $path ]($style)"
-truncation_length = 3
+style = "fg:peach"
+format = "[ $path]($style)"
+truncation_length = 2
 truncate_to_repo = true
 truncation_symbol = "…/"
 
-[directory.substitutions]
-"Documents" = "󰈙 "
-"Downloads" = " "
-"Music" = "󰝚 "
-"Pictures" = " "
-"Developer" = "󰆍 "
-"Development" = "󰆍 "
-
 [git_branch]
 symbol = ""
-style = "fg:crust bg:yellow"
-format = "[[ $symbol $branch ]($style)]($style)"
+style = "fg:yellow"
+format = "[ $symbol $branch]($style)"
 
 [git_status]
-style = "fg:crust bg:yellow"
-format = "[[($all_status$ahead_behind )]($style)]($style)"
+style = "fg:bold yellow"
+ahead = '⇡${count}'
+behind = '⇣${count}'
+diverged = '⇕⇡${ahead_count}⇣${behind_count}'
+untracked = '?${count}'
+stashed = '$${count}'
+modified = '!${count}'
+staged = '+${count}'
+renamed = '»${count}'
+deleted = '✘${count}'
+conflicted = '=${count}'
+typechanged = ""
+format = '([ \[$all_status$ahead_behind\]]($style))'
 
 [package]
 disabled = false
-symbol = "❐ "
-style = "bg:green fg:crust"
-format = "[ $symbol$version ]($style)"
+symbol = "❐"
+style = "fg:green"
+format = "[ $symbol $version ]($style)"
 
 [bun]
-symbol = "🥟"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "bun"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [cmake]
-symbol = "△"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "cmake"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [conda]
-symbol = ""
+symbol = "conda"
 style = "fg:crust bg:green"
-format = "[ $symbol$environment ]($style)"
+format = "[$symbol$environment]($style)"
 ignore_base = false
 
 [deno]
-symbol = "🦕"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "deno"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [gradle]
-symbol = "🅶"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "gradle"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [pixi]
-symbol = "🧚"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "pixi"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [c]
-symbol = ""
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "C"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [cpp]
 symbol = "C++"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [crystal]
-symbol = "🔮"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "crystal"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [daml]
 symbol = "Λ"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [dart]
-symbol = "🎯"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "dart"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [dotnet]
 symbol = ".NET"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [elixir]
-symbol = "💧"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "elexir"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [elm]
-symbol = "🌳"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "elm"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [erlang]
-symbol = ""
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "erlang"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [fennel]
-symbol = "🧅"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "fennel"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [gleam]
-symbol = "⭐"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "gleam"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [golang]
-symbol = ""
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "go"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [haskell]
-symbol = ""
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "haskell"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [haxe]
-symbol = "⌘"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "haxe"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [java]
-symbol = ""
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "java"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [julia]
-symbol = "ஃ"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "julia"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [kotlin]
-symbol = ""
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "kotlin"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [lua]
-symbol = "☽"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "lua"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [mojo]
-symbol = "🔥"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "mojo"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [nim]
-symbol = "👑"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "nim"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [nodejs]
-symbol = ""
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "node"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [ocaml]
-symbol = "🐫"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "ocaml"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [perl]
-symbol = "🧅"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "perl"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [php]
-symbol = ""
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "php"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [purescript]
-symbol = ""
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "purescript"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [python]
-symbol = ""
+symbol = "python"
 style = "bg:green"
-format = "[[ $symbol( $version)(\\(#$virtualenv\\)) ](fg:crust bg:green)]($style)"
+format = "[[$symbol( $version)(\\(#$virtualenv\\))](fg:crust bg:green)]($style)"
 
 [rlang]
-symbol = "📐"
+symbol = "rlang"
 style = "bg:green"
-format = "[[ $symbol( $version)(\\(#$virtualenv\\)) ](fg:crust bg:green)]($style)"
+format = "[[$symbol( $version)(\\(#$virtualenv\\))](fg:crust bg:green)]($style)"
 
 [raku]
-symbol = "🦋"
+symbol = "raku"
 style = "bg:green"
-format = "[[ $symbol( $version)(\\(#$virtualenv\\)) ](fg:crust bg:green)]($style)"
+format = "[[$symbol( $version)(\\(#$virtualenv\\))](fg:crust bg:green)]($style)"
 
 [red]
-symbol = "🔺"
+symbol = "red"
 style = "bg:green"
-format = "[[ $symbol( $version)(\\(#$virtualenv\\)) ](fg:crust bg:green)]($style)"
+format = "[[$symbol( $version)(\\(#$virtualenv\\))](fg:crust bg:green)]($style)"
 
 [ruby]
-symbol = "💎"
+symbol = "ruby"
 style = "bg:green"
-format = "[[ $symbol( $version)(\\(#$virtualenv\\)) ](fg:crust bg:green)]($style)"
+format = "[[$symbol( $version)(\\(#$virtualenv\\))](fg:crust bg:green)]($style)"
 
 [rust]
-symbol = ""
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "rust"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [scala]
-symbol = "🆂"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "scala"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [solidity]
-symbol = "S"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "solidity"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [swift]
-symbol = "🐦"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "swift"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [vlang]
-symbol = "V"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "vlang"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [zig]
-symbol = "↯"
-style = "bg:green"
-format = "[[ $symbol( $version) ](fg:crust bg:green)]($style)"
+symbol = "zig"
+style = "fg:green"
+format = "[$symbol $version]($style)"
 
 [aws]
-symbol = "🅰"
-style = "fg:crust bg:sapphire"
-format = ' on [$symbol( $profile )(\($region\) )]($style)'
+symbol = "aws"
+style = "fg:sapphire"
+format = '[ $symbol( $profile )(\($region\) )]($style)'
 
 [azure]
 disabled = false
-symbol = "󰠅"
-style = "fg:crust bg:sapphire"
-format = " on [$symbol( $username )( $subscription )]($style) "
+symbol = "azure"
+style = "fg:sapphire"
+format = "[ $symbol( $username )( $subscription )]($style) "
 
 [gcloud]
-symbol = '️🇬️'
-style = "fg:crust bg:sapphire"
-format = 'on [$symbol $account(@$domain)(\($project\))]($style) '
+symbol = 'gcloud'
+style = "fg:sapphire"
+format = ' on [$symbol $account(@$domain)(\($project\))]($style) '
 
 [docker_context]
 symbol = ""
-style = "bg:blue"
-format = "[[ $symbol( $context) ](fg:crust bg:blue)]($style)"
+style = "fg:blue"
+format = "[ $symbol $context]($style)"
 
 [time]
 disabled = false
 time_format = "%R"
-style = "fg:crust bg:lavender"
-format = "[[  $time]($style)]($style)"
+style = "fg:lavender"
+format = "[  $time]($style)"
 
 [cmd_duration]
 show_milliseconds = true
@@ -405,12 +397,12 @@ disabled = false
 
 [character]
 disabled = false
-success_symbol = '[❯](bold fg:green)'
-error_symbol = '[!❯](bold fg:red)'
-vimcmd_symbol = '[❮](bold fg:green)'
-vimcmd_replace_one_symbol = '[❮](bold fg:lavender)'
-vimcmd_replace_symbol = '[❮](bold fg:lavender)'
-vimcmd_visual_symbol = '[❮](bold fg:yellow)'
+success_symbol = '[❯](fg:subtext0)'
+error_symbol = '[!❯](fg:red)'
+vimcmd_symbol = '[❮](fg:subtext0)'
+vimcmd_replace_one_symbol = '[❮](fg:lavender)'
+vimcmd_replace_symbol = '[❮](fg:lavender)'
+vimcmd_visual_symbol = '[❮](fg:yellow)'
 
 [palettes.catppuccin_mocha]
 rosewater = "#f5e0dc"
@@ -506,7 +498,7 @@ maroon = "#ee99a0"
 peach = "#f5a97f"
 yellow = "#eed49f"
 green = "#a6da95"
-teal = "#bd5ca"
+teal = "#8bd5ca"
 sky = "#91d7e3"
 sapphire = "#7dc4e4"
 blue = "#8aadf4"
