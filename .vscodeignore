@@ -1,5 +1,6 @@
 .devcontainer/**
 .gitattributes
+.git/**
 .github/**
 .gitignore
 .dockerignore
@@ -16,7 +17,6 @@ out/
 build.ts
 extension.ts
 jest.config.ts
-local-ci.sh
 package-lock.json
 src/ConfigurationService.ts
 src/constants.ts
