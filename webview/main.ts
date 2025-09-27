@@ -38,7 +38,6 @@ const COMMANDS = {
   SWITCH_PROFILE: "switchProfile",
   SAVE_PROFILE: "saveProfile",
   DELETE_PROFILE: "deleteProfile",
-  RESET_PROFILE: "resetProfile",
   LOAD_SETTINGS: "loadSettings",
 } as const;
 
@@ -69,7 +68,6 @@ export class UIManager {
     profileNameInput: document.getElementById("profile-name-input") as HTMLInputElement,
     saveProfileBtn: document.getElementById("save-profile-btn") as HTMLButtonElement,
     deleteProfileBtn: document.getElementById("delete-profile-btn") as HTMLButtonElement,
-    resetProfileBtn: document.getElementById("reset-profile-btn") as HTMLButtonElement,
   };
 
   /** Holds the current settings payload from the extension. */
@@ -231,11 +229,6 @@ export class UIManager {
       if (currentProfile !== "Default") {
         this._showDeleteConfirmation(currentProfile);
       }
-    });
-
-    this.elements.resetProfileBtn.addEventListener("click", () => {
-      const currentProfile = this.elements.profileSelect.value;
-      this.vscode.postMessage({ command: COMMANDS.RESET_PROFILE, profile: currentProfile });
     });
 
     // Primary listener for messages coming from the VS Code extension host.
@@ -674,67 +667,53 @@ export class UIManager {
 
     // Clear the profile name input when switching profiles
     this.elements.profileNameInput.value = "";
-
-    // Update reset button text based on profile type
-    this.elements.resetProfileBtn.textContent = isDefaultProfile ? "Reset Profile" : "Reset Profile";
   }
 
   /**
-   * Shows a confirmation dialog for deleting a profile.
+   * Shows delete confirmation by modifying the existing reset dialog.
    * @param {string} profileName The name of the profile to delete.
    * @private
    */
   private _showDeleteConfirmation(profileName: string) {
-    // Create a temporary delete confirmation dialog
-    const deleteOverlay = document.createElement("div");
-    deleteOverlay.className = "dialog-overlay";
-    deleteOverlay.style.opacity = "1";
-    deleteOverlay.style.pointerEvents = "auto";
+    // Store original dialog content to restore later
+    const dialogTitle = this.elements.dialogOverlay.querySelector("h3")!;
+    const dialogMessage = this.elements.dialogOverlay.querySelector("p")!;
+    const confirmButton = this.elements.confirmResetButton;
 
-    const deleteDialog = document.createElement("div");
-    deleteDialog.className = "dialog-box";
+    const originalTitle = dialogTitle.textContent;
+    const originalMessage = dialogMessage.textContent;
+    const originalButtonText = confirmButton.textContent;
 
-    const title = document.createElement("h3");
-    title.textContent = "Delete Profile";
+    // Modify dialog for delete confirmation
+    dialogTitle.textContent = "Delete Profile";
+    dialogMessage.textContent = `Are you sure you want to delete the profile "${profileName}"? This action cannot be undone.`;
+    confirmButton.textContent = "Delete Profile";
 
-    const message = document.createElement("p");
-    message.textContent = `Are you sure you want to delete the profile "${profileName}"? This action cannot be undone.`;
+    // Replace the confirm button's event handler
+    const newConfirmButton = confirmButton.cloneNode(true) as HTMLButtonElement;
+    confirmButton.parentNode?.replaceChild(newConfirmButton, confirmButton);
 
-    const buttonContainer = document.createElement("div");
-    buttonContainer.className = "dialog-buttons";
-
-    const cancelBtn = document.createElement("button");
-    cancelBtn.textContent = "Cancel";
-    cancelBtn.className = "dialog-button secondary";
-    cancelBtn.addEventListener("click", () => {
-      document.body.removeChild(deleteOverlay);
-    });
-
-    const confirmBtn = document.createElement("button");
-    confirmBtn.textContent = "Delete Profile";
-    confirmBtn.className = "dialog-button danger";
-    confirmBtn.addEventListener("click", () => {
+    // Add delete-specific event handler
+    newConfirmButton.addEventListener("click", () => {
       this.vscode.postMessage({ command: COMMANDS.DELETE_PROFILE, profile: profileName });
-      document.body.removeChild(deleteOverlay);
+      this.elements.dialogOverlay.classList.add("hidden");
+
+      // Restore original dialog content
+      dialogTitle.textContent = originalTitle;
+      dialogMessage.textContent = originalMessage;
+      newConfirmButton.textContent = originalButtonText;
+
+      // Restore original reset button functionality
+      const finalConfirmButton = newConfirmButton.cloneNode(true) as HTMLButtonElement;
+      newConfirmButton.parentNode?.replaceChild(finalConfirmButton, newConfirmButton);
+      finalConfirmButton.addEventListener("click", () => {
+        this.vscode.postMessage({ command: COMMANDS.RESET_ALL });
+        this.elements.dialogOverlay.classList.add("hidden");
+      });
     });
 
-    buttonContainer.appendChild(cancelBtn);
-    buttonContainer.appendChild(confirmBtn);
-
-    deleteDialog.appendChild(title);
-    deleteDialog.appendChild(message);
-    deleteDialog.appendChild(buttonContainer);
-
-    deleteOverlay.appendChild(deleteDialog);
-
-    // Close dialog when clicking outside
-    deleteOverlay.addEventListener("click", (e) => {
-      if (e.target === deleteOverlay) {
-        document.body.removeChild(deleteOverlay);
-      }
-    });
-
-    document.body.appendChild(deleteOverlay);
+    // Show the dialog
+    this.elements.dialogOverlay.classList.remove("hidden");
   }
 
 }

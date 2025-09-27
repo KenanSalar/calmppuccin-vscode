@@ -92,10 +92,6 @@ export class SettingsPanel {
         await ConfigurationService.deleteProfile(message.profile);
         this._update();
         return;
-      case C.WEBVIEW_COMMANDS.RESET_PROFILE:
-        await ConfigurationService.resetProfile(message.profile);
-        this._update();
-        return;
     }
   }
 

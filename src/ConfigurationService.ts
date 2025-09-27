@@ -136,11 +136,13 @@ export class ConfigurationService {
       await this.config.update(C.CONFIG_KEY_UI_OVERRIDES, undefined, vscode.ConfigurationTarget.Global);
       await this.config.update(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT, vscode.ConfigurationTarget.Global);
     } else {
-      // Clear the specific profile object, keeping the profile itself
-      const profiles = this.getProfiles();
-      if (profiles[profileName]) {
-        profiles[profileName] = {};
-        await this.config.update(C.CONFIG_KEY_PROFILES, profiles, vscode.ConfigurationTarget.Global);
+      // Reset the custom profile to empty (clear all customizations but keep the profile)
+      const currentProfiles: { [name: string]: IProfile } = this.config.get(C.CONFIG_KEY_PROFILES, {});
+      if (currentProfiles[profileName]) {
+        currentProfiles[profileName] = {}; // Clear all settings but keep the profile
+
+        await this.config.update(C.CONFIG_KEY_PROFILES, currentProfiles, vscode.ConfigurationTarget.Global);
+        // Don't switch profiles - stay on the same profile but with reset settings
       }
     }
   }
@@ -173,7 +175,7 @@ export class ConfigurationService {
    */
   private static getProfileSetting<T>(key: string, defaultValue: T): T {
     const activeProfile = this.getActiveProfile();
-    if (activeProfile !== "Default") {
+    if (activeProfile && activeProfile !== "Default") {
       const profiles = this.getProfiles();
       const profile = profiles[activeProfile];
       if (profile && typeof profile[key] !== "undefined") {

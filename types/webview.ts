@@ -46,8 +46,7 @@ export type MessageToExtension =
   | { command: "resetAll" }
   | { command: "switchProfile"; profile: string }
   | { command: "saveProfile"; profile: string }
-  | { command: "deleteProfile"; profile: string }
-  | { command: "resetProfile"; profile: string };
+  | { command: "deleteProfile"; profile: string };
 
 /** A discriminated union of all possible messages that can be sent FROM the extension TO the webview. */
 export type MessageToWebview = {
