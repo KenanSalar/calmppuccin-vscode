@@ -16,6 +16,9 @@ coverage/
 local-ci.sh
 out/
 
-
 assets/*
 !assets/images/logo/icon.png
+
+# AI
+CLAUDE.md
+.claude/

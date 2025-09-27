@@ -6,6 +6,8 @@
 .dockerignore
 .vscode-test/**
 .vscode/**
+.claude/**
+CLAUDE.md
 assets/images/customUI/**
 assets/images/preview/**
 assets/images/screenshots/**
