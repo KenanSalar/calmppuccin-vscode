@@ -223,7 +223,7 @@ describe("SettingsPanel Integration Tests", () => {
     const panel = new (SettingsPanel as any)(mockContext);
 
     // Create a spy on the service method we expect to be called.
-    const resetAllSpy = jest.spyOn(ConfigurationService, "resetAll");
+    const resetAllSpy = jest.spyOn(ConfigurationService, "resetAll").mockImplementation(() => Promise.resolve());
 
     // This is our simulated message, as if a user clicked the "Reset All" button.
     const mockMessage: WebviewMessage = {

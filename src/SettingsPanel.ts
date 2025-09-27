@@ -75,8 +75,7 @@ export class SettingsPanel {
         await ConfigurationService.resetUiColor(message.flavor, message.key);
         return;
       case C.WEBVIEW_COMMANDS.RESET_ALL:
-        const activeProfile = ConfigurationService.getActiveProfile();
-        await ConfigurationService.resetProfile(activeProfile);
+        await ConfigurationService.resetAll();
         this._update();
         return;
       case C.WEBVIEW_COMMANDS.SWITCH_PROFILE:
