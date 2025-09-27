@@ -124,7 +124,9 @@ export function activate(context: vscode.ExtensionContext) {
         event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_CUSTOM_ACCENT}`) ||
         event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_SYNTAX_OVERRIDES}`) ||
         event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_UI_OVERRIDES}`) ||
-        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLE_OVERRIDES}`)
+        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLE_OVERRIDES}`) ||
+        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_PROFILES}`) ||
+        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACTIVE_PROFILE}`)
       ) {
         vscode.commands.executeCommand(C.REGENERATE_COMMAND_ID);
       }

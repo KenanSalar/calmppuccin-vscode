@@ -16,6 +16,9 @@ out/
 # Built Visual Studio Code Extensions
 *.vsix
 
-# Claude Code related files and folders
+# AI and Claude Code related files
+.claude/
+GEMINI.md
 CLAUDE.md
-/.claude
+AGENTS.md
+instructions.md

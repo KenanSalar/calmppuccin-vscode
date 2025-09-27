@@ -1083,6 +1083,52 @@
               }
             }
           }
+        },
+        "calmppuccin.profiles": {
+          "type": "object",
+          "default": {
+            "Default": {}
+          },
+          "description": "Custom profiles to save different configuration sets. Each profile can contain its own accent, font styles, syntax overrides, and UI overrides.",
+          "patternProperties": {
+            "^.+$": {
+              "type": "object",
+              "description": "A custom profile containing theme configuration",
+              "properties": {
+                "accent": {
+                  "type": "string",
+                  "description": "The accent color for this profile"
+                },
+                "customAccentColor": {
+                  "type": "string",
+                  "pattern": "^#([A-Fa-f0-9]{6})$",
+                  "description": "The custom accent color hex code for this profile"
+                },
+                "fontStyles": {
+                  "type": "object",
+                  "description": "Font style configuration for this profile"
+                },
+                "syntaxOverrides": {
+                  "type": "object",
+                  "description": "Syntax color overrides for this profile"
+                },
+                "uiOverrides": {
+                  "type": "object",
+                  "description": "UI color overrides for this profile"
+                },
+                "fontStyleOverrides": {
+                  "type": "object",
+                  "description": "Font style overrides for this profile"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "calmppuccin.activeProfile": {
+          "type": "string",
+          "default": "Default",
+          "description": "The currently active profile name"
         }
       }
     }

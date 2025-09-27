@@ -13,7 +13,7 @@ import {
   CUSTOMIZABLE_SYNTAX_KEYS,
   CUSTOMIZABLE_UI_KEYS,
 } from "./constants";
-import { ISettingsPayload, IWebviewSetting } from "../types/webview";
+import { ISettingsPayload, IWebviewSetting, IProfile } from "../types/webview";
 
 /** Defines the shape of the font styles configuration object in settings.json. */
 export interface IFontStyles {
@@ -63,17 +63,138 @@ export class ConfigurationService {
   }
 
   /**
+   * Gets the user-defined profiles from settings.json.
+   * @returns {{ [name: string]: IProfile }} The profiles object.
+   */
+  public static getProfiles(): { [name: string]: IProfile } {
+    return this.config.get(C.CONFIG_KEY_PROFILES, { Default: {} });
+  }
+
+  /**
+   * Gets the name of the currently active profile.
+   * @returns {string} The active profile name.
+   */
+  public static getActiveProfile(): string {
+    return this.config.get(C.CONFIG_KEY_ACTIVE_PROFILE, "Default");
+  }
+
+  /**
+   * Updates the active profile setting.
+   * @param {string} profileName The name of the profile to set as active.
+   */
+  public static async updateActiveProfile(profileName: string) {
+    await this.config.update(C.CONFIG_KEY_ACTIVE_PROFILE, profileName, vscode.ConfigurationTarget.Global);
+  }
+
+  /**
+   * Saves the current configuration as a new profile.
+   * @param {string} profileName The name for the new profile.
+   */
+  public static async saveProfile(profileName: string) {
+    const profiles = this.getProfiles();
+    const currentSettings: IProfile = {
+      [C.CONFIG_KEY_ACCENT]: this.config.get(C.CONFIG_KEY_ACCENT),
+      [C.CONFIG_KEY_CUSTOM_ACCENT]: this.config.get(C.CONFIG_KEY_CUSTOM_ACCENT),
+      [C.CONFIG_KEY_FONT_STYLES]: this.getFontStyles(),
+      [C.CONFIG_KEY_SYNTAX_OVERRIDES]: this.getSyntaxOverrides(),
+      [C.CONFIG_KEY_UI_OVERRIDES]: this.getUiOverrides(),
+      [C.CONFIG_KEY_FONT_STYLE_OVERRIDES]: this.getFontStyleOverrides(),
+    };
+
+    profiles[profileName] = currentSettings;
+    await this.config.update(C.CONFIG_KEY_PROFILES, profiles, vscode.ConfigurationTarget.Global);
+  }
+
+  /**
+   * Deletes a specified profile.
+   * @param {string} profileName The name of the profile to delete.
+   */
+  public static async deleteProfile(profileName: string) {
+    if (profileName === "Default") return; // Cannot delete the default profile
+
+    const profiles = this.getProfiles();
+    delete profiles[profileName];
+
+    // If no custom profiles remain, clear the profiles setting entirely
+    const customProfiles = Object.keys(profiles).filter(name => name !== "Default");
+    const finalProfiles = customProfiles.length > 0 ? profiles : {};
+
+    await this.config.update(C.CONFIG_KEY_PROFILES, finalProfiles, vscode.ConfigurationTarget.Global);
+    await this.updateActiveProfile("Default"); // Switch back to default
+  }
+
+  /**
+   * Resets the settings for a specific profile.
+   * @param {string} profileName The name of the profile to reset.
+   */
+  public static async resetProfile(profileName: string) {
+    if (profileName === "Default") {
+      // Reset global settings
+      await this.config.update(C.CONFIG_KEY_FONT_STYLES, undefined, vscode.ConfigurationTarget.Global);
+      await this.config.update(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, undefined, vscode.ConfigurationTarget.Global);
+      await this.config.update(C.CONFIG_KEY_SYNTAX_OVERRIDES, undefined, vscode.ConfigurationTarget.Global);
+      await this.config.update(C.CONFIG_KEY_UI_OVERRIDES, undefined, vscode.ConfigurationTarget.Global);
+      await this.config.update(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT, vscode.ConfigurationTarget.Global);
+    } else {
+      // Clear the specific profile object, keeping the profile itself
+      const profiles = this.getProfiles();
+      if (profiles[profileName]) {
+        profiles[profileName] = {};
+        await this.config.update(C.CONFIG_KEY_PROFILES, profiles, vscode.ConfigurationTarget.Global);
+      }
+    }
+  }
+
+  /**
+   * Updates a setting, respecting the current profile.
+   * @param {string} key The configuration key.
+   * @param {T} value The new value.
+   * @private
+   */
+  private static async updateProfileSetting<T>(key: string, value: T) {
+    const activeProfile = this.getActiveProfile();
+    if (activeProfile === "Default") {
+      await this.config.update(key, value, vscode.ConfigurationTarget.Global);
+    } else {
+      const profiles = this.getProfiles();
+      const profile = profiles[activeProfile] || {};
+      profile[key] = value;
+      profiles[activeProfile] = profile;
+      await this.config.update(C.CONFIG_KEY_PROFILES, profiles, vscode.ConfigurationTarget.Global);
+    }
+  }
+
+  /**
+   * Gets a setting value, respecting the current profile.
+   * @param {string} key The configuration key.
+   * @param {T} defaultValue The default value if not found.
+   * @returns {T} The value of the setting.
+   * @private
+   */
+  private static getProfileSetting<T>(key: string, defaultValue: T): T {
+    const activeProfile = this.getActiveProfile();
+    if (activeProfile !== "Default") {
+      const profiles = this.getProfiles();
+      const profile = profiles[activeProfile];
+      if (profile && typeof profile[key] !== "undefined") {
+        return profile[key] as T;
+      }
+    }
+    return this.config.get<T>(key, defaultValue);
+  }
+
+  /**
    * Gets the currently configured accent color.
    * This method resolves the 'custom' option to its validated hex value,
    * ensuring a valid color is always returned for theme generation.
    * @returns {string} The active accent color value (e.g., "sapphire" or a hex code like "#89b4fa").
    */
   public static getAccent(): string {
-    const accentSetting = this.config.get<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
+    const accentSetting = this.getProfileSetting<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
 
     // If the user has selected "custom", the corresponding hex code must be fetched and validated.
     if (accentSetting === "custom") {
-      const customColor = this.config.get<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
+      const customColor = this.getProfileSetting<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
 
       // A simple regex to validate that the color is a 6-digit hex code.
       const hex6Regex = /^#([A-Fa-f0-9]{6})$/;
@@ -90,7 +211,7 @@ export class ConfigurationService {
    * @returns {IFontStyles} The font styles object. Returns an empty object if not set.
    */
   public static getFontStyles(): IFontStyles {
-    return this.config.get<IFontStyles>(C.CONFIG_KEY_FONT_STYLES, {});
+    return this.getProfileSetting<IFontStyles>(C.CONFIG_KEY_FONT_STYLES, {});
   }
 
   /**
@@ -98,7 +219,7 @@ export class ConfigurationService {
    * @returns {ISyntaxOverrides} The syntax overrides object. Returns an empty object if not set.
    */
   public static getSyntaxOverrides(): ISyntaxOverrides {
-    return this.config.get<ISyntaxOverrides>(C.CONFIG_KEY_SYNTAX_OVERRIDES, {});
+    return this.getProfileSetting<ISyntaxOverrides>(C.CONFIG_KEY_SYNTAX_OVERRIDES, {});
   }
 
   /**
@@ -106,7 +227,7 @@ export class ConfigurationService {
    * @returns {IUiOverrides} The UI overrides object. Returns an empty object if not set.
    */
   public static getUiOverrides(): IUiOverrides {
-    return this.config.get<IUiOverrides>(C.CONFIG_KEY_UI_OVERRIDES, {});
+    return this.getProfileSetting<IUiOverrides>(C.CONFIG_KEY_UI_OVERRIDES, {});
   }
 
   /**
@@ -114,7 +235,7 @@ export class ConfigurationService {
    * @returns {IFontStyleOverrides} The font style overrides object. Returns an empty object if not set.
    */
   public static getFontStyleOverrides(): IFontStyleOverrides {
-    return this.config.get<IFontStyleOverrides>(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, {});
+    return this.getProfileSetting<IFontStyleOverrides>(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, {});
   }
 
   /**
@@ -157,7 +278,7 @@ export class ConfigurationService {
 
     // If no custom font styles remain, remove the entire setting
     const finalFontStyles = Object.keys(filteredFontStyles).length === 0 ? undefined : filteredFontStyles;
-    await this.config.update(C.CONFIG_KEY_FONT_STYLES, finalFontStyles, vscode.ConfigurationTarget.Global);
+    await this.updateProfileSetting(C.CONFIG_KEY_FONT_STYLES, finalFontStyles);
   }
 
   /**
@@ -181,7 +302,7 @@ export class ConfigurationService {
 
     // If no custom font styles remain, remove the entire setting
     const finalFontStyles = Object.keys(filteredFontStyles).length === 0 ? undefined : filteredFontStyles;
-    await this.config.update(C.CONFIG_KEY_FONT_STYLES, finalFontStyles, vscode.ConfigurationTarget.Global);
+    await this.updateProfileSetting(C.CONFIG_KEY_FONT_STYLES, finalFontStyles);
   }
 
   /**
@@ -189,7 +310,7 @@ export class ConfigurationService {
    * @param {string} value The new accent color name (e.g., "mauve").
    */
   public static async updateAccent(value: string) {
-    await this.config.update(C.CONFIG_KEY_ACCENT, value, vscode.ConfigurationTarget.Global);
+    await this.updateProfileSetting(C.CONFIG_KEY_ACCENT, value);
   }
 
   /**
@@ -197,7 +318,7 @@ export class ConfigurationService {
    * @param {string} value The new hex color value (e.g., "#89b4fa").
    */
   public static async updateCustomAccent(value: string) {
-    await this.config.update(C.CONFIG_KEY_CUSTOM_ACCENT, value, vscode.ConfigurationTarget.Global);
+    await this.updateProfileSetting(C.CONFIG_KEY_CUSTOM_ACCENT, value);
   }
 
   /**
@@ -214,7 +335,7 @@ export class ConfigurationService {
       overrides[flavor] = {};
     }
     overrides[flavor][key] = value;
-    await this.config.update(C.CONFIG_KEY_SYNTAX_OVERRIDES, overrides, vscode.ConfigurationTarget.Global);
+    await this.updateProfileSetting(C.CONFIG_KEY_SYNTAX_OVERRIDES, overrides);
   }
 
   /**
@@ -232,7 +353,7 @@ export class ConfigurationService {
       }
       // If the top-level overrides object is now empty, remove the entire setting.
       const finalOverrides = Object.keys(overrides).length === 0 ? undefined : overrides;
-      await this.config.update(C.CONFIG_KEY_SYNTAX_OVERRIDES, finalOverrides, vscode.ConfigurationTarget.Global);
+      await this.updateProfileSetting(C.CONFIG_KEY_SYNTAX_OVERRIDES, finalOverrides);
     }
   }
 
@@ -248,7 +369,7 @@ export class ConfigurationService {
       overrides[flavor] = {};
     }
     overrides[flavor][key] = value;
-    await this.config.update(C.CONFIG_KEY_UI_OVERRIDES, overrides, vscode.ConfigurationTarget.Global);
+    await this.updateProfileSetting(C.CONFIG_KEY_UI_OVERRIDES, overrides);
   }
 
   /**
@@ -264,7 +385,7 @@ export class ConfigurationService {
         delete overrides[flavor];
       }
       const finalOverrides = Object.keys(overrides).length === 0 ? undefined : overrides;
-      await this.config.update(C.CONFIG_KEY_UI_OVERRIDES, finalOverrides, vscode.ConfigurationTarget.Global);
+      await this.updateProfileSetting(C.CONFIG_KEY_UI_OVERRIDES, finalOverrides);
     }
   }
 
@@ -284,7 +405,7 @@ export class ConfigurationService {
         fontStyleOverrides[flavor] = {};
       }
       fontStyleOverrides[flavor][key] = value;
-      await this.config.update(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, fontStyleOverrides, vscode.ConfigurationTarget.Global);
+      await this.updateProfileSetting(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, fontStyleOverrides);
     } else {
       // If setting to default, remove it (same as resetting)
       await this.resetFontStyleOverride(flavor, key);
@@ -304,7 +425,7 @@ export class ConfigurationService {
         delete overrides[flavor];
       }
       const finalOverrides = Object.keys(overrides).length === 0 ? undefined : overrides;
-      await this.config.update(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, finalOverrides, vscode.ConfigurationTarget.Global);
+      await this.updateProfileSetting(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, finalOverrides);
     }
   }
 
@@ -355,8 +476,10 @@ export class ConfigurationService {
     const syntaxOverrides = this.getSyntaxOverrides();
     const uiOverrides = this.getUiOverrides();
     const fontStyleOverrides = this.getFontStyleOverrides();
-    const currentAccent = this.config.get<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
-    const customAccentColor = this.config.get<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
+    const currentAccent = this.getProfileSetting<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
+    const customAccentColor = this.getProfileSetting<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
+    const profiles = this.getProfiles();
+    const activeProfile = this.getActiveProfile();
 
     const defaultFontStyles = this.getDefaultFontStyles();
     const accentOptions =
@@ -422,6 +545,8 @@ export class ConfigurationService {
       defaultFontStyles,
       activeThemeBackgroundColor,
       accentColorPalettes,
+      profiles,
+      activeProfile,
     };
   }
 }
