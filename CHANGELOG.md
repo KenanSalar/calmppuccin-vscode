@@ -2,6 +2,7 @@
 
 ## [1.7.2] - 2025-09-27
 
+- **Feature**: Font styles are now theme-specific! Users can customize font styles (none, italic, bold, underline) per theme flavor through the Customization UI. Font style overrides are stored in `calmppuccin.fontStyleOverrides` and automatically trigger theme regeneration.
 - **Improvement**: Font style settings now only save customized values to `settings.json` instead of saving all default values. This keeps the settings file clean and only stores your actual customizations.
 - **Improvement**: Custom accent color picker now uses proper event listeners to prevent multiple reload popups when dragging the color slider. The reload notification now only appears when you release the mouse button.
 - **Feature**: Devcontainer now uses ble.sh with atuin, starship, fzf, zoxide and eza.
