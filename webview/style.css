@@ -551,20 +551,64 @@ select:focus,
 
 .profile-selector-container {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 100px 1fr auto;
   align-items: center;
   gap: 12px;
 }
 
-.profile-selector-container label {
+.profile-selector-container label,
+.profile-input-container label {
   font-weight: 500;
   color: var(--vscode-description-foreground);
   font-size: 1em;
   white-space: nowrap;
+  width: 100px;
+  text-align: left;
+}
+
+/* Ensure both profile buttons have the same width */
+#delete-profile-btn,
+#save-profile-btn {
+  width: 110px;
+  text-align: center;
+  padding-left: 0;
+  padding-right: 0;
+  box-sizing: border-box;
+}
+
+/* Disable transitions for delete button to prevent text animation */
+#delete-profile-btn {
+  transition: none !important;
+}
+
+/* Spacer for when delete button is hidden - override display:none with visibility:hidden */
+.profile-selector-container #delete-profile-btn[style*="display: none"] {
+  display: block !important;
+  visibility: hidden;
+  height: var(--control-height);
+  padding: 0;
+  font-weight: 500;
+  font-size: 1em;
+  white-space: nowrap;
+  width: 110px;
+  box-sizing: border-box;
+  pointer-events: none;
+  font-size: 0;
+  overflow: hidden;
+}
+
+.profile-selector-container #delete-profile-btn[style*="display: none"]::before {
+  content: "Save Profile";
+  font-size: 1em;
+  color: var(--vscode-button-foreground, white);
+  display: block;
+  text-align: center;
+  line-height: var(--control-height);
 }
 
 #profile-select {
   min-width: 200px;
+  max-width: 100%;
 }
 
 .profile-actions {
@@ -575,13 +619,14 @@ select:focus,
 
 .profile-input-container {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 100px 1fr auto;
   gap: 12px;
   align-items: center;
 }
 
 #profile-name-input {
-  width: 100%;
+  min-width: 200px;
+  max-width: 100%;
   height: var(--control-height);
   padding: 0 16px;
   background-color: var(--vscode-input-background);
@@ -603,11 +648,6 @@ select:focus,
   box-shadow: 0 0 0 1px var(--dynamic-accent-color) !important;
 }
 
-.profile-buttons {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
 
 /* Button Styles */
 .btn {
@@ -688,10 +728,6 @@ select:focus,
     gap: 8px;
   }
 
-  .profile-buttons {
-    flex-direction: column;
-    align-items: stretch;
-  }
 
   .btn {
     width: 100%;

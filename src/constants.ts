@@ -59,7 +59,6 @@ export const WEBVIEW_COMMANDS = {
   SWITCH_PROFILE: "switchProfile",
   SAVE_PROFILE: "saveProfile",
   DELETE_PROFILE: "deleteProfile",
-  RESET_PROFILE: "resetProfile",
   LOAD_SETTINGS: "loadSettings",
   WEBVIEW_ID: "calmppuccinSettings",
   WEBVIEW_TITLE: "Calmppuccin Customization",

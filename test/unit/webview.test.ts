@@ -20,7 +20,6 @@ const htmlFixture = `
   <input type="text" id="profile-name-input" />
   <button id="save-profile-btn"></button>
   <button id="delete-profile-btn"></button>
-  <button id="reset-profile-btn"></button>
   <div id="accent-container"></div>
   <div id="custom-accent-picker-container" style="display: none;">
     <input type="color" id="custom-accent-picker" />
