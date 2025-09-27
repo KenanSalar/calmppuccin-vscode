@@ -34,6 +34,13 @@ export interface IUiOverrides {
   };
 }
 
+/** Defines the shape of the font style overrides object in settings.json. */
+export interface IFontStyleOverrides {
+  [flavor: string]: {
+    [fontStyleKey: string]: string;
+  };
+}
+
 /**
  * A type guard to check if a string is a valid flavor key from the palettes.
  * @param key The string to check.
@@ -100,6 +107,14 @@ export class ConfigurationService {
    */
   public static getUiOverrides(): IUiOverrides {
     return this.config.get<IUiOverrides>(C.CONFIG_KEY_UI_OVERRIDES, {});
+  }
+
+  /**
+   * Gets the user-defined font style overrides from settings.json.
+   * @returns {IFontStyleOverrides} The font style overrides object. Returns an empty object if not set.
+   */
+  public static getFontStyleOverrides(): IFontStyleOverrides {
+    return this.config.get<IFontStyleOverrides>(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, {});
   }
 
   /**
@@ -254,10 +269,51 @@ export class ConfigurationService {
   }
 
   /**
+   * Updates a specific font style override for a flavor in the user's global settings.json.
+   * @param {string} flavor The theme flavor (e.g., "mocha").
+   * @param {string} key The font style key to update (e.g., "commentFontStyle").
+   * @param {string} value The new font style value (e.g., "italic").
+   */
+  public static async updateFontStyleOverride(flavor: string, key: string, value: string) {
+    const fontStyleOverrides = this.getFontStyleOverrides();
+    const defaultFontStyles = this.getDefaultFontStyles();
+
+    // Only save if the value differs from the default
+    if (value !== defaultFontStyles[key]) {
+      if (!fontStyleOverrides[flavor]) {
+        fontStyleOverrides[flavor] = {};
+      }
+      fontStyleOverrides[flavor][key] = value;
+      await this.config.update(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, fontStyleOverrides, vscode.ConfigurationTarget.Global);
+    } else {
+      // If setting to default, remove it (same as resetting)
+      await this.resetFontStyleOverride(flavor, key);
+    }
+  }
+
+  /**
+   * Resets a font style override for a specific flavor by removing it from the user's settings.json.
+   * @param {string} flavor The theme flavor (e.g., "mocha").
+   * @param {string} key The font style key to reset.
+   */
+  public static async resetFontStyleOverride(flavor: string, key: string) {
+    const overrides: IFontStyleOverrides = JSON.parse(JSON.stringify(this.getFontStyleOverrides()));
+    if (overrides[flavor]?.[key]) {
+      delete overrides[flavor][key];
+      if (Object.keys(overrides[flavor]).length === 0) {
+        delete overrides[flavor];
+      }
+      const finalOverrides = Object.keys(overrides).length === 0 ? undefined : overrides;
+      await this.config.update(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, finalOverrides, vscode.ConfigurationTarget.Global);
+    }
+  }
+
+  /**
    * Resets all user-defined settings for the extension to their default values.
    */
   public static async resetAll() {
     await this.config.update(C.CONFIG_KEY_FONT_STYLES, undefined, vscode.ConfigurationTarget.Global);
+    await this.config.update(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, undefined, vscode.ConfigurationTarget.Global);
     await this.config.update(C.CONFIG_KEY_SYNTAX_OVERRIDES, undefined, vscode.ConfigurationTarget.Global);
     await this.config.update(C.CONFIG_KEY_UI_OVERRIDES, undefined, vscode.ConfigurationTarget.Global);
     await this.config.update(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT, vscode.ConfigurationTarget.Global);
@@ -266,9 +322,8 @@ export class ConfigurationService {
   /**
    * Parses the active VS Code theme name to determine the current Calmppuccin flavor.
    * @returns {keyof IPalettes} The corresponding flavor key (e.g., "mocha").
-   * @private
    */
-  private static getActiveFlavor(): keyof IPalettes {
+  public static getActiveFlavor(): keyof IPalettes {
     const workbenchConfig = vscode.workspace.getConfiguration("workbench");
     const themeName = workbenchConfig.get<string>("colorTheme", "");
     const calmppuccinPrefix = "calmppuccin ";
@@ -299,6 +354,7 @@ export class ConfigurationService {
     const fontStyles = this.getFontStyles();
     const syntaxOverrides = this.getSyntaxOverrides();
     const uiOverrides = this.getUiOverrides();
+    const fontStyleOverrides = this.getFontStyleOverrides();
     const currentAccent = this.config.get<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
     const customAccentColor = this.config.get<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
 
@@ -310,6 +366,7 @@ export class ConfigurationService {
     const defaultPalette = palettes[activeFlavor];
     const overrideSyntaxPalette = syntaxOverrides[activeFlavor] || {};
     const overrideUiPalette = uiOverrides[activeFlavor] || {};
+    const overrideFontStylePalette = fontStyleOverrides[activeFlavor] || {};
     const activeThemeBackgroundColor = defaultPalette.crust;
 
     const accentColorPalettes = accentOptions.reduce((acc: { [key: string]: string }, option: string) => {
@@ -322,7 +379,7 @@ export class ConfigurationService {
     const syntaxSettings = CUSTOMIZABLE_SYNTAX_KEYS.map(
       (key): IWebviewSetting => ({
         key: key,
-        fontStyle: fontStyles[`${key}FontStyle`] ?? "none",
+        fontStyle: overrideFontStylePalette[`${key}FontStyle`] ?? fontStyles[`${key}FontStyle`] ?? "none",
         color: overrideSyntaxPalette[key] || defaultPalette[key],
         defaultColor: defaultPalette[key],
       })
@@ -339,7 +396,7 @@ export class ConfigurationService {
     const jsonSettings = CUSTOMIZABLE_JSON_KEYS.map(
       (key): IWebviewSetting => ({
         key: key,
-        fontStyle: fontStyles[`${key}FontStyle`] ?? "none",
+        fontStyle: overrideFontStylePalette[`${key}FontStyle`] ?? fontStyles[`${key}FontStyle`] ?? "none",
         color: overrideSyntaxPalette[key] || defaultPalette[key],
         defaultColor: defaultPalette[key],
       })

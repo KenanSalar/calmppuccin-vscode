@@ -44,7 +44,7 @@ describe("Build Script Unit Tests", () => {
     (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
 
     // 2. Act
-    await buildAllFlavors("sapphire", mockFontStyles, {}, {});
+    await buildAllFlavors("sapphire", mockFontStyles, {}, {}, {});
 
     // 3. Assert
     expect(fs.writeJson).toHaveBeenCalled();
@@ -86,7 +86,7 @@ describe("Build Script Unit Tests", () => {
 
     // 2. Act: Run the build process with a known accent color.
     // We'll use the 'mocha' flavor and the 'mauve' accent for this test.
-    await buildAllFlavors("mauve", {}, {}, {});
+    await buildAllFlavors("mauve", {}, {}, {}, {});
 
     // 3. Assert: Verify the output for the Mocha theme.
 

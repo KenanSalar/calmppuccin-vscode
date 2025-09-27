@@ -481,12 +481,19 @@ describe("ConfigurationService", () => {
     await ConfigurationService.resetAll();
 
     // 3. Assert
-    // Verify that the update method was called four times in total.
-    expect(mockConfiguration.update).toHaveBeenCalledTimes(4);
+    // Verify that the update method was called five times in total.
+    expect(mockConfiguration.update).toHaveBeenCalledTimes(5);
 
     // Verify that the 'fontStyles' setting was cleared.
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_FONT_STYLES,
+      undefined,
+      vscode.ConfigurationTarget.Global
+    );
+
+    // Verify that the 'fontStyleOverrides' setting was cleared.
+    expect(mockConfiguration.update).toHaveBeenCalledWith(
+      C.CONFIG_KEY_FONT_STYLE_OVERRIDES,
       undefined,
       vscode.ConfigurationTarget.Global
     );

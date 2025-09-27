@@ -1061,6 +1061,28 @@
               }
             }
           }
+        },
+        "calmppuccin.fontStyleOverrides": {
+          "type": "object",
+          "default": {},
+          "description": "Override specific font styles for each Calmppuccin flavor. Font styles are applied on top of the global font styles. Use the Customization UI for a better experience.",
+          "patternProperties": {
+            "^(latte|frappe|macchiato|mocha|nitro-cold-brew|oledppuccin)$": {
+              "type": "object",
+              "description": "Font style overrides for a specific theme flavor",
+              "additionalProperties": {
+                "type": "string",
+                "description": "Font style value",
+                "enum": [
+                  "none",
+                  "italic",
+                  "bold",
+                  "italic bold",
+                  "underline"
+                ]
+              }
+            }
+          }
         }
       }
     }
