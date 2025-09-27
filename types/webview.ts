@@ -11,6 +11,11 @@ export interface IWebviewSetting {
   defaultColor: string;
 }
 
+/** A profile containing theme configuration. */
+export interface IProfile {
+  [key: string]: any;
+}
+
 /** The complete data payload sent from the extension to the webview upon loading. */
 export interface ISettingsPayload {
   activeFlavor: string;
@@ -24,6 +29,8 @@ export interface ISettingsPayload {
   activeThemeBackgroundColor: string;
   accentColorPalettes: { [key: string]: string };
   defaultFontStyles: { [key: string]: string };
+  profiles: { [name: string]: IProfile };
+  activeProfile: string;
 }
 
 /** A discriminated union of all possible messages that can be sent FROM the webview TO the extension. */
@@ -36,7 +43,11 @@ export type MessageToExtension =
   | { command: "resetSyntaxColor"; flavor: string; key: string }
   | { command: "updateUiColor"; flavor: string; key: string; value: string }
   | { command: "resetUiColor"; flavor: string; key: string }
-  | { command: "resetAll" };
+  | { command: "resetAll" }
+  | { command: "switchProfile"; profile: string }
+  | { command: "saveProfile"; profile: string }
+  | { command: "deleteProfile"; profile: string }
+  | { command: "resetProfile"; profile: string };
 
 /** A discriminated union of all possible messages that can be sent FROM the extension TO the webview. */
 export type MessageToWebview = {

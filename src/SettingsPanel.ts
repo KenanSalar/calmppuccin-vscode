@@ -75,7 +75,25 @@ export class SettingsPanel {
         await ConfigurationService.resetUiColor(message.flavor, message.key);
         return;
       case C.WEBVIEW_COMMANDS.RESET_ALL:
-        await ConfigurationService.resetAll();
+        const activeProfile = ConfigurationService.getActiveProfile();
+        await ConfigurationService.resetProfile(activeProfile);
+        this._update();
+        return;
+      case C.WEBVIEW_COMMANDS.SWITCH_PROFILE:
+        await ConfigurationService.updateActiveProfile(message.profile);
+        this._update();
+        return;
+      case C.WEBVIEW_COMMANDS.SAVE_PROFILE:
+        await ConfigurationService.saveProfile(message.profile);
+        await ConfigurationService.updateActiveProfile(message.profile);
+        this._update();
+        return;
+      case C.WEBVIEW_COMMANDS.DELETE_PROFILE:
+        await ConfigurationService.deleteProfile(message.profile);
+        this._update();
+        return;
+      case C.WEBVIEW_COMMANDS.RESET_PROFILE:
+        await ConfigurationService.resetProfile(message.profile);
         this._update();
         return;
     }

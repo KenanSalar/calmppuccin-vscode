@@ -19,6 +19,9 @@ out/
 assets/*
 !assets/images/logo/icon.png
 
-# AI
+# AI and Claude Code related files
 CLAUDE.md
 .claude/
+GEMINI.md
+AGENTS.md
+instructions.md

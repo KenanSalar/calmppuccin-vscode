@@ -35,6 +35,10 @@ const COMMANDS = {
   UPDATE_UI_COLOR: "updateUiColor",
   RESET_UI_COLOR: "resetUiColor",
   RESET_ALL: "resetAll",
+  SWITCH_PROFILE: "switchProfile",
+  SAVE_PROFILE: "saveProfile",
+  DELETE_PROFILE: "deleteProfile",
+  RESET_PROFILE: "resetProfile",
   LOAD_SETTINGS: "loadSettings",
 } as const;
 
@@ -61,6 +65,11 @@ export class UIManager {
     dialogOverlay: document.getElementById("reset-dialog-overlay")!,
     confirmResetButton: document.getElementById("dialog-confirm-button")!,
     cancelResetButton: document.getElementById("dialog-cancel-button")!,
+    profileSelect: document.getElementById("profile-select") as HTMLSelectElement,
+    profileNameInput: document.getElementById("profile-name-input") as HTMLInputElement,
+    saveProfileBtn: document.getElementById("save-profile-btn") as HTMLButtonElement,
+    deleteProfileBtn: document.getElementById("delete-profile-btn") as HTMLButtonElement,
+    resetProfileBtn: document.getElementById("reset-profile-btn") as HTMLButtonElement,
   };
 
   /** Holds the current settings payload from the extension. */
@@ -89,6 +98,8 @@ export class UIManager {
       customAccentColor,
       activeThemeBackgroundColor,
       accentColorPalettes,
+      profiles,
+      activeProfile,
     } = settings;
 
     // 1. Update internal state with the new settings.
@@ -107,12 +118,17 @@ export class UIManager {
     this.elements.previewPane.style.backgroundColor = activeThemeBackgroundColor;
 
     // 4. Build each section of the UI dynamically.
+    this._populateProfileDropdown(profiles, activeProfile);
+    this._updateProfileUI(activeProfile);
     this._createAccentColorControls(currentAccent, accentOptions, customAccentColor);
     this._createResetAllButton();
     this._handleViewChange(); // This will now render the correct initial view based on the dropdown
 
     // 5. Apply the initial state to the UI.
     this._handleAccentChange(currentAccent);
+
+    // 6. Ensure the preview pane is updated with the new settings
+    this.updatePreviewPane();
   }
 
   /**
@@ -194,6 +210,32 @@ export class UIManager {
     this.elements.confirmResetButton.addEventListener("click", () => {
       this.vscode.postMessage({ command: COMMANDS.RESET_ALL });
       this.elements.dialogOverlay.classList.add("hidden");
+    });
+
+    // Set up profile management event listeners.
+    this.elements.profileSelect.addEventListener("change", (e) => {
+      const selectedProfile = (e.target as HTMLSelectElement).value;
+      this._updateProfileUI(selectedProfile);
+      this.vscode.postMessage({ command: COMMANDS.SWITCH_PROFILE, profile: selectedProfile });
+    });
+
+    this.elements.saveProfileBtn.addEventListener("click", () => {
+      const profileName = this.elements.profileNameInput.value.trim();
+      if (profileName && profileName !== "Default") {
+        this.vscode.postMessage({ command: COMMANDS.SAVE_PROFILE, profile: profileName });
+      }
+    });
+
+    this.elements.deleteProfileBtn.addEventListener("click", () => {
+      const currentProfile = this.elements.profileSelect.value;
+      if (currentProfile !== "Default") {
+        this._showDeleteConfirmation(currentProfile);
+      }
+    });
+
+    this.elements.resetProfileBtn.addEventListener("click", () => {
+      const currentProfile = this.elements.profileSelect.value;
+      this.vscode.postMessage({ command: COMMANDS.RESET_PROFILE, profile: currentProfile });
     });
 
     // Primary listener for messages coming from the VS Code extension host.
@@ -588,6 +630,113 @@ export class UIManager {
     });
     this.elements.resetAllContainer.appendChild(resetAllButton);
   }
+
+  /**
+   * Populates the profile dropdown with available profiles.
+   * @param {Object} profiles The profiles object from settings.
+   * @param {string} activeProfile The currently active profile name.
+   * @private
+   */
+  private _populateProfileDropdown(profiles: { [name: string]: any }, activeProfile: string) {
+    // Clear existing options
+    this.elements.profileSelect.innerHTML = "";
+
+    // Add Default profile option (only if it's not already in profiles)
+    if (!profiles.hasOwnProperty("Default")) {
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "Default";
+      defaultOption.textContent = "Default";
+      this.elements.profileSelect.appendChild(defaultOption);
+    }
+
+    // Add all profiles (including Default if it exists in profiles)
+    Object.keys(profiles).sort().forEach((profileName) => {
+      const option = document.createElement("option");
+      option.value = profileName;
+      option.textContent = profileName;
+      this.elements.profileSelect.appendChild(option);
+    });
+
+    // Set the selected profile
+    this.elements.profileSelect.value = activeProfile;
+  }
+
+  /**
+   * Updates the profile management UI based on the selected profile.
+   * @param {string} selectedProfile The currently selected profile name.
+   * @private
+   */
+  private _updateProfileUI(selectedProfile: string) {
+    const isDefaultProfile = selectedProfile === "Default";
+
+    // Show/hide delete button based on profile type
+    this.elements.deleteProfileBtn.style.display = isDefaultProfile ? "none" : "inline-block";
+
+    // Clear the profile name input when switching profiles
+    this.elements.profileNameInput.value = "";
+
+    // Update reset button text based on profile type
+    this.elements.resetProfileBtn.textContent = isDefaultProfile ? "Reset Profile" : "Reset Profile";
+  }
+
+  /**
+   * Shows a confirmation dialog for deleting a profile.
+   * @param {string} profileName The name of the profile to delete.
+   * @private
+   */
+  private _showDeleteConfirmation(profileName: string) {
+    // Create a temporary delete confirmation dialog
+    const deleteOverlay = document.createElement("div");
+    deleteOverlay.className = "dialog-overlay";
+    deleteOverlay.style.opacity = "1";
+    deleteOverlay.style.pointerEvents = "auto";
+
+    const deleteDialog = document.createElement("div");
+    deleteDialog.className = "dialog-box";
+
+    const title = document.createElement("h3");
+    title.textContent = "Delete Profile";
+
+    const message = document.createElement("p");
+    message.textContent = `Are you sure you want to delete the profile "${profileName}"? This action cannot be undone.`;
+
+    const buttonContainer = document.createElement("div");
+    buttonContainer.className = "dialog-buttons";
+
+    const cancelBtn = document.createElement("button");
+    cancelBtn.textContent = "Cancel";
+    cancelBtn.className = "dialog-button secondary";
+    cancelBtn.addEventListener("click", () => {
+      document.body.removeChild(deleteOverlay);
+    });
+
+    const confirmBtn = document.createElement("button");
+    confirmBtn.textContent = "Delete Profile";
+    confirmBtn.className = "dialog-button danger";
+    confirmBtn.addEventListener("click", () => {
+      this.vscode.postMessage({ command: COMMANDS.DELETE_PROFILE, profile: profileName });
+      document.body.removeChild(deleteOverlay);
+    });
+
+    buttonContainer.appendChild(cancelBtn);
+    buttonContainer.appendChild(confirmBtn);
+
+    deleteDialog.appendChild(title);
+    deleteDialog.appendChild(message);
+    deleteDialog.appendChild(buttonContainer);
+
+    deleteOverlay.appendChild(deleteDialog);
+
+    // Close dialog when clicking outside
+    deleteOverlay.addEventListener("click", (e) => {
+      if (e.target === deleteOverlay) {
+        document.body.removeChild(deleteOverlay);
+      }
+    });
+
+    document.body.appendChild(deleteOverlay);
+  }
+
 }
 
 // This conditional check ensures this block of code ONLY runs in the browser/webview context
