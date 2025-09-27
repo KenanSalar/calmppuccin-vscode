@@ -67,6 +67,11 @@ async function syncIconFlavor() {
 export function activate(context: vscode.ExtensionContext) {
   console.log("Calmppuccin extension activated.");
 
+  // Migrate existing global settings to Default profile (skip in test environment)
+  if (typeof process === "undefined" || process.env.JEST_WORKER_ID === undefined) {
+    ConfigurationService.migrateGlobalSettingsToDefault();
+  }
+
   // This internal command is used by the extension itself to regenerate themes.
   const regenerateThemesCommand = vscode.commands.registerCommand(C.REGENERATE_COMMAND_ID, async () => {
     try {
