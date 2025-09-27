@@ -250,11 +250,30 @@ export class ConfigurationService {
     if (profileName === "Default") return; // Cannot delete the default profile
 
     const profiles = this.getProfiles();
-    delete profiles[profileName];
 
-    // If no custom profiles remain, clear the profiles setting entirely
-    const customProfiles = Object.keys(profiles).filter(name => name !== "Default");
-    const finalProfiles = customProfiles.length > 0 ? profiles : {};
+    // Create a mutable copy of the profiles object since VS Code config returns read-only proxies
+    const mutableProfiles = JSON.parse(JSON.stringify(profiles));
+    delete mutableProfiles[profileName];
+
+    // Check if any custom profiles remain (excluding Default)
+    const customProfiles = Object.keys(mutableProfiles).filter(name => name !== "Default");
+
+    // If no custom profiles remain, keep only the Default profile (if it has settings) or clear entirely
+    let finalProfiles;
+    if (customProfiles.length > 0) {
+      // Custom profiles exist, keep the full profiles object
+      finalProfiles = mutableProfiles;
+    } else {
+      // No custom profiles exist, check if Default has any settings
+      const defaultProfile = mutableProfiles["Default"];
+      if (defaultProfile && Object.keys(defaultProfile).length > 0) {
+        // Default has settings, keep it
+        finalProfiles = { "Default": defaultProfile };
+      } else {
+        // Default is empty, clear the entire profiles setting
+        finalProfiles = {};
+      }
+    }
 
     await this.config.update(C.CONFIG_KEY_PROFILES, finalProfiles, vscode.ConfigurationTarget.Global);
     await this.updateActiveProfile("Default"); // Switch back to default
