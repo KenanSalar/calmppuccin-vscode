@@ -1,7 +1,9 @@
 # Changelog
 
-## [1.7.2] - 2025-09-10
+## [1.7.2] - 2025-09-27
 
+- **Improvement**: Font style settings now only save customized values to `settings.json` instead of saving all default values. This keeps the settings file clean and only stores your actual customizations.
+- **Improvement**: Custom accent color picker now uses proper event listeners to prevent multiple reload popups when dragging the color slider. The reload notification now only appears when you release the mouse button.
 - **Feature**: Devcontainer now uses ble.sh with atuin, starship, fzf, zoxide and eza.
 - **Chore**: Updated dependencies
 - **Chore**: Deleted local-ci.sh because it's not needed anymore
