@@ -16,5 +16,6 @@ out/
 # Built Visual Studio Code Extensions
 *.vsix
 
-# Claude Code files
+# Claude Code related files and folders
 CLAUDE.md
+/.claude
