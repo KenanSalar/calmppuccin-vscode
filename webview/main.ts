@@ -143,10 +143,15 @@ export class UIManager {
     });
 
     // Listen for changes on the custom accent color pickers.
+    // Use 'input' for immediate UI updates and 'change' for sending to VS Code
     this.elements.customAccentPicker.addEventListener("input", (e) => {
       const newValue = (e.target as HTMLInputElement).value;
       this.elements.customAccentHexInput.value = newValue;
       this.updateAccentColor(newValue);
+    });
+
+    this.elements.customAccentPicker.addEventListener("change", (e) => {
+      const newValue = (e.target as HTMLInputElement).value;
       this.vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
     });
 
@@ -164,12 +169,20 @@ export class UIManager {
         this.elements.customAccentPicker.value = newValue;
         // Update the live UI accent color.
         this.updateAccentColor(newValue);
-        // Send the valid color to the extension host to be saved.
-        this.vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
       } else {
         // If invalid, apply error styling for immediate user feedback.
         inputElement.style.borderColor = "var(--danger-color)";
         inputElement.style.outlineColor = "var(--danger-color)";
+      }
+    });
+
+    this.elements.customAccentHexInput.addEventListener("change", (e) => {
+      const inputElement = e.target as HTMLInputElement;
+      const newValue = inputElement.value;
+
+      // Only send to VS Code if the final value is valid
+      if (this.hex6Regex.test(newValue)) {
+        this.vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
       }
     });
 
@@ -247,6 +260,7 @@ export class UIManager {
   private updateAccentColor(newColor: string) {
     document.documentElement.style.setProperty("--dynamic-accent-color", newColor);
   }
+
 
   /**
    * Dynamically creates the Accent Color dropdown and the custom color picker controls.

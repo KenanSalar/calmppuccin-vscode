@@ -103,13 +103,46 @@ export class ConfigurationService {
   }
 
   /**
+   * Gets the default font styles from the extension's package.json configuration.
+   * @returns {IFontStyles} The default font styles object.
+   * @private
+   */
+  private static getDefaultFontStyles(): IFontStyles {
+    const extensionConfig = vscode.extensions.getExtension("kenan-salar.calmppuccin-vscode")?.packageJSON;
+    return extensionConfig?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLES}`]?.default ?? {};
+  }
+
+  /**
    * Updates a specific font style setting in the user's global settings.json.
+   * Only saves font styles that differ from the default values.
    * @param {string} key The font style key to update (e.g., "commentFontStyle").
    * @param {string} value The new font style value (e.g., "italic").
    */
   public static async updateFontStyle(key: string, value: string) {
-    const fontStyles = this.getFontStyles();
-    await this.config.update(C.CONFIG_KEY_FONT_STYLES, { ...fontStyles, [key]: value }, vscode.ConfigurationTarget.Global);
+    const currentFontStyles = this.getFontStyles();
+    const defaultFontStyles = this.getDefaultFontStyles();
+
+    // Start with current font styles and update the specific key
+    const updatedFontStyles: IFontStyles = { ...currentFontStyles };
+
+    // Update or remove the specific key
+    if (value !== defaultFontStyles[key]) {
+      updatedFontStyles[key] = value;
+    } else {
+      delete updatedFontStyles[key];
+    }
+
+    // Filter out all font styles that match their default values
+    const filteredFontStyles: IFontStyles = {};
+    for (const [styleKey, styleValue] of Object.entries(updatedFontStyles)) {
+      if (styleValue !== defaultFontStyles[styleKey]) {
+        filteredFontStyles[styleKey] = styleValue;
+      }
+    }
+
+    // If no custom font styles remain, remove the entire setting
+    const finalFontStyles = Object.keys(filteredFontStyles).length === 0 ? undefined : filteredFontStyles;
+    await this.config.update(C.CONFIG_KEY_FONT_STYLES, finalFontStyles, vscode.ConfigurationTarget.Global);
   }
 
   /**
@@ -117,11 +150,22 @@ export class ConfigurationService {
    * @param {string} key The font style key to reset.
    */
   public static async resetFontStyle(key: string) {
-    const fontStyles: IFontStyles = { ...this.getFontStyles() };
-    delete fontStyles[key];
-    // If the fontStyles object is empty after deletion, set it to 'undefined'.
-    // This completely removes the "calmppuccin.fontStyles" entry from settings.json.
-    const finalFontStyles = Object.keys(fontStyles).length === 0 ? undefined : fontStyles;
+    const currentFontStyles: IFontStyles = { ...this.getFontStyles() };
+    const defaultFontStyles = this.getDefaultFontStyles();
+
+    // Remove the specific key being reset
+    delete currentFontStyles[key];
+
+    // Filter out all font styles that match their default values
+    const filteredFontStyles: IFontStyles = {};
+    for (const [styleKey, styleValue] of Object.entries(currentFontStyles)) {
+      if (styleValue !== defaultFontStyles[styleKey]) {
+        filteredFontStyles[styleKey] = styleValue;
+      }
+    }
+
+    // If no custom font styles remain, remove the entire setting
+    const finalFontStyles = Object.keys(filteredFontStyles).length === 0 ? undefined : filteredFontStyles;
     await this.config.update(C.CONFIG_KEY_FONT_STYLES, finalFontStyles, vscode.ConfigurationTarget.Global);
   }
 
@@ -258,9 +302,7 @@ export class ConfigurationService {
     const currentAccent = this.config.get<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
     const customAccentColor = this.config.get<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
 
-    const defaultFontStyles =
-      extensionConfig?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLES}`]
-        ?.default ?? {};
+    const defaultFontStyles = this.getDefaultFontStyles();
     const accentOptions =
       extensionConfig?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACCENT}`]?.enum ??
       [];

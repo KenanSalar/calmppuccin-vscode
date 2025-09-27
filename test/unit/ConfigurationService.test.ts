@@ -123,68 +123,49 @@ describe("ConfigurationService", () => {
   });
 
   /**
-   * @description Tests that updateFontStyle correctly merges a new style with existing settings.
-   * @precondition The mocked `getConfiguration().get()` is set up to return a pre-existing
-   * set of font styles.
-   * @assertion The `update` method should be called with an object that contains both
-   * the old and the new font styles.
+   * @description Tests that updateFontStyle only saves font styles that differ from defaults.
+   * @precondition The mocked `getConfiguration().get()` is set up to return existing font styles,
+   * and the extension mock returns default font styles.
+   * @assertion The `update` method should be called with an object that contains only
+   * non-default font styles.
    */
-  it("updateFontStyle() should correctly add a new font style to the configuration", async () => {
+  it("updateFontStyle() should only save non-default font styles to the configuration", async () => {
     // 1. Arrange
     const existingFontStyles = { keywordFontStyle: "bold" };
     const newKey = "commentFontStyle";
-    const newValue = "italic";
+    const newValue = "bold"; // This is different from the default "italic"
+
+    // Mock the extension package.json to provide default font styles
+    (mockedVscode.extensions.getExtension as jest.Mock).mockReturnValue({
+      packageJSON: {
+        contributes: {
+          configuration: {
+            properties: {
+              "calmppuccin.fontStyles": {
+                default: {
+                  commentFontStyle: "italic", // Default for comment is italic
+                  keywordFontStyle: "none",   // Default for keyword is none
+                },
+              },
+            },
+          },
+        },
+      },
+    });
 
     // Simulate existing settings being returned by .get()
     mockConfiguration.get.mockReturnValue(existingFontStyles);
 
-    // The expected result after the update: the new style merged with the old ones.
+    // The expected result: only non-default styles should be saved
     const expectedUpdatedStyles = {
-      keywordFontStyle: "bold", // The existing style
-      commentFontStyle: "italic", // The new style
+      keywordFontStyle: "bold", // This differs from default "none", so keep it
+      commentFontStyle: "bold", // This differs from default "italic", so save it
     };
 
     // 2. Act
-    // Call the method to test the "write" operation.
     await ConfigurationService.updateFontStyle(newKey, newValue);
 
     // 3. Assert
-    // Verify that the update method on the configuration was called with the correct parameters.
-    expect(mockConfiguration.update).toHaveBeenCalledWith(
-      C.CONFIG_KEY_FONT_STYLES, // The setting key to update
-      expectedUpdatedStyles, // The new, merged object
-      vscode.ConfigurationTarget.Global // The configuration scope
-    );
-  });
-
-  /**
-   * @description Tests that resetFontStyle removes a single key from the font styles object
-   * while leaving other keys intact.
-   * @precondition The mocked `getConfiguration().get()` returns an object with multiple font styles.
-   * @assertion The `update` method should be called with an object that no longer
-   * contains the reset key, but still contains the other keys.
-   */
-  it("resetFontStyle() should remove a specific font style from the configuration", async () => {
-    // 1. Arrange
-    const existingFontStyles = {
-      keywordFontStyle: "bold",
-      commentFontStyle: "italic", // This is the style we will reset
-    };
-    const keyToReset = "commentFontStyle";
-
-    // Simulate the user having multiple styles configured.
-    mockConfiguration.get.mockReturnValue(existingFontStyles);
-
-    // This is the state we expect after the reset operation.
-    const expectedUpdatedStyles = {
-      keywordFontStyle: "bold", // This style should remain.
-    };
-
-    // 2. Act
-    await ConfigurationService.resetFontStyle(keyToReset);
-
-    // 3. Assert
-    // Verify that the update method was called with the correctly modified object.
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_FONT_STYLES,
       expectedUpdatedStyles,
@@ -193,18 +174,238 @@ describe("ConfigurationService", () => {
   });
 
   /**
-   * @description Tests the edge case where resetting the last remaining font style
+   * @description Tests that updateFontStyle filters out existing default values.
+   * @precondition Existing font styles include both custom and default values.
+   * @assertion Only the truly custom values should remain after update.
+   */
+  it("updateFontStyle() should filter out existing default values from configuration", async () => {
+    // 1. Arrange
+    const existingFontStyles = {
+      keywordFontStyle: "bold",   // Custom (default is "none")
+      commentFontStyle: "italic", // This is the default value
+      typeFontStyle: "underline"  // Custom (default is "italic")
+    };
+    const newKey = "stringFontStyle";
+    const newValue = "bold"; // Custom value
+
+    // Mock the extension package.json
+    (mockedVscode.extensions.getExtension as jest.Mock).mockReturnValue({
+      packageJSON: {
+        contributes: {
+          configuration: {
+            properties: {
+              "calmppuccin.fontStyles": {
+                default: {
+                  commentFontStyle: "italic",
+                  keywordFontStyle: "none",
+                  typeFontStyle: "italic",
+                  stringFontStyle: "none",
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    mockConfiguration.get.mockReturnValue(existingFontStyles);
+
+    // Expected: only non-default values should remain
+    const expectedUpdatedStyles = {
+      keywordFontStyle: "bold",    // Custom
+      typeFontStyle: "underline",  // Custom
+      stringFontStyle: "bold"      // New custom value
+      // commentFontStyle removed because it matches default "italic"
+    };
+
+    // 2. Act
+    await ConfigurationService.updateFontStyle(newKey, newValue);
+
+    // 3. Assert
+    expect(mockConfiguration.update).toHaveBeenCalledWith(
+      C.CONFIG_KEY_FONT_STYLES,
+      expectedUpdatedStyles,
+      vscode.ConfigurationTarget.Global
+    );
+  });
+
+  /**
+   * @description Tests that updateFontStyle removes a setting when it matches the default.
+   * @precondition A font style is set to a custom value, then updated to match the default.
+   * @assertion The font style should be removed from the saved configuration.
+   */
+  it("updateFontStyle() should remove a setting when it matches the default value", async () => {
+    // 1. Arrange
+    const existingFontStyles = {
+      keywordFontStyle: "bold",
+      commentFontStyle: "bold"
+    };
+    const keyToUpdate = "commentFontStyle";
+    const newValue = "italic"; // This matches the default
+
+    // Mock the extension package.json to provide default font styles
+    (mockedVscode.extensions.getExtension as jest.Mock).mockReturnValue({
+      packageJSON: {
+        contributes: {
+          configuration: {
+            properties: {
+              "calmppuccin.fontStyles": {
+                default: {
+                  commentFontStyle: "italic",
+                  keywordFontStyle: "none",
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    mockConfiguration.get.mockReturnValue(existingFontStyles);
+
+    // Expected: only the keyword style remains since comment matches default
+    const expectedUpdatedStyles = {
+      keywordFontStyle: "bold",
+    };
+
+    // 2. Act
+    await ConfigurationService.updateFontStyle(keyToUpdate, newValue);
+
+    // 3. Assert
+    expect(mockConfiguration.update).toHaveBeenCalledWith(
+      C.CONFIG_KEY_FONT_STYLES,
+      expectedUpdatedStyles,
+      vscode.ConfigurationTarget.Global
+    );
+  });
+
+  /**
+   * @description Tests that updateFontStyle removes the entire setting when all styles match defaults.
+   * @precondition Only one custom font style exists, and it's updated to match the default.
+   * @assertion The entire fontStyles setting should be removed (undefined).
+   */
+  it("updateFontStyle() should remove the entire setting when all styles match defaults", async () => {
+    // 1. Arrange
+    const existingFontStyles = { commentFontStyle: "bold" };
+    const keyToUpdate = "commentFontStyle";
+    const newValue = "italic"; // This matches the default
+
+    // Mock the extension package.json
+    (mockedVscode.extensions.getExtension as jest.Mock).mockReturnValue({
+      packageJSON: {
+        contributes: {
+          configuration: {
+            properties: {
+              "calmppuccin.fontStyles": {
+                default: {
+                  commentFontStyle: "italic",
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    mockConfiguration.get.mockReturnValue(existingFontStyles);
+
+    // 2. Act
+    await ConfigurationService.updateFontStyle(keyToUpdate, newValue);
+
+    // 3. Assert
+    expect(mockConfiguration.update).toHaveBeenCalledWith(
+      C.CONFIG_KEY_FONT_STYLES,
+      undefined, // Entire setting should be removed
+      vscode.ConfigurationTarget.Global
+    );
+  });
+
+  /**
+   * @description Tests that resetFontStyle removes a specific key and filters out default values.
+   * @precondition The mocked `getConfiguration().get()` returns an object with multiple font styles.
+   * @assertion The `update` method should be called with an object that only contains
+   * non-default values, excluding the reset key.
+   */
+  it("resetFontStyle() should remove a specific font style and filter out defaults", async () => {
+    // 1. Arrange
+    const existingFontStyles = {
+      keywordFontStyle: "bold",    // Custom (default is "none")
+      commentFontStyle: "italic",  // This is the style we will reset
+      typeFontStyle: "italic",     // This matches default, should be filtered out
+    };
+    const keyToReset = "commentFontStyle";
+
+    // Mock the extension package.json to provide default font styles
+    (mockedVscode.extensions.getExtension as jest.Mock).mockReturnValue({
+      packageJSON: {
+        contributes: {
+          configuration: {
+            properties: {
+              "calmppuccin.fontStyles": {
+                default: {
+                  commentFontStyle: "italic",
+                  keywordFontStyle: "none",
+                  typeFontStyle: "italic",
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    mockConfiguration.get.mockReturnValue(existingFontStyles);
+
+    // Expected: only truly custom values should remain
+    const expectedUpdatedStyles = {
+      keywordFontStyle: "bold", // Custom value, should remain
+      // commentFontStyle removed (reset)
+      // typeFontStyle removed (matches default)
+    };
+
+    // 2. Act
+    await ConfigurationService.resetFontStyle(keyToReset);
+
+    // 3. Assert
+    expect(mockConfiguration.update).toHaveBeenCalledWith(
+      C.CONFIG_KEY_FONT_STYLES,
+      expectedUpdatedStyles,
+      vscode.ConfigurationTarget.Global
+    );
+  });
+
+  /**
+   * @description Tests the edge case where resetting the last remaining custom font style
    * removes the entire 'fontStyles' setting from the configuration.
-   * @precondition The mocked `getConfiguration().get()` returns an object with only one style.
+   * @precondition The mocked `getConfiguration().get()` returns an object with only custom styles.
    * @assertion The `update` method should be called with `undefined` as the value,
    * which tells VS Code to remove the setting from settings.json.
    */
-  it("resetFontStyle() should remove the entire setting if the last style is reset", async () => {
+  it("resetFontStyle() should remove the entire setting if no custom styles remain", async () => {
     // 1. Arrange
     const existingFontStyles = {
-      commentFontStyle: "italic", // This is the only style.
+      commentFontStyle: "bold", // This is the only custom style.
+      typeFontStyle: "italic",  // This matches default, so it's not truly custom
     };
     const keyToReset = "commentFontStyle";
+
+    // Mock the extension package.json
+    (mockedVscode.extensions.getExtension as jest.Mock).mockReturnValue({
+      packageJSON: {
+        contributes: {
+          configuration: {
+            properties: {
+              "calmppuccin.fontStyles": {
+                default: {
+                  commentFontStyle: "italic",
+                  typeFontStyle: "italic",
+                },
+              },
+            },
+          },
+        },
+      },
+    });
 
     mockConfiguration.get.mockReturnValue(existingFontStyles);
 
