@@ -191,14 +191,52 @@ export class ConfigurationService {
    */
   public static async saveProfile(profileName: string) {
     const profiles = this.getProfiles();
-    const currentSettings: IProfile = {
-      [C.CONFIG_KEY_ACCENT]: this.config.get(C.CONFIG_KEY_ACCENT),
-      [C.CONFIG_KEY_CUSTOM_ACCENT]: this.config.get(C.CONFIG_KEY_CUSTOM_ACCENT),
-      [C.CONFIG_KEY_FONT_STYLES]: this.getFontStyles(),
-      [C.CONFIG_KEY_SYNTAX_OVERRIDES]: this.getSyntaxOverrides(),
-      [C.CONFIG_KEY_UI_OVERRIDES]: this.getUiOverrides(),
-      [C.CONFIG_KEY_FONT_STYLE_OVERRIDES]: this.getFontStyleOverrides(),
-    };
+
+    // Get current font styles and filter out defaults
+    const currentFontStyles = this.getFontStyles();
+    const defaultFontStyles = this.getDefaultFontStyles();
+    const customizedFontStyles: IFontStyles = {};
+
+    // Only include font styles that differ from defaults
+    for (const [key, value] of Object.entries(currentFontStyles)) {
+      if (defaultFontStyles[key] !== value) {
+        customizedFontStyles[key] = value;
+      }
+    }
+
+    // Get current accent and custom accent, only include if different from defaults
+    const currentAccent = this.getProfileSetting<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
+    const currentCustomAccent = this.getProfileSetting<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
+
+    const currentSettings: IProfile = {};
+
+    // Only include settings that are different from defaults
+    if (currentAccent !== C.DEFAULT_ACCENT) {
+      currentSettings[C.CONFIG_KEY_ACCENT] = currentAccent;
+    }
+
+    if (currentCustomAccent !== C.DEFAULT_CUSTOM_ACCENT) {
+      currentSettings[C.CONFIG_KEY_CUSTOM_ACCENT] = currentCustomAccent;
+    }
+
+    if (Object.keys(customizedFontStyles).length > 0) {
+      currentSettings[C.CONFIG_KEY_FONT_STYLES] = customizedFontStyles;
+    }
+
+    const syntaxOverrides = this.getSyntaxOverrides();
+    if (Object.keys(syntaxOverrides).length > 0) {
+      currentSettings[C.CONFIG_KEY_SYNTAX_OVERRIDES] = syntaxOverrides;
+    }
+
+    const uiOverrides = this.getUiOverrides();
+    if (Object.keys(uiOverrides).length > 0) {
+      currentSettings[C.CONFIG_KEY_UI_OVERRIDES] = uiOverrides;
+    }
+
+    const fontStyleOverrides = this.getFontStyleOverrides();
+    if (Object.keys(fontStyleOverrides).length > 0) {
+      currentSettings[C.CONFIG_KEY_FONT_STYLE_OVERRIDES] = fontStyleOverrides;
+    }
 
     profiles[profileName] = currentSettings;
     await this.config.update(C.CONFIG_KEY_PROFILES, profiles, vscode.ConfigurationTarget.Global);
