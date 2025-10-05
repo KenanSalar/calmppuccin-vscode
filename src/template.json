@@ -1150,6 +1150,7 @@
         "storage.type.primitive",
         "storage.type.string.go",
         "storage.type.numeric.go",
+        "storage.type.string.python",
         "support.type.primitive",
         "storage.type.sql"
       ],
@@ -1258,7 +1259,6 @@
         "string.quoted.double.interpolated.crystal",
         "string.quoted.double.interpolated.crystal punctuation.definition.string",
         "text.tex markup.raw",
-        "storage.type.string.python",
         "storage.type.string"
       ],
       "settings": {
