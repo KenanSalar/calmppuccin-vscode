@@ -16,6 +16,10 @@ const mockVscode = {
 // --- HTML Fixture ---
 const htmlFixture = `
   <h2 id="current-flavor"></h2>
+  <select id="profile-select"></select>
+  <input type="text" id="profile-name-input" />
+  <button id="save-profile-btn"></button>
+  <button id="delete-profile-btn"></button>
   <div id="accent-container"></div>
   <div id="custom-accent-picker-container" style="display: none;">
     <input type="color" id="custom-accent-picker" />
@@ -61,6 +65,8 @@ const mockSettingsPayload = {
   activeThemeBackgroundColor: "#1d1d2c",
   accentColorPalettes: { sapphire: "#70b7d8", mauve: "#ba9ae2" },
   defaultFontStyles: { commentFontStyle: "italic", keywordFontStyle: "none", jsonLvl0FontStyle: "none" },
+  profiles: { "Custom Profile 1": {}, "Work Theme": {} },
+  activeProfile: "Default",
 };
 
 describe("UIManager Unit Tests", () => {

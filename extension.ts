@@ -67,6 +67,11 @@ async function syncIconFlavor() {
 export function activate(context: vscode.ExtensionContext) {
   console.log("Calmppuccin extension activated.");
 
+  // Migrate existing global settings to Default profile (skip in test environment)
+  if (typeof process === "undefined" || process.env.JEST_WORKER_ID === undefined) {
+    ConfigurationService.migrateGlobalSettingsToDefault();
+  }
+
   // This internal command is used by the extension itself to regenerate themes.
   const regenerateThemesCommand = vscode.commands.registerCommand(C.REGENERATE_COMMAND_ID, async () => {
     try {
@@ -74,7 +79,8 @@ export function activate(context: vscode.ExtensionContext) {
       const fontStyles = ConfigurationService.getFontStyles();
       const syntaxOverrides = ConfigurationService.getSyntaxOverrides();
       const uiOverrides = ConfigurationService.getUiOverrides();
-      await buildAllFlavors(accentValue, fontStyles, syntaxOverrides, uiOverrides);
+      const fontStyleOverrides = ConfigurationService.getFontStyleOverrides();
+      await buildAllFlavors(accentValue, fontStyles, syntaxOverrides, uiOverrides, fontStyleOverrides);
       const selection = await vscode.window.showInformationMessage(C.INFO_MESSAGE, C.RELOAD_ACTION);
       if (selection === C.RELOAD_ACTION) {
         vscode.commands.executeCommand(C.RELOAD_COMMAND_ID);
@@ -122,7 +128,10 @@ export function activate(context: vscode.ExtensionContext) {
         event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLES}`) ||
         event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_CUSTOM_ACCENT}`) ||
         event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_SYNTAX_OVERRIDES}`) ||
-        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_UI_OVERRIDES}`)
+        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_UI_OVERRIDES}`) ||
+        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLE_OVERRIDES}`) ||
+        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_PROFILES}`) ||
+        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACTIVE_PROFILE}`)
       ) {
         vscode.commands.executeCommand(C.REGENERATE_COMMAND_ID);
       }

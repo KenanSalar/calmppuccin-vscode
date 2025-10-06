@@ -784,7 +784,11 @@
         "onstant.language.undefined",
         "constant.language.null",
         "meta.expression.implicit",
-        "constant.enum.php"
+        "constant.enum.php",
+        "constant.language punctuation.definition.variable",
+        "source.toml constant",
+        "source.zig keyword.constant.bool",
+        "source.zig keyword.constant.default"
       ],
       "settings": {
         "foreground": "{{constant}}",
@@ -1146,6 +1150,7 @@
         "storage.type.primitive",
         "storage.type.string.go",
         "storage.type.numeric.go",
+        "storage.type.string.python",
         "support.type.primitive",
         "storage.type.sql"
       ],
@@ -1254,7 +1259,6 @@
         "string.quoted.double.interpolated.crystal",
         "string.quoted.double.interpolated.crystal punctuation.definition.string",
         "text.tex markup.raw",
-        "storage.type.string.python",
         "storage.type.string"
       ],
       "settings": {
@@ -1287,11 +1291,7 @@
       "scope": [
         "punctuation.separator.decimal.period",
         "constant.integer.apacheconf",
-        "constant.language punctuation.definition.variable",
         "string.quoted.double.skinparam.value",
-        "source.toml constant",
-        "source.zig keyword.constant.bool",
-        "source.zig keyword.constant.default",
         "entity.name.type.numeric",
         "entity.other.keyframe-offset.percentage",
         "constant.numeric"

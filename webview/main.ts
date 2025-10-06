@@ -35,6 +35,9 @@ const COMMANDS = {
   UPDATE_UI_COLOR: "updateUiColor",
   RESET_UI_COLOR: "resetUiColor",
   RESET_ALL: "resetAll",
+  SWITCH_PROFILE: "switchProfile",
+  SAVE_PROFILE: "saveProfile",
+  DELETE_PROFILE: "deleteProfile",
   LOAD_SETTINGS: "loadSettings",
 } as const;
 
@@ -61,6 +64,10 @@ export class UIManager {
     dialogOverlay: document.getElementById("reset-dialog-overlay")!,
     confirmResetButton: document.getElementById("dialog-confirm-button")!,
     cancelResetButton: document.getElementById("dialog-cancel-button")!,
+    profileSelect: document.getElementById("profile-select") as HTMLSelectElement,
+    profileNameInput: document.getElementById("profile-name-input") as HTMLInputElement,
+    saveProfileBtn: document.getElementById("save-profile-btn") as HTMLButtonElement,
+    deleteProfileBtn: document.getElementById("delete-profile-btn") as HTMLButtonElement,
   };
 
   /** Holds the current settings payload from the extension. */
@@ -89,6 +96,8 @@ export class UIManager {
       customAccentColor,
       activeThemeBackgroundColor,
       accentColorPalettes,
+      profiles,
+      activeProfile,
     } = settings;
 
     // 1. Update internal state with the new settings.
@@ -107,12 +116,17 @@ export class UIManager {
     this.elements.previewPane.style.backgroundColor = activeThemeBackgroundColor;
 
     // 4. Build each section of the UI dynamically.
+    this._populateProfileDropdown(profiles, activeProfile);
+    this._updateProfileUI(activeProfile);
     this._createAccentColorControls(currentAccent, accentOptions, customAccentColor);
     this._createResetAllButton();
     this._handleViewChange(); // This will now render the correct initial view based on the dropdown
 
     // 5. Apply the initial state to the UI.
     this._handleAccentChange(currentAccent);
+
+    // 6. Ensure the preview pane is updated with the new settings
+    this.updatePreviewPane();
   }
 
   /**
@@ -143,10 +157,15 @@ export class UIManager {
     });
 
     // Listen for changes on the custom accent color pickers.
+    // Use 'input' for immediate UI updates and 'change' for sending to VS Code
     this.elements.customAccentPicker.addEventListener("input", (e) => {
       const newValue = (e.target as HTMLInputElement).value;
       this.elements.customAccentHexInput.value = newValue;
       this.updateAccentColor(newValue);
+    });
+
+    this.elements.customAccentPicker.addEventListener("change", (e) => {
+      const newValue = (e.target as HTMLInputElement).value;
       this.vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
     });
 
@@ -164,12 +183,20 @@ export class UIManager {
         this.elements.customAccentPicker.value = newValue;
         // Update the live UI accent color.
         this.updateAccentColor(newValue);
-        // Send the valid color to the extension host to be saved.
-        this.vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
       } else {
         // If invalid, apply error styling for immediate user feedback.
         inputElement.style.borderColor = "var(--danger-color)";
         inputElement.style.outlineColor = "var(--danger-color)";
+      }
+    });
+
+    this.elements.customAccentHexInput.addEventListener("change", (e) => {
+      const inputElement = e.target as HTMLInputElement;
+      const newValue = inputElement.value;
+
+      // Only send to VS Code if the final value is valid
+      if (this.hex6Regex.test(newValue)) {
+        this.vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
       }
     });
 
@@ -181,6 +208,27 @@ export class UIManager {
     this.elements.confirmResetButton.addEventListener("click", () => {
       this.vscode.postMessage({ command: COMMANDS.RESET_ALL });
       this.elements.dialogOverlay.classList.add("hidden");
+    });
+
+    // Set up profile management event listeners.
+    this.elements.profileSelect.addEventListener("change", (e) => {
+      const selectedProfile = (e.target as HTMLSelectElement).value;
+      this._updateProfileUI(selectedProfile);
+      this.vscode.postMessage({ command: COMMANDS.SWITCH_PROFILE, profile: selectedProfile });
+    });
+
+    this.elements.saveProfileBtn.addEventListener("click", () => {
+      const profileName = this.elements.profileNameInput.value.trim();
+      if (profileName && profileName !== "Default") {
+        this.vscode.postMessage({ command: COMMANDS.SAVE_PROFILE, profile: profileName });
+      }
+    });
+
+    this.elements.deleteProfileBtn.addEventListener("click", () => {
+      const currentProfile = this.elements.profileSelect.value;
+      if (currentProfile !== "Default") {
+        this._showDeleteConfirmation(currentProfile);
+      }
     });
 
     // Primary listener for messages coming from the VS Code extension host.
@@ -247,6 +295,7 @@ export class UIManager {
   private updateAccentColor(newColor: string) {
     document.documentElement.style.setProperty("--dynamic-accent-color", newColor);
   }
+
 
   /**
    * Dynamically creates the Accent Color dropdown and the custom color picker controls.
@@ -574,6 +623,99 @@ export class UIManager {
     });
     this.elements.resetAllContainer.appendChild(resetAllButton);
   }
+
+  /**
+   * Populates the profile dropdown with available profiles.
+   * @param {Object} profiles The profiles object from settings.
+   * @param {string} activeProfile The currently active profile name.
+   * @private
+   */
+  private _populateProfileDropdown(profiles: { [name: string]: any }, activeProfile: string) {
+    // Clear existing options
+    this.elements.profileSelect.innerHTML = "";
+
+    // Add Default profile option (only if it's not already in profiles)
+    if (!profiles.hasOwnProperty("Default")) {
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "Default";
+      defaultOption.textContent = "Default";
+      this.elements.profileSelect.appendChild(defaultOption);
+    }
+
+    // Add all profiles (including Default if it exists in profiles)
+    Object.keys(profiles).sort().forEach((profileName) => {
+      const option = document.createElement("option");
+      option.value = profileName;
+      option.textContent = profileName;
+      this.elements.profileSelect.appendChild(option);
+    });
+
+    // Set the selected profile
+    this.elements.profileSelect.value = activeProfile;
+  }
+
+  /**
+   * Updates the profile management UI based on the selected profile.
+   * @param {string} selectedProfile The currently selected profile name.
+   * @private
+   */
+  private _updateProfileUI(selectedProfile: string) {
+    const isDefaultProfile = selectedProfile === "Default";
+
+    // Show/hide delete button based on profile type
+    this.elements.deleteProfileBtn.style.display = isDefaultProfile ? "none" : "inline-block";
+
+    // Clear the profile name input when switching profiles
+    this.elements.profileNameInput.value = "";
+  }
+
+  /**
+   * Shows delete confirmation by modifying the existing reset dialog.
+   * @param {string} profileName The name of the profile to delete.
+   * @private
+   */
+  private _showDeleteConfirmation(profileName: string) {
+    // Store original dialog content to restore later
+    const dialogTitle = this.elements.dialogOverlay.querySelector("h3")!;
+    const dialogMessage = this.elements.dialogOverlay.querySelector("p")!;
+    const confirmButton = this.elements.confirmResetButton;
+
+    const originalTitle = dialogTitle.textContent;
+    const originalMessage = dialogMessage.textContent;
+    const originalButtonText = confirmButton.textContent;
+
+    // Modify dialog for delete confirmation
+    dialogTitle.textContent = "Delete Profile";
+    dialogMessage.textContent = `Are you sure you want to delete the profile "${profileName}"? This action cannot be undone.`;
+    confirmButton.textContent = "Delete Profile";
+
+    // Replace the confirm button's event handler
+    const newConfirmButton = confirmButton.cloneNode(true) as HTMLButtonElement;
+    confirmButton.parentNode?.replaceChild(newConfirmButton, confirmButton);
+
+    // Add delete-specific event handler
+    newConfirmButton.addEventListener("click", () => {
+      this.vscode.postMessage({ command: COMMANDS.DELETE_PROFILE, profile: profileName });
+      this.elements.dialogOverlay.classList.add("hidden");
+
+      // Restore original dialog content
+      dialogTitle.textContent = originalTitle;
+      dialogMessage.textContent = originalMessage;
+      newConfirmButton.textContent = originalButtonText;
+
+      // Restore original reset button functionality
+      const finalConfirmButton = newConfirmButton.cloneNode(true) as HTMLButtonElement;
+      newConfirmButton.parentNode?.replaceChild(finalConfirmButton, newConfirmButton);
+      finalConfirmButton.addEventListener("click", () => {
+        this.vscode.postMessage({ command: COMMANDS.RESET_ALL });
+        this.elements.dialogOverlay.classList.add("hidden");
+      });
+    });
+
+    // Show the dialog
+    this.elements.dialogOverlay.classList.remove("hidden");
+  }
+
 }
 
 // This conditional check ensures this block of code ONLY runs in the browser/webview context

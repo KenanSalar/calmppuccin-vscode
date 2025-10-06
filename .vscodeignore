@@ -1,10 +1,16 @@
 .devcontainer/**
 .gitattributes
+.git/**
 .github/**
 .gitignore
 .dockerignore
 .vscode-test/**
 .vscode/**
+claude/**
+CLAUDE.md
+GEMINI.md
+AGENTS.md
+instructions.md
 assets/images/customUI/**
 assets/images/preview/**
 assets/images/screenshots/**
@@ -16,7 +22,6 @@ out/
 build.ts
 extension.ts
 jest.config.ts
-local-ci.sh
 package-lock.json
 src/ConfigurationService.ts
 src/constants.ts

@@ -67,12 +67,12 @@ built-in graphical interface or by editing your `settings.json` directly.
 
 ### 1. Using the Customization UI (Recommended)
 
-This is the easiest and most powerful way to configure everything in one place. The UI gives you full control over accent colors,\
-font styles, and granular syntax colors, with a live preview pane that updates instantly as you make changes.
+This is the easiest and most powerful way to configure everything in one place. The UI gives you full control over accent colors,  
+font styles, granular syntax colors, and profile management, with a live preview pane that updates instantly as you make changes.
 
 <details>
 <summary>🛠️ <b>Customization UI</b></summary>
-<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/customUI/custom-ui.png" alt="customUI" width="802" height="1324">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/customUI/custom-ui.png" alt="customUI" width="800" height="2100">
 </details>
 
 <br/>
@@ -100,6 +100,25 @@ You can open the custom UI in two main ways:
 <br/>
 
 Changes are saved automatically. A notification will appear prompting you to reload VS Code to apply them.
+
+#### Profile Management
+
+The Customization UI includes a powerful profile management system that allows you to save, switch between, and manage multiple configuration sets:
+
+- **Save Profile**: Create new profiles with your current customizations. Only settings that differ from defaults are saved, keeping profiles clean and focused.
+- **Switch Profile**: Instantly switch between saved profiles using the dropdown selector.
+- **Delete Profile**: Remove profiles you no longer need. The system ensures profiles are completely removed from your settings.
+- **Default Profile**: Your existing settings are automatically migrated to a "Default" profile, preserving your current setup.
+
+Profiles store all your customizations including:
+
+- Accent colors and custom accent settings
+- Font style preferences
+- Syntax color overrides
+- UI color customizations
+- Theme-specific font style overrides
+
+This allows you to create different configurations for different projects, moods, or lighting conditions, and switch between them effortlessly.
 
 ### 2. Using the Standard Settings UI
 
