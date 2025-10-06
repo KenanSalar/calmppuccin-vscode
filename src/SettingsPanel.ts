@@ -49,10 +49,12 @@ export class SettingsPanel {
     // TypeScript correctly infers the shape of 'message' in each case block.
     switch (message.command) {
       case C.WEBVIEW_COMMANDS.UPDATE_SETTING:
-        await ConfigurationService.updateFontStyle(message.key, message.value);
+        const activeFlavor = ConfigurationService.getActiveFlavor();
+        await ConfigurationService.updateFontStyleOverride(activeFlavor, message.key, message.value);
         return;
       case C.WEBVIEW_COMMANDS.RESET_FONT_STYLE:
-        await ConfigurationService.resetFontStyle(message.key);
+        const currentFlavor = ConfigurationService.getActiveFlavor();
+        await ConfigurationService.resetFontStyleOverride(currentFlavor, message.key);
         return;
       case C.WEBVIEW_COMMANDS.UPDATE_ACCENT:
         await ConfigurationService.updateAccent(message.value);
@@ -74,6 +76,19 @@ export class SettingsPanel {
         return;
       case C.WEBVIEW_COMMANDS.RESET_ALL:
         await ConfigurationService.resetAll();
+        this._update();
+        return;
+      case C.WEBVIEW_COMMANDS.SWITCH_PROFILE:
+        await ConfigurationService.updateActiveProfile(message.profile);
+        this._update();
+        return;
+      case C.WEBVIEW_COMMANDS.SAVE_PROFILE:
+        await ConfigurationService.saveProfile(message.profile);
+        await ConfigurationService.updateActiveProfile(message.profile);
+        this._update();
+        return;
+      case C.WEBVIEW_COMMANDS.DELETE_PROFILE:
+        await ConfigurationService.deleteProfile(message.profile);
         this._update();
         return;
     }

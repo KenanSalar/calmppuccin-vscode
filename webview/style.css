@@ -541,3 +541,195 @@ select:focus,
 #settings-view-select:hover {
   border-color: var(--dynamic-accent-color);
 }
+
+/* --- Profile Management Section --- */
+.profile-management {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-selector-container {
+  display: grid;
+  grid-template-columns: 100px 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-selector-container label,
+.profile-input-container label {
+  font-weight: 500;
+  color: var(--vscode-description-foreground);
+  font-size: 1em;
+  white-space: nowrap;
+  width: 100px;
+  text-align: left;
+}
+
+/* Ensure both profile buttons have the same width */
+#delete-profile-btn,
+#save-profile-btn {
+  width: 110px;
+  text-align: center;
+  padding-left: 0;
+  padding-right: 0;
+  box-sizing: border-box;
+}
+
+/* Disable transitions for delete button to prevent text animation */
+#delete-profile-btn {
+  transition: none !important;
+}
+
+/* Spacer for when delete button is hidden - override display:none with visibility:hidden */
+.profile-selector-container #delete-profile-btn[style*="display: none"] {
+  display: block !important;
+  visibility: hidden;
+  height: var(--control-height);
+  padding: 0;
+  font-weight: 500;
+  font-size: 1em;
+  white-space: nowrap;
+  width: 110px;
+  box-sizing: border-box;
+  pointer-events: none;
+  font-size: 0;
+  overflow: hidden;
+}
+
+.profile-selector-container #delete-profile-btn[style*="display: none"]::before {
+  content: "Save Profile";
+  font-size: 1em;
+  color: var(--vscode-button-foreground, white);
+  display: block;
+  text-align: center;
+  line-height: var(--control-height);
+}
+
+#profile-select {
+  min-width: 200px;
+  max-width: 100%;
+}
+
+.profile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profile-input-container {
+  display: grid;
+  grid-template-columns: 100px 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+#profile-name-input {
+  min-width: 200px;
+  max-width: 100%;
+  height: var(--control-height);
+  padding: 0 16px;
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: var(--radius);
+  outline: none;
+  transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1em;
+}
+
+#profile-name-input:hover {
+  border-color: var(--dynamic-accent-color);
+  box-shadow: var(--shadow-medium);
+}
+
+#profile-name-input:focus {
+  border-color: var(--dynamic-accent-color) !important;
+  box-shadow: 0 0 0 1px var(--dynamic-accent-color) !important;
+}
+
+
+/* Button Styles */
+.btn {
+  height: var(--control-height);
+  padding: 0 20px;
+  cursor: pointer;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  font-weight: 500;
+  font-size: 1em;
+  transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  outline: none;
+}
+
+.btn:focus {
+  box-shadow: 0 0 0 2px var(--dynamic-accent-color);
+}
+
+.btn-primary {
+  background-color: var(--dynamic-accent-color);
+  color: var(--vscode-button-foreground, white);
+  border-color: var(--dynamic-accent-color);
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.btn-secondary {
+  background: var(--vscode-button-secondary-background);
+  color: var(--vscode-button-secondary-foreground);
+  border-color: var(--vscode-input-border);
+}
+
+.btn-secondary:hover {
+  background: var(--vscode-button-secondary-hover-background);
+  border-color: var(--dynamic-accent-color);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-light);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.btn-danger {
+  background-color: transparent;
+  color: var(--danger-color);
+  border-color: var(--danger-color-transparent);
+}
+
+.btn-danger:hover {
+  background-color: var(--danger-color);
+  color: #ffffff;
+  border-color: var(--danger-color);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+}
+
+.btn-danger:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Responsive adjustments for profile management */
+@media (max-width: 768px) {
+  .profile-input-container {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+
+  .btn {
+    width: 100%;
+  }
+}

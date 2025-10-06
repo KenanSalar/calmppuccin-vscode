@@ -1,10 +1,17 @@
 # Changelog
 
-## [1.7.2] - 2025-09-10
+## [1.8.0] - 2025-09-27
 
+- **Major Feature**: Added comprehensive Profile Management system! Users can now save, switch between, and manage multiple configuration profiles through the Customization UI. Each profile stores its own accent colors, font styles, syntax overrides, UI overrides, and font style overrides.
+- **Feature**: Profile generation now only saves customized settings that differ from defaults, keeping profiles clean and focused on actual customizations.
+- **Feature**: Profile deletion completely removes profiles from settings instead of leaving empty objects.
+- **Improvement**: Updated all dependencies to latest versions including Jest 30, Node types 24, and VS Code API 1.104.
+- **Internal**: Fixed VS Code configuration proxy issue in profile deletion by creating mutable copies before modification.
+- **Internal**: Enhanced profile management with proper validation and error handling.
 - **Feature**: Devcontainer now uses ble.sh with atuin, starship, fzf, zoxide and eza.
 - **Chore**: Updated dependencies
 - **Chore**: Deleted local-ci.sh because it's not needed anymore
+- **Chore**: Changed license to CC BY 4.0, everyone who uses this project as a fork or creates a new project or make another project based on this project will now need to mention me.
 
 ## [1.7.1] - 2025-09-04
 

@@ -17,6 +17,28 @@
       <div class="controls-column">
         <section class="card">
           <div class="card-header">
+            <h3>Profile Management</h3>
+          </div>
+          <div class="card-body">
+            <div class="profile-management">
+              <div class="profile-selector-container">
+                <label for="profile-select">Active Profile:</label>
+                <select id="profile-select"></select>
+                <button id="delete-profile-btn" class="btn btn-danger" style="display: none;">Delete Profile</button>
+              </div>
+              <div class="profile-actions">
+                <div class="profile-input-container">
+                  <label for="profile-name-input">Save Profile:</label>
+                  <input type="text" id="profile-name-input" placeholder="New profile name..." />
+                  <button id="save-profile-btn" class="btn btn-primary">Save Profile</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
             <h3>Accent Color</h3>
           </div>
           <div class="card-body" id="accent-container">
