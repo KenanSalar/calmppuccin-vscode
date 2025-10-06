@@ -1,6 +1,10 @@
 # Changelog
 
-## [1.8.0] - 2025-09-27
+## [1.8.1] - 2025-10-06
+
+- **Chore**: Changed license back to MIT
+
+## [1.8.0] - 2025-10-06
 
 - **Major Feature**: Added comprehensive Profile Management system! Users can now save, switch between, and manage multiple configuration profiles through the Customization UI. Each profile stores its own accent colors, font styles, syntax overrides, UI overrides, and font style overrides.
 - **Feature**: Profile generation now only saves customized settings that differ from defaults, keeping profiles clean and focused on actual customizations.
