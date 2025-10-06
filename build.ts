@@ -8,7 +8,7 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import palette, { IPalettes } from "./src/palettes";
 import * as C from "./src/constants";
-import { IFontStyles, ISyntaxOverrides, IUiOverrides } from "./src/ConfigurationService";
+import { IFontStyles, ISyntaxOverrides, IUiOverrides, IFontStyleOverrides } from "./src/ConfigurationService";
 
 const THEME_DIR = path.resolve(__dirname, "..", C.THEMES_DIR);
 const TEMPLATE_PATH = path.resolve(__dirname, "..", C.SRC_DIR, C.TEMPLATE_FILE);
@@ -20,13 +20,15 @@ const FLAVORS = Object.keys(palette) as Array<keyof IPalettes>;
  * @param {IFontStyles} editorSettings The user's configured font style settings.
  * @param {ISyntaxOverrides} syntaxOverrides The user's configured syntax color overrides.
  * @param {IUiOverrides} uiOverrides The user's configured UI color overrides.
+ * @param {IFontStyleOverrides} fontStyleOverrides The user's configured theme-specific font style overrides.
  * @returns {Promise<void>} A promise that resolves when all theme files have been written to disk.
  */
 export async function buildAllFlavors(
   accentIdentifier: string,
   editorSettings: IFontStyles,
   syntaxOverrides: ISyntaxOverrides,
-  uiOverrides: IUiOverrides
+  uiOverrides: IUiOverrides,
+  fontStyleOverrides: IFontStyleOverrides
 ): Promise<void> {
   // Ensure the output directory is clean and ready.
   await fs.emptyDir(THEME_DIR);
@@ -38,6 +40,7 @@ export async function buildAllFlavors(
     const basePalette = palette[flavor];
     const flavorSyntaxOverrides = syntaxOverrides[flavor] || {};
     const flavorUiOverrides = uiOverrides[flavor] || {};
+    const flavorFontStyleOverrides = fontStyleOverrides[flavor] || {};
     // Merge the base flavor palette with any user-defined color overrides.
     const finalPalette = { ...basePalette, ...flavorSyntaxOverrides, ...flavorUiOverrides };
 
@@ -59,8 +62,11 @@ export async function buildAllFlavors(
       }
     }
 
+    // Merge global font styles with flavor-specific font style overrides, with overrides taking precedence.
+    const finalFontStyles = { ...editorSettings, ...flavorFontStyleOverrides };
+
     // Combine all colors, the resolved accent, and font styles into a single object for replacement.
-    const replacements = { ...resolvedPalette, accent: accentColor, ...editorSettings };
+    const replacements = { ...resolvedPalette, accent: accentColor, ...finalFontStyles };
     let themeContent = templateStr;
 
     // Replace all placeholders (e.g., "{{base}}", "{{mauve}}", "{{commentFontStyle}}") in the template.
@@ -101,5 +107,5 @@ function getDefaultFontStyles(): IFontStyles {
  */
 if (require.main === module) {
   const defaultFontStyles = getDefaultFontStyles();
-  buildAllFlavors(C.DEFAULT_ACCENT, defaultFontStyles, {}, {});
+  buildAllFlavors(C.DEFAULT_ACCENT, defaultFontStyles, {}, {}, {});
 }

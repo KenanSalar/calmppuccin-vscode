@@ -6,6 +6,11 @@
 .dockerignore
 .vscode-test/**
 .vscode/**
+claude/**
+CLAUDE.md
+GEMINI.md
+AGENTS.md
+instructions.md
 assets/images/customUI/**
 assets/images/preview/**
 assets/images/screenshots/**
