@@ -72,7 +72,7 @@ font styles, granular syntax colors, and profile management, with a live preview
 
 <details>
 <summary>🛠️ <b>Customization UI</b></summary>
-<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/customUI/custom-ui.png" alt="customUI" width="802" height="1324">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/customUI/custom-ui.png" alt="customUI" width="800" height="2100">
 </details>
 
 <br/>
