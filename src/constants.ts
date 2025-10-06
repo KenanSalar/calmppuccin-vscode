@@ -13,8 +13,11 @@ export const ICON_THEME_KEY = "workbench.iconTheme";
 export const CATPPUCCIN_ICON_PACK_ID = "catppuccin-";
 export const PANEL_IS_OPEN_KEY = "calmppuccin.panelIsOpen";
 export const CONFIG_KEY_FONT_STYLES = "fontStyles";
+export const CONFIG_KEY_FONT_STYLE_OVERRIDES = "fontStyleOverrides";
 export const CONFIG_KEY_SYNTAX_OVERRIDES = "syntaxOverrides";
 export const CONFIG_KEY_UI_OVERRIDES = "uiOverrides";
+export const CONFIG_KEY_PROFILES = "profiles";
+export const CONFIG_KEY_ACTIVE_PROFILE = "activeProfile";
 export const CUSTOMIZE_COMMAND_ID = "calmppuccin.customize";
 
 /** Constants used in the `build.ts` script for theme generation. */
@@ -53,6 +56,9 @@ export const WEBVIEW_COMMANDS = {
   UPDATE_UI_COLOR: "updateUiColor",
   RESET_UI_COLOR: "resetUiColor",
   RESET_ALL: "resetAll",
+  SWITCH_PROFILE: "switchProfile",
+  SAVE_PROFILE: "saveProfile",
+  DELETE_PROFILE: "deleteProfile",
   LOAD_SETTINGS: "loadSettings",
   WEBVIEW_ID: "calmppuccinSettings",
   WEBVIEW_TITLE: "Calmppuccin Customization",

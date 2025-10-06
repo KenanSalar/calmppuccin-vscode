@@ -119,6 +119,8 @@ describe("Extension Integration Tests", () => {
     jest.spyOn(ConfigurationService, "getAccent").mockReturnValue("sapphire");
     jest.spyOn(ConfigurationService, "getFontStyles").mockReturnValue({});
     jest.spyOn(ConfigurationService, "getSyntaxOverrides").mockReturnValue({});
+    jest.spyOn(ConfigurationService, "getUiOverrides").mockReturnValue({});
+    jest.spyOn(ConfigurationService, "getFontStyleOverrides").mockReturnValue({});
 
     // Capture the callback function that is passed to registerCommand.
     let commandCallback: () => Promise<void> = async () => {};

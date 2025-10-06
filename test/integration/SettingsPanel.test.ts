@@ -68,17 +68,20 @@ describe("SettingsPanel Integration Tests", () => {
 
   /**
    * @description Tests that an 'updateSetting' message (for font styles) from the webview
-   * correctly triggers the ConfigurationService.updateFontStyle method.
+   * correctly triggers the ConfigurationService.updateFontStyleOverride method.
    * @precondition The ConfigurationService is mocked.
-   * @assertion The spy on `ConfigurationService.updateFontStyle` should be called
-   * with the exact key and value from the mock message.
+   * @assertion The spy on `ConfigurationService.updateFontStyleOverride` should be called
+   * with the exact flavor, key and value from the mock message.
    */
-  it("should call updateFontStyle on the ConfigurationService when receiving an updateSetting message", async () => {
+  it("should call updateFontStyleOverride on the ConfigurationService when receiving an updateSetting message", async () => {
     // 1. Arrange
     const panel = new (SettingsPanel as any)(mockContext);
 
+    // Mock getActiveFlavor to return a specific flavor
+    const getActiveFlavorSpy = jest.spyOn(ConfigurationService, "getActiveFlavor").mockReturnValue("macchiato");
+
     // Create a spy on the specific service method we expect to be called.
-    const updateFontStyleSpy = jest.spyOn(ConfigurationService, "updateFontStyle");
+    const updateFontStyleOverrideSpy = jest.spyOn(ConfigurationService, "updateFontStyleOverride");
 
     // This is our simulated message, as if a user changed the 'comment' font style.
     const mockMessage: WebviewMessage = {
@@ -93,23 +96,27 @@ describe("SettingsPanel Integration Tests", () => {
 
     // 3. Assert
     // Verify that the correct service method was called, and with the correct data.
-    expect(updateFontStyleSpy).toHaveBeenCalledTimes(1);
-    expect(updateFontStyleSpy).toHaveBeenCalledWith("commentFontStyle", "italic");
+    expect(getActiveFlavorSpy).toHaveBeenCalledTimes(1);
+    expect(updateFontStyleOverrideSpy).toHaveBeenCalledTimes(1);
+    expect(updateFontStyleOverrideSpy).toHaveBeenCalledWith("macchiato", "commentFontStyle", "italic");
   });
 
   /**
    * @description Tests that a 'resetFontStyle' message from the webview
-   * correctly triggers the ConfigurationService.resetFontStyle method.
+   * correctly triggers the ConfigurationService.resetFontStyleOverride method.
    * @precondition The ConfigurationService is mocked.
-   * @assertion The spy on `ConfigurationService.resetFontStyle` should be called
-   * with the exact key from the mock message.
+   * @assertion The spy on `ConfigurationService.resetFontStyleOverride` should be called
+   * with the exact flavor and key from the mock message.
    */
-  it("should call resetFontStyle on the ConfigurationService when receiving a resetFontStyle message", async () => {
+  it("should call resetFontStyleOverride on the ConfigurationService when receiving a resetFontStyle message", async () => {
     // 1. Arrange
     const panel = new (SettingsPanel as any)(mockContext);
 
+    // Mock getActiveFlavor to return a specific flavor
+    const getActiveFlavorSpy = jest.spyOn(ConfigurationService, "getActiveFlavor").mockReturnValue("macchiato");
+
     // Create a spy on the specific service method we expect to be called.
-    const resetFontStyleSpy = jest.spyOn(ConfigurationService, "resetFontStyle");
+    const resetFontStyleOverrideSpy = jest.spyOn(ConfigurationService, "resetFontStyleOverride");
 
     // This is our simulated message, as if a user clicked the "Reset" button for a font style.
     const mockMessage: WebviewMessage = {
@@ -123,8 +130,9 @@ describe("SettingsPanel Integration Tests", () => {
 
     // 3. Assert
     // Verify that the correct service method was called, and with the correct data.
-    expect(resetFontStyleSpy).toHaveBeenCalledTimes(1);
-    expect(resetFontStyleSpy).toHaveBeenCalledWith("keywordFontStyle");
+    expect(getActiveFlavorSpy).toHaveBeenCalledTimes(1);
+    expect(resetFontStyleOverrideSpy).toHaveBeenCalledTimes(1);
+    expect(resetFontStyleOverrideSpy).toHaveBeenCalledWith("macchiato", "keywordFontStyle");
   });
 
   /**
@@ -215,7 +223,7 @@ describe("SettingsPanel Integration Tests", () => {
     const panel = new (SettingsPanel as any)(mockContext);
 
     // Create a spy on the service method we expect to be called.
-    const resetAllSpy = jest.spyOn(ConfigurationService, "resetAll");
+    const resetAllSpy = jest.spyOn(ConfigurationService, "resetAll").mockImplementation(() => Promise.resolve());
 
     // This is our simulated message, as if a user clicked the "Reset All" button.
     const mockMessage: WebviewMessage = {
