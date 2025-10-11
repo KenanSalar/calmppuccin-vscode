@@ -239,6 +239,22 @@ verifying this line:
 
 You could also use it witout semantic highlighting, but it's not recommended.
 
+### Extension Integrations
+
+Calmppuccin includes seamless color theming for popular VSCode extensions to provide a consistent visual experience:
+
+#### Error Lens
+
+[Error Lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens) displays diagnostic messages inline in your code.
+
+Calmppuccin automatically themes Error Lens with colors that match each flavor:
+- **Errors:** Red - For critical issues requiring immediate attention
+- **Warnings:** Peach - For important but non-critical issues
+- **Info:** Blue - For informational messages
+- **Hints:** Green - For suggestions and improvements
+
+The integration is automatic - just install Error Lens and Calmppuccin will handle the theming across all 6 flavors (Latte, Frappé, Macchiato, Mocha, Nitro Cold Brew, and Oledppuccin).
+
 ### Icons
 
 - **Note:** These extensions are not required, but it provides a more consistent icon set.\
