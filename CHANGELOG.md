@@ -4,13 +4,16 @@
 
 - **Major Feature**: Added Error Lens extension integration! Calmppuccin now automatically themes the Error Lens extension with colors that match each flavor, providing a consistent visual experience for inline diagnostic messages.
 - **Major Feature**: Added GitHub Pull Requests and Issues extension integration! Calmppuccin now automatically themes PR and issue states (open, closed, merged, draft) with intuitive colors that match each flavor.
+- **Major Feature**: Added GitLens extension integration! Calmppuccin now automatically themes GitLens with semantic colors for Git information, including file status decorations, branch states, blame annotations, and commit graph visualization.
 - **Feature**: Error messages use red for critical issues, warnings use peach for important but non-critical issues, info messages use blue, and hints use green for suggestions.
 - **Feature**: GitHub PR states use green for open, red for closed PRs, mauve for merged PRs and closed issues, and muted gray for drafts.
+- **Feature**: GitLens file decorations use semantic colors (green for added, yellow for modified, red for deleted, sky for untracked), branch states use intuitive colors (green for ahead, peach for behind, yellow for diverged), and graph lanes use a rainbow of accent colors for visual distinction.
 - **Feature**: Created new extension integration system with dedicated modules at `src/extensions/` to support theming of popular VSCode extensions.
 - **Internal**: Added `hexWithAlpha()` utility function for color opacity calculations in extension integrations.
-- **Documentation**: Added Extension Integrations section to README.md documenting the Error Lens and GitHub PR integrations.
+- **Documentation**: Added Extension Integrations section to README.md documenting the Error Lens, GitHub PR, and GitLens integrations.
 - **Fix**: Typo for property readonly in the texmate scope which prevented the color to be applied.
-- **Chore**: Changed license back to MIT
+- **Chore**: The changed color is now yellow.
+- **Chore**: Changed license back to MIT.
 
 ## [1.8.0] - 2025-10-06
 

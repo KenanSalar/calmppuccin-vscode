@@ -269,6 +269,23 @@ Calmppuccin automatically themes GitHub PR states with intuitive colors:
 
 The integration is automatic and adapts to each flavor's palette.
 
+#### GitLens
+
+[GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) supercharges Git inside VSCode with powerful features for visualizing code authorship and exploring Git repositories.
+
+Calmppuccin automatically themes GitLens with semantic colors:
+- **Added Files:** Green - New content
+- **Modified Files:** Yellow - Changed content
+- **Deleted Files:** Red - Removed content
+- **Untracked Files:** Sky - New but not yet added
+- **Branch Ahead:** Green - Local commits ready to push
+- **Branch Behind:** Peach - Remote commits to pull
+- **Branch Diverged:** Yellow - Potential conflicts
+- **Graph Lanes:** Rainbow of accent colors for visual distinction in commit history
+- **Blame Annotations:** Muted colors for subtle, non-distracting information
+
+The integration is automatic and provides consistent theming across all 6 flavors.
+
 ### Icons
 
 - **Note:** These extensions are not required, but it provides a more consistent icon set.\
