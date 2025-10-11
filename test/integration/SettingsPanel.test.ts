@@ -238,4 +238,153 @@ describe("SettingsPanel Integration Tests", () => {
     // Verify that the correct service method was called.
     expect(resetAllSpy).toHaveBeenCalledTimes(1);
   });
+
+  /**
+   * @description Tests that a 'switchProfile' message triggers profile switch and refreshes webview.
+   * @precondition The ConfigurationService is mocked
+   * @assertion updateActiveProfile should be called and _update should be called
+   */
+  it("should call updateActiveProfile and refresh webview when receiving switchProfile message", async () => {
+    const panel = new (SettingsPanel as any)(mockContext);
+    const updateActiveProfileSpy = jest.spyOn(ConfigurationService, "updateActiveProfile").mockResolvedValue();
+    const updateSpy = jest.spyOn(panel, "_update" as any).mockImplementation();
+
+    const mockMessage: WebviewMessage = {
+      command: "switchProfile",
+      profile: "CustomProfile",
+    };
+
+    await panel._handleMessage(mockMessage);
+
+    expect(updateActiveProfileSpy).toHaveBeenCalledWith("CustomProfile");
+    expect(updateSpy).toHaveBeenCalled();
+  });
+
+  /**
+   * @description Tests that a 'saveProfile' message triggers profile save.
+   * @precondition The ConfigurationService is mocked
+   * @assertion saveProfile should be called with profile name
+   */
+  it("should call saveProfile when receiving saveProfile message", async () => {
+    const panel = new (SettingsPanel as any)(mockContext);
+    const saveProfileSpy = jest.spyOn(ConfigurationService, "saveProfile").mockResolvedValue();
+
+    const mockMessage: WebviewMessage = {
+      command: "saveProfile",
+      profile: "NewProfile",
+    };
+
+    await panel._handleMessage(mockMessage);
+
+    expect(saveProfileSpy).toHaveBeenCalledWith("NewProfile");
+  });
+
+  /**
+   * @description Tests that a 'deleteProfile' message triggers profile deletion and refresh.
+   * @precondition The ConfigurationService is mocked
+   * @assertion deleteProfile should be called and _update should be called
+   */
+  it("should call deleteProfile and refresh webview when receiving deleteProfile message", async () => {
+    const panel = new (SettingsPanel as any)(mockContext);
+    const deleteProfileSpy = jest.spyOn(ConfigurationService, "deleteProfile").mockResolvedValue();
+    const updateSpy = jest.spyOn(panel, "_update" as any).mockImplementation();
+
+    const mockMessage: WebviewMessage = {
+      command: "deleteProfile",
+      profile: "OldProfile",
+    };
+
+    await panel._handleMessage(mockMessage);
+
+    expect(deleteProfileSpy).toHaveBeenCalledWith("OldProfile");
+    expect(updateSpy).toHaveBeenCalled();
+  });
+
+  /**
+   * @description Tests that deleteProfile with Default profile is handled.
+   * @precondition The ConfigurationService prevents Default profile deletion
+   * @assertion deleteProfile should be called even for Default (service handles protection)
+   */
+  it("should attempt to delete Default profile (ConfigurationService handles protection)", async () => {
+    const panel = new (SettingsPanel as any)(mockContext);
+    const deleteProfileSpy = jest.spyOn(ConfigurationService, "deleteProfile").mockResolvedValue();
+
+    const mockMessage: WebviewMessage = {
+      command: "deleteProfile",
+      profile: "Default",
+    };
+
+    await panel._handleMessage(mockMessage);
+
+    // Panel passes request to service, service handles protection
+    expect(deleteProfileSpy).toHaveBeenCalledWith("Default");
+  });
+
+  /**
+   * @description Tests that updating font style works correctly.
+   * @precondition The ConfigurationService is mocked
+   * @assertion updateFontStyleOverride should be called with flavor, key and value
+   */
+  it("should call updateFontStyleOverride when receiving updateSetting message", async () => {
+    const panel = new (SettingsPanel as any)(mockContext);
+    jest.spyOn(ConfigurationService, "getActiveFlavor").mockReturnValue("mocha");
+    const updateFontStyleOverrideSpy = jest.spyOn(ConfigurationService, "updateFontStyleOverride").mockResolvedValue();
+
+    const mockMessage: WebviewMessage = {
+      command: "updateSetting",
+      key: "commentFontStyle",
+      value: "bold",
+    };
+
+    await panel._handleMessage(mockMessage);
+
+    expect(updateFontStyleOverrideSpy).toHaveBeenCalledWith("mocha", "commentFontStyle", "bold");
+  });
+
+  /**
+   * @description Tests that a 'resetSyntaxColor' message triggers syntax color reset.
+   * @precondition The ConfigurationService is mocked
+   * @assertion resetSyntaxColor should be called with flavor and key
+   */
+  it("should call resetSyntaxColor when receiving resetSyntaxColor message", async () => {
+    const panel = new (SettingsPanel as any)(mockContext);
+    const resetSyntaxColorSpy = jest.spyOn(ConfigurationService, "resetSyntaxColor").mockResolvedValue();
+
+    const mockMessage: WebviewMessage = {
+      command: "resetSyntaxColor",
+      flavor: "mocha",
+      key: "string",
+    };
+
+    await panel._handleMessage(mockMessage);
+
+    expect(resetSyntaxColorSpy).toHaveBeenCalledWith("mocha", "string");
+  });
+
+  /**
+   * @description Tests that multiple sequential messages are handled correctly.
+   * @precondition The ConfigurationService is mocked
+   * @assertion All messages should be processed in order
+   */
+  it("should handle multiple sequential messages correctly", async () => {
+    const panel = new (SettingsPanel as any)(mockContext);
+    const updateAccentSpy = jest.spyOn(ConfigurationService, "updateAccent").mockResolvedValue();
+    jest.spyOn(ConfigurationService, "getActiveFlavor").mockReturnValue("mocha");
+    const updateFontStyleOverrideSpy = jest.spyOn(ConfigurationService, "updateFontStyleOverride").mockResolvedValue();
+    const saveProfileSpy = jest.spyOn(ConfigurationService, "saveProfile").mockResolvedValue();
+    jest.spyOn(ConfigurationService, "updateActiveProfile").mockResolvedValue();
+    jest.spyOn(panel, "_update" as any).mockImplementation();
+
+    const message1: WebviewMessage = { command: "updateAccent", value: "mauve" };
+    const message2: WebviewMessage = { command: "updateSetting", key: "commentFontStyle", value: "bold" };
+    const message3: WebviewMessage = { command: "saveProfile", profile: "TestProfile" };
+
+    await panel._handleMessage(message1);
+    await panel._handleMessage(message2);
+    await panel._handleMessage(message3);
+
+    expect(updateAccentSpy).toHaveBeenCalledWith("mauve");
+    expect(updateFontStyleOverrideSpy).toHaveBeenCalledWith("mocha", "commentFontStyle", "bold");
+    expect(saveProfileSpy).toHaveBeenCalledWith("TestProfile");
+  });
 });
