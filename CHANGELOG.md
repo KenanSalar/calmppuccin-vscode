@@ -3,10 +3,12 @@
 ## [Unreleased]
 
 - **Major Feature**: Added Error Lens extension integration! Calmppuccin now automatically themes the Error Lens extension with colors that match each flavor, providing a consistent visual experience for inline diagnostic messages.
+- **Major Feature**: Added GitHub Pull Requests and Issues extension integration! Calmppuccin now automatically themes PR and issue states (open, closed, merged, draft) with intuitive colors that match each flavor.
 - **Feature**: Error messages use red for critical issues, warnings use peach for important but non-critical issues, info messages use blue, and hints use green for suggestions.
-- **Feature**: Created new extension integration system with dedicated module at `src/extensions/errorLens.ts` to support theming of popular VSCode extensions.
-- **Internal**: Added `hexToRgba()` utility function for color opacity calculations in extension integrations.
-- **Documentation**: Added Extension Integrations section to README.md documenting the Error Lens integration.
+- **Feature**: GitHub PR states use green for open, red for closed PRs, mauve for merged PRs and closed issues, and muted gray for drafts.
+- **Feature**: Created new extension integration system with dedicated modules at `src/extensions/` to support theming of popular VSCode extensions.
+- **Internal**: Added `hexWithAlpha()` utility function for color opacity calculations in extension integrations.
+- **Documentation**: Added Extension Integrations section to README.md documenting the Error Lens and GitHub PR integrations.
 - **Fix**: Typo for property readonly in the texmate scope which prevented the color to be applied.
 - **Chore**: Changed license back to MIT
 
