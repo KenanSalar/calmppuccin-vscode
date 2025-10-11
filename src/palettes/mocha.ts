@@ -214,7 +214,7 @@ export default {
   invalid: "#be7474",
   inserted: "#accc7c",
   deleted: "#c06271",
-  changed: "#b081cf", // TODO: change to a yellow color
+  changed: "#e7d1a2",
   gitChangedGutter: "#c7a058",
   metaMethod: "#6a8cd4",
   regularExpression: "#76b1c9",
