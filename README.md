@@ -255,6 +255,20 @@ Calmppuccin automatically themes Error Lens with colors that match each flavor:
 
 The integration is automatic - just install Error Lens and Calmppuccin will handle the theming across all 6 flavors (Latte, Frappé, Macchiato, Mocha, Nitro Cold Brew, and Oledppuccin).
 
+#### GitHub Pull Requests and Issues
+
+[GitHub Pull Requests and Issues](https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-pull-request-github) brings GitHub workflow integration directly into VSCode.
+
+Calmppuccin automatically themes GitHub PR states with intuitive colors:
+- **Open (PR/Issue):** Green - Active and awaiting attention
+- **Closed PR:** Red - Rejected or closed without merging
+- **Closed Issue:** Mauve - Successfully resolved
+- **Merged PR:** Mauve - Successfully integrated
+- **Draft PR:** Muted gray - Work in progress
+- **New Issue Decoration:** Rosewater - Subtle attention indicator
+
+The integration is automatic and adapts to each flavor's palette.
+
 ### Icons
 
 - **Note:** These extensions are not required, but it provides a more consistent icon set.\
