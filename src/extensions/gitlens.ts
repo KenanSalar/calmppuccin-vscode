@@ -25,7 +25,15 @@ export interface IGitLensColors {
   "gitlens.lineHighlightOverviewRulerColor": string;
 
   // Trailing line blame annotations
+  "gitlens.trailingLineBackgroundColor": string;
   "gitlens.trailingLineForegroundColor": string;
+
+  // PR/Issue icon colors
+  "gitlens.openAutolinkedIssueIconColor": string;
+  "gitlens.closedAutolinkedIssueIconColor": string;
+  "gitlens.closedPullRequestIconColor": string;
+  "gitlens.openPullRequestIconColor": string;
+  "gitlens.mergedPullRequestIconColor": string;
 
   // Graph visualization colors (commit history graph)
   "gitlens.graphLane1Color": string;
@@ -39,9 +47,10 @@ export interface IGitLensColors {
   "gitlens.graphLane9Color": string;
   "gitlens.graphLane10Color": string;
 
-  // Unpublished commit decorations
+  // Unpublished/unpulled changes
   "gitlens.unpublishedChangesIconColor": string;
   "gitlens.unpublishedCommitIconColor": string;
+  "gitlens.unpulledChangesIconColor": string;
 
   // Comparison view colors
   "gitlens.decorations.addedForegroundColor": string;
@@ -59,8 +68,36 @@ export interface IGitLensColors {
   "gitlens.decorations.branchUnpublishedForegroundColor": string;
   "gitlens.decorations.branchMissingUpstreamForegroundColor": string;
 
+  // Status decorations
+  "gitlens.decorations.statusMergingOrRebasingConflictForegroundColor": string;
+  "gitlens.decorations.statusMergingOrRebasingForegroundColor": string;
+
+  // Workspace decorations
+  "gitlens.decorations.workspaceRepoMissingForegroundColor": string;
+  "gitlens.decorations.workspaceCurrentForegroundColor": string;
+  "gitlens.decorations.workspaceRepoOpenForegroundColor": string;
+
   // Worktree colors
+  "gitlens.decorations.worktreeHasUncommittedChangesForegroundColor": string;
   "gitlens.decorations.worktreeMissingForegroundColor": string;
+
+  // Graph markers and scrollbar
+  "gitlens.graphChangesColumnAddedColor": string;
+  "gitlens.graphChangesColumnDeletedColor": string;
+  "gitlens.graphMinimapMarkerHeadColor": string;
+  "gitlens.graphScrollMarkerHeadColor": string;
+  "gitlens.graphMinimapMarkerUpstreamColor": string;
+  "gitlens.graphScrollMarkerUpstreamColor": string;
+  "gitlens.graphMinimapMarkerHighlightsColor": string;
+  "gitlens.graphScrollMarkerHighlightsColor": string;
+  "gitlens.graphMinimapMarkerLocalBranchesColor": string;
+  "gitlens.graphScrollMarkerLocalBranchesColor": string;
+  "gitlens.graphMinimapMarkerRemoteBranchesColor": string;
+  "gitlens.graphScrollMarkerRemoteBranchesColor": string;
+  "gitlens.graphMinimapMarkerStashesColor": string;
+  "gitlens.graphScrollMarkerStashesColor": string;
+  "gitlens.graphMinimapMarkerTagsColor": string;
+  "gitlens.graphScrollMarkerTagsColor": string;
 }
 
 /**
@@ -118,11 +155,19 @@ export function generateGitLensColors(palette: IPalette): IGitLensColors {
     "gitlens.gutterUncommittedForegroundColor": palette.yellow,
 
     // Line highlights - gentle accent color with low opacity
-    "gitlens.lineHighlightBackgroundColor": hexWithAlpha(palette.blue, 0.1),
-    "gitlens.lineHighlightOverviewRulerColor": hexWithAlpha(palette.blue, 0.4),
+    "gitlens.lineHighlightBackgroundColor": hexWithAlpha(palette.blue, 0.15),
+    "gitlens.lineHighlightOverviewRulerColor": hexWithAlpha(palette.blue, 0.8),
 
     // Trailing line blame - muted for minimal distraction
-    "gitlens.trailingLineForegroundColor": palette.uiInactiveForeground0,
+    "gitlens.trailingLineBackgroundColor": "#00000000",
+    "gitlens.trailingLineForegroundColor": hexWithAlpha(palette.uiText, 0.3),
+
+    // PR/Issue icon colors
+    "gitlens.openAutolinkedIssueIconColor": palette.green,
+    "gitlens.closedAutolinkedIssueIconColor": palette.mauve,
+    "gitlens.closedPullRequestIconColor": palette.red,
+    "gitlens.openPullRequestIconColor": palette.green,
+    "gitlens.mergedPullRequestIconColor": palette.mauve,
 
     // Graph visualization - colorful lanes for commit history
     "gitlens.graphLane1Color": graphLaneColors[0],
@@ -136,9 +181,10 @@ export function generateGitLensColors(palette: IPalette): IGitLensColors {
     "gitlens.graphLane9Color": graphLaneColors[8],
     "gitlens.graphLane10Color": graphLaneColors[9],
 
-    // Unpublished changes - yellow for attention
-    "gitlens.unpublishedChangesIconColor": palette.yellow,
-    "gitlens.unpublishedCommitIconColor": palette.yellow,
+    // Unpublished/unpulled changes
+    "gitlens.unpublishedChangesIconColor": palette.green,
+    "gitlens.unpublishedCommitIconColor": palette.green,
+    "gitlens.unpulledChangesIconColor": palette.peach,
 
     // File status decorations - semantic colors
     "gitlens.decorations.addedForegroundColor": palette.green,
@@ -148,7 +194,7 @@ export function generateGitLensColors(palette: IPalette): IGitLensColors {
     "gitlens.decorations.untrackedForegroundColor": palette.sky,
     "gitlens.decorations.renamedForegroundColor": palette.mauve,
 
-    // Branch status - semantic colors for sync state
+    // Branch status - semantic colors (following Catppuccin approach)
     "gitlens.decorations.branchAheadForegroundColor": palette.green,
     "gitlens.decorations.branchBehindForegroundColor": palette.peach,
     "gitlens.decorations.branchDivergedForegroundColor": palette.yellow,
@@ -156,7 +202,35 @@ export function generateGitLensColors(palette: IPalette): IGitLensColors {
     "gitlens.decorations.branchUnpublishedForegroundColor": palette.blue,
     "gitlens.decorations.branchMissingUpstreamForegroundColor": palette.red,
 
+    // Status decorations
+    "gitlens.decorations.statusMergingOrRebasingConflictForegroundColor": palette.maroon,
+    "gitlens.decorations.statusMergingOrRebasingForegroundColor": palette.yellow,
+
+    // Workspace decorations
+    "gitlens.decorations.workspaceRepoMissingForegroundColor": palette.uiInactiveForeground0,
+    "gitlens.decorations.workspaceCurrentForegroundColor": palette.blue,
+    "gitlens.decorations.workspaceRepoOpenForegroundColor": palette.blue,
+
     // Worktree
-    "gitlens.decorations.worktreeMissingForegroundColor": palette.red,
+    "gitlens.decorations.worktreeHasUncommittedChangesForegroundColor": palette.peach,
+    "gitlens.decorations.worktreeMissingForegroundColor": palette.maroon,
+
+    // Graph markers and scrollbar
+    "gitlens.graphChangesColumnAddedColor": palette.green,
+    "gitlens.graphChangesColumnDeletedColor": palette.red,
+    "gitlens.graphMinimapMarkerHeadColor": palette.green,
+    "gitlens.graphScrollMarkerHeadColor": palette.green,
+    "gitlens.graphMinimapMarkerUpstreamColor": palette.green,
+    "gitlens.graphScrollMarkerUpstreamColor": palette.green,
+    "gitlens.graphMinimapMarkerHighlightsColor": palette.yellow,
+    "gitlens.graphScrollMarkerHighlightsColor": palette.yellow,
+    "gitlens.graphMinimapMarkerLocalBranchesColor": palette.blue,
+    "gitlens.graphScrollMarkerLocalBranchesColor": palette.blue,
+    "gitlens.graphMinimapMarkerRemoteBranchesColor": palette.blue,
+    "gitlens.graphScrollMarkerRemoteBranchesColor": palette.blue,
+    "gitlens.graphMinimapMarkerStashesColor": palette.mauve,
+    "gitlens.graphScrollMarkerStashesColor": palette.mauve,
+    "gitlens.graphMinimapMarkerTagsColor": palette.flamingo,
+    "gitlens.graphScrollMarkerTagsColor": palette.flamingo,
   };
 }
