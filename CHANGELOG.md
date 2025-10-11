@@ -1,7 +1,13 @@
 # Changelog
 
-## [1.8.1] - 2025-10-06
+## [Unreleased]
 
+- **Major Feature**: Added Error Lens extension integration! Calmppuccin now automatically themes the Error Lens extension with colors that match each flavor, providing a consistent visual experience for inline diagnostic messages.
+- **Feature**: Error messages use red for critical issues, warnings use peach for important but non-critical issues, info messages use blue, and hints use green for suggestions.
+- **Feature**: Created new extension integration system with dedicated module at `src/extensions/errorLens.ts` to support theming of popular VSCode extensions.
+- **Internal**: Added `hexToRgba()` utility function for color opacity calculations in extension integrations.
+- **Documentation**: Added Extension Integrations section to README.md documenting the Error Lens integration.
+- **Fix**: Typo for property readonly in the texmate scope which prevented the color to be applied.
 - **Chore**: Changed license back to MIT
 
 ## [1.8.0] - 2025-10-06
