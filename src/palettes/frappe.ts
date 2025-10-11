@@ -214,7 +214,7 @@ export default {
   invalid: "#be7474",
   inserted: "#accc7c",
   deleted: "#c06271",
-  changed: "#b081cf",
+  changed: "#e5c890",
   gitChangedGutter: "#cca356",
   metaMethod: "#6a8cd4",
   regularExpression: "#76b1c9",
