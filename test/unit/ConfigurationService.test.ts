@@ -906,3 +906,4 @@ describe("ConfigurationService.getWebViewSettings", () => {
     expect(baseSetting?.defaultColor).toBeDefined();
   });
 });
+
