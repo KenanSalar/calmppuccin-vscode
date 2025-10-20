@@ -9,6 +9,9 @@ import * as path from "path";
 import palette, { IPalettes } from "./src/palettes";
 import * as C from "./src/constants";
 import { IFontStyles, ISyntaxOverrides, IUiOverrides, IFontStyleOverrides } from "./src/ConfigurationService";
+import { generateErrorLensColors } from "./src/extensions/errorLens";
+import { generateGitHubPullRequestColors } from "./src/extensions/githubPullRequest";
+import { generateGitLensColors } from "./src/extensions/gitlens";
 
 const THEME_DIR = path.resolve(__dirname, "..", C.THEMES_DIR);
 const TEMPLATE_PATH = path.resolve(__dirname, "..", C.SRC_DIR, C.TEMPLATE_FILE);
@@ -81,6 +84,18 @@ export async function buildAllFlavors(
     const flavorDisplayName = flavor.charAt(0).toUpperCase() + flavor.slice(1);
     themeJson.name = `Calmppuccin ${flavorDisplayName}`;
     themeJson.type = flavor === C.LIGHT_FLAVOR_NAME ? C.THEME_TYPE_LIGHT : C.THEME_TYPE_DARK;
+
+    // Add Error Lens extension color customizations
+    const errorLensColors = generateErrorLensColors(basePalette);
+    themeJson.colors = { ...themeJson.colors, ...errorLensColors };
+
+    // Add GitHub Pull Requests extension color customizations
+    const githubPRColors = generateGitHubPullRequestColors(basePalette);
+    themeJson.colors = { ...themeJson.colors, ...githubPRColors };
+
+    // Add GitLens extension color customizations
+    const gitLensColors = generateGitLensColors(basePalette);
+    themeJson.colors = { ...themeJson.colors, ...gitLensColors };
 
     // Write the generated theme object to a JSON file in the /themes directory.
     const themeFileName = `${C.THEME_FILE_PREFIX}-${flavor}-${C.THEME_FILE_SUFFIX}`;

@@ -239,6 +239,53 @@ verifying this line:
 
 You could also use it witout semantic highlighting, but it's not recommended.
 
+### Extension Integrations
+
+Calmppuccin includes seamless color theming for popular VSCode extensions to provide a consistent visual experience:
+
+#### Error Lens
+
+[Error Lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens) displays diagnostic messages inline in your code.
+
+Calmppuccin automatically themes Error Lens with colors that match each flavor:
+- **Errors:** Red - For critical issues requiring immediate attention
+- **Warnings:** Peach - For important but non-critical issues
+- **Info:** Blue - For informational messages
+- **Hints:** Green - For suggestions and improvements
+
+The integration is automatic - just install Error Lens and Calmppuccin will handle the theming across all 6 flavors (Latte, Frappé, Macchiato, Mocha, Nitro Cold Brew, and Oledppuccin).
+
+#### GitHub Pull Requests and Issues
+
+[GitHub Pull Requests and Issues](https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-pull-request-github) brings GitHub workflow integration directly into VSCode.
+
+Calmppuccin automatically themes GitHub PR states with intuitive colors:
+- **Open (PR/Issue):** Green - Active and awaiting attention
+- **Closed PR:** Red - Rejected or closed without merging
+- **Closed Issue:** Mauve - Successfully resolved
+- **Merged PR:** Mauve - Successfully integrated
+- **Draft PR:** Muted gray - Work in progress
+- **New Issue Decoration:** Rosewater - Subtle attention indicator
+
+The integration is automatic and adapts to each flavor's palette.
+
+#### GitLens
+
+[GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) supercharges Git inside VSCode with powerful features for visualizing code authorship and exploring Git repositories.
+
+Calmppuccin automatically themes GitLens with semantic colors:
+- **Added Files:** Green - New content
+- **Modified Files:** Yellow - Changed content
+- **Deleted Files:** Red - Removed content
+- **Untracked Files:** Sky - New but not yet added
+- **Branch Ahead:** Green - Local commits ready to push
+- **Branch Behind:** Peach - Remote commits to pull
+- **Branch Diverged:** Yellow - Potential conflicts
+- **Graph Lanes:** Rainbow of accent colors for visual distinction in commit history
+- **Blame Annotations:** Muted colors for subtle, non-distracting information
+
+The integration is automatic and provides consistent theming across all 6 flavors.
+
 ### Icons
 
 - **Note:** These extensions are not required, but it provides a more consistent icon set.\
