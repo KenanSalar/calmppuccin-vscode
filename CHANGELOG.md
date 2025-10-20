@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.9.0] - 2025-10-20
 
 - **Major Feature**: Added Error Lens extension integration! Calmppuccin now automatically themes the Error Lens extension with colors that match each flavor, providing a consistent visual experience for inline diagnostic messages.
 - **Major Feature**: Added GitHub Pull Requests and Issues extension integration! Calmppuccin now automatically themes PR and issue states (open, closed, merged, draft) with intuitive colors that match each flavor.
