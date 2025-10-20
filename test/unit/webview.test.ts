@@ -194,4 +194,166 @@ describe("UIManager Unit Tests", () => {
     expect(mockPostMessage).toHaveBeenCalledWith({ command: "resetAll" });
     expect(dialogOverlay?.classList.contains("hidden")).toBe(true); // Dialog is hidden again
   });
+
+  // --- Priority 3: Webview UI Validation Tests ---
+
+  describe("Hex Color Input Validation", () => {
+    it("should validate hex color input and reject invalid values", () => {
+      // Arrange
+      uiManager.populateAllSettings(mockSettingsPayload);
+      const customAccentHexInput = document.getElementById("custom-accent-hex-input") as HTMLInputElement;
+      const accentSelect = document.querySelector("#accent-container select") as HTMLSelectElement;
+
+      // Switch to custom accent to show the hex input
+      accentSelect.value = "custom";
+      accentSelect.dispatchEvent(new Event("change"));
+
+      // Act - Test invalid hex value
+      customAccentHexInput.value = "invalid";
+      customAccentHexInput.dispatchEvent(new Event("input"));
+
+      // Assert - Should show error styling
+      expect(customAccentHexInput.style.borderColor).toBe("var(--danger-color)");
+      expect(customAccentHexInput.style.outlineColor).toBe("var(--danger-color)");
+
+      // Act - Test valid hex value
+      customAccentHexInput.value = "#89b4fa";
+      customAccentHexInput.dispatchEvent(new Event("input"));
+
+      // Assert - Should remove error styling
+      expect(customAccentHexInput.style.borderColor).toBe("");
+      expect(customAccentHexInput.style.outlineColor).toBe("");
+    });
+
+    it("should only send valid hex colors to VS Code on change event", () => {
+      // Arrange
+      uiManager.populateAllSettings(mockSettingsPayload);
+      const customAccentHexInput = document.getElementById("custom-accent-hex-input") as HTMLInputElement;
+      const accentSelect = document.querySelector("#accent-container select") as HTMLSelectElement;
+
+      accentSelect.value = "custom";
+      accentSelect.dispatchEvent(new Event("change"));
+      mockPostMessage.mockClear();
+
+      // Act - Enter invalid hex and trigger change
+      customAccentHexInput.value = "not-a-color";
+      customAccentHexInput.dispatchEvent(new Event("input"));
+      customAccentHexInput.dispatchEvent(new Event("change"));
+
+      // Assert - Should NOT send message for invalid color
+      expect(mockPostMessage).not.toHaveBeenCalled();
+
+      // Act - Enter valid hex and trigger change
+      customAccentHexInput.value = "#ff00ff";
+      customAccentHexInput.dispatchEvent(new Event("input"));
+      customAccentHexInput.dispatchEvent(new Event("change"));
+
+      // Assert - Should send message for valid color
+      expect(mockPostMessage).toHaveBeenCalledTimes(1);
+      expect(mockPostMessage).toHaveBeenCalledWith({
+        command: "updateCustomAccent",
+        value: "#ff00ff",
+      });
+    });
+
+    it("should validate syntax color hex input with 8-digit support", () => {
+      // Arrange
+      uiManager.populateAllSettings(mockSettingsPayload);
+      const keywordColorControl = document.querySelector("label[for='keyword']")?.nextElementSibling?.nextElementSibling;
+      const hexInput = keywordColorControl?.querySelector(".hex-input-display") as HTMLInputElement;
+
+      // Act - Test valid 6-digit hex
+      hexInput.value = "#89b4fa";
+      hexInput.dispatchEvent(new Event("input"));
+
+      // Assert
+      expect(hexInput.style.borderColor).toBe("");
+      expect(hexInput.style.outlineColor).toBe("");
+
+      // Act - Test valid 8-digit hex (with alpha)
+      hexInput.value = "#89b4fa80";
+      hexInput.dispatchEvent(new Event("input"));
+
+      // Assert
+      expect(hexInput.style.borderColor).toBe("");
+      expect(hexInput.style.outlineColor).toBe("");
+
+      // Act - Test invalid hex
+      hexInput.value = "#zzzzzz";
+      hexInput.dispatchEvent(new Event("input"));
+
+      // Assert
+      expect(hexInput.style.borderColor).toBe("var(--danger-color)");
+      expect(hexInput.style.outlineColor).toBe("var(--danger-color)");
+    });
+  });
+
+  describe("Profile Management Validation", () => {
+    it("should prevent profile save with empty string", () => {
+      // Arrange
+      uiManager.populateAllSettings(mockSettingsPayload);
+      const profileNameInput = document.getElementById("profile-name-input") as HTMLInputElement;
+      const saveProfileBtn = document.getElementById("save-profile-btn") as HTMLButtonElement;
+
+      // Act - Try to save with empty name
+      profileNameInput.value = "";
+      saveProfileBtn.click();
+
+      // Assert - Should NOT send message
+      expect(mockPostMessage).not.toHaveBeenCalled();
+
+      // Act - Try to save with whitespace only
+      profileNameInput.value = "   ";
+      saveProfileBtn.click();
+
+      // Assert - Should NOT send message
+      expect(mockPostMessage).not.toHaveBeenCalled();
+    });
+
+    it("should prevent saving profile with name 'Default'", () => {
+      // Arrange
+      uiManager.populateAllSettings(mockSettingsPayload);
+      const profileNameInput = document.getElementById("profile-name-input") as HTMLInputElement;
+      const saveProfileBtn = document.getElementById("save-profile-btn") as HTMLButtonElement;
+
+      // Act - Try to save with name "Default"
+      profileNameInput.value = "Default";
+      saveProfileBtn.click();
+
+      // Assert - Should NOT send message
+      expect(mockPostMessage).not.toHaveBeenCalled();
+    });
+
+    it("should handle rapid profile switches correctly", () => {
+      // Arrange
+      uiManager.populateAllSettings(mockSettingsPayload);
+      const profileSelect = document.getElementById("profile-select") as HTMLSelectElement;
+      mockPostMessage.mockClear();
+
+      // Act - Rapidly switch profiles
+      profileSelect.value = "Custom Profile 1";
+      profileSelect.dispatchEvent(new Event("change"));
+
+      profileSelect.value = "Work Theme";
+      profileSelect.dispatchEvent(new Event("change"));
+
+      profileSelect.value = "Default";
+      profileSelect.dispatchEvent(new Event("change"));
+
+      // Assert - All messages should be sent
+      expect(mockPostMessage).toHaveBeenCalledTimes(3);
+      expect(mockPostMessage).toHaveBeenNthCalledWith(1, {
+        command: "switchProfile",
+        profile: "Custom Profile 1",
+      });
+      expect(mockPostMessage).toHaveBeenNthCalledWith(2, {
+        command: "switchProfile",
+        profile: "Work Theme",
+      });
+      expect(mockPostMessage).toHaveBeenNthCalledWith(3, {
+        command: "switchProfile",
+        profile: "Default",
+      });
+    });
+  });
 });

@@ -26,6 +26,7 @@ package-lock.json
 src/ConfigurationService.ts
 src/constants.ts
 src/palettes/**
+src/extensions/**
 src/SettingsPanel.ts
 src/WebviewManager.ts
 tsconfig.json
