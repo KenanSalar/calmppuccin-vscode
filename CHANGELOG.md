@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.1] - 2025-12-01
+
+- **Feature**: Added syntax highlighting support for `.env` files (dotenv). Comments, variable keys, quoted strings, and property values are now properly colored.
+- **Feature**: Added `keyword.control.type` to the keyword scope for improved type-related keyword highlighting.
+- **Internal**: Updated test mocks to include `keys` method for the VS Code secrets API, ensuring compatibility with latest VS Code API.
+- **Chore**: Updated dependencies.
+
 ## [1.9.0] - 2025-10-20
 
 - **Major Feature**: Added Error Lens extension integration! Calmppuccin now automatically themes the Error Lens extension with colors that match each flavor, providing a consistent visual experience for inline diagnostic messages.

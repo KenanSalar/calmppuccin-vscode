@@ -54,7 +54,7 @@ describe("Icon Theme Synchronization", () => {
         setKeysForSync: jest.fn(),
       },
       workspaceState: { get: jest.fn(), update: jest.fn(), keys: jest.fn() },
-      secrets: { get: jest.fn(), store: jest.fn(), onDidChange: jest.fn(), delete: jest.fn() },
+      secrets: { get: jest.fn(), store: jest.fn(), onDidChange: jest.fn(), delete: jest.fn(), keys: jest.fn() },
       extensionUri: vscode.Uri.parse("file:///mock/extension/path"),
       extensionPath: "/mock/extension/path",
       storageUri: vscode.Uri.parse("file:///mock/storage/path"),
