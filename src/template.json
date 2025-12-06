@@ -654,7 +654,8 @@
         "punctuation.definition.heading",
         "punctuation.definition.bold.markdown",
         "punctuation.definition.italic.markdown",
-        "punctuation.definition.strikethrough.markdown"
+        "punctuation.definition.strikethrough.markdown",
+        "comment.line.dotenv"
       ],
       "settings": {
         "foreground": "{{comment}}",
@@ -707,6 +708,7 @@
         "support",
         "support.variable",
         "variable",
+        "variable.key.dotenv",
         "variable.argument",
         "variable.css",
         "variable.global",
@@ -1119,7 +1121,8 @@
         "keyword.other.DDL",
         "keyword.other.order",
         "keyword.other.pgsql",
-        "keyword.other.data-integrity"
+        "keyword.other.data-integrity",
+        "keyword.control.type"
       ],
       "settings": {
         "foreground": "{{keyword}}",
@@ -1237,6 +1240,7 @@
         "constant.character.literal.scala",
         "source.tf entity.name",
         "string.quoted.double",
+        "string.quoted.double.dotenv",
         "string.unquoted"
       ],
       "settings": {
@@ -1322,7 +1326,8 @@
         "variable.other.property",
         "entity.name.variable.property",
         "meta.object-literal.key",
-        "support.variable.property"
+        "support.variable.property",
+        "property.value.dotenv"
       ],
       "settings": {
         "foreground": "{{property}}",
