@@ -1122,7 +1122,8 @@
         "keyword.other.order",
         "keyword.other.pgsql",
         "keyword.other.data-integrity",
-        "keyword.control.type"
+        "keyword.control.type",
+        "keyword.control.dart"
       ],
       "settings": {
         "foreground": "{{keyword}}",
@@ -1510,7 +1511,8 @@
         "source.tf meta.keyword.number",
         "source.scala entity.name.class",
         "markup.raw.monospace",
-        "markup.mark"
+        "markup.mark",
+        "punctuation.dot.dart"
       ],
       "settings": {
         "foreground": "{{annotation}}",
@@ -2063,6 +2065,10 @@
       "fontStyle": "{{keywordFontStyle}}"
     },
     "controlKeyword": {
+      "foreground": "{{keyword}}",
+      "fontStyle": "{{keywordFontStyle}}"
+    },
+    "keyword.control": {
       "foreground": "{{keyword}}",
       "fontStyle": "{{keywordFontStyle}}"
     },
