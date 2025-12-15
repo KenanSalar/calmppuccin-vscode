@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.9.2] - 2025-12-16
+
+- **Feature**: Added Dart language syntax highlighting support with `keyword.control.dart` for control keywords and `punctuation.dot.dart` for dot punctuation.
+- **Feature**: Added `keyword.control` semantic token rule for improved keyword highlighting across languages.
+
 ## [1.9.1] - 2025-12-01
 
 - **Feature**: Added syntax highlighting support for `.env` files (dotenv). Comments, variable keys, quoted strings, and property values are now properly colored.
