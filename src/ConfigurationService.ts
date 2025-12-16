@@ -96,7 +96,7 @@ export class ConfigurationService {
     }
 
     let needsUpdate = false;
-    const defaultProfile = profiles.Default;
+    const defaultProfile: IProfile = profiles.Default;
 
     // Get global settings
     const globalFontStyles = this.config.get(C.CONFIG_KEY_FONT_STYLES);
@@ -107,7 +107,7 @@ export class ConfigurationService {
     const globalCustomAccent = this.config.get(C.CONFIG_KEY_CUSTOM_ACCENT);
 
     // Only migrate fontStyles if they contain non-default values
-    if (globalFontStyles && !(C.CONFIG_KEY_FONT_STYLES in defaultProfile)) {
+    if (globalFontStyles && !defaultProfile.fontStyles) {
       const defaults = this.getDefaultFontStyles();
       const customizedStyles: { [key: string]: string } = {};
 
@@ -120,38 +120,38 @@ export class ConfigurationService {
 
       // Only add to profile if there are actually customized styles
       if (Object.keys(customizedStyles).length > 0) {
-        (defaultProfile as any)[C.CONFIG_KEY_FONT_STYLES] = customizedStyles;
+        defaultProfile.fontStyles = customizedStyles;
         needsUpdate = true;
       }
     }
 
     // Migrate fontStyleOverrides (these are always customizations)
-    if (globalFontStyleOverrides && Object.keys(globalFontStyleOverrides).length > 0 && !(C.CONFIG_KEY_FONT_STYLE_OVERRIDES in defaultProfile)) {
-      (defaultProfile as any)[C.CONFIG_KEY_FONT_STYLE_OVERRIDES] = globalFontStyleOverrides;
+    if (globalFontStyleOverrides && Object.keys(globalFontStyleOverrides).length > 0 && !defaultProfile.fontStyleOverrides) {
+      defaultProfile.fontStyleOverrides = globalFontStyleOverrides as Record<string, Record<string, string>>;
       needsUpdate = true;
     }
 
     // Migrate syntaxOverrides (these are always customizations)
-    if (globalSyntaxOverrides && Object.keys(globalSyntaxOverrides).length > 0 && !(C.CONFIG_KEY_SYNTAX_OVERRIDES in defaultProfile)) {
-      (defaultProfile as any)[C.CONFIG_KEY_SYNTAX_OVERRIDES] = globalSyntaxOverrides;
+    if (globalSyntaxOverrides && Object.keys(globalSyntaxOverrides).length > 0 && !defaultProfile.syntaxOverrides) {
+      defaultProfile.syntaxOverrides = globalSyntaxOverrides as Record<string, Record<string, string>>;
       needsUpdate = true;
     }
 
     // Migrate uiOverrides (these are always customizations)
-    if (globalUiOverrides && Object.keys(globalUiOverrides).length > 0 && !(C.CONFIG_KEY_UI_OVERRIDES in defaultProfile)) {
-      (defaultProfile as any)[C.CONFIG_KEY_UI_OVERRIDES] = globalUiOverrides;
+    if (globalUiOverrides && Object.keys(globalUiOverrides).length > 0 && !defaultProfile.uiOverrides) {
+      defaultProfile.uiOverrides = globalUiOverrides as Record<string, Record<string, string>>;
       needsUpdate = true;
     }
 
     // Only migrate accent if it's different from default
-    if (globalAccent && globalAccent !== C.DEFAULT_ACCENT && !(C.CONFIG_KEY_ACCENT in defaultProfile)) {
-      (defaultProfile as any)[C.CONFIG_KEY_ACCENT] = globalAccent;
+    if (globalAccent && globalAccent !== C.DEFAULT_ACCENT && !defaultProfile.accent) {
+      defaultProfile.accent = globalAccent as string;
       needsUpdate = true;
     }
 
     // Only migrate custom accent if it's different from default
-    if (globalCustomAccent && globalCustomAccent !== C.DEFAULT_CUSTOM_ACCENT && !(C.CONFIG_KEY_CUSTOM_ACCENT in defaultProfile)) {
-      (defaultProfile as any)[C.CONFIG_KEY_CUSTOM_ACCENT] = globalCustomAccent;
+    if (globalCustomAccent && globalCustomAccent !== C.DEFAULT_CUSTOM_ACCENT && !defaultProfile.customAccentColor) {
+      defaultProfile.customAccentColor = globalCustomAccent as string;
       needsUpdate = true;
     }
 
@@ -319,7 +319,7 @@ export class ConfigurationService {
 
     // Store setting in the appropriate profile (including Default)
     const profile = profiles[activeProfile] || {};
-    profile[key] = value;
+    profile[key] = value as IProfile[keyof IProfile];
     profiles[activeProfile] = profile;
 
     await this.config.update(C.CONFIG_KEY_PROFILES, profiles, vscode.ConfigurationTarget.Global);
