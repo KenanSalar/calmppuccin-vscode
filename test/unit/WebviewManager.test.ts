@@ -73,7 +73,7 @@ describe("WebviewManager Unit Tests", () => {
       onDidDispose: jest.fn(),
       reveal: jest.fn(),
       dispose: disposeSpy,
-    } as any;
+    } as unknown as vscode.WebviewPanel;
 
     // Create a mock ExtensionContext. The WebviewManager only requires `extensionPath`.
     mockContext = {
@@ -154,7 +154,7 @@ describe("WebviewManager Unit Tests", () => {
    */
   it("should delegate postMessage to the underlying webview's postMessage method", () => {
     // Arrange: Define a message payload that conforms to the `MessageToWebview` type.
-    const testMessage: MessageToWebview = { command: "loadSettings", settings: {} as any };
+    const testMessage: MessageToWebview = { command: "loadSettings", settings: {} as unknown as import("../../types/webview").ISettingsPayload };
     WebviewManager.createOrShow(mockContext, jest.fn());
 
     // Act: Post the message through the manager.

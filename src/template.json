@@ -1122,7 +1122,9 @@
         "keyword.other.order",
         "keyword.other.pgsql",
         "keyword.other.data-integrity",
-        "keyword.control.type"
+        "keyword.control.type",
+        "keyword.control.dart",
+        "keyword.control.catch-exception"
       ],
       "settings": {
         "foreground": "{{keyword}}",
@@ -1415,6 +1417,7 @@
         "punctuation.accessor",
         "punctuation.definition.colon",
         "punctuation.separator.dot-access",
+        "punctuation.dot.dart",
         "punctuation.separator.scope-resolution",
         "punctuation.separator.period",
         "punctuation.separator.pointer-access",
@@ -2066,6 +2069,10 @@
       "foreground": "{{keyword}}",
       "fontStyle": "{{keywordFontStyle}}"
     },
+    "keyword.control": {
+      "foreground": "{{keyword}}",
+      "fontStyle": "{{keywordFontStyle}}"
+    },
     "keyword.controlFlow": {
       "foreground": "{{keyword}}",
       "fontStyle": "{{keywordFontStyle}}"
@@ -2127,6 +2134,10 @@
       "fontStyle": "{{moduleFontStyle}}"
     },
     "annotation": {
+      "foreground": "{{annotation}}",
+      "fontStyle": "{{annotationFontStyle}}"
+    },
+    "property.annotation:dart": {
       "foreground": "{{annotation}}",
       "fontStyle": "{{annotationFontStyle}}"
     },
@@ -2230,6 +2241,18 @@
       "foreground": "{{fieldAndAttribute}}",
       "fontStyle": "{{fieldAndAttributeFontStyle}}"
     },
+    "variable.instance:dart": {
+      "foreground": "{{fieldAndAttribute}}",
+      "fontStyle": "{{fieldAndAttributeFontStyle}}"
+    },
+    "variable.declaration.instance:dart": {
+      "foreground": "{{fieldAndAttribute}}",
+      "fontStyle": "{{fieldAndAttributeFontStyle}}"
+    },
+    "property.instance:dart": {
+      "foreground": "{{fieldAndAttribute}}",
+      "fontStyle": "{{fieldAndAttributeFontStyle}}"
+    },
     "property": {
       "foreground": "{{property}}",
       "fontStyle": "{{propertyFontStyle}}"
@@ -2239,6 +2262,10 @@
       "fontStyle": "{{propertyReadOnlyFontStyle}}"
     },
     "recordComponent": {
+      "foreground": "{{property}}",
+      "fontStyle": "{{propertyFontStyle}}"
+    },
+    "property.declaration.instance:dart": {
       "foreground": "{{property}}",
       "fontStyle": "{{propertyFontStyle}}"
     },
@@ -2347,6 +2374,14 @@
       "fontStyle": "{{constantFontStyle}}"
     },
     "builtinConstant": {
+      "foreground": "{{constant}}",
+      "fontStyle": "{{constantFontStyle}}"
+    },
+    "variable.declaration.static:dart": {
+      "foreground": "{{constant}}",
+      "fontStyle": "{{constantFontStyle}}"
+    },
+    "property.static:dart": {
       "foreground": "{{constant}}",
       "fontStyle": "{{constantFontStyle}}"
     },
