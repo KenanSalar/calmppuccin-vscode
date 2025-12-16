@@ -6,6 +6,8 @@
 - **Feature**: Added Dart code snippet to the Customization UI live preview, showcasing Dart 3 features like sealed classes, pattern matching, enhanced enums, mixins, and extension methods.
 - **Improvement**: Added `keyword.control.catch-exception` to the keyword scope for improved exception handling keyword highlighting.
 - **Fix**: Moved `punctuation.dot.dart` from the annotation scope to the punctuation scope for correct dot accessor highlighting in Dart.
+- **Chore**: Added ESLint with TypeScript support for code quality enforcement.
+- **Internal**: Fixed TypeScript type errors by replacing `as any` casts with proper type assertions and adding explicit type annotations to `IProfile` interface.
 
 ## [1.9.1] - 2025-12-01
 

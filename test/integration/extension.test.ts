@@ -94,9 +94,9 @@ describe("Extension Integration Tests", () => {
       logUri: vscode.Uri.parse("file:///mock/log/path"),
       logPath: "/mock/log/path",
       extensionMode: vscode.ExtensionMode.Test,
-      environmentVariableCollection: {} as any, // This API is complex; 'any' is acceptable for simplicity.
+      environmentVariableCollection: {} as unknown as vscode.GlobalEnvironmentVariableCollection,
       asAbsolutePath: jest.fn((relativePath) => `/mock/extension/path/${relativePath}`),
-      extension: {} as any,
+      extension: {} as unknown as vscode.Extension<unknown>,
       languageModelAccessInformation: {
         onDidChange: jest.fn(),
         canSendRequest: jest.fn(),
@@ -196,8 +196,8 @@ describe("Extension Integration Tests", () => {
     // Re-mock vscode module
     jest.mock("vscode", () => mockedVscode, { virtual: true });
     
-    const { activate: freshActivate } = require("../../extension");
-    
+    const { activate: freshActivate } = await import("../../extension");
+
     let listener: (event: vscode.ConfigurationChangeEvent) => void = () => {};
     (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation((callback) => {
       listener = callback;
@@ -226,11 +226,11 @@ describe("Extension Integration Tests", () => {
   it("should trigger regenerateThemes when syntax overrides change", async () => {
     // Use dynamic import to get a fresh module instance
     jest.resetModules();
-    
+
     // Re-mock vscode module
     jest.mock("vscode", () => mockedVscode, { virtual: true });
-    
-    const { activate: freshActivate } = require("../../extension");
+
+    const { activate: freshActivate } = await import("../../extension");
     
     let listener: (event: vscode.ConfigurationChangeEvent) => void = () => {};
     (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation((callback) => {
@@ -331,9 +331,9 @@ describe("Theme Regeneration Error Handling", () => {
       logUri: vscode.Uri.parse("file:///mock/log/path"),
       logPath: "/mock/log/path",
       extensionMode: vscode.ExtensionMode.Test,
-      environmentVariableCollection: {} as any,
+      environmentVariableCollection: {} as unknown as vscode.GlobalEnvironmentVariableCollection,
       asAbsolutePath: jest.fn((relativePath) => `/mock/extension/path/${relativePath}`),
-      extension: {} as any,
+      extension: {} as unknown as vscode.Extension<unknown>,
       languageModelAccessInformation: {
         onDidChange: jest.fn(),
         canSendRequest: jest.fn(),

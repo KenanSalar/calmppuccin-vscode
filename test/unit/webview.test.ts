@@ -11,7 +11,7 @@ const mockPostMessage = jest.fn();
 const mockVscode = {
   postMessage: mockPostMessage,
 };
-(global as any).acquireVsCodeApi = jest.fn(() => mockVscode);
+(global as unknown as { acquireVsCodeApi: () => typeof mockVscode }).acquireVsCodeApi = jest.fn(() => mockVscode);
 
 // --- HTML Fixture ---
 const htmlFixture = `
@@ -75,7 +75,7 @@ describe("UIManager Unit Tests", () => {
   beforeEach(() => {
     document.body.innerHTML = htmlFixture;
     mockPostMessage.mockClear();
-    (global as any).acquireVsCodeApi.mockClear();
+    ((global as unknown as { acquireVsCodeApi: jest.Mock }).acquireVsCodeApi).mockClear();
     uiManager = new UIManager();
     // Initialize event listeners before every single test
     uiManager.initializeEventListeners();

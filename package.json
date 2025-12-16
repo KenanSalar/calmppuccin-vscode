@@ -1140,13 +1140,17 @@
     "build-themes": "npm run compile && node ./dist/build.js",
     "package": "npm run build-themes && npx vsce package --no-dependencies",
     "publish:ci": "npm run build-themes && npx vsce publish --no-dependencies",
-    "test": "jest --config jest.config.ts"
+    "test": "jest --config jest.config.ts",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint ."
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@types/fs-extra": "^11.0.4",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.5.2",
     "@types/vscode": "^1.104.0",
+    "eslint": "^9.39.2",
     "fs-extra": "^11.3.2",
     "jest": "^30.1.3",
     "jest-environment-jsdom": "^30.0.5",
@@ -1154,6 +1158,7 @@
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2",
+    "typescript-eslint": "^8.50.0",
     "webpack": "^5.101.0",
     "webpack-cli": "^6.0.1"
   }
