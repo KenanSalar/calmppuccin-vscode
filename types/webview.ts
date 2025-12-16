@@ -13,7 +13,14 @@ export interface IWebviewSetting {
 
 /** A profile containing theme configuration. */
 export interface IProfile {
-  [key: string]: any;
+  accent?: string;
+  customAccentColor?: string;
+  fontStyles?: Record<string, string>;
+  fontStyleOverrides?: Record<string, Record<string, string>>;
+  syntaxOverrides?: Record<string, Record<string, string>>;
+  uiOverrides?: Record<string, Record<string, string>>;
+  // Index signature for dynamic key access in internal methods
+  [key: string]: string | Record<string, string> | Record<string, Record<string, string>> | undefined;
 }
 
 /** The complete data payload sent from the extension to the webview upon loading. */

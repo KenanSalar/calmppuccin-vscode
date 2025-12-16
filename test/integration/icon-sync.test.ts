@@ -64,9 +64,9 @@ describe("Icon Theme Synchronization", () => {
       logUri: vscode.Uri.parse("file:///mock/log/path"),
       logPath: "/mock/log/path",
       extensionMode: vscode.ExtensionMode.Test,
-      environmentVariableCollection: {} as any,
+      environmentVariableCollection: {} as unknown as vscode.GlobalEnvironmentVariableCollection,
       asAbsolutePath: jest.fn((relativePath) => `/mock/extension/path/${relativePath}`),
-      extension: {} as any,
+      extension: {} as unknown as vscode.Extension<unknown>,
       languageModelAccessInformation: {
         onDidChange: jest.fn(),
         canSendRequest: jest.fn(),
@@ -132,8 +132,8 @@ describe("Icon Theme Synchronization", () => {
     // Use dynamic import to get a fresh module instance
     jest.resetModules();
     jest.mock("vscode", () => mockedVscode, { virtual: true });
-    const { activate: freshActivate } = require("../../extension");
-    
+    const { activate: freshActivate } = await import("../../extension");
+
     mockWorkbenchConfig.get.mockImplementation((key: string) => {
       if (key === "colorTheme") return "Calmppuccin Nitro Cold Brew";
       if (key === "iconTheme") return "catppuccin-frappe"; // Different flavor
@@ -161,7 +161,7 @@ describe("Icon Theme Synchronization", () => {
     // Use dynamic import to get a fresh module instance
     jest.resetModules();
     jest.mock("vscode", () => mockedVscode, { virtual: true });
-    const { activate: freshActivate } = require("../../extension");
+    const { activate: freshActivate } = await import("../../extension");
     
     mockWorkbenchConfig.get.mockImplementation((key: string) => {
       if (key === "colorTheme") return "Calmppuccin Oledppuccin";
@@ -219,13 +219,13 @@ describe("Icon Theme Synchronization", () => {
       "mocha": { theme: "Calmppuccin Mocha", wrongIcon: "catppuccin-latte", rightIcon: "catppuccin-mocha" },
     };
 
-    for (const [flavorName, config] of Object.entries(flavorsMap)) {
+    for (const [, config] of Object.entries(flavorsMap)) {
       jest.clearAllMocks();
-      
+
       // Reset modules for each iteration to get fresh module state
       jest.resetModules();
       jest.mock("vscode", () => mockedVscode, { virtual: true });
-      const { activate: freshActivate } = require("../../extension");
+      const { activate: freshActivate } = await import("../../extension");
 
       mockWorkbenchConfig.get.mockImplementation((key: string) => {
         if (key === "colorTheme") return config.theme;

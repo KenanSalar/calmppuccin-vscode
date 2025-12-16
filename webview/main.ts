@@ -5,7 +5,7 @@
 
 import { codeSnippets } from "./snippets";
 // Import the shared types from the new central location.
-import { ISettingsPayload, MessageToWebview, MessageToExtension, IWebviewSetting } from "../types/webview";
+import { ISettingsPayload, MessageToWebview, MessageToExtension, IWebviewSetting, IProfile } from "../types/webview";
 
 /**
  * @interface IVsCodeApi
@@ -630,12 +630,12 @@ export class UIManager {
    * @param {string} activeProfile The currently active profile name.
    * @private
    */
-  private _populateProfileDropdown(profiles: { [name: string]: any }, activeProfile: string) {
+  private _populateProfileDropdown(profiles: { [name: string]: IProfile }, activeProfile: string) {
     // Clear existing options
     this.elements.profileSelect.innerHTML = "";
 
     // Add Default profile option (only if it's not already in profiles)
-    if (!profiles.hasOwnProperty("Default")) {
+    if (!Object.prototype.hasOwnProperty.call(profiles, "Default")) {
       const defaultOption = document.createElement("option");
       defaultOption.value = "Default";
       defaultOption.textContent = "Default";
