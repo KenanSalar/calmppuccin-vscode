@@ -1,4 +1,4 @@
-name: Build, Test, and Release Extension
+name: Build and Release Extension
 
 on:
   push:
@@ -13,8 +13,8 @@ permissions:
   packages: write
 
 jobs:
-  # Build, test, and package the extension
-  build_and_test:
+  # Build and package the extension
+  build:
     runs-on: ubuntu-latest
     # Define job outputs for the release job
     outputs:
@@ -62,9 +62,6 @@ jobs:
       - name: Pull Dev Container Image
         run: docker pull ghcr.io/${{ steps.set_owner.outputs.owner_lc }}/calmppuccin-builder:latest
 
-      - name: Run Tests
-        run: docker run --rm --workdir /workspaces/calmppuccin-vscode ghcr.io/${{ steps.set_owner.outputs.owner_lc }}/calmppuccin-builder:latest npm test
-
       - name: Get Package Version
         id: get_version
         uses: martinbeentjes/npm-get-version-action@v1.3.1
@@ -99,8 +96,8 @@ jobs:
     runs-on: ubuntu-latest
     # Run this job only on the 'main' branch
     if: github.ref == 'refs/heads/main'
-    # Requires the 'build_and_test' job to succeed
-    needs: build_and_test
+    # Requires the 'build' job to succeed
+    needs: build
     steps:
       # Download the VSIX package from the previous job
       - name: Download VSIX Artifact
@@ -117,8 +114,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          VERSION="${{ needs.build_and_test.outputs.version }}"
-          VSIX_PATH="${{ needs.build_and_test.outputs.vsix_path }}"
+          VERSION="${{ needs.build.outputs.version }}"
+          VSIX_PATH="${{ needs.build.outputs.vsix_path }}"
           
           echo "Version: ${VERSION}"
           echo "VSIX Path: ${VSIX_PATH}"

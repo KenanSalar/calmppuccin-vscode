@@ -7,6 +7,9 @@
 - **Improvement**: Added `keyword.control.catch-exception` to the keyword scope for improved exception handling keyword highlighting.
 - **Fix**: Moved `punctuation.dot.dart` from the annotation scope to the punctuation scope for correct dot accessor highlighting in Dart.
 - **Chore**: Added ESLint with TypeScript support for code quality enforcement.
+- **Chore**: Added `enforce-pr-source.yml` workflow to enforce that PRs to `main` must originate from the `dev` branch.
+- **Chore**: Added `pr-validation.yml` workflow with separate `type-check`, `lint-check`, and `tests` jobs for PR validation to `dev`.
+- **Chore**: Refactored `release.yml` to remove duplicate test execution, renamed job from `build_and_test` to `build`, and updated workflow name to "Build and Release Extension".
 - **Internal**: Fixed TypeScript type errors by replacing `as any` casts with proper type assertions and adding explicit type annotations to `IProfile` interface.
 
 ## [1.9.1] - 2025-12-01
