@@ -6,6 +6,7 @@
 import { cSnippet } from "./snippets/c";
 import { cppSnippet } from "./snippets/cpp";
 import { csharpSnippet } from "./snippets/csharp";
+import { dartSnippet } from "./snippets/dart";
 import { cssSnippet } from "./snippets/css";
 import { goSnippet } from "./snippets/go";
 import { htmlSnippet } from "./snippets/html";
@@ -39,6 +40,7 @@ export const codeSnippets: CodeSnippets = {
   c: cSnippet,
   "c++": cppSnippet,
   csharp: csharpSnippet,
+  dart: dartSnippet,
   css: cssSnippet,
   go: goSnippet,
   html: htmlSnippet,
