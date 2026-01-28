@@ -1124,7 +1124,8 @@
         "keyword.other.data-integrity",
         "keyword.control.type",
         "keyword.control.dart",
-        "keyword.control.catch-exception"
+        "keyword.control.catch-exception",
+        "keyword.other.attribute-specifier"
       ],
       "settings": {
         "foreground": "{{keyword}}",

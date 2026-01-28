@@ -13,6 +13,24 @@ import { generateErrorLensColors } from "./src/extensions/errorLens";
 import { generateGitHubPullRequestColors } from "./src/extensions/githubPullRequest";
 import { generateGitLensColors } from "./src/extensions/gitlens";
 
+/** Represents the structure of a VS Code theme JSON file. */
+interface IThemeJson {
+  name: string;
+  type: string;
+  colors: Record<string, string>;
+  tokenColors?: unknown[];
+  semanticTokenColors?: Record<string, string>;
+}
+
+/** Represents the relevant structure of the extension's package.json. */
+interface IPackageJson {
+  contributes?: {
+    configuration?: {
+      properties?: Record<string, { default?: IFontStyles }>;
+    };
+  };
+}
+
 const THEME_DIR = path.resolve(__dirname, "..", C.THEMES_DIR);
 const TEMPLATE_PATH = path.resolve(__dirname, "..", C.SRC_DIR, C.TEMPLATE_FILE);
 const FLAVORS = Object.keys(palette) as Array<keyof IPalettes>;
@@ -41,16 +59,16 @@ export async function buildAllFlavors(
   // Iterate over each flavor (latte, frappe, mocha, etc.) to generate a theme for it.
   for (const flavor of FLAVORS) {
     const basePalette = palette[flavor];
-    const flavorSyntaxOverrides = syntaxOverrides[flavor] || {};
-    const flavorUiOverrides = uiOverrides[flavor] || {};
-    const flavorFontStyleOverrides = fontStyleOverrides[flavor] || {};
+    const flavorSyntaxOverrides = syntaxOverrides[flavor] ?? {};
+    const flavorUiOverrides = uiOverrides[flavor] ?? {};
+    const flavorFontStyleOverrides = fontStyleOverrides[flavor] ?? {};
     // Merge the base flavor palette with any user-defined color overrides.
     const finalPalette = { ...basePalette, ...flavorSyntaxOverrides, ...flavorUiOverrides };
 
     // Resolve the accent color. If it's a hex code, use it directly. Otherwise, look it up in the palette.
     const accentColor = accentIdentifier.startsWith("#")
       ? accentIdentifier
-      : finalPalette[accentIdentifier] || finalPalette[C.FALLBACK_ACCENT];
+      : finalPalette[accentIdentifier] ?? finalPalette[C.FALLBACK_ACCENT];
     const accentHexValue = accentColor.substring(1);
 
     // Create the final resolved palette by processing color recipes (e.g., "{{accent}}2f").
@@ -61,7 +79,7 @@ export async function buildAllFlavors(
         const transparency = value.substring(C.ACCENT_RECIPE_PREFIX.length);
         resolvedPalette[key] = `#${accentHexValue}${transparency}`;
       } else {
-        resolvedPalette[key] = value as string;
+        resolvedPalette[key] = value;
       }
     }
 
@@ -77,10 +95,10 @@ export async function buildAllFlavors(
       // Handle the special case for font styles where "none" should be an empty string.
       const finalValue = value === "none" ? "" : value;
       const placeholder = new RegExp(`\\{\\{${key}\\}\\}`, "g");
-      themeContent = themeContent.replace(placeholder, finalValue as string);
+      themeContent = themeContent.replace(placeholder, finalValue);
     }
 
-    const themeJson = JSON.parse(themeContent);
+    const themeJson: IThemeJson = JSON.parse(themeContent) as IThemeJson;
     const flavorDisplayName = flavor.charAt(0).toUpperCase() + flavor.slice(1);
     themeJson.name = `Calmppuccin ${flavorDisplayName}`;
     themeJson.type = flavor === C.LIGHT_FLAVOR_NAME ? C.THEME_TYPE_LIGHT : C.THEME_TYPE_DARK;
@@ -112,8 +130,8 @@ export async function buildAllFlavors(
  */
 function getDefaultFontStyles(): IFontStyles {
   const packageJsonPath = path.resolve(__dirname, "..", "package.json");
-  const packageJson = fs.readJsonSync(packageJsonPath);
-  return packageJson?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.fontStyles`]?.default ?? {};
+  const packageJson = fs.readJsonSync(packageJsonPath) as IPackageJson;
+  return packageJson.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.fontStyles`]?.default ?? {};
 }
 
 /**
@@ -122,5 +140,5 @@ function getDefaultFontStyles(): IFontStyles {
  */
 if (require.main === module) {
   const defaultFontStyles = getDefaultFontStyles();
-  buildAllFlavors(C.DEFAULT_ACCENT, defaultFontStyles, {}, {}, {});
+  void buildAllFlavors(C.DEFAULT_ACCENT, defaultFontStyles, {}, {}, {});
 }

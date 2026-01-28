@@ -93,8 +93,9 @@ describe("UIManager Unit Tests", () => {
 
     const codePreview = document.getElementById("code-preview");
     expect(codePreview).not.toBeNull(); // Ensure the element exists
+    if (!codePreview) return; // Type guard for TypeScript
 
-    const content = codePreview!.innerHTML;
+    const content = codePreview.innerHTML;
 
     // 1. Check that the content is not empty
     expect(content.length).toBeGreaterThan(100);
