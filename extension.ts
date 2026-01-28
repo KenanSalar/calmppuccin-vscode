@@ -83,12 +83,13 @@ export function activate(context: vscode.ExtensionContext) {
   // This internal command is used by the extension itself to regenerate themes.
   const regenerateThemesCommand = vscode.commands.registerCommand(C.REGENERATE_COMMAND_ID, async () => {
     try {
-      const accentValue = ConfigurationService.getAccent();
-      const fontStyles = ConfigurationService.getFontStyles();
-      const syntaxOverrides = ConfigurationService.getSyntaxOverrides();
-      const uiOverrides = ConfigurationService.getUiOverrides();
-      const fontStyleOverrides = ConfigurationService.getFontStyleOverrides();
-      await buildAllFlavors(accentValue, fontStyles, syntaxOverrides, uiOverrides, fontStyleOverrides);
+      await buildAllFlavors({
+        accentIdentifier: ConfigurationService.getAccent(),
+        fontStyles: ConfigurationService.getFontStyles(),
+        syntaxOverrides: ConfigurationService.getSyntaxOverrides(),
+        uiOverrides: ConfigurationService.getUiOverrides(),
+        fontStyleOverrides: ConfigurationService.getFontStyleOverrides(),
+      });
       const selection = await vscode.window.showInformationMessage(C.INFO_MESSAGE, C.RELOAD_ACTION);
       if (selection === C.RELOAD_ACTION) {
         vscode.commands.executeCommand(C.RELOAD_COMMAND_ID)

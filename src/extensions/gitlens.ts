@@ -8,6 +8,7 @@
  */
 
 import { IPalette } from "../palettes";
+import { hexWithAlpha } from "../utils/color";
 
 /**
  * Interface defining all GitLens color customization points.
@@ -98,20 +99,6 @@ export interface IGitLensColors {
   "gitlens.graphScrollMarkerStashesColor": string;
   "gitlens.graphMinimapMarkerTagsColor": string;
   "gitlens.graphScrollMarkerTagsColor": string;
-}
-
-/**
- * Converts a hex color to hex format with alpha channel.
- * @param {string} hex - The hex color code (e.g., "#e4829e").
- * @param {number} opacity - The opacity value between 0 and 1.
- * @returns {string} The color in hex format with alpha (e.g., "#e4829e26").
- */
-function hexWithAlpha(hex: string, opacity: number): string {
-  const cleanHex = hex.replace("#", "");
-  const alpha = Math.round(opacity * 255)
-    .toString(16)
-    .padStart(2, "0");
-  return `#${cleanHex}${alpha}`;
 }
 
 /**
