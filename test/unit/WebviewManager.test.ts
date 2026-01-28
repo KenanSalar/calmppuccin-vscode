@@ -108,8 +108,8 @@ describe("WebviewManager Unit Tests", () => {
     // Assert: A new panel was created with the correct parameters.
     expect(mockedVscode.window.createWebviewPanel).toHaveBeenCalledTimes(1);
     expect(mockedVscode.window.createWebviewPanel).toHaveBeenCalledWith(
-      C.WEBVIEW_COMMANDS.WEBVIEW_ID,
-      C.WEBVIEW_COMMANDS.WEBVIEW_TITLE,
+      C.WEBVIEW_CONSTANTS.WEBVIEW_ID,
+      C.WEBVIEW_CONSTANTS.WEBVIEW_TITLE,
       vscode.ViewColumn.One,
       expect.any(Object)
     );

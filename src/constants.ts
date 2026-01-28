@@ -4,6 +4,7 @@
  */
 
 /** Constants primarily used in the main `extension.ts` file. */
+export const EXTENSION_ID = "kenan-salar.calmppuccin-vscode";
 export const EXTENSION_NAMESPACE = "calmppuccin";
 export const CONFIG_KEY_ACCENT = "accent";
 export const CONFIG_KEY_CUSTOM_ACCENT = "customAccentColor";
@@ -49,7 +50,7 @@ export const REPO_ISSUES_URL = "https://github.com/KenanSalar/calmppuccin-vscode
  * Using `as const` ensures that the properties are read-only and their values are treated as literal types,
  * which provides stronger type-checking.
  */
-export const WEBVIEW_COMMANDS = {
+export const WEBVIEW_CONSTANTS = {
   UPDATE_SETTING: "updateSetting",
   RESET_FONT_STYLE: "resetFontStyle",
   UPDATE_ACCENT: "updateAccent",

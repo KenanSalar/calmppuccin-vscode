@@ -68,7 +68,13 @@ describe("Build Script Unit Tests", () => {
     (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
 
     // 2. Act
-    await buildAllFlavors("sapphire", mockFontStyles, {}, {}, {});
+    await buildAllFlavors({
+      accentIdentifier: "sapphire",
+      fontStyles: mockFontStyles,
+      syntaxOverrides: {},
+      uiOverrides: {},
+      fontStyleOverrides: {},
+    });
 
     // 3. Assert
     expect(fs.writeJson).toHaveBeenCalled();
@@ -111,7 +117,13 @@ describe("Build Script Unit Tests", () => {
 
     // 2. Act: Run the build process with a known accent color.
     // We'll use the 'mocha' flavor and the 'mauve' accent for this test.
-    await buildAllFlavors("mauve", {}, {}, {}, {});
+    await buildAllFlavors({
+      accentIdentifier: "mauve",
+      fontStyles: {},
+      syntaxOverrides: {},
+      uiOverrides: {},
+      fontStyleOverrides: {},
+    });
 
     // 3. Assert: Verify the output for the Mocha theme.
 
@@ -177,7 +189,13 @@ describe("Build Script Unit Tests", () => {
       (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
 
       // Act
-      await buildAllFlavors("sapphire", {}, {}, {}, {});
+      await buildAllFlavors({
+        accentIdentifier: "sapphire",
+        fontStyles: {},
+        syntaxOverrides: {},
+        uiOverrides: {},
+        fontStyleOverrides: {},
+      });
 
       // Assert - Should successfully write mocha theme without errors
       const mochaCall = findThemeCall("mocha");
@@ -223,7 +241,13 @@ describe("Build Script Unit Tests", () => {
       (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
 
       // Act
-      await buildAllFlavors("sapphire", mockFontStyles, {}, {}, {});
+      await buildAllFlavors({
+      accentIdentifier: "sapphire",
+      fontStyles: mockFontStyles,
+      syntaxOverrides: {},
+      uiOverrides: {},
+      fontStyleOverrides: {},
+    });
 
       // Assert
       const mochaCall = findThemeCall("mocha");
@@ -266,7 +290,13 @@ describe("Build Script Unit Tests", () => {
       (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
 
       // Act
-      await buildAllFlavors("sapphire", { commentFontStyle: "italic" }, {}, {}, {});
+      await buildAllFlavors({
+        accentIdentifier: "sapphire",
+        fontStyles: { commentFontStyle: "italic" },
+        syntaxOverrides: {},
+        uiOverrides: {},
+        fontStyleOverrides: {},
+      });
 
       // Assert
       const mochaCall = findThemeCall("mocha");
@@ -299,7 +329,13 @@ describe("Build Script Unit Tests", () => {
       (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
 
       // Act
-      await buildAllFlavors("sapphire", {}, {}, {}, {});
+      await buildAllFlavors({
+        accentIdentifier: "sapphire",
+        fontStyles: {},
+        syntaxOverrides: {},
+        uiOverrides: {},
+        fontStyleOverrides: {},
+      });
 
       // Assert - Should not throw, verify output
       const mochaCall = findThemeCall("mocha");

@@ -55,48 +55,48 @@ export class SettingsPanel {
     // The 'command' property is used as a discriminator for the message type.
     // TypeScript correctly infers the shape of 'message' in each case block.
     switch (message.command) {
-      case C.WEBVIEW_COMMANDS.UPDATE_SETTING: {
+      case C.WEBVIEW_CONSTANTS.UPDATE_SETTING: {
         const activeFlavor = ConfigurationService.getActiveFlavor();
         await ConfigurationService.updateFontStyleOverride(activeFlavor, message.key, message.value);
         return;
       }
-      case C.WEBVIEW_COMMANDS.RESET_FONT_STYLE: {
+      case C.WEBVIEW_CONSTANTS.RESET_FONT_STYLE: {
         const currentFlavor = ConfigurationService.getActiveFlavor();
         await ConfigurationService.resetFontStyleOverride(currentFlavor, message.key);
         return;
       }
-      case C.WEBVIEW_COMMANDS.UPDATE_ACCENT:
+      case C.WEBVIEW_CONSTANTS.UPDATE_ACCENT:
         await ConfigurationService.updateAccent(message.value);
         return;
-      case C.WEBVIEW_COMMANDS.UPDATE_CUSTOM_ACCENT:
+      case C.WEBVIEW_CONSTANTS.UPDATE_CUSTOM_ACCENT:
         await ConfigurationService.updateCustomAccent(message.value);
         return;
-      case C.WEBVIEW_COMMANDS.UPDATE_SYNTAX_COLOR:
+      case C.WEBVIEW_CONSTANTS.UPDATE_SYNTAX_COLOR:
         await ConfigurationService.updateSyntaxColor(message.flavor, message.key, message.value);
         return;
-      case C.WEBVIEW_COMMANDS.RESET_SYNTAX_COLOR:
+      case C.WEBVIEW_CONSTANTS.RESET_SYNTAX_COLOR:
         await ConfigurationService.resetSyntaxColor(message.flavor, message.key);
         return;
-      case C.WEBVIEW_COMMANDS.UPDATE_UI_COLOR:
+      case C.WEBVIEW_CONSTANTS.UPDATE_UI_COLOR:
         await ConfigurationService.updateUiColor(message.flavor, message.key, message.value);
         return;
-      case C.WEBVIEW_COMMANDS.RESET_UI_COLOR:
+      case C.WEBVIEW_CONSTANTS.RESET_UI_COLOR:
         await ConfigurationService.resetUiColor(message.flavor, message.key);
         return;
-      case C.WEBVIEW_COMMANDS.RESET_ALL:
+      case C.WEBVIEW_CONSTANTS.RESET_ALL:
         await ConfigurationService.resetAll();
         this._update();
         return;
-      case C.WEBVIEW_COMMANDS.SWITCH_PROFILE:
+      case C.WEBVIEW_CONSTANTS.SWITCH_PROFILE:
         await ConfigurationService.updateActiveProfile(message.profile);
         this._update();
         return;
-      case C.WEBVIEW_COMMANDS.SAVE_PROFILE:
+      case C.WEBVIEW_CONSTANTS.SAVE_PROFILE:
         await ConfigurationService.saveProfile(message.profile);
         await ConfigurationService.updateActiveProfile(message.profile);
         this._update();
         return;
-      case C.WEBVIEW_COMMANDS.DELETE_PROFILE:
+      case C.WEBVIEW_CONSTANTS.DELETE_PROFILE:
         await ConfigurationService.deleteProfile(message.profile);
         this._update();
         return;
@@ -131,7 +131,7 @@ export class SettingsPanel {
       const settings = ConfigurationService.getWebViewSettings();
 
       WebviewManager.currentPanel.postMessage({
-        command: C.WEBVIEW_COMMANDS.LOAD_SETTINGS,
+        command: C.WEBVIEW_CONSTANTS.LOAD_SETTINGS,
         settings: settings,
       });
     }, C.WEBVIEW_UPDATE_DEBOUNCE_MS);

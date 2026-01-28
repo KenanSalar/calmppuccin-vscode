@@ -496,7 +496,7 @@ export class ConfigurationService {
    * @private
    */
   private static getDefaultFontStyles(): IFontStyles {
-    const extensionConfig = vscode.extensions.getExtension("kenan-salar.calmppuccin-vscode")?.packageJSON as IExtensionPackageJson | undefined;
+    const extensionConfig = vscode.extensions.getExtension(C.EXTENSION_ID)?.packageJSON as IExtensionPackageJson | undefined;
     return extensionConfig?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLES}`]?.default ?? {};
   }
 
@@ -689,7 +689,7 @@ export class ConfigurationService {
     // Cache the configuration snapshot once to avoid repeated VS Code API calls.
     const configSnapshot = vscode.workspace.getConfiguration(C.EXTENSION_NAMESPACE);
     const workbenchConfig = vscode.workspace.getConfiguration("workbench");
-    const extensionConfig = vscode.extensions.getExtension("kenan-salar.calmppuccin-vscode")?.packageJSON as IExtensionPackageJson | undefined;
+    const extensionConfig = vscode.extensions.getExtension(C.EXTENSION_ID)?.packageJSON as IExtensionPackageJson | undefined;
 
     // Get profiles from cached config
     const rawProfiles: unknown = configSnapshot.get(C.CONFIG_KEY_PROFILES);

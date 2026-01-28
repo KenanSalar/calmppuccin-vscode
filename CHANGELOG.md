@@ -15,6 +15,12 @@
 - **Performance**: Added `sideEffects: false` to package.json for better tree-shaking during bundling.
 - **Chore**: Upgraded ESLint configuration from `recommended` to `strictTypeChecked` for stronger type safety and better code quality enforcement.
 - **Chore**: Updated dependencies to latest versions (TypeScript 5.9.3, Jest 30.2.0, typescript-eslint 8.54.0, Webpack 5.104.1).
+- **Refactor**: Extracted duplicate `hexWithAlpha` function from `errorLens.ts` and `gitlens.ts` into shared `src/utils/color.ts` module (DRY).
+- **Refactor**: Consolidated duplicate `COMMANDS` object in webview by importing shared `WEBVIEW_CONSTANTS` from constants (DRY).
+- **Refactor**: Added `EXTENSION_ID` constant to `constants.ts` to replace hardcoded extension identifier strings (DRY).
+- **Refactor**: Created `IBuildOptions` interface in `build.ts` to replace long parameter lists in `buildFlavor` and `buildAllFlavors` functions.
+- **Refactor**: Converted synchronous `fs.readJsonSync` to async `fs.readJson` in build script's `getDefaultFontStyles()` for consistency.
+- **Refactor**: Extracted `ProfileController` class from `UIManager` to handle profile management (Single Responsibility Principle).
 - **Internal**: Fixed floating promises in extension activation and icon sync by adding proper `.then()/.catch()` error handling.
 - **Internal**: Refactored `ConfigurationService` to use immutable object updates instead of `JSON.parse(JSON.stringify())` deep cloning.
 - **Internal**: Added explicit type interfaces (`IThemeJson`, `IPackageJson`, `IExtensionPackageJson`) to replace inline type assertions.

@@ -55,8 +55,8 @@ export class WebviewManager {
 
     // Create the panel first so it appears immediately.
     const panel = vscode.window.createWebviewPanel(
-      C.WEBVIEW_COMMANDS.WEBVIEW_ID,
-      C.WEBVIEW_COMMANDS.WEBVIEW_TITLE,
+      C.WEBVIEW_CONSTANTS.WEBVIEW_ID,
+      C.WEBVIEW_CONSTANTS.WEBVIEW_TITLE,
       vscode.ViewColumn.One,
       {
         enableScripts: true,

@@ -31,6 +31,15 @@ interface IPackageJson {
   };
 }
 
+/** Options for building theme flavors, consolidating multiple parameters into a single object. */
+export interface IBuildOptions {
+  accentIdentifier: string;
+  fontStyles: IFontStyles;
+  syntaxOverrides: ISyntaxOverrides;
+  uiOverrides: IUiOverrides;
+  fontStyleOverrides: IFontStyleOverrides;
+}
+
 const THEME_DIR = path.resolve(__dirname, "..", C.THEMES_DIR);
 const TEMPLATE_PATH = path.resolve(__dirname, "..", C.SRC_DIR, C.TEMPLATE_FILE);
 const FLAVORS = Object.keys(palette) as Array<keyof IPalettes>;
@@ -39,22 +48,15 @@ const FLAVORS = Object.keys(palette) as Array<keyof IPalettes>;
  * Generates a single theme file for a given flavor.
  * @param {keyof IPalettes} flavor The flavor to generate (e.g., "mocha").
  * @param {string} templateStr The raw template string.
- * @param {string} accentIdentifier The name of the accent color or a custom hex code.
- * @param {IFontStyles} editorSettings The user's configured font style settings.
- * @param {ISyntaxOverrides} syntaxOverrides The user's configured syntax color overrides.
- * @param {IUiOverrides} uiOverrides The user's configured UI color overrides.
- * @param {IFontStyleOverrides} fontStyleOverrides The user's configured theme-specific font style overrides.
+ * @param {IBuildOptions} options The build configuration options.
  * @returns {Promise<void>} A promise that resolves when the theme file has been written.
  */
 async function buildFlavor(
   flavor: keyof IPalettes,
   templateStr: string,
-  accentIdentifier: string,
-  editorSettings: IFontStyles,
-  syntaxOverrides: ISyntaxOverrides,
-  uiOverrides: IUiOverrides,
-  fontStyleOverrides: IFontStyleOverrides
+  options: IBuildOptions
 ): Promise<void> {
+  const { accentIdentifier, fontStyles, syntaxOverrides, uiOverrides, fontStyleOverrides } = options;
   const basePalette = palette[flavor];
   const flavorSyntaxOverrides = syntaxOverrides[flavor] ?? {};
   const flavorUiOverrides = uiOverrides[flavor] ?? {};
@@ -81,7 +83,7 @@ async function buildFlavor(
   }
 
   // Merge global font styles with flavor-specific font style overrides, with overrides taking precedence.
-  const finalFontStyles = { ...editorSettings, ...flavorFontStyleOverrides };
+  const finalFontStyles = { ...fontStyles, ...flavorFontStyleOverrides };
 
   // Combine all colors, the resolved accent, and font styles into a single replacement map.
   const replacementMap = new Map<string, string>();
@@ -127,20 +129,10 @@ async function buildFlavor(
 
 /**
  * Generates all Calmppuccin theme files based on the template, palettes, and user settings.
- * @param {string} accentIdentifier The name of the accent color (e.g., "sapphire") or a custom hex code.
- * @param {IFontStyles} editorSettings The user's configured font style settings.
- * @param {ISyntaxOverrides} syntaxOverrides The user's configured syntax color overrides.
- * @param {IUiOverrides} uiOverrides The user's configured UI color overrides.
- * @param {IFontStyleOverrides} fontStyleOverrides The user's configured theme-specific font style overrides.
+ * @param {IBuildOptions} options The build configuration options.
  * @returns {Promise<void>} A promise that resolves when all theme files have been written to disk.
  */
-export async function buildAllFlavors(
-  accentIdentifier: string,
-  editorSettings: IFontStyles,
-  syntaxOverrides: ISyntaxOverrides,
-  uiOverrides: IUiOverrides,
-  fontStyleOverrides: IFontStyleOverrides
-): Promise<void> {
+export async function buildAllFlavors(options: IBuildOptions): Promise<void> {
   // Ensure the output directory is clean and ready.
   // Note: emptyDir() creates the directory if it doesn't exist.
   await fs.emptyDir(THEME_DIR);
@@ -148,21 +140,19 @@ export async function buildAllFlavors(
 
   // Generate all flavors in parallel for faster theme regeneration.
   await Promise.all(
-    FLAVORS.map(flavor =>
-      buildFlavor(flavor, templateStr, accentIdentifier, editorSettings, syntaxOverrides, uiOverrides, fontStyleOverrides)
-    )
+    FLAVORS.map(flavor => buildFlavor(flavor, templateStr, options))
   );
 
-  console.log(`All Calmppuccin themes built with the "${accentIdentifier}" accent.`);
+  console.log(`All Calmppuccin themes built with the "${options.accentIdentifier}" accent.`);
 }
 
 /**
  * Reads the project's package.json to get the default font styles defined in the contribution points.
- * @returns {IFontStyles} The default font styles object.
+ * @returns {Promise<IFontStyles>} The default font styles object.
  */
-function getDefaultFontStyles(): IFontStyles {
+async function getDefaultFontStyles(): Promise<IFontStyles> {
   const packageJsonPath = path.resolve(__dirname, "..", "package.json");
-  const packageJson = fs.readJsonSync(packageJsonPath) as IPackageJson;
+  const packageJson = await fs.readJson(packageJsonPath) as IPackageJson;
   return packageJson.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.fontStyles`]?.default ?? {};
 }
 
@@ -171,6 +161,14 @@ function getDefaultFontStyles(): IFontStyles {
  * which is useful for development and testing purposes. It generates the themes using default values.
  */
 if (require.main === module) {
-  const defaultFontStyles = getDefaultFontStyles();
-  void buildAllFlavors(C.DEFAULT_ACCENT, defaultFontStyles, {}, {}, {});
+  void (async () => {
+    const defaultFontStyles = await getDefaultFontStyles();
+    await buildAllFlavors({
+      accentIdentifier: C.DEFAULT_ACCENT,
+      fontStyles: defaultFontStyles,
+      syntaxOverrides: {},
+      uiOverrides: {},
+      fontStyleOverrides: {},
+    });
+  })();
 }
