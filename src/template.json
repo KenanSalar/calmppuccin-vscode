@@ -1636,10 +1636,10 @@
         "entity.other.attribute-name.pseudo-element",
         "meta.attribute.id entity.other.attribute-name",
         "entity.other.attribute",
-        "punctuation.definition.attribute",
         "meta.attribute",
+        "support.attribute",
         "punctuation.brackets.attribute",
-        "support.attribute"
+        "punctuation.definition.attribute"
       ],
       "settings": {
         "foreground": "{{fieldAndAttribute}}",
