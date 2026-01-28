@@ -70,6 +70,7 @@ jobs:
           set -euo pipefail
           docker run --rm \
             -u 0 \
+            -e NODE_ENV=production \
             -v "$PWD":/out \
             --workdir /workspaces/calmppuccin-vscode \
             ghcr.io/${{ steps.set_owner.outputs.owner_lc }}/calmppuccin-builder:latest \
