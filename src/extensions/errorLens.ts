@@ -8,6 +8,7 @@
  */
 
 import { IPalette } from "../palettes";
+import { hexWithAlpha } from "../utils/color";
 
 /**
  * Interface defining all Error Lens color customization points.
@@ -50,22 +51,6 @@ export interface IErrorLensColors {
   "errorLens.statusBarHintForeground": string;
   "errorLens.statusBarIconErrorForeground": string;
   "errorLens.statusBarIconWarningForeground": string;
-}
-
-/**
- * Converts a hex color to hex format with alpha channel.
- * @param {string} hex - The hex color code (e.g., "#e4829e").
- * @param {number} opacity - The opacity value between 0 and 1.
- * @returns {string} The color in hex format with alpha (e.g., "#e4829e26").
- */
-function hexWithAlpha(hex: string, opacity: number): string {
-  // Remove the # if present
-  const cleanHex = hex.replace("#", "");
-
-  // Convert opacity (0-1) to hex (00-FF)
-  const alpha = Math.round(opacity * 255).toString(16).padStart(2, "0");
-
-  return `#${cleanHex}${alpha}`;
 }
 
 /**

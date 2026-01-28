@@ -4,6 +4,7 @@
  */
 
 /** Constants primarily used in the main `extension.ts` file. */
+export const EXTENSION_ID = "kenan-salar.calmppuccin-vscode";
 export const EXTENSION_NAMESPACE = "calmppuccin";
 export const CONFIG_KEY_ACCENT = "accent";
 export const CONFIG_KEY_CUSTOM_ACCENT = "customAccentColor";
@@ -34,6 +35,9 @@ export const THEME_FILE_SUFFIX = "color-theme.json";
 export const THEME_TYPE_LIGHT = "light";
 export const THEME_TYPE_DARK = "dark";
 
+/** Debounce delay (in ms) for webview settings updates during rapid changes. */
+export const WEBVIEW_UPDATE_DEBOUNCE_MS = 50;
+
 /** User-facing messages and actions used in notifications and dialogs. */
 export const INFO_MESSAGE = "Calmppuccin theme updated. Reload to apply.";
 export const RELOAD_ACTION = "Reload Window";
@@ -46,7 +50,7 @@ export const REPO_ISSUES_URL = "https://github.com/KenanSalar/calmppuccin-vscode
  * Using `as const` ensures that the properties are read-only and their values are treated as literal types,
  * which provides stronger type-checking.
  */
-export const WEBVIEW_COMMANDS = {
+export const WEBVIEW_CONSTANTS = {
   UPDATE_SETTING: "updateSetting",
   RESET_FONT_STYLE: "resetFontStyle",
   UPDATE_ACCENT: "updateAccent",
@@ -122,3 +126,21 @@ export const CUSTOMIZABLE_JSON_KEYS = [
   "jsonLvl8",
 ];
 export const CUSTOMIZABLE_UI_KEYS = ["base", "mantle", "crust", "uiText"];
+
+/**
+ * Parses a Calmppuccin theme name to extract the flavor identifier.
+ * @param {string} themeName The full theme name (e.g., "Calmppuccin Mocha", "Calmppuccin Nitro Cold Brew")
+ * @returns {string | null} The normalized flavor key (e.g., "mocha", "nitro-cold-brew") or null if not a Calmppuccin theme.
+ */
+export function parseFlavorFromThemeName(themeName: string): string | null {
+  const prefix = "calmppuccin ";
+  const lowerName = themeName.toLowerCase();
+  if (!lowerName.startsWith(prefix)) {
+    return null;
+  }
+  return lowerName
+    .slice(prefix.length)
+    .replace(/ /g, "-")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}

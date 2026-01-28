@@ -12,6 +12,7 @@ import {
   CUSTOMIZABLE_JSON_KEYS,
   CUSTOMIZABLE_SYNTAX_KEYS,
   CUSTOMIZABLE_UI_KEYS,
+  parseFlavorFromThemeName,
 } from "./constants";
 import { ISettingsPayload, IWebviewSetting, IProfile } from "../types/webview";
 
@@ -41,6 +42,15 @@ export interface IFontStyleOverrides {
   };
 }
 
+/** Represents the relevant structure of the extension's package.json. */
+interface IExtensionPackageJson {
+  contributes?: {
+    configuration?: {
+      properties?: Record<string, { default?: IFontStyles; enum?: string[] }>;
+    };
+  };
+}
+
 /**
  * A type guard to check if a string is a valid flavor key from the palettes.
  * @param key The string to check.
@@ -51,7 +61,60 @@ function isFlavor(key: string): key is keyof IPalettes {
 }
 
 /**
- * A static utility class for managing all Calmppuccin settings in VS Code.
+ * Creates a deep clone of a nested overrides object.
+ * @param obj The object to clone.
+ * @returns A deep copy of the object.
+ */
+function cloneOverrides<T extends Record<string, Record<string, string>>>(obj: T): T {
+  const result: Record<string, Record<string, string>> = {};
+  for (const [key, value] of Object.entries(obj)) {
+    result[key] = { ...value };
+  }
+  return result as T;
+}
+
+/**
+ * Removes a key from a nested override object immutably.
+ * Returns undefined if the result would be empty.
+ * @param overrides The overrides object
+ * @param flavor The flavor key
+ * @param key The nested key to remove
+ */
+function removeOverrideKey<T extends { [flavor: string]: { [key: string]: string } | undefined }>(
+  overrides: T,
+  flavor: string,
+  key: string
+): T | undefined {
+  const flavorOverrides = overrides[flavor];
+  if (!flavorOverrides || !(key in flavorOverrides)) {
+    return overrides;
+  }
+
+  // Build new flavor object without the key
+  const newFlavorOverrides: Record<string, string> = {};
+  for (const [k, v] of Object.entries(flavorOverrides)) {
+    if (k !== key) {
+      newFlavorOverrides[k] = v;
+    }
+  }
+
+  // Build new overrides object
+  const newOverrides: { [f: string]: { [k: string]: string } | undefined } = {};
+  for (const [f, v] of Object.entries(overrides)) {
+    if (f !== flavor) {
+      newOverrides[f] = v;
+    } else if (Object.keys(newFlavorOverrides).length > 0) {
+      newOverrides[f] = newFlavorOverrides;
+    }
+    // If newFlavorOverrides is empty, we skip adding this flavor
+  }
+
+  return Object.keys(newOverrides).length === 0 ? undefined : newOverrides as T;
+}
+
+/**
+ * A utility class for managing all Calmppuccin settings in VS Code.
+ * Provides static methods for reading and writing extension configuration.
  */
 export class ConfigurationService {
   /**
@@ -67,16 +130,23 @@ export class ConfigurationService {
    * @returns {{ [name: string]: IProfile }} The profiles object.
    */
   public static getProfiles(): { [name: string]: IProfile } {
-    let profiles = this.config.get(C.CONFIG_KEY_PROFILES, { Default: {} });
+    // Get profiles with unknown type for runtime safety validation
+    const rawProfiles: unknown = this.config.get(C.CONFIG_KEY_PROFILES);
 
-    // Handle cases where profiles might not be an object (e.g., in tests)
-    if (typeof profiles !== 'object' || profiles === null || Array.isArray(profiles)) {
-      profiles = { Default: {} };
+    // Validate and return a safe default if profiles is not a valid object
+    if (
+      typeof rawProfiles !== "object" ||
+      rawProfiles === null ||
+      Array.isArray(rawProfiles)
+    ) {
+      return { Default: {} };
     }
 
+    const profiles = rawProfiles as { [name: string]: IProfile };
+
     // Ensure Default profile exists
-    if (!profiles.Default) {
-      profiles.Default = {};
+    if (!Object.prototype.hasOwnProperty.call(profiles, "Default")) {
+      return { ...profiles, Default: {} };
     }
 
     return profiles;
@@ -88,23 +158,17 @@ export class ConfigurationService {
    * This should be called once when the extension activates.
    */
   public static async migrateGlobalSettingsToDefault() {
-    const profiles = this.config.get(C.CONFIG_KEY_PROFILES, { Default: {} });
-
-    // Ensure Default profile exists
-    if (!profiles.Default) {
-      profiles.Default = {};
-    }
-
+    const profiles = this.getProfiles();
     let needsUpdate = false;
     const defaultProfile: IProfile = profiles.Default;
 
-    // Get global settings
-    const globalFontStyles = this.config.get(C.CONFIG_KEY_FONT_STYLES);
-    const globalFontStyleOverrides = this.config.get(C.CONFIG_KEY_FONT_STYLE_OVERRIDES);
-    const globalSyntaxOverrides = this.config.get(C.CONFIG_KEY_SYNTAX_OVERRIDES);
-    const globalUiOverrides = this.config.get(C.CONFIG_KEY_UI_OVERRIDES);
-    const globalAccent = this.config.get(C.CONFIG_KEY_ACCENT);
-    const globalCustomAccent = this.config.get(C.CONFIG_KEY_CUSTOM_ACCENT);
+    // Get global settings with explicit types
+    const globalFontStyles = this.config.get<IFontStyles | undefined>(C.CONFIG_KEY_FONT_STYLES);
+    const globalFontStyleOverrides = this.config.get<IFontStyleOverrides | undefined>(C.CONFIG_KEY_FONT_STYLE_OVERRIDES);
+    const globalSyntaxOverrides = this.config.get<ISyntaxOverrides | undefined>(C.CONFIG_KEY_SYNTAX_OVERRIDES);
+    const globalUiOverrides = this.config.get<IUiOverrides | undefined>(C.CONFIG_KEY_UI_OVERRIDES);
+    const globalAccent = this.config.get<string | undefined>(C.CONFIG_KEY_ACCENT);
+    const globalCustomAccent = this.config.get<string | undefined>(C.CONFIG_KEY_CUSTOM_ACCENT);
 
     // Only migrate fontStyles if they contain non-default values
     if (globalFontStyles && !defaultProfile.fontStyles) {
@@ -114,7 +178,7 @@ export class ConfigurationService {
       // Only include styles that differ from defaults
       for (const [key, value] of Object.entries(globalFontStyles)) {
         if (defaults[key] !== value) {
-          customizedStyles[key] = value as string;
+          customizedStyles[key] = value;
         }
       }
 
@@ -127,31 +191,31 @@ export class ConfigurationService {
 
     // Migrate fontStyleOverrides (these are always customizations)
     if (globalFontStyleOverrides && Object.keys(globalFontStyleOverrides).length > 0 && !defaultProfile.fontStyleOverrides) {
-      defaultProfile.fontStyleOverrides = globalFontStyleOverrides as Record<string, Record<string, string>>;
+      defaultProfile.fontStyleOverrides = globalFontStyleOverrides;
       needsUpdate = true;
     }
 
     // Migrate syntaxOverrides (these are always customizations)
     if (globalSyntaxOverrides && Object.keys(globalSyntaxOverrides).length > 0 && !defaultProfile.syntaxOverrides) {
-      defaultProfile.syntaxOverrides = globalSyntaxOverrides as Record<string, Record<string, string>>;
+      defaultProfile.syntaxOverrides = globalSyntaxOverrides;
       needsUpdate = true;
     }
 
     // Migrate uiOverrides (these are always customizations)
     if (globalUiOverrides && Object.keys(globalUiOverrides).length > 0 && !defaultProfile.uiOverrides) {
-      defaultProfile.uiOverrides = globalUiOverrides as Record<string, Record<string, string>>;
+      defaultProfile.uiOverrides = globalUiOverrides;
       needsUpdate = true;
     }
 
     // Only migrate accent if it's different from default
     if (globalAccent && globalAccent !== C.DEFAULT_ACCENT && !defaultProfile.accent) {
-      defaultProfile.accent = globalAccent as string;
+      defaultProfile.accent = globalAccent;
       needsUpdate = true;
     }
 
     // Only migrate custom accent if it's different from default
     if (globalCustomAccent && globalCustomAccent !== C.DEFAULT_CUSTOM_ACCENT && !defaultProfile.customAccentColor) {
-      defaultProfile.customAccentColor = globalCustomAccent as string;
+      defaultProfile.customAccentColor = globalCustomAccent;
       needsUpdate = true;
     }
 
@@ -205,8 +269,8 @@ export class ConfigurationService {
     }
 
     // Get current accent and custom accent, only include if different from defaults
-    const currentAccent = this.getProfileSetting<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
-    const currentCustomAccent = this.getProfileSetting<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
+    const currentAccent = this.getProfileSetting(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
+    const currentCustomAccent = this.getProfileSetting(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
 
     const currentSettings: IProfile = {};
 
@@ -251,24 +315,23 @@ export class ConfigurationService {
 
     const profiles = this.getProfiles();
 
-    // Create a mutable copy of the profiles object since VS Code config returns read-only proxies
-    const mutableProfiles = JSON.parse(JSON.stringify(profiles));
-    delete mutableProfiles[profileName];
+    // Create new profiles object without the deleted profile using object destructuring
+    const { [profileName]: _removed, ...remainingProfiles } = profiles;
 
     // Check if any custom profiles remain (excluding Default)
-    const customProfiles = Object.keys(mutableProfiles).filter(name => name !== "Default");
+    const customProfileNames = Object.keys(remainingProfiles).filter(name => name !== "Default");
 
-    // If no custom profiles remain, keep only the Default profile (if it has settings) or clear entirely
-    let finalProfiles;
-    if (customProfiles.length > 0) {
+    // Determine final profiles object
+    let finalProfiles: { [name: string]: IProfile };
+    if (customProfileNames.length > 0) {
       // Custom profiles exist, keep the full profiles object
-      finalProfiles = mutableProfiles;
+      finalProfiles = remainingProfiles;
     } else {
       // No custom profiles exist, check if Default has any settings
-      const defaultProfile = mutableProfiles["Default"];
-      if (defaultProfile && Object.keys(defaultProfile).length > 0) {
+      const defaultProfile = remainingProfiles["Default"];
+      if (Object.keys(defaultProfile).length > 0) {
         // Default has settings, keep it
-        finalProfiles = { "Default": defaultProfile };
+        finalProfiles = { Default: defaultProfile };
       } else {
         // Default is empty, clear the entire profiles setting
         finalProfiles = {};
@@ -284,12 +347,12 @@ export class ConfigurationService {
    * @param {string} profileName The name of the profile to reset.
    */
   public static async resetProfile(profileName: string) {
-    const currentProfiles: { [name: string]: IProfile } = this.config.get(C.CONFIG_KEY_PROFILES, {});
+    const currentProfiles = this.getProfiles();
 
-    if (currentProfiles[profileName]) {
+    if (Object.prototype.hasOwnProperty.call(currentProfiles, profileName)) {
       // Clear all settings but keep the profile (works for both Default and custom profiles)
-      currentProfiles[profileName] = {};
-      await this.config.update(C.CONFIG_KEY_PROFILES, currentProfiles, vscode.ConfigurationTarget.Global);
+      const updatedProfiles = { ...currentProfiles, [profileName]: {} };
+      await this.config.update(C.CONFIG_KEY_PROFILES, updatedProfiles, vscode.ConfigurationTarget.Global);
 
       // If resetting Default profile, also clear any legacy global settings for cleanup
       if (profileName === "Default") {
@@ -305,46 +368,71 @@ export class ConfigurationService {
   /**
    * Updates a setting, respecting the current profile.
    * @param {string} key The configuration key.
-   * @param {T} value The new value.
+   * @param {IProfile[keyof IProfile]} value The new value.
    * @private
    */
-  private static async updateProfileSetting<T>(key: string, value: T) {
+  private static async updateProfileSetting(key: string, value: IProfile[keyof IProfile]) {
     const activeProfile = this.getActiveProfile();
     const profiles = this.getProfiles();
 
-    // Ensure Default profile exists
-    if (!profiles["Default"]) {
-      profiles["Default"] = {};
-    }
+    // Get existing profile or create empty one - use hasOwnProperty for proper key check
+    const existingProfile = Object.prototype.hasOwnProperty.call(profiles, activeProfile)
+      ? profiles[activeProfile]
+      : undefined;
+    const profile: IProfile = existingProfile ? { ...existingProfile } : {};
+    profile[key] = value;
 
-    // Store setting in the appropriate profile (including Default)
-    const profile = profiles[activeProfile] || {};
-    profile[key] = value as IProfile[keyof IProfile];
-    profiles[activeProfile] = profile;
-
-    await this.config.update(C.CONFIG_KEY_PROFILES, profiles, vscode.ConfigurationTarget.Global);
+    const updatedProfiles = { ...profiles, [activeProfile]: profile };
+    await this.config.update(C.CONFIG_KEY_PROFILES, updatedProfiles, vscode.ConfigurationTarget.Global);
   }
 
   /**
-   * Gets a setting value, respecting the current profile.
+   * Gets a string setting value, respecting the current profile.
+   * @param {string} key The configuration key.
+   * @param {string} defaultValue The default value if not found.
+   * @returns {string} The value of the setting.
+   * @private
+   */
+  private static getProfileSetting(key: string, defaultValue: string): string {
+    const activeProfile = this.getActiveProfile();
+    const profiles = this.getProfiles();
+
+    // Check if profile exists using hasOwnProperty for proper key check
+    if (Object.prototype.hasOwnProperty.call(profiles, activeProfile)) {
+      const profile = profiles[activeProfile];
+      const value = profile[key];
+      if (typeof value === "string") {
+        return value;
+      }
+    }
+
+    // Fallback to global config for backward compatibility
+    return this.config.get<string>(key, defaultValue);
+  }
+
+  /**
+   * Gets an object setting value, respecting the current profile.
    * @param {string} key The configuration key.
    * @param {T} defaultValue The default value if not found.
    * @returns {T} The value of the setting.
    * @private
    */
-  private static getProfileSetting<T>(key: string, defaultValue: T): T {
+  private static getProfileObjectSetting<T extends Record<string, unknown>>(key: string, defaultValue: T): T {
     const activeProfile = this.getActiveProfile();
     const profiles = this.getProfiles();
 
-    if (activeProfile && profiles[activeProfile]) {
+    // Check if profile exists using hasOwnProperty for proper key check
+    if (Object.prototype.hasOwnProperty.call(profiles, activeProfile)) {
       const profile = profiles[activeProfile];
-      if (typeof profile[key] !== "undefined") {
-        return profile[key] as T;
+      const value = profile[key];
+      if (typeof value === "object") {
+        return value as T;
       }
     }
 
     // Fallback to global config for backward compatibility
-    return this.config.get<T>(key, defaultValue);
+    const globalValue = this.config.get<T | undefined>(key);
+    return globalValue ?? defaultValue;
   }
 
   /**
@@ -354,11 +442,11 @@ export class ConfigurationService {
    * @returns {string} The active accent color value (e.g., "sapphire" or a hex code like "#89b4fa").
    */
   public static getAccent(): string {
-    const accentSetting = this.getProfileSetting<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
+    const accentSetting = this.getProfileSetting(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
 
     // If the user has selected "custom", the corresponding hex code must be fetched and validated.
     if (accentSetting === "custom") {
-      const customColor = this.getProfileSetting<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
+      const customColor = this.getProfileSetting(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
 
       // A simple regex to validate that the color is a 6-digit hex code.
       const hex6Regex = /^#([A-Fa-f0-9]{6})$/;
@@ -375,7 +463,7 @@ export class ConfigurationService {
    * @returns {IFontStyles} The font styles object. Returns an empty object if not set.
    */
   public static getFontStyles(): IFontStyles {
-    return this.getProfileSetting<IFontStyles>(C.CONFIG_KEY_FONT_STYLES, {});
+    return this.getProfileObjectSetting<IFontStyles>(C.CONFIG_KEY_FONT_STYLES, {});
   }
 
   /**
@@ -383,7 +471,7 @@ export class ConfigurationService {
    * @returns {ISyntaxOverrides} The syntax overrides object. Returns an empty object if not set.
    */
   public static getSyntaxOverrides(): ISyntaxOverrides {
-    return this.getProfileSetting<ISyntaxOverrides>(C.CONFIG_KEY_SYNTAX_OVERRIDES, {});
+    return this.getProfileObjectSetting<ISyntaxOverrides>(C.CONFIG_KEY_SYNTAX_OVERRIDES, {});
   }
 
   /**
@@ -391,7 +479,7 @@ export class ConfigurationService {
    * @returns {IUiOverrides} The UI overrides object. Returns an empty object if not set.
    */
   public static getUiOverrides(): IUiOverrides {
-    return this.getProfileSetting<IUiOverrides>(C.CONFIG_KEY_UI_OVERRIDES, {});
+    return this.getProfileObjectSetting<IUiOverrides>(C.CONFIG_KEY_UI_OVERRIDES, {});
   }
 
   /**
@@ -399,7 +487,7 @@ export class ConfigurationService {
    * @returns {IFontStyleOverrides} The font style overrides object. Returns an empty object if not set.
    */
   public static getFontStyleOverrides(): IFontStyleOverrides {
-    return this.getProfileSetting<IFontStyleOverrides>(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, {});
+    return this.getProfileObjectSetting<IFontStyleOverrides>(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, {});
   }
 
   /**
@@ -408,7 +496,7 @@ export class ConfigurationService {
    * @private
    */
   private static getDefaultFontStyles(): IFontStyles {
-    const extensionConfig = vscode.extensions.getExtension("kenan-salar.calmppuccin-vscode")?.packageJSON;
+    const extensionConfig = vscode.extensions.getExtension(C.EXTENSION_ID)?.packageJSON as IExtensionPackageJson | undefined;
     return extensionConfig?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLES}`]?.default ?? {};
   }
 
@@ -422,22 +510,19 @@ export class ConfigurationService {
     const currentFontStyles = this.getFontStyles();
     const defaultFontStyles = this.getDefaultFontStyles();
 
-    // Start with current font styles and update the specific key
-    const updatedFontStyles: IFontStyles = { ...currentFontStyles };
-
-    // Update or remove the specific key
-    if (value !== defaultFontStyles[key]) {
-      updatedFontStyles[key] = value;
-    } else {
-      delete updatedFontStyles[key];
-    }
-
-    // Filter out all font styles that match their default values
+    // Build new font styles object, excluding keys that match defaults
     const filteredFontStyles: IFontStyles = {};
-    for (const [styleKey, styleValue] of Object.entries(updatedFontStyles)) {
-      if (styleValue !== defaultFontStyles[styleKey]) {
+
+    // Add all existing styles that differ from defaults (excluding the key being updated)
+    for (const [styleKey, styleValue] of Object.entries(currentFontStyles)) {
+      if (styleKey !== key && styleValue !== defaultFontStyles[styleKey]) {
         filteredFontStyles[styleKey] = styleValue;
       }
+    }
+
+    // Add the new value if it differs from the default
+    if (value !== defaultFontStyles[key]) {
+      filteredFontStyles[key] = value;
     }
 
     // If no custom font styles remain, remove the entire setting
@@ -450,16 +535,13 @@ export class ConfigurationService {
    * @param {string} key The font style key to reset.
    */
   public static async resetFontStyle(key: string) {
-    const currentFontStyles: IFontStyles = { ...this.getFontStyles() };
+    const currentFontStyles = this.getFontStyles();
     const defaultFontStyles = this.getDefaultFontStyles();
 
-    // Remove the specific key being reset
-    delete currentFontStyles[key];
-
-    // Filter out all font styles that match their default values
+    // Build new font styles object, excluding the key being reset and keys that match defaults
     const filteredFontStyles: IFontStyles = {};
     for (const [styleKey, styleValue] of Object.entries(currentFontStyles)) {
-      if (styleValue !== defaultFontStyles[styleKey]) {
+      if (styleKey !== key && styleValue !== defaultFontStyles[styleKey]) {
         filteredFontStyles[styleKey] = styleValue;
       }
     }
@@ -492,14 +574,13 @@ export class ConfigurationService {
    * @param {string} value The new hex color value.
    */
   public static async updateSyntaxColor(flavor: string, key: string, value: string) {
-    // We deep-clone the settings object because the object returned by .get() is read-only.
-    // This creates a mutable copy that we can safely modify before updating the configuration.
-    const overrides: ISyntaxOverrides = JSON.parse(JSON.stringify(this.getSyntaxOverrides()));
-    if (!overrides[flavor]) {
-      overrides[flavor] = {};
-    }
-    overrides[flavor][key] = value;
-    await this.updateProfileSetting(C.CONFIG_KEY_SYNTAX_OVERRIDES, overrides);
+    // Clone the settings object to create a mutable copy
+    const overrides = cloneOverrides(this.getSyntaxOverrides());
+    const existingFlavor = Object.prototype.hasOwnProperty.call(overrides, flavor) ? overrides[flavor] : undefined;
+    const flavorOverrides = existingFlavor ? { ...existingFlavor } : {};
+    flavorOverrides[key] = value;
+    const updatedOverrides: ISyntaxOverrides = { ...overrides, [flavor]: flavorOverrides };
+    await this.updateProfileSetting(C.CONFIG_KEY_SYNTAX_OVERRIDES, updatedOverrides);
   }
 
   /**
@@ -508,17 +589,9 @@ export class ConfigurationService {
    * @param {string} key The syntax key.
    */
   public static async resetSyntaxColor(flavor: string, key: string) {
-    const overrides: ISyntaxOverrides = JSON.parse(JSON.stringify(this.getSyntaxOverrides()));
-    if (overrides[flavor]?.[key]) {
-      delete overrides[flavor][key];
-      // If a flavor object becomes empty, remove it entirely.
-      if (Object.keys(overrides[flavor]).length === 0) {
-        delete overrides[flavor];
-      }
-      // If the top-level overrides object is now empty, remove the entire setting.
-      const finalOverrides = Object.keys(overrides).length === 0 ? undefined : overrides;
-      await this.updateProfileSetting(C.CONFIG_KEY_SYNTAX_OVERRIDES, finalOverrides);
-    }
+    const overrides = this.getSyntaxOverrides();
+    const finalOverrides = removeOverrideKey(overrides, flavor, key);
+    await this.updateProfileSetting(C.CONFIG_KEY_SYNTAX_OVERRIDES, finalOverrides);
   }
 
   /**
@@ -528,12 +601,12 @@ export class ConfigurationService {
    * @param {string} value The new hex color value.
    */
   public static async updateUiColor(flavor: string, key: string, value: string) {
-    const overrides: IUiOverrides = JSON.parse(JSON.stringify(this.getUiOverrides()));
-    if (!overrides[flavor]) {
-      overrides[flavor] = {};
-    }
-    overrides[flavor][key] = value;
-    await this.updateProfileSetting(C.CONFIG_KEY_UI_OVERRIDES, overrides);
+    const overrides = cloneOverrides(this.getUiOverrides());
+    const existingFlavor = Object.prototype.hasOwnProperty.call(overrides, flavor) ? overrides[flavor] : undefined;
+    const flavorOverrides = existingFlavor ? { ...existingFlavor } : {};
+    flavorOverrides[key] = value;
+    const updatedOverrides: IUiOverrides = { ...overrides, [flavor]: flavorOverrides };
+    await this.updateProfileSetting(C.CONFIG_KEY_UI_OVERRIDES, updatedOverrides);
   }
 
   /**
@@ -542,15 +615,9 @@ export class ConfigurationService {
    * @param {string} key The UI key.
    */
   public static async resetUiColor(flavor: string, key: string) {
-    const overrides: IUiOverrides = JSON.parse(JSON.stringify(this.getUiOverrides()));
-    if (overrides[flavor]?.[key]) {
-      delete overrides[flavor][key];
-      if (Object.keys(overrides[flavor]).length === 0) {
-        delete overrides[flavor];
-      }
-      const finalOverrides = Object.keys(overrides).length === 0 ? undefined : overrides;
-      await this.updateProfileSetting(C.CONFIG_KEY_UI_OVERRIDES, finalOverrides);
-    }
+    const overrides = this.getUiOverrides();
+    const finalOverrides = removeOverrideKey(overrides, flavor, key);
+    await this.updateProfileSetting(C.CONFIG_KEY_UI_OVERRIDES, finalOverrides);
   }
 
   /**
@@ -560,16 +627,18 @@ export class ConfigurationService {
    * @param {string} value The new font style value (e.g., "italic").
    */
   public static async updateFontStyleOverride(flavor: string, key: string, value: string) {
-    const fontStyleOverrides = this.getFontStyleOverrides();
+    const fontStyleOverrides = cloneOverrides(this.getFontStyleOverrides());
     const defaultFontStyles = this.getDefaultFontStyles();
 
     // Only save if the value differs from the default
     if (value !== defaultFontStyles[key]) {
-      if (!fontStyleOverrides[flavor]) {
-        fontStyleOverrides[flavor] = {};
-      }
-      fontStyleOverrides[flavor][key] = value;
-      await this.updateProfileSetting(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, fontStyleOverrides);
+      const existingFlavor = Object.prototype.hasOwnProperty.call(fontStyleOverrides, flavor)
+        ? fontStyleOverrides[flavor]
+        : undefined;
+      const flavorOverrides = existingFlavor ? { ...existingFlavor } : {};
+      flavorOverrides[key] = value;
+      const updatedOverrides: IFontStyleOverrides = { ...fontStyleOverrides, [flavor]: flavorOverrides };
+      await this.updateProfileSetting(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, updatedOverrides);
     } else {
       // If setting to default, remove it (same as resetting)
       await this.resetFontStyleOverride(flavor, key);
@@ -582,15 +651,9 @@ export class ConfigurationService {
    * @param {string} key The font style key to reset.
    */
   public static async resetFontStyleOverride(flavor: string, key: string) {
-    const overrides: IFontStyleOverrides = JSON.parse(JSON.stringify(this.getFontStyleOverrides()));
-    if (overrides[flavor]?.[key]) {
-      delete overrides[flavor][key];
-      if (Object.keys(overrides[flavor]).length === 0) {
-        delete overrides[flavor];
-      }
-      const finalOverrides = Object.keys(overrides).length === 0 ? undefined : overrides;
-      await this.updateProfileSetting(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, finalOverrides);
-    }
+    const overrides = this.getFontStyleOverrides();
+    const finalOverrides = removeOverrideKey(overrides, flavor, key);
+    await this.updateProfileSetting(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, finalOverrides);
   }
 
   /**
@@ -608,52 +671,84 @@ export class ConfigurationService {
   public static getActiveFlavor(): keyof IPalettes {
     const workbenchConfig = vscode.workspace.getConfiguration("workbench");
     const themeName = workbenchConfig.get<string>("colorTheme", "");
-    const calmppuccinPrefix = "calmppuccin ";
+    const flavor = parseFlavorFromThemeName(themeName);
 
-    if (themeName.toLowerCase().startsWith(calmppuccinPrefix)) {
-      const flavor = themeName
-        .slice(calmppuccinPrefix.length)
-        .toLowerCase()
-        .replace(/ /g, "-")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
-
-      if (isFlavor(flavor)) {
-        return flavor;
-      }
+    if (flavor && isFlavor(flavor)) {
+      return flavor;
     }
     return "mocha"; // Default fallback
   }
 
   /**
    * Gathers all settings required by the webview into a single object.
+   * This method is optimized to read the VS Code configuration once and reuse it
+   * for all internal lookups, reducing redundant configuration API calls.
    * @returns {ISettingsPayload} The complete settings payload for the webview.
    */
   public static getWebViewSettings(): ISettingsPayload {
-    const extensionConfig = vscode.extensions.getExtension("kenan-salar.calmppuccin-vscode")?.packageJSON;
+    // Cache the configuration snapshot once to avoid repeated VS Code API calls.
+    const configSnapshot = vscode.workspace.getConfiguration(C.EXTENSION_NAMESPACE);
+    const workbenchConfig = vscode.workspace.getConfiguration("workbench");
+    const extensionConfig = vscode.extensions.getExtension(C.EXTENSION_ID)?.packageJSON as IExtensionPackageJson | undefined;
 
-    const activeFlavor = this.getActiveFlavor();
-    const fontStyles = this.getFontStyles();
-    const syntaxOverrides = this.getSyntaxOverrides();
-    const uiOverrides = this.getUiOverrides();
-    const fontStyleOverrides = this.getFontStyleOverrides();
-    const currentAccent = this.getProfileSetting<string>(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
-    const customAccentColor = this.getProfileSetting<string>(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
-    const profiles = this.getProfiles();
-    const activeProfile = this.getActiveProfile();
+    // Get profiles from cached config
+    const rawProfiles: unknown = configSnapshot.get(C.CONFIG_KEY_PROFILES);
+    let profiles: { [name: string]: IProfile };
+    if (typeof rawProfiles !== "object" || rawProfiles === null || Array.isArray(rawProfiles)) {
+      profiles = { Default: {} };
+    } else {
+      profiles = rawProfiles as { [name: string]: IProfile };
+      if (!Object.prototype.hasOwnProperty.call(profiles, "Default")) {
+        profiles = { ...profiles, Default: {} };
+      }
+    }
 
-    const defaultFontStyles = this.getDefaultFontStyles();
-    const accentOptions =
+    const activeProfile = configSnapshot.get(C.CONFIG_KEY_ACTIVE_PROFILE, "Default");
+    const profile = Object.prototype.hasOwnProperty.call(profiles, activeProfile) ? profiles[activeProfile] : {};
+
+    // Helper to get string setting from profile with fallback to global config
+    const getProfileString = (key: string, defaultValue: string): string => {
+      const value = profile[key];
+      if (typeof value === "string") return value;
+      return configSnapshot.get<string>(key, defaultValue);
+    };
+
+    // Helper to get object setting from profile with fallback to global config
+    const getProfileObject = <T extends Record<string, unknown>>(key: string, defaultValue: T): T => {
+      const value = profile[key];
+      if (typeof value === "object") return value as T;
+      const globalValue = configSnapshot.get<T | undefined>(key);
+      return globalValue ?? defaultValue;
+    };
+
+    // Get active flavor from workbench config
+    const themeName = workbenchConfig.get<string>("colorTheme", "");
+    let activeFlavor: keyof typeof palettes = "mocha";
+    const parsedFlavor = parseFlavorFromThemeName(themeName);
+    if (parsedFlavor && parsedFlavor in palettes) {
+      activeFlavor = parsedFlavor as keyof typeof palettes;
+    }
+
+    // Get all settings using cached helpers
+    const fontStyles = getProfileObject<IFontStyles>(C.CONFIG_KEY_FONT_STYLES, {});
+    const syntaxOverrides = getProfileObject<ISyntaxOverrides>(C.CONFIG_KEY_SYNTAX_OVERRIDES, {});
+    const uiOverrides = getProfileObject<IUiOverrides>(C.CONFIG_KEY_UI_OVERRIDES, {});
+    const fontStyleOverrides = getProfileObject<IFontStyleOverrides>(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, {});
+    const currentAccent = getProfileString(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
+    const customAccentColor = getProfileString(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
+
+    const defaultFontStyles = extensionConfig?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLES}`]?.default ?? {};
+    const accentOptions: string[] =
       extensionConfig?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACCENT}`]?.enum ??
       [];
 
     const defaultPalette = palettes[activeFlavor];
-    const overrideSyntaxPalette = syntaxOverrides[activeFlavor] || {};
-    const overrideUiPalette = uiOverrides[activeFlavor] || {};
-    const overrideFontStylePalette = fontStyleOverrides[activeFlavor] || {};
+    const overrideSyntaxPalette = syntaxOverrides[activeFlavor] ?? {};
+    const overrideUiPalette = uiOverrides[activeFlavor] ?? {};
+    const overrideFontStylePalette = fontStyleOverrides[activeFlavor] ?? {};
     const activeThemeBackgroundColor = defaultPalette.crust;
 
-    const accentColorPalettes = accentOptions.reduce((acc: { [key: string]: string }, option: string) => {
+    const accentColorPalettes = accentOptions.reduce<{ [key: string]: string }>((acc, option) => {
       if (defaultPalette[option]) {
         acc[option] = defaultPalette[option];
       }
@@ -663,7 +758,7 @@ export class ConfigurationService {
     const syntaxSettings = CUSTOMIZABLE_SYNTAX_KEYS.map(
       (key): IWebviewSetting => ({
         key: key,
-        fontStyle: overrideFontStylePalette[`${key}FontStyle`] ?? fontStyles[`${key}FontStyle`] ?? "none",
+        fontStyle: overrideFontStylePalette[`${key}FontStyle`] || fontStyles[`${key}FontStyle`] || "none",
         color: overrideSyntaxPalette[key] || defaultPalette[key],
         defaultColor: defaultPalette[key],
       })
@@ -680,7 +775,7 @@ export class ConfigurationService {
     const jsonSettings = CUSTOMIZABLE_JSON_KEYS.map(
       (key): IWebviewSetting => ({
         key: key,
-        fontStyle: overrideFontStylePalette[`${key}FontStyle`] ?? fontStyles[`${key}FontStyle`] ?? "none",
+        fontStyle: overrideFontStylePalette[`${key}FontStyle`] || fontStyles[`${key}FontStyle`] || "none",
         color: overrideSyntaxPalette[key] || defaultPalette[key],
         defaultColor: defaultPalette[key],
       })

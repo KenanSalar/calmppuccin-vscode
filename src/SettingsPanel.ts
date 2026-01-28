@@ -16,6 +16,8 @@ import { MessageToExtension } from "../types/webview";
 export class SettingsPanel {
   private static _instance: SettingsPanel | undefined;
   private readonly _context: vscode.ExtensionContext;
+  /** Timer handle for debouncing webview updates. */
+  private _pendingUpdate: ReturnType<typeof setTimeout> | undefined;
 
   private constructor(context: vscode.ExtensionContext) {
     this._context = context;
@@ -29,8 +31,13 @@ export class SettingsPanel {
     if (!SettingsPanel._instance) {
       SettingsPanel._instance = new SettingsPanel(context);
     }
-    WebviewManager.createOrShow(context, SettingsPanel._instance._handleMessage.bind(SettingsPanel._instance));
-    SettingsPanel._instance._update();
+    WebviewManager.createOrShow(context, SettingsPanel._instance._handleMessage.bind(SettingsPanel._instance))
+      .then(() => {
+        SettingsPanel._instance?._update();
+      })
+      .catch((err: unknown) => {
+        console.error("Failed to create webview panel:", err);
+      });
   }
 
   /**
@@ -48,66 +55,85 @@ export class SettingsPanel {
     // The 'command' property is used as a discriminator for the message type.
     // TypeScript correctly infers the shape of 'message' in each case block.
     switch (message.command) {
-      case C.WEBVIEW_COMMANDS.UPDATE_SETTING: {
+      case C.WEBVIEW_CONSTANTS.UPDATE_SETTING: {
         const activeFlavor = ConfigurationService.getActiveFlavor();
         await ConfigurationService.updateFontStyleOverride(activeFlavor, message.key, message.value);
         return;
       }
-      case C.WEBVIEW_COMMANDS.RESET_FONT_STYLE: {
+      case C.WEBVIEW_CONSTANTS.RESET_FONT_STYLE: {
         const currentFlavor = ConfigurationService.getActiveFlavor();
         await ConfigurationService.resetFontStyleOverride(currentFlavor, message.key);
         return;
       }
-      case C.WEBVIEW_COMMANDS.UPDATE_ACCENT:
+      case C.WEBVIEW_CONSTANTS.UPDATE_ACCENT:
         await ConfigurationService.updateAccent(message.value);
         return;
-      case C.WEBVIEW_COMMANDS.UPDATE_CUSTOM_ACCENT:
+      case C.WEBVIEW_CONSTANTS.UPDATE_CUSTOM_ACCENT:
         await ConfigurationService.updateCustomAccent(message.value);
         return;
-      case C.WEBVIEW_COMMANDS.UPDATE_SYNTAX_COLOR:
+      case C.WEBVIEW_CONSTANTS.UPDATE_SYNTAX_COLOR:
         await ConfigurationService.updateSyntaxColor(message.flavor, message.key, message.value);
         return;
-      case C.WEBVIEW_COMMANDS.RESET_SYNTAX_COLOR:
+      case C.WEBVIEW_CONSTANTS.RESET_SYNTAX_COLOR:
         await ConfigurationService.resetSyntaxColor(message.flavor, message.key);
         return;
-      case C.WEBVIEW_COMMANDS.UPDATE_UI_COLOR:
+      case C.WEBVIEW_CONSTANTS.UPDATE_UI_COLOR:
         await ConfigurationService.updateUiColor(message.flavor, message.key, message.value);
         return;
-      case C.WEBVIEW_COMMANDS.RESET_UI_COLOR:
+      case C.WEBVIEW_CONSTANTS.RESET_UI_COLOR:
         await ConfigurationService.resetUiColor(message.flavor, message.key);
         return;
-      case C.WEBVIEW_COMMANDS.RESET_ALL:
+      case C.WEBVIEW_CONSTANTS.RESET_ALL:
         await ConfigurationService.resetAll();
         this._update();
         return;
-      case C.WEBVIEW_COMMANDS.SWITCH_PROFILE:
+      case C.WEBVIEW_CONSTANTS.SWITCH_PROFILE:
         await ConfigurationService.updateActiveProfile(message.profile);
         this._update();
         return;
-      case C.WEBVIEW_COMMANDS.SAVE_PROFILE:
+      case C.WEBVIEW_CONSTANTS.SAVE_PROFILE:
         await ConfigurationService.saveProfile(message.profile);
         await ConfigurationService.updateActiveProfile(message.profile);
         this._update();
         return;
-      case C.WEBVIEW_COMMANDS.DELETE_PROFILE:
+      case C.WEBVIEW_CONSTANTS.DELETE_PROFILE:
         await ConfigurationService.deleteProfile(message.profile);
         this._update();
         return;
+      default: {
+        // Exhaustive check: TypeScript will error if a new command is added to MessageToExtension
+        // but not handled above.
+        const _exhaustiveCheck: never = message;
+        console.warn("Unhandled webview message:", _exhaustiveCheck);
+      }
     }
   }
 
   /**
    * Gathers all current settings via the ConfigurationService and posts them to the webview.
+   * This method is debounced to prevent excessive recomputation during rapid changes
+   * (e.g., dragging a color picker slider).
    */
   private _update() {
     if (!WebviewManager.currentPanel) return;
 
-    // The ONLY responsibility of this method now is to get the complete settings payload and post it.
-    const settings = ConfigurationService.getWebViewSettings();
+    // Clear any pending update to implement debouncing.
+    if (this._pendingUpdate) {
+      clearTimeout(this._pendingUpdate);
+    }
 
-    WebviewManager.currentPanel.postMessage({
-      command: C.WEBVIEW_COMMANDS.LOAD_SETTINGS,
-      settings: settings,
-    });
+    // Debounce updates to coalesce rapid setting changes.
+    this._pendingUpdate = setTimeout(() => {
+      this._pendingUpdate = undefined;
+      if (!WebviewManager.currentPanel) return;
+
+      // The ONLY responsibility of this method now is to get the complete settings payload and post it.
+      const settings = ConfigurationService.getWebViewSettings();
+
+      WebviewManager.currentPanel.postMessage({
+        command: C.WEBVIEW_CONSTANTS.LOAD_SETTINGS,
+        settings: settings,
+      });
+    }, C.WEBVIEW_UPDATE_DEBOUNCE_MS);
   }
 }

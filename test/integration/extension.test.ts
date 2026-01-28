@@ -157,10 +157,12 @@ describe("Extension Integration Tests", () => {
   it("should trigger regenerateThemes command on configuration change", () => {
     // 1. Arrange
     let listener: (event: vscode.ConfigurationChangeEvent) => void = () => {};
-    (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation((callback) => {
-      listener = callback;
-      return { dispose: () => {} };
-    });
+    (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation(
+      (callback: (event: vscode.ConfigurationChangeEvent) => void) => {
+        listener = callback;
+        return { dispose: () => {} };
+      }
+    );
 
     const mockEvent: vscode.ConfigurationChangeEvent = {
       affectsConfiguration: jest.fn((section: string) => {
@@ -199,10 +201,12 @@ describe("Extension Integration Tests", () => {
     const { activate: freshActivate } = await import("../../extension");
 
     let listener: (event: vscode.ConfigurationChangeEvent) => void = () => {};
-    (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation((callback) => {
-      listener = callback;
-      return { dispose: () => {} };
-    });
+    (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation(
+      (callback: (event: vscode.ConfigurationChangeEvent) => void) => {
+        listener = callback;
+        return { dispose: () => {} };
+      }
+    );
 
     const mockEvent: vscode.ConfigurationChangeEvent = {
       affectsConfiguration: jest.fn((section: string) => {
@@ -233,10 +237,12 @@ describe("Extension Integration Tests", () => {
     const { activate: freshActivate } = await import("../../extension");
     
     let listener: (event: vscode.ConfigurationChangeEvent) => void = () => {};
-    (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation((callback) => {
-      listener = callback;
-      return { dispose: () => {} };
-    });
+    (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation(
+      (callback: (event: vscode.ConfigurationChangeEvent) => void) => {
+        listener = callback;
+        return { dispose: () => {} };
+      }
+    );
 
     const mockEvent: vscode.ConfigurationChangeEvent = {
       affectsConfiguration: jest.fn((section: string) => {
@@ -259,10 +265,12 @@ describe("Extension Integration Tests", () => {
    */
   it("should NOT trigger regeneration for non-Calmppuccin settings", () => {
     let listener: (event: vscode.ConfigurationChangeEvent) => void = () => {};
-    (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation((callback) => {
-      listener = callback;
-      return { dispose: () => {} };
-    });
+    (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation(
+      (callback: (event: vscode.ConfigurationChangeEvent) => void) => {
+        listener = callback;
+        return { dispose: () => {} };
+      }
+    );
 
     const mockEvent: vscode.ConfigurationChangeEvent = {
       affectsConfiguration: jest.fn((section: string) => {
