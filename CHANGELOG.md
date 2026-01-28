@@ -28,6 +28,7 @@
 - **Internal**: Changed `||` to `??` (nullish coalescing) throughout the codebase for semantically correct default value handling.
 - **Internal**: Split generic `getProfileSetting<T>` into `getProfileSetting()` and `getProfileObjectSetting<T>()` for better type inference.
 - **Internal**: Removed redundant `onCommand:calmppuccin.customize` activation event from package.json.
+- **Chore**: Simplified release workflow to build Docker image fresh on every run (`no-cache: true`) instead of relying on cached GHCR images, ensuring builds always use the latest code and dependencies.
 
 ## [1.9.2] - 2025-12-16
 
