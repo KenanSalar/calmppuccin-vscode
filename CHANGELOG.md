@@ -10,7 +10,7 @@
 - **Performance**: Converted synchronous file read in `WebviewManager` to async (`fs/promises.readFile`) to avoid blocking the extension host thread during webview creation.
 - **Performance**: Disposed the lightweight "tripwire" theme-change listener after full activation to eliminate redundant event processing.
 - **Performance**: Consolidated three separate object spread operations for extension colors into a single `Object.assign()` call.
-- **Performance**: Changed webpack build.js config from `mode: "none"` to `mode: "production"` for minification.
+- **Performance**: Changed webpack config for build script from `mode: "none"` to `mode: "production"` for minification.
 - **Performance**: Made source maps conditional based on `NODE_ENV`, reducing production dist folder from ~1.2MB to ~384KB.
 - **Performance**: Added `sideEffects: false` to package.json for better tree-shaking during bundling.
 - **Chore**: Upgraded ESLint configuration from `recommended` to `strictTypeChecked` for stronger type safety and better code quality enforcement.
