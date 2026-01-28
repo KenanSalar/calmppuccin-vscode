@@ -40,7 +40,7 @@ export const window = {
  */
 export const commands = {
   registerCommand: jest.fn(),
-  executeCommand: jest.fn(),
+  executeCommand: jest.fn().mockReturnValue(Promise.resolve()),
 };
 
 /**

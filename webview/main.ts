@@ -23,6 +23,19 @@ interface IVsCodeApi {
 declare function acquireVsCodeApi(): IVsCodeApi;
 
 /**
+ * Asserts that a DOM element exists and returns it with the correct type.
+ * @param element The element or null from document.getElementById
+ * @param id The element ID for error messages
+ * @returns The element, guaranteed non-null
+ */
+function assertElement<T extends HTMLElement>(element: T | null, id: string): T {
+  if (!element) {
+    throw new Error(`Required element #${id} not found in DOM`);
+  }
+  return element;
+}
+
+/**
  * A centralized object for all command identifiers sent to and from the webview.
  */
 const COMMANDS = {
@@ -50,24 +63,24 @@ export class UIManager {
 
   /** A single object to hold references to all necessary DOM elements, queried once on instantiation for performance. */
   private readonly elements = {
-    accentContainer: document.getElementById("accent-container")!,
-    settingsContainer: document.getElementById("settings-container")!,
-    customAccentPickerContainer: document.getElementById("custom-accent-picker-container")!,
-    flavorTitle: document.getElementById("current-flavor")!,
-    customAccentPicker: document.getElementById("custom-accent-picker") as HTMLInputElement,
-    customAccentHexInput: document.getElementById("custom-accent-hex-input") as HTMLInputElement,
-    previewPane: document.getElementById("preview-pane")!,
-    codePreview: document.getElementById("code-preview")!,
-    resetAllContainer: document.getElementById("reset-all-container")!,
-    languageSelect: document.getElementById("language-select") as HTMLSelectElement,
-    settingsViewSelect: document.getElementById("settings-view-select") as HTMLSelectElement,
-    dialogOverlay: document.getElementById("reset-dialog-overlay")!,
-    confirmResetButton: document.getElementById("dialog-confirm-button")!,
-    cancelResetButton: document.getElementById("dialog-cancel-button")!,
-    profileSelect: document.getElementById("profile-select") as HTMLSelectElement,
-    profileNameInput: document.getElementById("profile-name-input") as HTMLInputElement,
-    saveProfileBtn: document.getElementById("save-profile-btn") as HTMLButtonElement,
-    deleteProfileBtn: document.getElementById("delete-profile-btn") as HTMLButtonElement,
+    accentContainer: assertElement(document.getElementById("accent-container"), "accent-container"),
+    settingsContainer: assertElement(document.getElementById("settings-container"), "settings-container"),
+    customAccentPickerContainer: assertElement(document.getElementById("custom-accent-picker-container"), "custom-accent-picker-container"),
+    flavorTitle: assertElement(document.getElementById("current-flavor"), "current-flavor"),
+    customAccentPicker: assertElement(document.getElementById("custom-accent-picker"), "custom-accent-picker") as HTMLInputElement,
+    customAccentHexInput: assertElement(document.getElementById("custom-accent-hex-input"), "custom-accent-hex-input") as HTMLInputElement,
+    previewPane: assertElement(document.getElementById("preview-pane"), "preview-pane"),
+    codePreview: assertElement(document.getElementById("code-preview"), "code-preview"),
+    resetAllContainer: assertElement(document.getElementById("reset-all-container"), "reset-all-container"),
+    languageSelect: assertElement(document.getElementById("language-select"), "language-select") as HTMLSelectElement,
+    settingsViewSelect: assertElement(document.getElementById("settings-view-select"), "settings-view-select") as HTMLSelectElement,
+    dialogOverlay: assertElement(document.getElementById("reset-dialog-overlay"), "reset-dialog-overlay"),
+    confirmResetButton: assertElement(document.getElementById("dialog-confirm-button"), "dialog-confirm-button"),
+    cancelResetButton: assertElement(document.getElementById("dialog-cancel-button"), "dialog-cancel-button"),
+    profileSelect: assertElement(document.getElementById("profile-select"), "profile-select") as HTMLSelectElement,
+    profileNameInput: assertElement(document.getElementById("profile-name-input"), "profile-name-input") as HTMLInputElement,
+    saveProfileBtn: assertElement(document.getElementById("save-profile-btn"), "save-profile-btn") as HTMLButtonElement,
+    deleteProfileBtn: assertElement(document.getElementById("delete-profile-btn"), "delete-profile-btn") as HTMLButtonElement,
   };
 
   /** Holds the current settings payload from the extension. */
@@ -201,7 +214,9 @@ export class UIManager {
     });
 
     // Set up listeners for the confirmation dialog.
-    this.elements.cancelResetButton.addEventListener("click", () => this.elements.dialogOverlay.classList.add("hidden"));
+    this.elements.cancelResetButton.addEventListener("click", () => {
+      this.elements.dialogOverlay.classList.add("hidden");
+    });
     this.elements.dialogOverlay.addEventListener("click", (e) => {
       if (e.target === this.elements.dialogOverlay) this.elements.dialogOverlay.classList.add("hidden");
     });
@@ -234,9 +249,8 @@ export class UIManager {
     // Primary listener for messages coming from the VS Code extension host.
     window.addEventListener("message", (event: MessageEvent<MessageToWebview>) => {
       const message = event.data;
-      if (message.command === COMMANDS.LOAD_SETTINGS) {
-        this.populateAllSettings(message.settings);
-      }
+      // Currently only loadSettings message type exists
+      this.populateAllSettings(message.settings);
     });
 
     // Trigger the initial fade-in animation for the dialog overlay
@@ -555,7 +569,7 @@ export class UIManager {
         hexInput.style.outlineColor = "";
 
         const rgb = match[1] ? `#${match[1]}` : "#000000";
-        const alphaHex = match[2] ?? "ff"; // Default to 'ff' (opaque) if alpha is not provided
+        const alphaHex = (match[2] as string | undefined) ?? "ff"; // Default to 'ff' (opaque) if alpha is not provided
         const alphaDecimal = parseInt(alphaHex, 16);
 
         // Update the color picker and slider to match the typed input
@@ -676,9 +690,13 @@ export class UIManager {
    */
   private _showDeleteConfirmation(profileName: string) {
     // Store original dialog content to restore later
-    const dialogTitle = this.elements.dialogOverlay.querySelector("h3")!;
-    const dialogMessage = this.elements.dialogOverlay.querySelector("p")!;
+    const dialogTitle = this.elements.dialogOverlay.querySelector("h3");
+    const dialogMessage = this.elements.dialogOverlay.querySelector("p");
     const confirmButton = this.elements.confirmResetButton;
+
+    if (!dialogTitle || !dialogMessage) {
+      throw new Error("Dialog elements not found");
+    }
 
     const originalTitle = dialogTitle.textContent;
     const originalMessage = dialogMessage.textContent;

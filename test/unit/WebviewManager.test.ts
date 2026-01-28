@@ -30,8 +30,8 @@ jest.mock(
     },
     Uri: {
       // The `file` method is mocked to return a URI-like object.
-      file: jest.fn((path) => ({
-        fsPath: path,
+      file: jest.fn((filePath: string) => ({
+        fsPath: filePath,
         // Mock the 'with' method for potential scheme changes (e.g., to 'vscode-resource').
         with: jest.fn(),
       })),
@@ -51,6 +51,8 @@ describe("WebviewManager Unit Tests", () => {
   let mockContext: vscode.ExtensionContext;
   let mockPanel: vscode.WebviewPanel;
   let disposeSpy: jest.SpyInstance;
+  let revealMock: jest.Mock;
+  let postMessageMock: jest.Mock;
 
   // This setup function runs before each test in the suite.
   beforeEach(() => {
@@ -61,17 +63,21 @@ describe("WebviewManager Unit Tests", () => {
     const mockDispose = jest.fn();
     disposeSpy = jest.spyOn({ dispose: mockDispose }, "dispose");
 
+    // Create mock functions that we'll reference directly in tests
+    revealMock = jest.fn();
+    postMessageMock = jest.fn();
+
     // Create a mock WebviewPanel object that simulates the real VS Code panel.
     mockPanel = {
       webview: {
         html: "",
         onDidReceiveMessage: jest.fn(),
-        postMessage: jest.fn(),
+        postMessage: postMessageMock,
         // The asWebviewUri function is mocked to return the URI unmodified for simplicity.
-        asWebviewUri: jest.fn((uri) => uri),
+        asWebviewUri: jest.fn((uri: vscode.Uri) => uri),
       },
       onDidDispose: jest.fn(),
-      reveal: jest.fn(),
+      reveal: revealMock,
       dispose: disposeSpy,
     } as unknown as vscode.WebviewPanel;
 
@@ -129,8 +135,8 @@ describe("WebviewManager Unit Tests", () => {
     // Assert: `createWebviewPanel` was not called again.
     expect(mockedVscode.window.createWebviewPanel).toHaveBeenCalledTimes(1);
     // Assert: The `reveal` method on the existing panel was called.
-    expect(mockPanel.reveal).toHaveBeenCalledTimes(1);
-    expect(mockPanel.reveal).toHaveBeenCalledWith(vscode.ViewColumn.One);
+    expect(revealMock).toHaveBeenCalledTimes(1);
+    expect(revealMock).toHaveBeenCalledWith(vscode.ViewColumn.One);
   });
 
   /**
@@ -161,8 +167,8 @@ describe("WebviewManager Unit Tests", () => {
     WebviewManager.currentPanel?.postMessage(testMessage);
 
     // Assert: The webview's internal postMessage method was called with the correct data.
-    expect(mockPanel.webview.postMessage).toHaveBeenCalledTimes(1);
-    expect(mockPanel.webview.postMessage).toHaveBeenCalledWith(testMessage);
+    expect(postMessageMock).toHaveBeenCalledTimes(1);
+    expect(postMessageMock).toHaveBeenCalledWith(testMessage);
   });
 
   /**

@@ -26,7 +26,7 @@ export class WebviewManager {
    * @param {vscode.ExtensionContext} context The extension's context.
    * @param {(message: MessageToExtension) => void} messageHandler The callback function to handle messages received from the webview.
    */
-  private constructor(context: vscode.ExtensionContext, messageHandler: (message: MessageToExtension) => void) {
+  private constructor(context: vscode.ExtensionContext, messageHandler: (message: MessageToExtension) => void | Promise<void>) {
     this._panel = vscode.window.createWebviewPanel(
       C.WEBVIEW_COMMANDS.WEBVIEW_ID,
       C.WEBVIEW_COMMANDS.WEBVIEW_TITLE,
@@ -45,7 +45,7 @@ export class WebviewManager {
 
     // Set the webview's initial HTML content and set up listeners for its lifecycle events.
     this._panel.webview.html = this._getHtmlForWebview(context.extensionPath);
-    this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+    this._panel.onDidDispose(() => { this.dispose(); }, null, this._disposables);
     this._panel.webview.onDidReceiveMessage(messageHandler, null, this._disposables);
   }
 
@@ -57,7 +57,7 @@ export class WebviewManager {
    */
   public static createOrShow(
     context: vscode.ExtensionContext,
-    messageHandler: (message: MessageToExtension) => void,
+    messageHandler: (message: MessageToExtension) => void | Promise<void>,
     onReveal?: () => void
   ) {
     if (WebviewManager.currentPanel) {

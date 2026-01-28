@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.9.3] - 2026-01-28
+
+- **Improvement**: Added `keyword.other.attribute-specifier` to the keyword scope for improved attribute specifier highlighting in languages like C++.
+- **Chore**: Upgraded ESLint configuration from `recommended` to `strictTypeChecked` for stronger type safety and better code quality enforcement.
+- **Chore**: Updated dependencies to latest versions (TypeScript 5.9.3, Jest 30.2.0, typescript-eslint 8.54.0, Webpack 5.104.1).
+- **Internal**: Fixed floating promises in extension activation and icon sync by adding proper `.then()/.catch()` error handling.
+- **Internal**: Refactored `ConfigurationService` to use immutable object updates instead of `JSON.parse(JSON.stringify())` deep cloning.
+- **Internal**: Added explicit type interfaces (`IThemeJson`, `IPackageJson`, `IExtensionPackageJson`) to replace inline type assertions.
+- **Internal**: Replaced non-null assertions in webview with `assertElement()` helper for better runtime error messages.
+- **Internal**: Changed `||` to `??` (nullish coalescing) throughout the codebase for semantically correct default value handling.
+- **Internal**: Split generic `getProfileSetting<T>` into `getProfileSetting()` and `getProfileObjectSetting<T>()` for better type inference.
+- **Internal**: Removed redundant `onCommand:calmppuccin.customize` activation event from package.json.
+
 ## [1.9.2] - 2025-12-16
 
 - **Feature**: Added comprehensive Dart language syntax highlighting with semantic tokens for annotations (`property.annotation:dart`), instance variables and fields (`variable.instance:dart`, `variable.declaration.instance:dart`, `property.instance:dart`), properties (`property.declaration.instance:dart`), and static constants (`variable.declaration.static:dart`, `property.static:dart`).
