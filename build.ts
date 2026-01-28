@@ -99,9 +99,11 @@ async function buildFlavor(
     `\\{\\{(${[...replacementMap.keys()].map(k => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})\\}\\}`,
     "g"
   );
-  const themeContent = templateStr.replace(allKeysPattern, (_, key: string) =>
-    replacementMap.get(key) ?? ""
-  );
+  const themeContent = templateStr.replace(allKeysPattern, (_, key: string) => {
+    const value = replacementMap.get(key) ?? "";
+    // Escape special JSON characters to prevent injection from malformed settings.
+    return JSON.stringify(value).slice(1, -1);
+  });
 
   const themeJson: IThemeJson = JSON.parse(themeContent) as IThemeJson;
   const flavorDisplayName = flavor.charAt(0).toUpperCase() + flavor.slice(1);
