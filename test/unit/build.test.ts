@@ -10,6 +10,30 @@ import * as fs from "fs-extra";
 // Mock the entire fs-extra module to isolate the test from the file system.
 jest.mock("fs-extra");
 
+/** Type definition for the theme JSON structure used in tests */
+interface ITestThemeJson {
+  name: string;
+  type?: string;
+  colors: Record<string, string>;
+  tokenColors?: Array<{
+    name: string;
+    scope?: string[];
+    settings: { foreground?: string; fontStyle?: string };
+  }>;
+  semanticTokenColors?: Record<string, string>;
+}
+
+/** Type for mock call arguments [filePath, themeJson, options] */
+type WriteJsonCall = [string, ITestThemeJson, { spaces: number }];
+
+/**
+ * Helper to find a specific theme call from writeJson mocks
+ */
+function findThemeCall(flavor: string): WriteJsonCall | undefined {
+  const calls = (fs.writeJson as jest.Mock).mock.calls as WriteJsonCall[];
+  return calls.find((call) => call[0].includes(flavor));
+}
+
 /**
  * Test suite for the build script.
  */
@@ -44,21 +68,28 @@ describe("Build Script Unit Tests", () => {
     (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
 
     // 2. Act
-    await buildAllFlavors("sapphire", mockFontStyles, {}, {}, {});
+    await buildAllFlavors({
+      accentIdentifier: "sapphire",
+      fontStyles: mockFontStyles,
+      syntaxOverrides: {},
+      uiOverrides: {},
+      fontStyleOverrides: {},
+    });
 
     // 3. Assert
     expect(fs.writeJson).toHaveBeenCalled();
 
     // Find the call that generated the Latte theme file.
-    const latteCall = (fs.writeJson as jest.Mock).mock.calls.find((call) => call[0].includes("latte"));
+    const latteCall = findThemeCall("latte");
     expect(latteCall).toBeDefined();
 
-    const writtenJson = latteCall[1];
+    const writtenJson = latteCall?.[1];
+    expect(writtenJson).toBeDefined();
 
     // Verify that the placeholders match the actual correct values from the palette.
-    expect(writtenJson.colors["activityBar.background"]).toBe("#cfd1d4");
-    expect(writtenJson.colors["activityBar.foreground"]).toBe("#1c8da1");
-    expect(writtenJson.tokenColors[0].settings.fontStyle).toBe("italic");
+    expect(writtenJson?.colors["activityBar.background"]).toBe("#cfd1d4");
+    expect(writtenJson?.colors["activityBar.foreground"]).toBe("#1c8da1");
+    expect(writtenJson?.tokenColors?.[0].settings.fontStyle).toBe("italic");
   });
 
   /**
@@ -86,27 +117,34 @@ describe("Build Script Unit Tests", () => {
 
     // 2. Act: Run the build process with a known accent color.
     // We'll use the 'mocha' flavor and the 'mauve' accent for this test.
-    await buildAllFlavors("mauve", {}, {}, {}, {});
+    await buildAllFlavors({
+      accentIdentifier: "mauve",
+      fontStyles: {},
+      syntaxOverrides: {},
+      uiOverrides: {},
+      fontStyleOverrides: {},
+    });
 
     // 3. Assert: Verify the output for the Mocha theme.
 
     // Find the specific call to writeJson for the 'mocha' theme file.
-    const mochaCall = (fs.writeJson as jest.Mock).mock.calls.find((call) => call[0].includes("mocha"));
+    const mochaCall = findThemeCall("mocha");
 
     expect(mochaCall).toBeDefined();
 
     // Capture the generated JSON data.
-    const writtenJson = mochaCall[1];
+    const writtenJson = mochaCall?.[1];
+    expect(writtenJson).toBeDefined();
 
     // The 'mauve' accent in the Mocha palette is '#ba9ae2'.
     const mauveHex = "#ba9ae2";
 
     // Verify the solid accent color was replaced correctly.
-    expect(writtenJson.colors["statusBar.background"]).toBe(mauveHex);
+    expect(writtenJson?.colors["statusBar.background"]).toBe(mauveHex);
 
     // Verify the recipe was correctly resolved by concatenating the hex value
     // (without the '#') and the transparency value.
-    expect(writtenJson.colors["statusBar.dropBorder"]).toBe(`${mauveHex}2f`);
+    expect(writtenJson?.colors["statusBar.dropBorder"]).toBe(`${mauveHex}2f`);
   });
 
   // --- Priority 4: Theme Template Validation Tests ---
@@ -151,19 +189,26 @@ describe("Build Script Unit Tests", () => {
       (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
 
       // Act
-      await buildAllFlavors("sapphire", {}, {}, {}, {});
+      await buildAllFlavors({
+        accentIdentifier: "sapphire",
+        fontStyles: {},
+        syntaxOverrides: {},
+        uiOverrides: {},
+        fontStyleOverrides: {},
+      });
 
       // Assert - Should successfully write mocha theme without errors
-      const mochaCall = (fs.writeJson as jest.Mock).mock.calls.find((call) => call[0].includes("mocha"));
+      const mochaCall = findThemeCall("mocha");
       expect(mochaCall).toBeDefined();
 
-      const writtenJson = mochaCall[1];
+      const writtenJson = mochaCall?.[1];
+      expect(writtenJson).toBeDefined();
 
       // Verify all placeholders were replaced with hex colors
-      expect(writtenJson.colors["test.rosewater"]).toMatch(/^#[0-9a-f]{6}$/i);
-      expect(writtenJson.colors["test.flamingo"]).toMatch(/^#[0-9a-f]{6}$/i);
-      expect(writtenJson.colors["test.base"]).toMatch(/^#[0-9a-f]{6}$/i);
-      expect(writtenJson.colors["test.accent"]).toBeUndefined(); // {{accent}} should be replaced
+      expect(writtenJson?.colors["test.rosewater"]).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(writtenJson?.colors["test.flamingo"]).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(writtenJson?.colors["test.base"]).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(writtenJson?.colors["test.accent"]).toBeUndefined(); // {{accent}} should be replaced
     });
 
     it("should validate all font style keys exist in defaults", async () => {
@@ -196,16 +241,23 @@ describe("Build Script Unit Tests", () => {
       (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
 
       // Act
-      await buildAllFlavors("sapphire", mockFontStyles, {}, {}, {});
+      await buildAllFlavors({
+      accentIdentifier: "sapphire",
+      fontStyles: mockFontStyles,
+      syntaxOverrides: {},
+      uiOverrides: {},
+      fontStyleOverrides: {},
+    });
 
       // Assert
-      const mochaCall = (fs.writeJson as jest.Mock).mock.calls.find((call) => call[0].includes("mocha"));
-      const writtenJson = mochaCall[1];
+      const mochaCall = findThemeCall("mocha");
+      const writtenJson = mochaCall?.[1];
+      expect(writtenJson).toBeDefined();
 
       // Verify all font style placeholders were replaced correctly
-      expect(writtenJson.tokenColors[0].settings.fontStyle).toBe("italic");
-      expect(writtenJson.tokenColors[1].settings.fontStyle).toBe("bold");
-      expect(writtenJson.tokenColors[2].settings.fontStyle).toBe(""); // "none" becomes ""
+      expect(writtenJson?.tokenColors?.[0].settings.fontStyle).toBe("italic");
+      expect(writtenJson?.tokenColors?.[1].settings.fontStyle).toBe("bold");
+      expect(writtenJson?.tokenColors?.[2].settings.fontStyle).toBe(""); // "none" becomes ""
     });
 
     it("should validate template JSON structure is preserved", async () => {
@@ -238,19 +290,26 @@ describe("Build Script Unit Tests", () => {
       (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
 
       // Act
-      await buildAllFlavors("sapphire", { commentFontStyle: "italic" }, {}, {}, {});
+      await buildAllFlavors({
+        accentIdentifier: "sapphire",
+        fontStyles: { commentFontStyle: "italic" },
+        syntaxOverrides: {},
+        uiOverrides: {},
+        fontStyleOverrides: {},
+      });
 
       // Assert
-      const mochaCall = (fs.writeJson as jest.Mock).mock.calls.find((call) => call[0].includes("mocha"));
-      const writtenJson = mochaCall[1];
+      const mochaCall = findThemeCall("mocha");
+      const writtenJson = mochaCall?.[1];
+      expect(writtenJson).toBeDefined();
 
       // Verify structure is preserved (note: name and type are overwritten by build script)
-      expect(writtenJson.name).toBe("Calmppuccin Mocha"); // Build script sets this
-      expect(writtenJson.type).toBe("dark"); // Build script sets this based on flavor
-      expect(writtenJson.tokenColors).toHaveLength(1);
-      expect(writtenJson.tokenColors[0].name).toBe("Comment");
-      expect(writtenJson.tokenColors[0].scope).toEqual(["comment", "punctuation.definition.comment"]);
-      expect(writtenJson.semanticTokenColors).toBeDefined();
+      expect(writtenJson?.name).toBe("Calmppuccin Mocha"); // Build script sets this
+      expect(writtenJson?.type).toBe("dark"); // Build script sets this based on flavor
+      expect(writtenJson?.tokenColors).toHaveLength(1);
+      expect(writtenJson?.tokenColors?.[0].name).toBe("Comment");
+      expect(writtenJson?.tokenColors?.[0].scope).toEqual(["comment", "punctuation.definition.comment"]);
+      expect(writtenJson?.semanticTokenColors).toBeDefined();
     });
 
     it("should handle malformed accent recipes gracefully", async () => {
@@ -270,25 +329,32 @@ describe("Build Script Unit Tests", () => {
       (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
 
       // Act
-      await buildAllFlavors("sapphire", {}, {}, {}, {});
+      await buildAllFlavors({
+        accentIdentifier: "sapphire",
+        fontStyles: {},
+        syntaxOverrides: {},
+        uiOverrides: {},
+        fontStyleOverrides: {},
+      });
 
       // Assert - Should not throw, verify output
-      const mochaCall = (fs.writeJson as jest.Mock).mock.calls.find((call) => call[0].includes("mocha"));
+      const mochaCall = findThemeCall("mocha");
       expect(mochaCall).toBeDefined();
 
-      const writtenJson = mochaCall[1];
+      const writtenJson = mochaCall?.[1];
+      expect(writtenJson).toBeDefined();
       const sapphireHex = "#70b7d8"; // Mocha sapphire color
 
       // Valid recipe should be replaced correctly
-      expect(writtenJson.colors["test.valid"]).toBe(`${sapphireHex}2f`);
+      expect(writtenJson?.colors["test.valid"]).toBe(`${sapphireHex}2f`);
 
       // Plain accent should be replaced correctly
-      expect(writtenJson.colors["test.plain"]).toBe(sapphireHex);
+      expect(writtenJson?.colors["test.plain"]).toBe(sapphireHex);
 
       // Malformed recipes should be replaced as literals (current behavior)
       // The build script doesn't validate recipe format, it just replaces {{accent}} with the color
-      expect(writtenJson.colors["test.invalidSuffix"]).toBe(`${sapphireHex}zz`);
-      expect(writtenJson.colors["test.tooLong"]).toBe(`${sapphireHex}2f3a`);
+      expect(writtenJson?.colors["test.invalidSuffix"]).toBe(`${sapphireHex}zz`);
+      expect(writtenJson?.colors["test.tooLong"]).toBe(`${sapphireHex}2f3a`);
     });
   });
 });

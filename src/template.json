@@ -1124,7 +1124,8 @@
         "keyword.other.data-integrity",
         "keyword.control.type",
         "keyword.control.dart",
-        "keyword.control.catch-exception"
+        "keyword.control.catch-exception",
+        "keyword.other.attribute-specifier"
       ],
       "settings": {
         "foreground": "{{keyword}}",
@@ -1635,10 +1636,10 @@
         "entity.other.attribute-name.pseudo-element",
         "meta.attribute.id entity.other.attribute-name",
         "entity.other.attribute",
-        "punctuation.definition.attribute",
         "meta.attribute",
+        "support.attribute",
         "punctuation.brackets.attribute",
-        "support.attribute"
+        "punctuation.definition.attribute"
       ],
       "settings": {
         "foreground": "{{fieldAndAttribute}}",

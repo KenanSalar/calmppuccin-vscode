@@ -14,6 +14,10 @@ import { ConfigurationService } from "./src/ConfigurationService";
 // to track its state and ensure it only registers it once.
 let settingsChangeListener: vscode.Disposable | undefined;
 
+// This disposable holds the lightweight "tripwire" listener that detects when
+// a user switches to a Calmppuccin theme. It is disposed after full activation.
+let tripwireListener: vscode.Disposable | undefined;
+
 /**
  * Maps Calmppuccin theme flavors to their corresponding Catppuccin Icon flavors.
  */
@@ -28,10 +32,16 @@ const flavorIconMap: Record<string, string> = {
 
 /**
  * Checks the user's current color theme and icon theme to sync them.
+ * If the user has a Catppuccin icon theme installed, this function
+ * automatically syncs the icon theme flavor to match the color theme flavor.
+ *
+ * @remarks
+ * A 100ms delay is used because VS Code's workbench needs time to finish
+ * applying the theme change before we can reliably read the new color theme.
+ * Without this delay, we may read the previous theme value.
  */
-async function syncIconFlavor() {
-  // Using a short timeout to ensure the workbench has finished applying the theme change.
-  setTimeout(async () => {
+function syncIconFlavor() {
+  setTimeout(() => {
     const workbenchConfig = vscode.workspace.getConfiguration("workbench");
     const currentTheme = workbenchConfig.get<string>("colorTheme", "");
     const currentIconTheme = workbenchConfig.get<string>("iconTheme");
@@ -39,23 +49,18 @@ async function syncIconFlavor() {
     if (!currentIconTheme || !currentIconTheme.startsWith(C.CATPPUCCIN_ICON_PACK_ID)) {
       return;
     }
-    const themeParts = currentTheme.split(" ");
-    if (themeParts[0]?.toLowerCase() !== "calmppuccin" || themeParts.length < 2) {
-      return;
-    }
-    const flavor = themeParts
-      .slice(1)
-      .join("-")
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
-    if (!flavorIconMap[flavor]) {
+    const flavor = C.parseFlavorFromThemeName(currentTheme);
+    if (!flavor || !flavorIconMap[flavor]) {
       return;
     }
     const targetIconFlavor = flavorIconMap[flavor];
     const targetIconThemeId = `${C.CATPPUCCIN_ICON_PACK_ID}${targetIconFlavor}`;
     if (currentIconTheme !== targetIconThemeId) {
-      await workbenchConfig.update("iconTheme", targetIconThemeId, vscode.ConfigurationTarget.Global);
+      workbenchConfig.update("iconTheme", targetIconThemeId, vscode.ConfigurationTarget.Global)
+        .then(
+          () => { /* success - no action needed */ },
+          (err: unknown) => { console.error("Failed to sync icon theme:", err); }
+        );
     }
   }, 100);
 }
@@ -69,21 +74,29 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Migrate existing global settings to Default profile (skip in test environment)
   if (typeof process === "undefined" || process.env.JEST_WORKER_ID === undefined) {
-    ConfigurationService.migrateGlobalSettingsToDefault();
+    ConfigurationService.migrateGlobalSettingsToDefault()
+      .catch((err: unknown) => {
+        console.error("Failed to migrate settings:", err);
+      });
   }
 
   // This internal command is used by the extension itself to regenerate themes.
   const regenerateThemesCommand = vscode.commands.registerCommand(C.REGENERATE_COMMAND_ID, async () => {
     try {
-      const accentValue = ConfigurationService.getAccent();
-      const fontStyles = ConfigurationService.getFontStyles();
-      const syntaxOverrides = ConfigurationService.getSyntaxOverrides();
-      const uiOverrides = ConfigurationService.getUiOverrides();
-      const fontStyleOverrides = ConfigurationService.getFontStyleOverrides();
-      await buildAllFlavors(accentValue, fontStyles, syntaxOverrides, uiOverrides, fontStyleOverrides);
+      await buildAllFlavors({
+        accentIdentifier: ConfigurationService.getAccent(),
+        fontStyles: ConfigurationService.getFontStyles(),
+        syntaxOverrides: ConfigurationService.getSyntaxOverrides(),
+        uiOverrides: ConfigurationService.getUiOverrides(),
+        fontStyleOverrides: ConfigurationService.getFontStyleOverrides(),
+      });
       const selection = await vscode.window.showInformationMessage(C.INFO_MESSAGE, C.RELOAD_ACTION);
       if (selection === C.RELOAD_ACTION) {
-        vscode.commands.executeCommand(C.RELOAD_COMMAND_ID);
+        vscode.commands.executeCommand(C.RELOAD_COMMAND_ID)
+          .then(
+            () => { /* success - no action needed */ },
+            (err: unknown) => { console.error("Failed to reload window:", err); }
+          );
       }
     } catch (error) {
       console.error(error);
@@ -120,6 +133,13 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
+    // Dispose the tripwire listener now that we're fully activating.
+    // This prevents redundant theme checks on every configuration change.
+    if (tripwireListener) {
+      tripwireListener.dispose();
+      tripwireListener = undefined;
+    }
+
     // This is the main listener that handles automatic theme regeneration and icon syncing.
     settingsChangeListener = vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
       // If a Calmppuccin-specific setting changed, regenerate the themes.
@@ -133,7 +153,11 @@ export function activate(context: vscode.ExtensionContext) {
         event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_PROFILES}`) ||
         event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACTIVE_PROFILE}`)
       ) {
-        vscode.commands.executeCommand(C.REGENERATE_COMMAND_ID);
+        vscode.commands.executeCommand(C.REGENERATE_COMMAND_ID)
+          .then(
+            () => { /* success - no action needed */ },
+            (err: unknown) => { console.error("Failed to regenerate themes:", err); }
+          );
       }
 
       // If the user changed their color theme, sync the icons and update the webview.
@@ -150,7 +174,8 @@ export function activate(context: vscode.ExtensionContext) {
 
   // This lightweight, always-on listener acts as a "tripwire". Its only job is to
   // fully activate our extension's features if a user switches TO a Calmppuccin theme.
-  const themeChangeListener = vscode.workspace.onDidChangeConfiguration((event) => {
+  // It is disposed after full activation to avoid redundant checks.
+  tripwireListener = vscode.workspace.onDidChangeConfiguration((event) => {
     if (event.affectsConfiguration("workbench.colorTheme")) {
       const currentTheme = vscode.workspace.getConfiguration("workbench").get<string>("colorTheme", "");
       if (currentTheme.toLowerCase().startsWith("calmppuccin")) {
@@ -159,7 +184,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
-  context.subscriptions.push(themeChangeListener);
+  context.subscriptions.push(tripwireListener);
 
   // Restore the panel if it was open before a reload.
   if (context.globalState.get<boolean>(C.PANEL_IS_OPEN_KEY)) {

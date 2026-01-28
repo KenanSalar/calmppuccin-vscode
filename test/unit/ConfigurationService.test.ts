@@ -51,7 +51,7 @@ describe("ConfigurationService", () => {
     // Arrange: Configure the mock for this specific test case.
     // We simulate the behavior of the real get() method, which returns the
     // second argument if the first (the key) is not found.
-    mockConfiguration.get.mockImplementation((_key, defaultValue) => defaultValue);
+    mockConfiguration.get.mockImplementation((_key: string, defaultValue: unknown) => defaultValue);
 
     // Act: Call the method we are testing.
     const accent = ConfigurationService.getAccent();

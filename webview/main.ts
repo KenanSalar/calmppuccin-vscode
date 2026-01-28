@@ -5,7 +5,9 @@
 
 import { codeSnippets } from "./snippets";
 // Import the shared types from the new central location.
-import { ISettingsPayload, MessageToWebview, MessageToExtension, IWebviewSetting, IProfile } from "../types/webview";
+import { ISettingsPayload, MessageToWebview, MessageToExtension, IWebviewSetting } from "../types/webview";
+import { WEBVIEW_CONSTANTS as COMMANDS } from "../src/constants";
+import { ProfileController } from "./ProfileController";
 
 /**
  * @interface IVsCodeApi
@@ -23,23 +25,17 @@ interface IVsCodeApi {
 declare function acquireVsCodeApi(): IVsCodeApi;
 
 /**
- * A centralized object for all command identifiers sent to and from the webview.
+ * Asserts that a DOM element exists and returns it with the correct type.
+ * @param element The element or null from document.getElementById
+ * @param id The element ID for error messages
+ * @returns The element, guaranteed non-null
  */
-const COMMANDS = {
-  UPDATE_SETTING: "updateSetting",
-  RESET_FONT_STYLE: "resetFontStyle",
-  UPDATE_ACCENT: "updateAccent",
-  UPDATE_CUSTOM_ACCENT: "updateCustomAccent",
-  UPDATE_SYNTAX_COLOR: "updateSyntaxColor",
-  RESET_SYNTAX_COLOR: "resetSyntaxColor",
-  UPDATE_UI_COLOR: "updateUiColor",
-  RESET_UI_COLOR: "resetUiColor",
-  RESET_ALL: "resetAll",
-  SWITCH_PROFILE: "switchProfile",
-  SAVE_PROFILE: "saveProfile",
-  DELETE_PROFILE: "deleteProfile",
-  LOAD_SETTINGS: "loadSettings",
-} as const;
+function assertElement<T extends HTMLElement>(element: T | null, id: string): T {
+  if (!element) {
+    throw new Error(`Required element #${id} not found in DOM`);
+  }
+  return element;
+}
 
 /**
  * Manages all UI elements, state, and interactions for the settings webview.
@@ -50,24 +46,24 @@ export class UIManager {
 
   /** A single object to hold references to all necessary DOM elements, queried once on instantiation for performance. */
   private readonly elements = {
-    accentContainer: document.getElementById("accent-container")!,
-    settingsContainer: document.getElementById("settings-container")!,
-    customAccentPickerContainer: document.getElementById("custom-accent-picker-container")!,
-    flavorTitle: document.getElementById("current-flavor")!,
-    customAccentPicker: document.getElementById("custom-accent-picker") as HTMLInputElement,
-    customAccentHexInput: document.getElementById("custom-accent-hex-input") as HTMLInputElement,
-    previewPane: document.getElementById("preview-pane")!,
-    codePreview: document.getElementById("code-preview")!,
-    resetAllContainer: document.getElementById("reset-all-container")!,
-    languageSelect: document.getElementById("language-select") as HTMLSelectElement,
-    settingsViewSelect: document.getElementById("settings-view-select") as HTMLSelectElement,
-    dialogOverlay: document.getElementById("reset-dialog-overlay")!,
-    confirmResetButton: document.getElementById("dialog-confirm-button")!,
-    cancelResetButton: document.getElementById("dialog-cancel-button")!,
-    profileSelect: document.getElementById("profile-select") as HTMLSelectElement,
-    profileNameInput: document.getElementById("profile-name-input") as HTMLInputElement,
-    saveProfileBtn: document.getElementById("save-profile-btn") as HTMLButtonElement,
-    deleteProfileBtn: document.getElementById("delete-profile-btn") as HTMLButtonElement,
+    accentContainer: assertElement(document.getElementById("accent-container"), "accent-container"),
+    settingsContainer: assertElement(document.getElementById("settings-container"), "settings-container"),
+    customAccentPickerContainer: assertElement(document.getElementById("custom-accent-picker-container"), "custom-accent-picker-container"),
+    flavorTitle: assertElement(document.getElementById("current-flavor"), "current-flavor"),
+    customAccentPicker: assertElement(document.getElementById("custom-accent-picker"), "custom-accent-picker") as HTMLInputElement,
+    customAccentHexInput: assertElement(document.getElementById("custom-accent-hex-input"), "custom-accent-hex-input") as HTMLInputElement,
+    previewPane: assertElement(document.getElementById("preview-pane"), "preview-pane"),
+    codePreview: assertElement(document.getElementById("code-preview"), "code-preview"),
+    resetAllContainer: assertElement(document.getElementById("reset-all-container"), "reset-all-container"),
+    languageSelect: assertElement(document.getElementById("language-select"), "language-select") as HTMLSelectElement,
+    settingsViewSelect: assertElement(document.getElementById("settings-view-select"), "settings-view-select") as HTMLSelectElement,
+    dialogOverlay: assertElement(document.getElementById("reset-dialog-overlay"), "reset-dialog-overlay"),
+    confirmResetButton: assertElement(document.getElementById("dialog-confirm-button"), "dialog-confirm-button") as HTMLButtonElement,
+    cancelResetButton: assertElement(document.getElementById("dialog-cancel-button"), "dialog-cancel-button"),
+    profileSelect: assertElement(document.getElementById("profile-select"), "profile-select") as HTMLSelectElement,
+    profileNameInput: assertElement(document.getElementById("profile-name-input"), "profile-name-input") as HTMLInputElement,
+    saveProfileBtn: assertElement(document.getElementById("save-profile-btn"), "save-profile-btn") as HTMLButtonElement,
+    deleteProfileBtn: assertElement(document.getElementById("delete-profile-btn"), "delete-profile-btn") as HTMLButtonElement,
   };
 
   /** Holds the current settings payload from the extension. */
@@ -82,6 +78,20 @@ export class UIManager {
   private readonly fontStyleOptions = ["none", "italic", "bold", "italic bold", "underline"];
   private readonly hex6Regex = /^#[0-9a-fA-F]{6}$/;
   private readonly hex8Regex = /^#([0-9a-fA-F]{6})([0-9a-fA-F]{2})?$/;
+
+  /** Controller for profile management operations. */
+  private readonly profileController: ProfileController;
+
+  constructor() {
+    this.profileController = new ProfileController(this.vscode, {
+      profileSelect: this.elements.profileSelect,
+      profileNameInput: this.elements.profileNameInput,
+      saveProfileBtn: this.elements.saveProfileBtn,
+      deleteProfileBtn: this.elements.deleteProfileBtn,
+      dialogOverlay: this.elements.dialogOverlay,
+      confirmResetButton: this.elements.confirmResetButton,
+    });
+  }
 
   /**
    * Builds the entire UI from scratch when settings are received from the extension.
@@ -116,8 +126,8 @@ export class UIManager {
     this.elements.previewPane.style.backgroundColor = activeThemeBackgroundColor;
 
     // 4. Build each section of the UI dynamically.
-    this._populateProfileDropdown(profiles, activeProfile);
-    this._updateProfileUI(activeProfile);
+    this.profileController.populateProfileDropdown(profiles, activeProfile);
+    this.profileController.updateProfileUI(activeProfile);
     this._createAccentColorControls(currentAccent, accentOptions, customAccentColor);
     this._createResetAllButton();
     this._handleViewChange(); // This will now render the correct initial view based on the dropdown
@@ -201,7 +211,9 @@ export class UIManager {
     });
 
     // Set up listeners for the confirmation dialog.
-    this.elements.cancelResetButton.addEventListener("click", () => this.elements.dialogOverlay.classList.add("hidden"));
+    this.elements.cancelResetButton.addEventListener("click", () => {
+      this.elements.dialogOverlay.classList.add("hidden");
+    });
     this.elements.dialogOverlay.addEventListener("click", (e) => {
       if (e.target === this.elements.dialogOverlay) this.elements.dialogOverlay.classList.add("hidden");
     });
@@ -210,33 +222,14 @@ export class UIManager {
       this.elements.dialogOverlay.classList.add("hidden");
     });
 
-    // Set up profile management event listeners.
-    this.elements.profileSelect.addEventListener("change", (e) => {
-      const selectedProfile = (e.target as HTMLSelectElement).value;
-      this._updateProfileUI(selectedProfile);
-      this.vscode.postMessage({ command: COMMANDS.SWITCH_PROFILE, profile: selectedProfile });
-    });
-
-    this.elements.saveProfileBtn.addEventListener("click", () => {
-      const profileName = this.elements.profileNameInput.value.trim();
-      if (profileName && profileName !== "Default") {
-        this.vscode.postMessage({ command: COMMANDS.SAVE_PROFILE, profile: profileName });
-      }
-    });
-
-    this.elements.deleteProfileBtn.addEventListener("click", () => {
-      const currentProfile = this.elements.profileSelect.value;
-      if (currentProfile !== "Default") {
-        this._showDeleteConfirmation(currentProfile);
-      }
-    });
+    // Set up profile management event listeners (delegated to ProfileController).
+    this.profileController.initializeEventListeners();
 
     // Primary listener for messages coming from the VS Code extension host.
     window.addEventListener("message", (event: MessageEvent<MessageToWebview>) => {
       const message = event.data;
-      if (message.command === COMMANDS.LOAD_SETTINGS) {
-        this.populateAllSettings(message.settings);
-      }
+      // Currently only loadSettings message type exists
+      this.populateAllSettings(message.settings);
     });
 
     // Trigger the initial fade-in animation for the dialog overlay
@@ -555,7 +548,7 @@ export class UIManager {
         hexInput.style.outlineColor = "";
 
         const rgb = match[1] ? `#${match[1]}` : "#000000";
-        const alphaHex = match[2] ?? "ff"; // Default to 'ff' (opaque) if alpha is not provided
+        const alphaHex = (match[2] as string | undefined) ?? "ff"; // Default to 'ff' (opaque) if alpha is not provided
         const alphaDecimal = parseInt(alphaHex, 16);
 
         // Update the color picker and slider to match the typed input
@@ -622,98 +615,6 @@ export class UIManager {
       this.elements.dialogOverlay.classList.remove("hidden");
     });
     this.elements.resetAllContainer.appendChild(resetAllButton);
-  }
-
-  /**
-   * Populates the profile dropdown with available profiles.
-   * @param {Object} profiles The profiles object from settings.
-   * @param {string} activeProfile The currently active profile name.
-   * @private
-   */
-  private _populateProfileDropdown(profiles: { [name: string]: IProfile }, activeProfile: string) {
-    // Clear existing options
-    this.elements.profileSelect.innerHTML = "";
-
-    // Add Default profile option (only if it's not already in profiles)
-    if (!Object.prototype.hasOwnProperty.call(profiles, "Default")) {
-      const defaultOption = document.createElement("option");
-      defaultOption.value = "Default";
-      defaultOption.textContent = "Default";
-      this.elements.profileSelect.appendChild(defaultOption);
-    }
-
-    // Add all profiles (including Default if it exists in profiles)
-    Object.keys(profiles).sort().forEach((profileName) => {
-      const option = document.createElement("option");
-      option.value = profileName;
-      option.textContent = profileName;
-      this.elements.profileSelect.appendChild(option);
-    });
-
-    // Set the selected profile
-    this.elements.profileSelect.value = activeProfile;
-  }
-
-  /**
-   * Updates the profile management UI based on the selected profile.
-   * @param {string} selectedProfile The currently selected profile name.
-   * @private
-   */
-  private _updateProfileUI(selectedProfile: string) {
-    const isDefaultProfile = selectedProfile === "Default";
-
-    // Show/hide delete button based on profile type
-    this.elements.deleteProfileBtn.style.display = isDefaultProfile ? "none" : "inline-block";
-
-    // Clear the profile name input when switching profiles
-    this.elements.profileNameInput.value = "";
-  }
-
-  /**
-   * Shows delete confirmation by modifying the existing reset dialog.
-   * @param {string} profileName The name of the profile to delete.
-   * @private
-   */
-  private _showDeleteConfirmation(profileName: string) {
-    // Store original dialog content to restore later
-    const dialogTitle = this.elements.dialogOverlay.querySelector("h3")!;
-    const dialogMessage = this.elements.dialogOverlay.querySelector("p")!;
-    const confirmButton = this.elements.confirmResetButton;
-
-    const originalTitle = dialogTitle.textContent;
-    const originalMessage = dialogMessage.textContent;
-    const originalButtonText = confirmButton.textContent;
-
-    // Modify dialog for delete confirmation
-    dialogTitle.textContent = "Delete Profile";
-    dialogMessage.textContent = `Are you sure you want to delete the profile "${profileName}"? This action cannot be undone.`;
-    confirmButton.textContent = "Delete Profile";
-
-    // Replace the confirm button's event handler
-    const newConfirmButton = confirmButton.cloneNode(true) as HTMLButtonElement;
-    confirmButton.parentNode?.replaceChild(newConfirmButton, confirmButton);
-
-    // Add delete-specific event handler
-    newConfirmButton.addEventListener("click", () => {
-      this.vscode.postMessage({ command: COMMANDS.DELETE_PROFILE, profile: profileName });
-      this.elements.dialogOverlay.classList.add("hidden");
-
-      // Restore original dialog content
-      dialogTitle.textContent = originalTitle;
-      dialogMessage.textContent = originalMessage;
-      newConfirmButton.textContent = originalButtonText;
-
-      // Restore original reset button functionality
-      const finalConfirmButton = newConfirmButton.cloneNode(true) as HTMLButtonElement;
-      newConfirmButton.parentNode?.replaceChild(finalConfirmButton, newConfirmButton);
-      finalConfirmButton.addEventListener("click", () => {
-        this.vscode.postMessage({ command: COMMANDS.RESET_ALL });
-        this.elements.dialogOverlay.classList.add("hidden");
-      });
-    });
-
-    // Show the dialog
-    this.elements.dialogOverlay.classList.remove("hidden");
   }
 
 }

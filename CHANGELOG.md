@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.9.3] - 2026-01-28
+
+- **Improvement**: Added `keyword.other.attribute-specifier` to the keyword scope for improved attribute specifier highlighting in languages like C++.
+- **Performance**: Parallelized theme generation using `Promise.all()` to build all 6 flavors concurrently instead of sequentially, significantly reducing theme regeneration time.
+- **Performance**: Optimized template placeholder replacement by using a single combined regex pattern with a replacement map instead of creating ~600 individual RegExp objects per build.
+- **Performance**: Added 50ms debounce to webview settings updates, preventing excessive recomputation during rapid color picker interactions.
+- **Performance**: Cached VS Code configuration snapshot in `getWebViewSettings()`, reducing 15+ configuration reads per webview update to just 2-3.
+- **Performance**: Converted synchronous file read in `WebviewManager` to async (`fs/promises.readFile`) to avoid blocking the extension host thread during webview creation.
+- **Performance**: Disposed the lightweight "tripwire" theme-change listener after full activation to eliminate redundant event processing.
+- **Performance**: Consolidated three separate object spread operations for extension colors into a single `Object.assign()` call.
+- **Performance**: Changed webpack config for build script from `mode: "none"` to `mode: "production"` for minification.
+- **Performance**: Made source maps conditional based on `NODE_ENV`, reducing production dist folder from ~1.2MB to ~384KB.
+- **Performance**: Added `sideEffects: false` to package.json for better tree-shaking during bundling.
+- **Chore**: Upgraded ESLint configuration from `recommended` to `strictTypeChecked` for stronger type safety and better code quality enforcement.
+- **Chore**: Updated dependencies to latest versions (TypeScript 5.9.3, Jest 30.2.0, typescript-eslint 8.54.0, Webpack 5.104.1).
+- **Refactor**: Extracted duplicate `hexWithAlpha` function from `errorLens.ts` and `gitlens.ts` into shared `src/utils/color.ts` module (DRY).
+- **Refactor**: Consolidated duplicate `COMMANDS` object in webview by importing shared `WEBVIEW_CONSTANTS` from constants (DRY).
+- **Refactor**: Added `EXTENSION_ID` constant to `constants.ts` to replace hardcoded extension identifier strings (DRY).
+- **Refactor**: Created `IBuildOptions` interface in `build.ts` to replace long parameter lists in `buildFlavor` and `buildAllFlavors` functions.
+- **Refactor**: Converted synchronous `fs.readJsonSync` to async `fs.readJson` in build script's `getDefaultFontStyles()` for consistency.
+- **Refactor**: Extracted `ProfileController` class from `UIManager` to handle profile management (Single Responsibility Principle).
+- **Internal**: Fixed floating promises in extension activation and icon sync by adding proper `.then()/.catch()` error handling.
+- **Internal**: Refactored `ConfigurationService` to use immutable object updates instead of `JSON.parse(JSON.stringify())` deep cloning.
+- **Internal**: Added explicit type interfaces (`IThemeJson`, `IPackageJson`, `IExtensionPackageJson`) to replace inline type assertions.
+- **Internal**: Replaced non-null assertions in webview with `assertElement()` helper for better runtime error messages.
+- **Internal**: Changed `||` to `??` (nullish coalescing) throughout the codebase for semantically correct default value handling.
+- **Internal**: Split generic `getProfileSetting<T>` into `getProfileSetting()` and `getProfileObjectSetting<T>()` for better type inference.
+- **Internal**: Removed redundant `onCommand:calmppuccin.customize` activation event from package.json.
+
 ## [1.9.2] - 2025-12-16
 
 - **Feature**: Added comprehensive Dart language syntax highlighting with semantic tokens for annotations (`property.annotation:dart`), instance variables and fields (`variable.instance:dart`, `variable.declaration.instance:dart`, `property.instance:dart`), properties (`property.declaration.instance:dart`), and static constants (`variable.declaration.static:dart`, `property.static:dart`).
