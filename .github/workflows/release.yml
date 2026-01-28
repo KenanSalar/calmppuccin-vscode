@@ -71,10 +71,10 @@ jobs:
           docker run --rm \
             -u 0 \
             -e NODE_ENV=production \
-            -v "$PWD":/out \
+            -v "$PWD":/workspaces/calmppuccin-vscode \
             --workdir /workspaces/calmppuccin-vscode \
             ghcr.io/${{ steps.set_owner.outputs.owner_lc }}/calmppuccin-builder:latest \
-            sh -lc 'npm run package && cp /workspaces/calmppuccin-vscode/*.vsix /out/'
+            sh -lc 'npm ci && npm run package'
 
       - name: Find VSIX file
         id: find_vsix
