@@ -3,6 +3,16 @@
 ## [1.9.3] - 2026-01-28
 
 - **Improvement**: Added `keyword.other.attribute-specifier` to the keyword scope for improved attribute specifier highlighting in languages like C++.
+- **Performance**: Parallelized theme generation using `Promise.all()` to build all 6 flavors concurrently instead of sequentially, significantly reducing theme regeneration time.
+- **Performance**: Optimized template placeholder replacement by using a single combined regex pattern with a replacement map instead of creating ~600 individual RegExp objects per build.
+- **Performance**: Added 50ms debounce to webview settings updates, preventing excessive recomputation during rapid color picker interactions.
+- **Performance**: Cached VS Code configuration snapshot in `getWebViewSettings()`, reducing 15+ configuration reads per webview update to just 2-3.
+- **Performance**: Converted synchronous file read in `WebviewManager` to async (`fs/promises.readFile`) to avoid blocking the extension host thread during webview creation.
+- **Performance**: Disposed the lightweight "tripwire" theme-change listener after full activation to eliminate redundant event processing.
+- **Performance**: Consolidated three separate object spread operations for extension colors into a single `Object.assign()` call.
+- **Performance**: Changed webpack build.js config from `mode: "none"` to `mode: "production"` for minification.
+- **Performance**: Made source maps conditional based on `NODE_ENV`, reducing production dist folder from ~1.2MB to ~384KB.
+- **Performance**: Added `sideEffects: false` to package.json for better tree-shaking during bundling.
 - **Chore**: Upgraded ESLint configuration from `recommended` to `strictTypeChecked` for stronger type safety and better code quality enforcement.
 - **Chore**: Updated dependencies to latest versions (TypeScript 5.9.3, Jest 30.2.0, typescript-eslint 8.54.0, Webpack 5.104.1).
 - **Internal**: Fixed floating promises in extension activation and icon sync by adding proper `.then()/.catch()` error handling.

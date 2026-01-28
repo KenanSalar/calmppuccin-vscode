@@ -16,6 +16,8 @@ import { MessageToExtension } from "../types/webview";
 export class SettingsPanel {
   private static _instance: SettingsPanel | undefined;
   private readonly _context: vscode.ExtensionContext;
+  /** Timer handle for debouncing webview updates. */
+  private _pendingUpdate: ReturnType<typeof setTimeout> | undefined;
 
   private constructor(context: vscode.ExtensionContext) {
     this._context = context;
@@ -29,8 +31,13 @@ export class SettingsPanel {
     if (!SettingsPanel._instance) {
       SettingsPanel._instance = new SettingsPanel(context);
     }
-    WebviewManager.createOrShow(context, SettingsPanel._instance._handleMessage.bind(SettingsPanel._instance));
-    SettingsPanel._instance._update();
+    WebviewManager.createOrShow(context, SettingsPanel._instance._handleMessage.bind(SettingsPanel._instance))
+      .then(() => {
+        SettingsPanel._instance?._update();
+      })
+      .catch((err: unknown) => {
+        console.error("Failed to create webview panel:", err);
+      });
   }
 
   /**
@@ -93,21 +100,40 @@ export class SettingsPanel {
         await ConfigurationService.deleteProfile(message.profile);
         this._update();
         return;
+      default: {
+        // Exhaustive check: TypeScript will error if a new command is added to MessageToExtension
+        // but not handled above.
+        const _exhaustiveCheck: never = message;
+        console.warn("Unhandled webview message:", _exhaustiveCheck);
+      }
     }
   }
 
   /**
    * Gathers all current settings via the ConfigurationService and posts them to the webview.
+   * This method is debounced to prevent excessive recomputation during rapid changes
+   * (e.g., dragging a color picker slider).
    */
   private _update() {
     if (!WebviewManager.currentPanel) return;
 
-    // The ONLY responsibility of this method now is to get the complete settings payload and post it.
-    const settings = ConfigurationService.getWebViewSettings();
+    // Clear any pending update to implement debouncing.
+    if (this._pendingUpdate) {
+      clearTimeout(this._pendingUpdate);
+    }
 
-    WebviewManager.currentPanel.postMessage({
-      command: C.WEBVIEW_COMMANDS.LOAD_SETTINGS,
-      settings: settings,
-    });
+    // Debounce updates to coalesce rapid setting changes.
+    this._pendingUpdate = setTimeout(() => {
+      this._pendingUpdate = undefined;
+      if (!WebviewManager.currentPanel) return;
+
+      // The ONLY responsibility of this method now is to get the complete settings payload and post it.
+      const settings = ConfigurationService.getWebViewSettings();
+
+      WebviewManager.currentPanel.postMessage({
+        command: C.WEBVIEW_COMMANDS.LOAD_SETTINGS,
+        settings: settings,
+      });
+    }, C.WEBVIEW_UPDATE_DEBOUNCE_MS);
   }
 }
