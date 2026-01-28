@@ -2,6 +2,10 @@
 "use strict";
 const path = require("path");
 
+// Use source maps only in development mode for smaller production bundles.
+const isProduction = process.env.NODE_ENV === "production";
+const devtool = isProduction ? false : "source-map";
+
 /**@type {import('webpack').Configuration[]}*/
 const configs = [
   // Config for the Extension's runtime code
@@ -29,12 +33,12 @@ const configs = [
         },
       ],
     },
-    devtool: "source-map",
+    devtool,
   },
   // Config for the build script
   {
     target: "node",
-    mode: "none",
+    mode: "production",
     entry: "./build.ts",
     output: {
       path: path.resolve(__dirname, "dist"),
@@ -53,6 +57,7 @@ const configs = [
         },
       ],
     },
+    devtool,
   },
   // Config for the webview's main logic script
   {
@@ -75,7 +80,7 @@ const configs = [
         },
       ],
     },
-    devtool: "source-map",
+    devtool,
   },
 ];
 module.exports = configs;

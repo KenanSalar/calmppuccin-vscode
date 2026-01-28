@@ -24,7 +24,7 @@ describe("Icon Theme Synchronization", () => {
     // Create mock workbench configuration
     mockWorkbenchConfig = {
       get: jest.fn(),
-      update: jest.fn(),
+      update: jest.fn().mockResolvedValue(undefined),
     };
 
     // Setup workspace configuration mocking
@@ -39,10 +39,12 @@ describe("Icon Theme Synchronization", () => {
     });
 
     // Capture the theme change listener
-    (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation((callback) => {
-      themeChangeListener = callback;
-      return { dispose: jest.fn() };
-    });
+    (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation(
+      (callback: (event: vscode.ConfigurationChangeEvent) => void) => {
+        themeChangeListener = callback;
+        return { dispose: jest.fn() };
+      }
+    );
 
     // Create mock extension context
     mockContext = {
