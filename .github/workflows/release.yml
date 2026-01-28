@@ -9,7 +9,6 @@ on:
 permissions:
   contents: write
   actions: write
-  packages: write
 
 jobs:
   # Build and package the extension
@@ -23,43 +22,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Check for changes in container definition
-        id: filter
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            container_files:
-              - '.devcontainer/**'
-              - 'package-lock.json'
-
-      - name: Set lowercase OWNER
-        id: set_owner 
-        run: echo "owner_lc=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Build image only on 'dev' if container files change
-      - name: Build and push new container image
-        if: steps.filter.outputs.container_files == 'true' && github.ref == 'refs/heads/dev'
+      - name: Build container image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./.devcontainer/Dockerfile
-          tags: ghcr.io/${{ steps.set_owner.outputs.owner_lc }}/calmppuccin-builder:latest
-          push: true
-          cache-from: type=gha,scope=builder-cache
-          cache-to: type=gha,scope=builder-cache,mode=max
-          
-      - name: Pull Dev Container Image
-        run: docker pull ghcr.io/${{ steps.set_owner.outputs.owner_lc }}/calmppuccin-builder:latest
+          tags: calmppuccin-builder:local
+          push: false
+          load: true
+          no-cache: true
 
       - name: Get Package Version
         id: get_version
@@ -71,9 +45,9 @@ jobs:
           docker run --rm \
             -u 0 \
             -e NODE_ENV=production \
-            -v "$PWD":/workspaces/calmppuccin-vscode \
-            --workdir /workspaces/calmppuccin-vscode \
-            ghcr.io/${{ steps.set_owner.outputs.owner_lc }}/calmppuccin-builder:latest \
+            -v "$PWD":/workspace \
+            --workdir /workspace \
+            calmppuccin-builder:local \
             sh -lc 'npm ci && npm run package'
 
       - name: Find VSIX file
@@ -116,7 +90,7 @@ jobs:
           set -euo pipefail
           VERSION="${{ needs.build.outputs.version }}"
           VSIX_PATH="${{ needs.build.outputs.vsix_path }}"
-          
+
           echo "Version: ${VERSION}"
           echo "VSIX Path: ${VSIX_PATH}"
 
