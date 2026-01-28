@@ -48,7 +48,7 @@ jobs:
             -v "$PWD":/workspace \
             --workdir /workspace \
             calmppuccin-builder:local \
-            sh -lc 'npm ci && npm run package'
+            bash -c 'npm install && npm run package'
 
       - name: Find VSIX file
         id: find_vsix
