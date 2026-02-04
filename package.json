@@ -3,7 +3,7 @@
   "displayName": "Calmppuccin",
   "description": "Calmppuccin is a visually refined theme for Visual Studio Code, designed to offer a harmonious coding experience. Inspired by the popular Catppuccin theme, Calmppuccin takes the beloved pastel palette and transforms it into a gentler, less intense version, perfect for long coding sessions without eye strain.",
   "icon": "assets/images/logo/icon.png",
-  "version": "1.9.5",
+  "version": "1.9.6",
   "publisher": "kenan-salar",
   "license": "MIT",
   "sideEffects": false,
@@ -1135,7 +1135,7 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "webpack --mode production",
+    "compile": "cross-env NODE_ENV=production webpack --mode production",
     "watch": "webpack --watch",
     "build-themes": "npm run compile && node ./dist/build.js",
     "package": "npm run build-themes && npx vsce package --no-dependencies",
@@ -1146,6 +1146,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
+    "cross-env": "^10.1.0",
     "@types/fs-extra": "^11.0.4",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.19.7",
