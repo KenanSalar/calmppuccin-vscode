@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.9.4] - 2026-02-04
+
+- **Feature**: Added Open VSX Registry support. The extension is now published to both the VS Code Marketplace and Open VSX, making it available to users of VSCodium, Gitpod, Eclipse Theia, and other VS Code alternatives.
+
 ## [1.9.3] - 2026-01-28
 
 - **Improvement**: Added `keyword.other.attribute-specifier` to the keyword scope for improved attribute specifier highlighting in languages like C++.
