@@ -36,11 +36,15 @@ const flavorIconMap: Record<string, string> = {
  * automatically syncs the icon theme flavor to match the color theme flavor.
  *
  * @remarks
- * A 100ms delay is used because VS Code's workbench needs time to finish
+ * Uses a retry mechanism because VS Code's workbench needs time to finish
  * applying the theme change before we can reliably read the new color theme.
  * Without this delay, we may read the previous theme value.
+ *
+ * @param {number} retryCount - Internal counter for retry attempts (default: 0).
  */
-function syncIconFlavor() {
+function syncIconFlavor(retryCount = 0) {
+  const delay = retryCount === 0 ? C.ICON_SYNC_INITIAL_DELAY_MS : C.ICON_SYNC_RETRY_DELAY_MS;
+
   setTimeout(() => {
     const workbenchConfig = vscode.workspace.getConfiguration("workbench");
     const currentTheme = workbenchConfig.get<string>("colorTheme", "");
@@ -50,6 +54,13 @@ function syncIconFlavor() {
       return;
     }
     const flavor = C.parseFlavorFromThemeName(currentTheme);
+
+    // If flavor is not detected yet and we haven't exhausted retries, try again
+    if (!flavor && retryCount < C.ICON_SYNC_MAX_RETRIES) {
+      syncIconFlavor(retryCount + 1);
+      return;
+    }
+
     if (!flavor || !flavorIconMap[flavor]) {
       return;
     }
@@ -62,7 +73,7 @@ function syncIconFlavor() {
           (err: unknown) => { console.error("Failed to sync icon theme:", err); }
         );
     }
-  }, 100);
+  }, delay);
 }
 
 /**

@@ -82,6 +82,9 @@ export class UIManager {
   /** Controller for profile management operations. */
   private readonly profileController: ProfileController;
 
+  /** Reference to the message event listener for cleanup. */
+  private messageListener: ((event: MessageEvent<MessageToWebview>) => void) | null = null;
+
   constructor() {
     this.profileController = new ProfileController(this.vscode, {
       profileSelect: this.elements.profileSelect,
@@ -226,11 +229,13 @@ export class UIManager {
     this.profileController.initializeEventListeners();
 
     // Primary listener for messages coming from the VS Code extension host.
-    window.addEventListener("message", (event: MessageEvent<MessageToWebview>) => {
+    // Store the reference for potential cleanup.
+    this.messageListener = (event: MessageEvent<MessageToWebview>) => {
       const message = event.data;
       // Currently only loadSettings message type exists
       this.populateAllSettings(message.settings);
-    });
+    };
+    window.addEventListener("message", this.messageListener);
 
     // Trigger the initial fade-in animation for the dialog overlay
     setTimeout(() => {
@@ -615,6 +620,17 @@ export class UIManager {
       this.elements.dialogOverlay.classList.remove("hidden");
     });
     this.elements.resetAllContainer.appendChild(resetAllButton);
+  }
+
+  /**
+   * Cleans up event listeners to prevent memory leaks.
+   * Should be called when the webview is disposed.
+   */
+  public dispose() {
+    if (this.messageListener) {
+      window.removeEventListener("message", this.messageListener);
+      this.messageListener = null;
+    }
   }
 
 }
