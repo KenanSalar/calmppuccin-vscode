@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.9.5] - 2026-02-04
+
+- **Feature**: Added 4 missing Error Lens range background colors (`errorLens.errorRangeBackground`, `errorLens.warningRangeBackground`, `errorLens.infoRangeBackground`, `errorLens.hintRangeBackground`). These colors highlight the specific problem range when `errorLens.problemRangeDecorationEnabled` is enabled. Error Lens support should now be 100% complete with all 30 colors.
+
 ## [1.9.4] - 2026-02-04
 
 - **Feature**: Added Open VSX Registry support. The extension is now published to both the VS Code Marketplace and Open VSX, making it available to users of VSCodium, Gitpod, Eclipse Theia, and other VS Code alternatives.
