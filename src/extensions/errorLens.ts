@@ -22,6 +22,7 @@ export interface IErrorLensColors {
   "errorLens.errorForeground": string;
   "errorLens.errorForegroundLight": string;
   "errorLens.errorMessageBackground": string;
+  "errorLens.errorRangeBackground": string;
 
   // Warning colors (using peach from palette)
   "errorLens.warningBackground": string;
@@ -29,6 +30,7 @@ export interface IErrorLensColors {
   "errorLens.warningForeground": string;
   "errorLens.warningForegroundLight": string;
   "errorLens.warningMessageBackground": string;
+  "errorLens.warningRangeBackground": string;
 
   // Info colors (using blue from palette)
   "errorLens.infoBackground": string;
@@ -36,6 +38,7 @@ export interface IErrorLensColors {
   "errorLens.infoForeground": string;
   "errorLens.infoForegroundLight": string;
   "errorLens.infoMessageBackground": string;
+  "errorLens.infoRangeBackground": string;
 
   // Hint colors (using green from palette)
   "errorLens.hintBackground": string;
@@ -43,6 +46,7 @@ export interface IErrorLensColors {
   "errorLens.hintForeground": string;
   "errorLens.hintForegroundLight": string;
   "errorLens.hintMessageBackground": string;
+  "errorLens.hintRangeBackground": string;
 
   // Status bar colors
   "errorLens.statusBarErrorForeground": string;
@@ -76,6 +80,7 @@ export function generateErrorLensColors(palette: IPalette): IErrorLensColors {
     "errorLens.errorForeground": palette.red,
     "errorLens.errorForegroundLight": palette.red,
     "errorLens.errorMessageBackground": hexWithAlpha(palette.red, backgroundOpacity),
+    "errorLens.errorRangeBackground": hexWithAlpha(palette.red, backgroundOpacity),
 
     // Warning colors - using peach
     "errorLens.warningBackground": hexWithAlpha(palette.peach, backgroundOpacity),
@@ -83,6 +88,7 @@ export function generateErrorLensColors(palette: IPalette): IErrorLensColors {
     "errorLens.warningForeground": palette.peach,
     "errorLens.warningForegroundLight": palette.peach,
     "errorLens.warningMessageBackground": hexWithAlpha(palette.peach, backgroundOpacity),
+    "errorLens.warningRangeBackground": hexWithAlpha(palette.peach, backgroundOpacity),
 
     // Info colors - using blue
     "errorLens.infoBackground": hexWithAlpha(palette.blue, backgroundOpacity),
@@ -90,6 +96,7 @@ export function generateErrorLensColors(palette: IPalette): IErrorLensColors {
     "errorLens.infoForeground": palette.blue,
     "errorLens.infoForegroundLight": palette.blue,
     "errorLens.infoMessageBackground": hexWithAlpha(palette.blue, backgroundOpacity),
+    "errorLens.infoRangeBackground": hexWithAlpha(palette.blue, backgroundOpacity),
 
     // Hint colors - using green
     "errorLens.hintBackground": hexWithAlpha(palette.green, backgroundOpacity),
@@ -97,6 +104,7 @@ export function generateErrorLensColors(palette: IPalette): IErrorLensColors {
     "errorLens.hintForeground": palette.green,
     "errorLens.hintForegroundLight": palette.green,
     "errorLens.hintMessageBackground": hexWithAlpha(palette.green, backgroundOpacity),
+    "errorLens.hintRangeBackground": hexWithAlpha(palette.green, backgroundOpacity),
 
     // Status bar colors
     "errorLens.statusBarErrorForeground": palette.red,
