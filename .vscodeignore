@@ -6,6 +6,7 @@
 .dockerignore
 .vscode-test/**
 .vscode/**
+.claude/**
 claude/**
 CLAUDE.md
 GEMINI.md
@@ -26,8 +27,21 @@ package-lock.json
 src/ConfigurationService.ts
 src/constants.ts
 src/palettes/**
+src/palettes.ts
 src/extensions/**
 src/SettingsPanel.ts
 src/WebviewManager.ts
+src/utils/**
 tsconfig.json
 webpack.config.js
+eslint.config.mjs
+
+# Source maps - not needed in production (safety measure)
+*.map
+dist/*.map
+
+# Build script - only needed for CLI theme generation, not extension runtime
+dist/build.js
+
+# Webview TypeScript sources - already compiled to dist/webview.js
+webview/**/*.ts
