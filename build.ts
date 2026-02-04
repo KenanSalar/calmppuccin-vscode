@@ -102,12 +102,21 @@ async function buildFlavor(
     "g"
   );
   const themeContent = templateStr.replace(allKeysPattern, (_, key: string) => {
-    const value = replacementMap.get(key) ?? "";
+    const value = replacementMap.get(key);
+    if (value === undefined) {
+      console.warn(`[Calmppuccin] Placeholder key "{{${key}}}" not found in replacement map for flavor "${flavor}".`);
+    }
     // Escape special JSON characters to prevent injection from malformed settings.
-    return JSON.stringify(value).slice(1, -1);
+    return JSON.stringify(value ?? "").slice(1, -1);
   });
 
-  const themeJson: IThemeJson = JSON.parse(themeContent) as IThemeJson;
+  let themeJson: IThemeJson;
+  try {
+    themeJson = JSON.parse(themeContent) as IThemeJson;
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    throw new Error(`Failed to parse theme JSON for flavor "${flavor}": ${message}`);
+  }
   const flavorDisplayName = flavor.charAt(0).toUpperCase() + flavor.slice(1);
   themeJson.name = `Calmppuccin ${flavorDisplayName}`;
   themeJson.type = flavor === C.LIGHT_FLAVOR_NAME ? C.THEME_TYPE_LIGHT : C.THEME_TYPE_DARK;

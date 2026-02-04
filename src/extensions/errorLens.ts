@@ -9,6 +9,7 @@
 
 import { IPalette } from "../palettes";
 import { hexWithAlpha } from "../utils/color";
+import { EXTENSION_OPACITY_BACKGROUND } from "../constants";
 
 /**
  * Interface defining all Error Lens color customization points.
@@ -70,41 +71,38 @@ export interface IErrorLensColors {
  * @returns {IErrorLensColors} An object containing all Error Lens color customizations.
  */
 export function generateErrorLensColors(palette: IPalette): IErrorLensColors {
-  // Background opacity for subtle inline highlighting
-  const backgroundOpacity = 0.15;
-
   return {
     // Error colors - using red
-    "errorLens.errorBackground": hexWithAlpha(palette.red, backgroundOpacity),
-    "errorLens.errorBackgroundLight": hexWithAlpha(palette.red, backgroundOpacity),
+    "errorLens.errorBackground": hexWithAlpha(palette.red, EXTENSION_OPACITY_BACKGROUND),
+    "errorLens.errorBackgroundLight": hexWithAlpha(palette.red, EXTENSION_OPACITY_BACKGROUND),
     "errorLens.errorForeground": palette.red,
     "errorLens.errorForegroundLight": palette.red,
-    "errorLens.errorMessageBackground": hexWithAlpha(palette.red, backgroundOpacity),
-    "errorLens.errorRangeBackground": hexWithAlpha(palette.red, backgroundOpacity),
+    "errorLens.errorMessageBackground": hexWithAlpha(palette.red, EXTENSION_OPACITY_BACKGROUND),
+    "errorLens.errorRangeBackground": hexWithAlpha(palette.red, EXTENSION_OPACITY_BACKGROUND),
 
     // Warning colors - using peach
-    "errorLens.warningBackground": hexWithAlpha(palette.peach, backgroundOpacity),
-    "errorLens.warningBackgroundLight": hexWithAlpha(palette.peach, backgroundOpacity),
+    "errorLens.warningBackground": hexWithAlpha(palette.peach, EXTENSION_OPACITY_BACKGROUND),
+    "errorLens.warningBackgroundLight": hexWithAlpha(palette.peach, EXTENSION_OPACITY_BACKGROUND),
     "errorLens.warningForeground": palette.peach,
     "errorLens.warningForegroundLight": palette.peach,
-    "errorLens.warningMessageBackground": hexWithAlpha(palette.peach, backgroundOpacity),
-    "errorLens.warningRangeBackground": hexWithAlpha(palette.peach, backgroundOpacity),
+    "errorLens.warningMessageBackground": hexWithAlpha(palette.peach, EXTENSION_OPACITY_BACKGROUND),
+    "errorLens.warningRangeBackground": hexWithAlpha(palette.peach, EXTENSION_OPACITY_BACKGROUND),
 
     // Info colors - using blue
-    "errorLens.infoBackground": hexWithAlpha(palette.blue, backgroundOpacity),
-    "errorLens.infoBackgroundLight": hexWithAlpha(palette.blue, backgroundOpacity),
+    "errorLens.infoBackground": hexWithAlpha(palette.blue, EXTENSION_OPACITY_BACKGROUND),
+    "errorLens.infoBackgroundLight": hexWithAlpha(palette.blue, EXTENSION_OPACITY_BACKGROUND),
     "errorLens.infoForeground": palette.blue,
     "errorLens.infoForegroundLight": palette.blue,
-    "errorLens.infoMessageBackground": hexWithAlpha(palette.blue, backgroundOpacity),
-    "errorLens.infoRangeBackground": hexWithAlpha(palette.blue, backgroundOpacity),
+    "errorLens.infoMessageBackground": hexWithAlpha(palette.blue, EXTENSION_OPACITY_BACKGROUND),
+    "errorLens.infoRangeBackground": hexWithAlpha(palette.blue, EXTENSION_OPACITY_BACKGROUND),
 
     // Hint colors - using green
-    "errorLens.hintBackground": hexWithAlpha(palette.green, backgroundOpacity),
-    "errorLens.hintBackgroundLight": hexWithAlpha(palette.green, backgroundOpacity),
+    "errorLens.hintBackground": hexWithAlpha(palette.green, EXTENSION_OPACITY_BACKGROUND),
+    "errorLens.hintBackgroundLight": hexWithAlpha(palette.green, EXTENSION_OPACITY_BACKGROUND),
     "errorLens.hintForeground": palette.green,
     "errorLens.hintForegroundLight": palette.green,
-    "errorLens.hintMessageBackground": hexWithAlpha(palette.green, backgroundOpacity),
-    "errorLens.hintRangeBackground": hexWithAlpha(palette.green, backgroundOpacity),
+    "errorLens.hintMessageBackground": hexWithAlpha(palette.green, EXTENSION_OPACITY_BACKGROUND),
+    "errorLens.hintRangeBackground": hexWithAlpha(palette.green, EXTENSION_OPACITY_BACKGROUND),
 
     // Status bar colors
     "errorLens.statusBarErrorForeground": palette.red,

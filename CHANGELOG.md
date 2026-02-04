@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.9.7] - 2026-02-05
+
+- **Reliability**: Added retry mechanism for icon theme synchronization, resolving timing issues where VS Code's workbench hasn't finished applying theme changes.
+- **Reliability**: Added proper error handling in theme generation with descriptive error messages when JSON parsing fails.
+- **Reliability**: Added warning logs when placeholder keys are not found in the replacement map during theme generation.
+- **Reliability**: Added `dispose()` method to webview `UIManager` to properly clean up event listeners and prevent memory leaks.
+- **Refactor**: Extracted icon sync timing values into named constants (`ICON_SYNC_INITIAL_DELAY_MS`, `ICON_SYNC_RETRY_DELAY_MS`, `ICON_SYNC_MAX_RETRIES`) for maintainability.
+- **Refactor**: Extracted opacity values used in extension color generators into named constants (`EXTENSION_OPACITY_BACKGROUND`, `EXTENSION_OPACITY_GUTTER`, `EXTENSION_OPACITY_HIGHLIGHT`, `EXTENSION_OPACITY_TRAILING`).
+- **Testing**: Added comprehensive unit tests for the `hexWithAlpha` color utility function covering edge cases like rounding, case handling, and boundary values.
+- **Testing**: Added unit tests for Error Lens color generation with semantic validation (error = red, warning = peach, info = blue, hint = green).
+- **Testing**: Added unit tests for GitHub Pull Request color generation with semantic consistency checks between related states.
+- **Testing**: Added unit tests for GitLens color generation covering gutter decorations, line highlights, graph lanes, file status, and branch status colors.
+
 ## [1.9.6] - 2026-02-04
 
 - **Performance**: Reduced VSIX package size by 25% (908KB → 683KB) through improved `.vscodeignore` exclusions.
