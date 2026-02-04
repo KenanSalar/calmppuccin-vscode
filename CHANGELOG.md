@@ -2,7 +2,7 @@
 
 ## [1.9.7] - 2026-02-05
 
-- **Reliability**: Added retry mechanism with exponential backoff for icon theme synchronization, resolving timing issues where VS Code's workbench hasn't finished applying theme changes.
+- **Reliability**: Added retry mechanism for icon theme synchronization, resolving timing issues where VS Code's workbench hasn't finished applying theme changes.
 - **Reliability**: Added proper error handling in theme generation with descriptive error messages when JSON parsing fails.
 - **Reliability**: Added warning logs when placeholder keys are not found in the replacement map during theme generation.
 - **Reliability**: Added `dispose()` method to webview `UIManager` to properly clean up event listeners and prevent memory leaks.
