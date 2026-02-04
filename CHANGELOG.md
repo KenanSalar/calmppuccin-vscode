@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.6] - 2026-02-04
+
+- **Performance**: Reduced VSIX package size by 25% (908KB → 683KB) through improved `.vscodeignore` exclusions.
+- **Performance**: Added exclusions for source maps (`*.map`), build script (`dist/build.js`), webview TypeScript sources (`webview/**/*.ts`), and other development files not needed at runtime.
+- **Chore**: Updated compile script to use `cross-env NODE_ENV=production` for consistent builds across all platforms.
+- **Chore**: Added `cross-env` as a dev dependency for Windows compatibility.
+
 ## [1.9.5] - 2026-02-04
 
 - **Feature**: Added 4 missing Error Lens range background colors (`errorLens.errorRangeBackground`, `errorLens.warningRangeBackground`, `errorLens.infoRangeBackground`, `errorLens.hintRangeBackground`). These colors highlight the specific problem range when `errorLens.problemRangeDecorationEnabled` is enabled. Error Lens support should now be 100% complete with all 30 colors.
