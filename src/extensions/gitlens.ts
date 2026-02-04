@@ -9,6 +9,12 @@
 
 import { IPalette } from "../palettes";
 import { hexWithAlpha } from "../utils/color";
+import {
+  EXTENSION_OPACITY_BACKGROUND,
+  EXTENSION_OPACITY_GUTTER,
+  EXTENSION_OPACITY_HIGHLIGHT,
+  EXTENSION_OPACITY_TRAILING,
+} from "../constants";
 
 /**
  * Interface defining all GitLens color customization points.
@@ -137,17 +143,17 @@ export function generateGitLensColors(palette: IPalette): IGitLensColors {
 
   return {
     // Gutter decorations - subtle and muted
-    "gitlens.gutterBackgroundColor": hexWithAlpha(palette.mantle, 0.3),
+    "gitlens.gutterBackgroundColor": hexWithAlpha(palette.mantle, EXTENSION_OPACITY_GUTTER),
     "gitlens.gutterForegroundColor": palette.uiInactiveForeground0,
     "gitlens.gutterUncommittedForegroundColor": palette.yellow,
 
     // Line highlights - gentle accent color with low opacity
-    "gitlens.lineHighlightBackgroundColor": hexWithAlpha(palette.blue, 0.15),
-    "gitlens.lineHighlightOverviewRulerColor": hexWithAlpha(palette.blue, 0.8),
+    "gitlens.lineHighlightBackgroundColor": hexWithAlpha(palette.blue, EXTENSION_OPACITY_BACKGROUND),
+    "gitlens.lineHighlightOverviewRulerColor": hexWithAlpha(palette.blue, EXTENSION_OPACITY_HIGHLIGHT),
 
     // Trailing line blame - muted for minimal distraction
     "gitlens.trailingLineBackgroundColor": "#00000000",
-    "gitlens.trailingLineForegroundColor": hexWithAlpha(palette.uiText, 0.3),
+    "gitlens.trailingLineForegroundColor": hexWithAlpha(palette.uiText, EXTENSION_OPACITY_TRAILING),
 
     // PR/Issue icon colors
     "gitlens.openAutolinkedIssueIconColor": palette.green,

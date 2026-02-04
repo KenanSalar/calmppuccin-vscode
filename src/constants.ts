@@ -38,6 +38,17 @@ export const THEME_TYPE_DARK = "dark";
 /** Debounce delay (in ms) for webview settings updates during rapid changes. */
 export const WEBVIEW_UPDATE_DEBOUNCE_MS = 50;
 
+/** Icon sync configuration: delay before checking theme (ms) and max retry attempts. */
+export const ICON_SYNC_INITIAL_DELAY_MS = 100;
+export const ICON_SYNC_RETRY_DELAY_MS = 150;
+export const ICON_SYNC_MAX_RETRIES = 3;
+
+/** Opacity values for extension color generators (Error Lens, GitLens). */
+export const EXTENSION_OPACITY_BACKGROUND = 0.15;
+export const EXTENSION_OPACITY_GUTTER = 0.3;
+export const EXTENSION_OPACITY_HIGHLIGHT = 0.8;
+export const EXTENSION_OPACITY_TRAILING = 0.3;
+
 /** User-facing messages and actions used in notifications and dialogs. */
 export const INFO_MESSAGE = "Calmppuccin theme updated. Reload to apply.";
 export const RELOAD_ACTION = "Reload Window";
