@@ -82,9 +82,10 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -R
 
-      - name: Publish to VS Code Marketplace and Create Release
+      - name: Publish to Marketplaces and Create Release
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
@@ -94,8 +95,14 @@ jobs:
           echo "Version: ${VERSION}"
           echo "VSIX Path: ${VSIX_PATH}"
 
-          npm install -g @vscode/vsce
+          npm install -g @vscode/vsce ovsx
+
+          echo "Publishing to VS Code Marketplace..."
           vsce publish --packagePath "${VSIX_PATH}"
+
+          echo "Publishing to Open VSX Registry..."
+          ovsx publish "${VSIX_PATH}"
+
           gh release create "v${VERSION}" \
             --repo "$GITHUB_REPOSITORY" \
             --title "Release v${VERSION}" \
