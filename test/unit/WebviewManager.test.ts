@@ -182,7 +182,7 @@ describe("WebviewManager Unit Tests", () => {
 
     // Assert: The HTML contains a CSP meta tag with the webview's cspSource.
     expect(mockPanel.webview.html).toContain("Content-Security-Policy");
-    expect(mockPanel.webview.html).toContain("img-src data:");
+    expect(mockPanel.webview.html).toContain("img-src https://mock.csp.source https: data:");
     expect(mockPanel.webview.html).toContain("https://mock.csp.source");
   });
 
