@@ -20,6 +20,8 @@ export class WebviewManager {
   private readonly _panel: vscode.WebviewPanel;
   /** A list of disposables to be cleaned up when the panel is closed. */
   private _disposables: vscode.Disposable[] = [];
+  /** Tracks whether this instance has already been disposed. */
+  private _disposed = false;
 
   /**
    * Creates a new WebviewManager instance. This is private to enforce the singleton pattern.
@@ -29,7 +31,14 @@ export class WebviewManager {
    */
   private constructor(panel: vscode.WebviewPanel, messageHandler: (message: MessageToExtension) => void | Promise<void>) {
     this._panel = panel;
-    this._panel.onDidDispose(() => { this.dispose(); }, null, this._disposables);
+    this._panel.onDidDispose(() => {
+      // VS Code already disposed the panel, so only clean up our own resources.
+      this._disposed = true;
+      WebviewManager.currentPanel = undefined;
+      while (this._disposables.length) {
+        this._disposables.pop()?.dispose();
+      }
+    }, null, this._disposables);
     this._panel.webview.onDidReceiveMessage(messageHandler, null, this._disposables);
   }
 
@@ -91,9 +100,12 @@ export class WebviewManager {
    * Cleans up all resources associated with the panel when it is closed.
    */
   public dispose() {
+    if (this._disposed) {
+      return;
+    }
+    this._disposed = true;
     WebviewManager.currentPanel = undefined;
     this._panel.dispose();
-    // Dispose all registered event listeners and other resources.
     while (this._disposables.length) {
       this._disposables.pop()?.dispose();
     }
@@ -117,6 +129,10 @@ export class WebviewManager {
     // Replace the placeholder paths in the HTML with the generated URIs.
     htmlContent = htmlContent.replace("webview.js", scriptUri.toString());
     htmlContent = htmlContent.replace("style.css", styleUri.toString());
+
+    // Inject a Content Security Policy that restricts resources to our extension's URIs.
+    const csp = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src ${webview.cspSource}; script-src ${webview.cspSource};">`;
+    htmlContent = htmlContent.replace("</head>", `${csp}\n  </head>`);
 
     return htmlContent;
   }

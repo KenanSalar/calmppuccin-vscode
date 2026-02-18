@@ -424,8 +424,9 @@ export class ConfigurationService {
     // Check if profile exists using hasOwnProperty for proper key check
     if (Object.prototype.hasOwnProperty.call(profiles, activeProfile)) {
       const profile = profiles[activeProfile];
-      const value = profile[key];
-      if (typeof value === "object") {
+      // Cast to unknown for runtime safety — user-edited JSON may contain null.
+      const value: unknown = profile[key];
+      if (typeof value === "object" && value !== null) {
         return value as T;
       }
     }
@@ -715,8 +716,9 @@ export class ConfigurationService {
 
     // Helper to get object setting from profile with fallback to global config
     const getProfileObject = <T extends Record<string, unknown>>(key: string, defaultValue: T): T => {
-      const value = profile[key];
-      if (typeof value === "object") return value as T;
+      // Cast to unknown for runtime safety — user-edited JSON may contain null.
+      const value: unknown = profile[key];
+      if (typeof value === "object" && value !== null) return value as T;
       const globalValue = configSnapshot.get<T | undefined>(key);
       return globalValue ?? defaultValue;
     };

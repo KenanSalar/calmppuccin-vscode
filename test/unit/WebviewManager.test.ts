@@ -75,6 +75,7 @@ describe("WebviewManager Unit Tests", () => {
         postMessage: postMessageMock,
         // The asWebviewUri function is mocked to return the URI unmodified for simplicity.
         asWebviewUri: jest.fn((uri: vscode.Uri) => uri),
+        cspSource: "https://mock.csp.source",
       },
       onDidDispose: jest.fn(),
       reveal: revealMock,
@@ -90,7 +91,8 @@ describe("WebviewManager Unit Tests", () => {
     (mockedVscode.window.createWebviewPanel as jest.Mock).mockReturnValue(mockPanel);
 
     // Configure the mocked `readFile` to return a simple HTML string (async version).
-    (fs.readFile as jest.Mock).mockResolvedValue("<html><body>webview.js style.css</body></html>");
+    // Includes <head>...</head> so that CSP injection can be tested.
+    (fs.readFile as jest.Mock).mockResolvedValue("<html><head></head><body>webview.js style.css</body></html>");
 
     // Reset the static `currentPanel` property on the WebviewManager before each test.
     WebviewManager.currentPanel = undefined;
@@ -172,6 +174,19 @@ describe("WebviewManager Unit Tests", () => {
   });
 
   /**
+   * @description Verifies that the generated HTML includes a Content-Security-Policy meta tag.
+   */
+  it("should inject a Content-Security-Policy meta tag into the HTML", async () => {
+    // Act
+    await WebviewManager.createOrShow(mockContext, jest.fn());
+
+    // Assert: The HTML contains a CSP meta tag with the webview's cspSource.
+    expect(mockPanel.webview.html).toContain("Content-Security-Policy");
+    expect(mockPanel.webview.html).toContain("img-src data:");
+    expect(mockPanel.webview.html).toContain("https://mock.csp.source");
+  });
+
+  /**
    * @description Verifies that the `dispose` method correctly cleans up resources.
    * @assertion It should call `dispose()` on the panel and clear the static instance.
    */
@@ -186,6 +201,23 @@ describe("WebviewManager Unit Tests", () => {
     // Assert: The panel's own dispose method was called.
     expect(disposeSpy).toHaveBeenCalledTimes(1);
     // Assert: The static singleton instance is now undefined.
+    expect(WebviewManager.currentPanel).toBeUndefined();
+  });
+
+  /**
+   * @description Verifies that calling dispose() twice does not throw or double-dispose.
+   */
+  it("should be safe to call dispose() twice (idempotent)", async () => {
+    // Arrange
+    await WebviewManager.createOrShow(mockContext, jest.fn());
+    const panelInstance = WebviewManager.currentPanel;
+
+    // Act: Call dispose twice — the second call should be a no-op.
+    panelInstance?.dispose();
+    panelInstance?.dispose();
+
+    // Assert: The panel's own dispose method was called only once.
+    expect(disposeSpy).toHaveBeenCalledTimes(1);
     expect(WebviewManager.currentPanel).toBeUndefined();
   });
 });
