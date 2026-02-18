@@ -4,13 +4,8 @@
  * Manages profile dropdown population, UI state updates, and delete confirmation dialogs.
  */
 
-import { IProfile, MessageToExtension } from "../types/webview";
+import { IProfile, IVsCodeApi } from "../types/webview";
 import { WEBVIEW_CONSTANTS } from "../src/constants";
-
-/** Interface for the VS Code API messaging. */
-interface IVsCodeApi {
-  postMessage(message: MessageToExtension): void;
-}
 
 /** Interface for DOM element references needed by ProfileController. */
 export interface IProfileElements {
@@ -20,6 +15,7 @@ export interface IProfileElements {
   deleteProfileBtn: HTMLButtonElement;
   dialogOverlay: HTMLElement;
   confirmResetButton: HTMLButtonElement;
+  cancelResetButton: HTMLElement;
 }
 
 /**
@@ -30,6 +26,14 @@ export class ProfileController {
   private readonly vscode: IVsCodeApi;
   private readonly elements: IProfileElements;
 
+  /** When non-null, the confirm button dispatches deleteProfile instead of resetAll. */
+  private _pendingDeleteProfile: string | null = null;
+
+  /** Cached original dialog text, read once from the DOM in the constructor. */
+  private readonly _originalDialogTitle: string;
+  private readonly _originalDialogMessage: string;
+  private readonly _originalConfirmText: string;
+
   /**
    * Creates a new ProfileController instance.
    * @param {IVsCodeApi} vscode The VS Code API for messaging.
@@ -38,6 +42,11 @@ export class ProfileController {
   constructor(vscode: IVsCodeApi, elements: IProfileElements) {
     this.vscode = vscode;
     this.elements = elements;
+
+    // Cache the original dialog text so we can restore it after delete confirmations.
+    this._originalDialogTitle = elements.dialogOverlay.querySelector("h3")?.textContent ?? "Confirm Reset";
+    this._originalDialogMessage = elements.dialogOverlay.querySelector("p")?.textContent ?? "";
+    this._originalConfirmText = elements.confirmResetButton.textContent;
   }
 
   /**
@@ -61,6 +70,31 @@ export class ProfileController {
       const currentProfile = this.elements.profileSelect.value;
       if (currentProfile !== "Default") {
         this.showDeleteConfirmation(currentProfile);
+      }
+    });
+
+    // Dialog confirm button: dispatches deleteProfile or resetAll based on state.
+    this.elements.confirmResetButton.addEventListener("click", () => {
+      if (this._pendingDeleteProfile) {
+        this.vscode.postMessage({ command: WEBVIEW_CONSTANTS.DELETE_PROFILE, profile: this._pendingDeleteProfile });
+      } else {
+        this.vscode.postMessage({ command: WEBVIEW_CONSTANTS.RESET_ALL });
+      }
+      this.elements.dialogOverlay.classList.add("hidden");
+      this._resetDialogState();
+    });
+
+    // Dialog cancel button.
+    this.elements.cancelResetButton.addEventListener("click", () => {
+      this.elements.dialogOverlay.classList.add("hidden");
+      this._resetDialogState();
+    });
+
+    // Click-outside dismissal.
+    this.elements.dialogOverlay.addEventListener("click", (e) => {
+      if (e.target === this.elements.dialogOverlay) {
+        this.elements.dialogOverlay.classList.add("hidden");
+        this._resetDialogState();
       }
     });
   }
@@ -110,55 +144,42 @@ export class ProfileController {
 
   /**
    * Shows delete confirmation by modifying the existing reset dialog.
+   * Uses state-based dispatch instead of cloning buttons.
    * @param {string} profileName The name of the profile to delete.
    */
   public showDeleteConfirmation(profileName: string): void {
-    // Store original dialog content to restore later
     const dialogTitle = this.elements.dialogOverlay.querySelector("h3");
     const dialogMessage = this.elements.dialogOverlay.querySelector("p");
-    const confirmButton = this.elements.confirmResetButton;
 
     if (!dialogTitle || !dialogMessage) {
       throw new Error("Dialog elements not found");
     }
 
-    const originalTitle = dialogTitle.textContent;
-    const originalMessage = dialogMessage.textContent;
-    const originalButtonText = confirmButton.textContent;
+    // Set pending state so the confirm handler dispatches deleteProfile.
+    this._pendingDeleteProfile = profileName;
 
-    // Modify dialog for delete confirmation
+    // Modify dialog text for delete confirmation.
     dialogTitle.textContent = "Delete Profile";
     dialogMessage.textContent = `Are you sure you want to delete the profile "${profileName}"? This action cannot be undone.`;
-    confirmButton.textContent = "Delete Profile";
+    this.elements.confirmResetButton.textContent = "Delete Profile";
 
-    // Replace the confirm button's event handler by cloning to remove existing listeners
-    const newConfirmButton = confirmButton.cloneNode(true) as HTMLButtonElement;
-    confirmButton.parentNode?.replaceChild(newConfirmButton, confirmButton);
-    // Update the reference to prevent stale node issues on subsequent calls
-    this.elements.confirmResetButton = newConfirmButton;
-
-    // Add delete-specific event handler
-    newConfirmButton.addEventListener("click", () => {
-      this.vscode.postMessage({ command: WEBVIEW_CONSTANTS.DELETE_PROFILE, profile: profileName });
-      this.elements.dialogOverlay.classList.add("hidden");
-
-      // Restore original dialog content
-      dialogTitle.textContent = originalTitle;
-      dialogMessage.textContent = originalMessage;
-      newConfirmButton.textContent = originalButtonText;
-
-      // Restore original reset button functionality by cloning to remove delete handler
-      const finalConfirmButton = newConfirmButton.cloneNode(true) as HTMLButtonElement;
-      newConfirmButton.parentNode?.replaceChild(finalConfirmButton, newConfirmButton);
-      // Update the reference to prevent stale node issues
-      this.elements.confirmResetButton = finalConfirmButton;
-      finalConfirmButton.addEventListener("click", () => {
-        this.vscode.postMessage({ command: WEBVIEW_CONSTANTS.RESET_ALL });
-        this.elements.dialogOverlay.classList.add("hidden");
-      });
-    });
-
-    // Show the dialog
+    // Show the dialog.
     this.elements.dialogOverlay.classList.remove("hidden");
+  }
+
+  /**
+   * Clears the pending delete state and restores original dialog text if needed.
+   */
+  private _resetDialogState(): void {
+    if (this._pendingDeleteProfile === null) return;
+
+    this._pendingDeleteProfile = null;
+
+    const dialogTitle = this.elements.dialogOverlay.querySelector("h3");
+    const dialogMessage = this.elements.dialogOverlay.querySelector("p");
+
+    if (dialogTitle) dialogTitle.textContent = this._originalDialogTitle;
+    if (dialogMessage) dialogMessage.textContent = this._originalDialogMessage;
+    this.elements.confirmResetButton.textContent = this._originalConfirmText;
   }
 }

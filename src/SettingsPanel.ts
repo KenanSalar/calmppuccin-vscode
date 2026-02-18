@@ -15,13 +15,10 @@ import { MessageToExtension } from "../types/webview";
  */
 export class SettingsPanel {
   private static _instance: SettingsPanel | undefined;
-  private readonly _context: vscode.ExtensionContext;
   /** Timer handle for debouncing webview updates. */
   private _pendingUpdate: ReturnType<typeof setTimeout> | undefined;
 
-  private constructor(context: vscode.ExtensionContext) {
-    this._context = context;
-  }
+  private constructor(_context: vscode.ExtensionContext) {}
 
   /**
    * Creates a new settings panel or reveals the existing one.

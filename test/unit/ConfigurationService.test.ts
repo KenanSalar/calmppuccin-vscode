@@ -780,6 +780,38 @@ describe("ConfigurationService", () => {
       vscode.ConfigurationTarget.Global
     );
   });
+  /**
+   * @description Tests that getProfileObjectSetting returns the default value when
+   * a profile key is explicitly set to null (which is possible via user-edited JSON).
+   * This exercises the null guard alongside typeof === "object".
+   * @precondition The mocked profile contains a null value for a key that normally holds an object.
+   * @assertion The method should return an empty default instead of crashing.
+   */
+  it("getFontStyles() should return default when profile contains null for the key", () => {
+    // Arrange: Create a profile where fontStyles is explicitly null,
+    // simulating a user who hand-edited their settings.json.
+    const profilesWithNull = {
+      "Default": {
+        fontStyles: null,
+      },
+    };
+
+    mockConfiguration.get.mockImplementation((key: string) => {
+      if (key === C.CONFIG_KEY_PROFILES) {
+        return profilesWithNull;
+      }
+      if (key === C.CONFIG_KEY_ACTIVE_PROFILE) {
+        return "Default";
+      }
+      return undefined;
+    });
+
+    // Act: Call a method that delegates to getProfileObjectSetting.
+    const result = ConfigurationService.getFontStyles();
+
+    // Assert: Should return the empty default, not crash with "Cannot read properties of null".
+    expect(result).toEqual({});
+  });
 });
 
 /**

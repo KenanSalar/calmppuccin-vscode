@@ -60,3 +60,14 @@ export type MessageToWebview = {
   command: "loadSettings";
   settings: ISettingsPayload;
 };
+
+/**
+ * Defines the shape of the VS Code API object provided by `acquireVsCodeApi`.
+ */
+export interface IVsCodeApi {
+  /**
+   * Posts a message from the webview to the extension host.
+   * @param {MessageToExtension} message The strongly-typed message object to send.
+   */
+  postMessage(message: MessageToExtension): void;
+}

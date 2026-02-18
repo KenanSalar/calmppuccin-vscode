@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.9.8] - 2026-02-18
+
+- **Security**: Injected Content-Security-Policy into the customization webview HTML, restricting script, style, and image sources to only the extension's own resources and HTTPS origins.
+- **Performance**: Added 200ms debounce to theme regeneration on configuration changes, preventing redundant rebuilds during rapid settings adjustments (e.g., sliding through accent colors).
+- **Fix**: Added null guards in `ConfigurationService` for user-edited JSON profiles, preventing crashes when profile values are set to `null` in `settings.json`.
+- **Fix**: Fixed `WebviewManager.onDidDispose` to avoid double-disposing the panel when VS Code destroys it.
+- **Fix**: Expanded webview CSP `img-src` directive to allow extension-hosted and HTTPS images alongside data URIs.
+- **Fix**: Fixed a bug where cancelling a profile delete dialog could corrupt the "Reset All" confirmation handler, causing it to dispatch a delete command instead.
+- **Refactor**: Decomposed monolithic `ConfigurationService` (810 LOC) into a thin facade re-exporting from 5 focused SRP modules under `src/config/` (`ConfigAccess`, `SettingsReader`, `SettingsWriter`, `ProfileManager`, `WebviewSettingsMapper`).
+- **Refactor**: Extracted `AccentController`, `ControlFactory`, and `PreviewRenderer` from `webview/main.ts` into dedicated modules with typed constructor injection, reducing `UIManager` from ~470 LOC to ~200 LOC.
+- **Refactor**: Extracted `THEME_AFFECTING_KEYS` constant array as the single source of truth for configuration keys that trigger theme regeneration.
+- **Refactor**: Made `WebviewManager.dispose()` idempotent with a `_disposed` flag to prevent double-disposal.
+- **Refactor**: Removed unused `SettingsPanel._context` field and panel auto-restore on activation.
+- **Refactor**: Moved `IVsCodeApi` interface to shared `types/webview.ts` to eliminate duplication between webview modules.
+- **Chore**: Upgraded ESLint from v9 to v10 (`eslint` ^10.0.0, `@eslint/js` ^10.0.1, `typescript-eslint` ^8.56.0).
+- **Chore**: Added `{ cause: err }` to re-thrown Error in `build.ts` to satisfy the `preserve-caught-error` lint rule and improve error chain debugging.
+- **Testing**: Added unit tests for `ConfigAccess` utility functions (`cloneOverrides`, `removeOverrideKey`).
+- **Testing**: Added contract/shape tests for `WebviewSettingsMapper.getWebViewSettings()` validating the full `ISettingsPayload` structure.
+- **Testing**: Added tests for debounced theme regeneration, CSP injection, idempotent dispose, null profile safety, and dialog handler corruption regression.
+
 ## [1.9.7] - 2026-02-05
 
 - **Reliability**: Added retry mechanism for icon theme synchronization, resolving timing issues where VS Code's workbench hasn't finished applying theme changes.
