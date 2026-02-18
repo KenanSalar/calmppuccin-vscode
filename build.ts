@@ -115,7 +115,7 @@ async function buildFlavor(
     themeJson = JSON.parse(themeContent) as IThemeJson;
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
-    throw new Error(`Failed to parse theme JSON for flavor "${flavor}": ${message}`);
+    throw new Error(`Failed to parse theme JSON for flavor "${flavor}": ${message}`, { cause: err });
   }
   const flavorDisplayName = flavor.charAt(0).toUpperCase() + flavor.slice(1);
   themeJson.name = `Calmppuccin ${flavorDisplayName}`;
