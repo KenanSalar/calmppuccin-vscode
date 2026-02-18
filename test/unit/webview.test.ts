@@ -40,8 +40,14 @@ const htmlFixture = `
   </div>
   <select id="language-select"></select>
   <div id="reset-dialog-overlay" class="hidden">
-    <button id="dialog-confirm-button"></button>
-    <button id="dialog-cancel-button"></button>
+    <div class="dialog-box">
+      <h3>Confirm Reset</h3>
+      <p>Are you sure you want to reset all Calmppuccin settings to their defaults? This action cannot be undone.</p>
+      <div class="dialog-buttons">
+        <button id="dialog-cancel-button"></button>
+        <button id="dialog-confirm-button">Reset Settings</button>
+      </div>
+    </div>
   </div>
 `;
 
@@ -194,6 +200,40 @@ describe("UIManager Unit Tests", () => {
     expect(mockPostMessage).toHaveBeenCalledTimes(1);
     expect(mockPostMessage).toHaveBeenCalledWith({ command: "resetAll" });
     expect(dialogOverlay?.classList.contains("hidden")).toBe(true); // Dialog is hidden again
+  });
+
+  it("should send 'resetAll' (not 'deleteProfile') after cancelling a delete dialog", () => {
+    // This test validates the fix for the cloneNode bug where cancelling a delete
+    // dialog would leave the delete handler on the confirm button.
+    const settingsWithProfiles = {
+      ...mockSettingsPayload,
+      profiles: { Default: {}, "My Profile": {} },
+      activeProfile: "My Profile",
+    };
+    uiManager.populateAllSettings(settingsWithProfiles);
+    mockPostMessage.mockClear();
+
+    const dialogOverlay = document.getElementById("reset-dialog-overlay") as HTMLElement;
+    const confirmButton = document.getElementById("dialog-confirm-button") as HTMLButtonElement;
+    const cancelButton = document.getElementById("dialog-cancel-button") as HTMLButtonElement;
+    const deleteProfileBtn = document.getElementById("delete-profile-btn") as HTMLButtonElement;
+    const resetAllButton = document.querySelector(".reset-all-button") as HTMLButtonElement;
+
+    // Step 1: Open delete dialog, then cancel.
+    deleteProfileBtn.click();
+    expect(dialogOverlay.classList.contains("hidden")).toBe(false);
+    cancelButton.click();
+    expect(dialogOverlay.classList.contains("hidden")).toBe(true);
+
+    // Step 2: Open reset dialog and confirm.
+    resetAllButton.click();
+    expect(dialogOverlay.classList.contains("hidden")).toBe(false);
+    confirmButton.click();
+
+    // Assert: should send resetAll, NOT deleteProfile.
+    expect(mockPostMessage).toHaveBeenCalledTimes(1);
+    expect(mockPostMessage).toHaveBeenCalledWith({ command: "resetAll" });
+    expect(dialogOverlay.classList.contains("hidden")).toBe(true);
   });
 
   // --- Priority 3: Webview UI Validation Tests ---
