@@ -131,7 +131,7 @@ export class WebviewManager {
     htmlContent = htmlContent.replace("style.css", styleUri.toString());
 
     // Inject a Content Security Policy that restricts resources to our extension's URIs.
-    const csp = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src ${webview.cspSource}; script-src ${webview.cspSource};">`;
+    const csp = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} https: data:; style-src ${webview.cspSource}; script-src ${webview.cspSource};">`;
     htmlContent = htmlContent.replace("</head>", `${csp}\n  </head>`);
 
     return htmlContent;
