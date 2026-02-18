@@ -33,6 +33,8 @@ describe("Extension Integration Tests", () => {
    * configuration API that can handle different configuration sections.
    */
   beforeEach(() => {
+    // Use fake timers so debounced regeneration can be controlled in tests.
+    jest.useFakeTimers();
     // Reset the state of all mocks to ensure tests are isolated.
     jest.clearAllMocks();
 
@@ -102,6 +104,10 @@ describe("Extension Integration Tests", () => {
         canSendRequest: jest.fn(),
       },
     };
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   /**
@@ -182,6 +188,8 @@ describe("Extension Integration Tests", () => {
     listener(mockEvent);
 
     // 3. Assert
+    // Advance past the debounce delay before checking.
+    jest.advanceTimersByTime(C.REGENERATE_DEBOUNCE_MS);
     // Verify that the listener, now correctly registered, executed the command.
     expect(executeCommandSpy).toHaveBeenCalledWith(C.REGENERATE_COMMAND_ID);
   });
@@ -194,10 +202,10 @@ describe("Extension Integration Tests", () => {
   it("should trigger regenerateThemes when font style configuration changes", async () => {
     // Use dynamic import to get a fresh module instance
     jest.resetModules();
-    
+
     // Re-mock vscode module
     jest.mock("vscode", () => mockedVscode, { virtual: true });
-    
+
     const { activate: freshActivate } = await import("../../extension");
 
     let listener: (event: vscode.ConfigurationChangeEvent) => void = () => {};
@@ -218,6 +226,7 @@ describe("Extension Integration Tests", () => {
 
     freshActivate(mockContext);
     listener(mockEvent);
+    jest.advanceTimersByTime(C.REGENERATE_DEBOUNCE_MS);
 
     expect(executeCommandSpy).toHaveBeenCalledWith(C.REGENERATE_COMMAND_ID);
   });
@@ -235,7 +244,7 @@ describe("Extension Integration Tests", () => {
     jest.mock("vscode", () => mockedVscode, { virtual: true });
 
     const { activate: freshActivate } = await import("../../extension");
-    
+
     let listener: (event: vscode.ConfigurationChangeEvent) => void = () => {};
     (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation(
       (callback: (event: vscode.ConfigurationChangeEvent) => void) => {
@@ -254,6 +263,7 @@ describe("Extension Integration Tests", () => {
 
     freshActivate(mockContext);
     listener(mockEvent);
+    jest.advanceTimersByTime(C.REGENERATE_DEBOUNCE_MS);
 
     expect(executeCommandSpy).toHaveBeenCalledWith(C.REGENERATE_COMMAND_ID);
   });
@@ -282,8 +292,53 @@ describe("Extension Integration Tests", () => {
 
     activate(mockContext);
     listener(mockEvent);
+    jest.advanceTimersByTime(C.REGENERATE_DEBOUNCE_MS);
 
     expect(executeCommandSpy).not.toHaveBeenCalledWith(C.REGENERATE_COMMAND_ID);
+  });
+
+  /**
+   * @description Tests that rapid config changes are debounced into a single regeneration.
+   * @precondition The configuration change listener is registered with debouncing
+   * @assertion executeCommand should be called only once after 5 rapid events
+   */
+  it("should debounce rapid config changes into a single regeneration", async () => {
+    // Use dynamic import to get a fresh module instance (avoids stale module-level state).
+    jest.resetModules();
+
+    // Re-mock vscode module
+    jest.mock("vscode", () => mockedVscode, { virtual: true });
+
+    const { activate: freshActivate } = await import("../../extension");
+
+    let listener: (event: vscode.ConfigurationChangeEvent) => void = () => {};
+    (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation(
+      (callback: (event: vscode.ConfigurationChangeEvent) => void) => {
+        listener = callback;
+        return { dispose: () => {} };
+      }
+    );
+
+    const mockEvent: vscode.ConfigurationChangeEvent = {
+      affectsConfiguration: jest.fn((section: string) => {
+        return section === `${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACCENT}`;
+      }),
+    };
+
+    const executeCommandSpy = mockedVscode.commands.executeCommand;
+
+    freshActivate(mockContext);
+
+    // Fire 5 rapid config change events.
+    for (let i = 0; i < 5; i++) {
+      listener(mockEvent);
+    }
+
+    jest.advanceTimersByTime(C.REGENERATE_DEBOUNCE_MS);
+
+    // Only one regeneration should have occurred despite 5 events.
+    expect(executeCommandSpy).toHaveBeenCalledWith(C.REGENERATE_COMMAND_ID);
+    expect(executeCommandSpy).toHaveBeenCalledTimes(1);
   });
 });
 

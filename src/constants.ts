@@ -12,13 +12,23 @@ export const REGENERATE_COMMAND_ID = "calmppuccin.regenerateThemes";
 export const RELOAD_COMMAND_ID = "workbench.action.reloadWindow";
 export const ICON_THEME_KEY = "workbench.iconTheme";
 export const CATPPUCCIN_ICON_PACK_ID = "catppuccin-";
-export const PANEL_IS_OPEN_KEY = "calmppuccin.panelIsOpen";
 export const CONFIG_KEY_FONT_STYLES = "fontStyles";
 export const CONFIG_KEY_FONT_STYLE_OVERRIDES = "fontStyleOverrides";
 export const CONFIG_KEY_SYNTAX_OVERRIDES = "syntaxOverrides";
 export const CONFIG_KEY_UI_OVERRIDES = "uiOverrides";
 export const CONFIG_KEY_PROFILES = "profiles";
 export const CONFIG_KEY_ACTIVE_PROFILE = "activeProfile";
+/** All config keys that trigger theme regeneration when changed. */
+export const THEME_AFFECTING_KEYS: readonly string[] = [
+  CONFIG_KEY_ACCENT,
+  CONFIG_KEY_CUSTOM_ACCENT,
+  CONFIG_KEY_FONT_STYLES,
+  CONFIG_KEY_FONT_STYLE_OVERRIDES,
+  CONFIG_KEY_SYNTAX_OVERRIDES,
+  CONFIG_KEY_UI_OVERRIDES,
+  CONFIG_KEY_PROFILES,
+  CONFIG_KEY_ACTIVE_PROFILE,
+] as const;
 export const CUSTOMIZE_COMMAND_ID = "calmppuccin.customize";
 
 /** Constants used in the `build.ts` script for theme generation. */
@@ -37,6 +47,9 @@ export const THEME_TYPE_DARK = "dark";
 
 /** Debounce delay (in ms) for webview settings updates during rapid changes. */
 export const WEBVIEW_UPDATE_DEBOUNCE_MS = 50;
+
+/** Debounce delay (in ms) for theme regeneration during rapid config changes. */
+export const REGENERATE_DEBOUNCE_MS = 200;
 
 /** Icon sync configuration: delay before checking theme (ms) and max retry attempts. */
 export const ICON_SYNC_INITIAL_DELAY_MS = 100;
