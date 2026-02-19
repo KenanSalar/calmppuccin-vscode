@@ -25,6 +25,7 @@ extension.ts
 jest.config.ts
 package-lock.json
 src/ConfigurationService.ts
+src/config/**
 src/constants.ts
 src/palettes/**
 src/palettes.ts
