@@ -17,6 +17,7 @@ let settingsChangeListener: vscode.Disposable | undefined;
 // This disposable holds the lightweight "tripwire" listener that detects when
 // a user switches to a Calmppuccin theme. It is disposed after full activation.
 let tripwireListener: vscode.Disposable | undefined;
+let regenerateTimer: ReturnType<typeof setTimeout> | undefined;
 
 /**
  * Maps Calmppuccin theme flavors to their corresponding Catppuccin Icon flavors.
@@ -153,22 +154,19 @@ export function activate(context: vscode.ExtensionContext) {
 
     // This is the main listener that handles automatic theme regeneration and icon syncing.
     settingsChangeListener = vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
-      // If a Calmppuccin-specific setting changed, regenerate the themes.
-      if (
-        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACCENT}`) ||
-        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLES}`) ||
-        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_CUSTOM_ACCENT}`) ||
-        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_SYNTAX_OVERRIDES}`) ||
-        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_UI_OVERRIDES}`) ||
-        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLE_OVERRIDES}`) ||
-        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_PROFILES}`) ||
-        event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACTIVE_PROFILE}`)
-      ) {
-        vscode.commands.executeCommand(C.REGENERATE_COMMAND_ID)
-          .then(
-            () => { /* success - no action needed */ },
-            (err: unknown) => { console.error("Failed to regenerate themes:", err); }
-          );
+      // If a Calmppuccin-specific setting changed, regenerate the themes (debounced).
+      if (C.THEME_AFFECTING_KEYS.some(key => event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${key}`))) {
+        if (regenerateTimer) {
+          clearTimeout(regenerateTimer);
+        }
+        regenerateTimer = setTimeout(() => {
+          regenerateTimer = undefined;
+          vscode.commands.executeCommand(C.REGENERATE_COMMAND_ID)
+            .then(
+              () => { /* success */ },
+              (err: unknown) => { console.error("Failed to regenerate themes:", err); }
+            );
+        }, C.REGENERATE_DEBOUNCE_MS);
       }
 
       // If the user changed their color theme, sync the icons and update the webview.
@@ -197,11 +195,6 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(tripwireListener);
 
-  // Restore the panel if it was open before a reload.
-  if (context.globalState.get<boolean>(C.PANEL_IS_OPEN_KEY)) {
-    SettingsPanel.createOrShow(context);
-  }
-
   // Finally, check if the user is already using our theme when VS Code starts.
   // This ensures that features like icon syncing work correctly from the get-go
   // for existing users.
@@ -214,4 +207,9 @@ export function activate(context: vscode.ExtensionContext) {
 /**
  * This method is called when the extension is deactivated.
  */
-export function deactivate() {}
+export function deactivate() {
+  if (regenerateTimer) {
+    clearTimeout(regenerateTimer);
+    regenerateTimer = undefined;
+  }
+}
