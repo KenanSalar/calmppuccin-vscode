@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.9.9] - 2026-02-19
+
+- **Improvement**: Replaced extension icon with an optimized 256x256 8-bit PNG (from 500x500 16-bit), reducing VSIX package size by ~69% (699KB → 220KB).
+
 ## [1.9.8] - 2026-02-18
 
 - **Security**: Injected Content-Security-Policy into the customization webview HTML, restricting script, style, and image sources to only the extension's own resources and HTTPS origins.
