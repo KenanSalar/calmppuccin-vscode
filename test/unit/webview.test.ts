@@ -1,8 +1,10 @@
 /**
  * @file This file contains unit tests for the UIManager class in the webview.
  * It verifies DOM manipulation, event handling, and communication with the extension host.
+ * @jest-environment jsdom
  */
 
+import { ISettingsPayload } from "../../types/webview";
 import { UIManager } from "../../webview/main";
 import { codeSnippets } from "../../webview/snippets";
 
@@ -54,7 +56,8 @@ const htmlFixture = `
 `;
 
 // --- Mock Settings Payload ---
-const mockSettingsPayload = {
+// Built per test: the controls record committed edits on the payload they were built from.
+const createSettingsPayload = (): ISettingsPayload => ({
   activeFlavor: "mocha",
   syntaxSettings: [
     { key: "comment", fontStyle: "italic", color: "#858aa0", defaultColor: "#858aa0" },
@@ -79,12 +82,14 @@ const mockSettingsPayload = {
   },
   profiles: { "Custom Profile 1": {}, "Work Theme": {} },
   activeProfile: "Default",
-};
+});
 
 describe("UIManager Unit Tests", () => {
   let uiManager: UIManager;
+  let mockSettingsPayload: ISettingsPayload;
 
   beforeEach(() => {
+    mockSettingsPayload = createSettingsPayload();
     document.body.innerHTML = htmlFixture;
     mockPostMessage.mockClear();
     (global as unknown as { acquireVsCodeApi: jest.Mock }).acquireVsCodeApi.mockClear();
@@ -340,6 +345,95 @@ describe("UIManager Unit Tests", () => {
       // Assert
       expect(hexInput.style.borderColor).toBe("var(--danger-color)");
       expect(hexInput.style.outlineColor).toBe("var(--danger-color)");
+    });
+  });
+
+  describe("Committed edits across view switches", () => {
+    function getKeywordColorControl(): Element {
+      const control =
+        document.querySelector("label[for='keyword']")?.nextElementSibling?.nextElementSibling;
+      if (!control) {
+        throw new Error("The keyword setting has no color control");
+      }
+      return control;
+    }
+
+    function getKeywordHexInput(): HTMLInputElement {
+      const hexInput = getKeywordColorControl().querySelector(".hex-input-display");
+      if (!(hexInput instanceof HTMLInputElement)) {
+        throw new Error("The keyword color control has no hex input");
+      }
+      return hexInput;
+    }
+
+    function getKeywordFontStyleSelect(): HTMLSelectElement {
+      const select = document.getElementById("keyword");
+      if (!(select instanceof HTMLSelectElement)) {
+        throw new Error("The keyword setting has no font style select");
+      }
+      return select;
+    }
+
+    function commitKeywordColor(color: string) {
+      const hexInput = getKeywordHexInput();
+      hexInput.value = color;
+      hexInput.dispatchEvent(new Event("input"));
+      hexInput.dispatchEvent(new Event("change"));
+    }
+
+    function showSyntaxViewAgain() {
+      const viewSelect = document.getElementById("settings-view-select") as HTMLSelectElement;
+      viewSelect.value = "ui";
+      viewSelect.dispatchEvent(new Event("change"));
+      viewSelect.value = "syntax";
+      viewSelect.dispatchEvent(new Event("change"));
+    }
+
+    it("should keep a committed color in its control", () => {
+      uiManager.populateAllSettings(mockSettingsPayload);
+      commitKeywordColor("#ff00ff");
+
+      showSyntaxViewAgain();
+
+      expect(getKeywordHexInput().value).toBe("#ff00ff");
+    });
+
+    it("should keep a committed color in the preview", () => {
+      uiManager.populateAllSettings(mockSettingsPayload);
+      commitKeywordColor("#ff00ff");
+
+      showSyntaxViewAgain();
+
+      const keywordToken = document.querySelector(
+        "#code-preview [data-token='keyword']",
+      ) as HTMLElement;
+      expect(keywordToken.style.color).toBe("rgb(255, 0, 255)");
+    });
+
+    it("should keep a committed font style", () => {
+      uiManager.populateAllSettings(mockSettingsPayload);
+      const select = getKeywordFontStyleSelect();
+      select.value = "bold";
+      select.dispatchEvent(new Event("change"));
+
+      showSyntaxViewAgain();
+
+      expect(getKeywordFontStyleSelect().value).toBe("bold");
+    });
+
+    it("should keep a color reset", () => {
+      uiManager.populateAllSettings({
+        ...mockSettingsPayload,
+        syntaxSettings: [
+          { key: "keyword", fontStyle: "none", color: "#ff00ff", defaultColor: "#B2AADD" },
+        ],
+      });
+      const resetButton = getKeywordColorControl().querySelector(".reset-button") as HTMLElement;
+      resetButton.click();
+
+      showSyntaxViewAgain();
+
+      expect(getKeywordHexInput().value).toBe("#B2AADD");
     });
   });
 

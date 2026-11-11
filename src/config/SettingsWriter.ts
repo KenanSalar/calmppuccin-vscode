@@ -116,6 +116,9 @@ export async function updateSyntaxColor(flavor: string, key: string, value: stri
 export async function resetSyntaxColor(flavor: string, key: string) {
   const overrides = getSyntaxOverrides();
   const finalOverrides = removeOverrideKey(overrides, flavor, key);
+  if (finalOverrides === overrides) {
+    return;
+  }
   await updateProfileSetting(C.CONFIG_KEY_SYNTAX_OVERRIDES, finalOverrides);
 }
 
@@ -144,6 +147,9 @@ export async function updateUiColor(flavor: string, key: string, value: string) 
 export async function resetUiColor(flavor: string, key: string) {
   const overrides = getUiOverrides();
   const finalOverrides = removeOverrideKey(overrides, flavor, key);
+  if (finalOverrides === overrides) {
+    return;
+  }
   await updateProfileSetting(C.CONFIG_KEY_UI_OVERRIDES, finalOverrides);
 }
 
@@ -183,5 +189,8 @@ export async function updateFontStyleOverride(flavor: string, key: string, value
 export async function resetFontStyleOverride(flavor: string, key: string) {
   const overrides = getFontStyleOverrides();
   const finalOverrides = removeOverrideKey(overrides, flavor, key);
+  if (finalOverrides === overrides) {
+    return;
+  }
   await updateProfileSetting(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, finalOverrides);
 }

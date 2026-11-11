@@ -1,43 +1,43 @@
-<div align="center">
-    <img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/logo/icon.png" alt="Logo" width="250" height="250">
-    <h3>Calmppuccin for <a href="https://code.visualstudio.com/">VSCode</a> </h3>
-</div>
+<h3>
+    <img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/logo/icon.png" alt="Logo" width="100" align="absmiddle">
+    Calmppuccin for <a href="https://code.visualstudio.com/">VSCode</a>
+</h3>
 <hr/>
 <br/>
 <div align="center">
-    <img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/preview/preview.png" alt="Preview" width="820" height="800">
+    <img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/preview/preview.png" alt="Preview" width="820">
 </div>
 
 ## Previews
 
 <details>
 <summary>🌻 Latte</summary>
-<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/latte-mauve.png" alt="Latte" width="800" height="´250">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/latte-mauve.png" alt="Latte" width="800">
 </details>
 
 <details>
 <summary>🪴 Frappé</summary>
-<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/frappe-green.png" alt="Frappé" width="800" height="´250">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/frappe-green.png" alt="Frappé" width="800">
 </details>
 
 <details>
 <summary>🌺 Macchiato</summary>
-<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/macchiato-sapphire.png" alt="Macchiato" width="800" height="´250">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/macchiato-sapphire.png" alt="Macchiato" width="800">
 </details>
 
 <details>
 <summary>🌿 Mocha</summary>
-<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/mocha-maroon.png" alt="Mocha" width="800" height="´250">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/mocha-maroon.png" alt="Mocha" width="800">
 </details>
 
 <details>
 <summary>🪻 Nitro Cold Brew</summary>
-<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/nitro-cold-brew-teal.png" alt="Nitro Cold Brew" width="800" height="´250">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/nitro-cold-brew-teal.png" alt="Nitro Cold Brew" width="800">
 </details>
 
 <details>
 <summary>🐾 Oledppuccin</summary>
-<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/oledppuccin-pink.png" alt="Oledppuccin" width="800" height="´250">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/screenshots/oledppuccin-pink.png" alt="Oledppuccin" width="800">
 </details>
 
 <br/>
@@ -72,7 +72,7 @@ font styles, granular syntax colors, and profile management, with a live preview
 
 <details>
 <summary>🛠️ <b>Customization UI</b></summary>
-<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/customUI/custom-ui.png" alt="customUI" width="800" height="2100">
+<img src="https://raw.githubusercontent.com/KenanSalar/calmppuccin-vscode/refs/heads/main/assets/images/customUI/custom-ui.png" alt="customUI" width="800">
 </details>
 
 <br/>

@@ -4,6 +4,7 @@ const path = require("path");
 
 // Use source maps only in development mode for smaller production bundles.
 const isProduction = process.env.NODE_ENV === "production";
+const mode = isProduction ? "production" : "development";
 const devtool = isProduction ? false : "source-map";
 
 // Type errors are reported by `npm run type-check`, a required PR check, so the build only transpiles.
@@ -20,7 +21,7 @@ const configs = [
   // Config for the Extension's runtime code
   {
     target: "node",
-    mode: "production",
+    mode,
     entry: "./extension.ts",
     output: {
       path: path.resolve(__dirname, "dist"),
@@ -39,7 +40,7 @@ const configs = [
   // Config for the build script
   {
     target: "node",
-    mode: "production",
+    mode,
     entry: "./build.ts",
     output: {
       path: path.resolve(__dirname, "dist"),
@@ -55,7 +56,7 @@ const configs = [
   // Config for the webview's main logic script
   {
     target: "web",
-    mode: "production",
+    mode,
     entry: "./webview/main.ts",
     output: {
       path: path.resolve(__dirname, "dist"),

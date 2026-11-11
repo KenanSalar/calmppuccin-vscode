@@ -30,6 +30,9 @@ export class ControlFactory {
 
   /**
    * Dynamically creates the grid of controls for font styles and syntax colors.
+   *
+   * Each control records a committed edit on its setting, since the host doesn't echo writes back
+   * and a view is rebuilt from these settings when it's shown again.
    * @param settings An array of the syntax settings to build controls for.
    * @param defaultFontStyles An object containing the default font styles.
    * @param includeFontStyles Whether to include font style controls.
@@ -42,7 +45,7 @@ export class ControlFactory {
     activeFlavor: string,
   ): void {
     settings.forEach((setting) => {
-      const { key, fontStyle, color, defaultColor } = setting;
+      const { key, fontStyle, color } = setting;
       const fontStyleKey = `${key}FontStyle`;
       const defaultFontStyle = defaultFontStyles[fontStyleKey] || "none";
 
@@ -56,20 +59,10 @@ export class ControlFactory {
 
       let fontContainer: HTMLElement | null = null;
       if (includeFontStyles && fontStyle !== undefined) {
-        fontContainer = this._createFontStyleControl(
-          key,
-          fontStyle,
-          defaultFontStyle,
-          fontStyleKey,
-        );
+        fontContainer = this._createFontStyleControl(setting, defaultFontStyle, fontStyleKey);
       }
 
-      const colorContainer = this._createColorPickerControl(
-        key,
-        color || "",
-        defaultColor,
-        activeFlavor,
-      );
+      const colorContainer = this._createColorPickerControl(setting, activeFlavor);
 
       // Add the new elements to the settings grid in the DOM.
       this.deps.settingsContainer.appendChild(label);
@@ -98,11 +91,11 @@ export class ControlFactory {
    * @returns The container element for the font style control.
    */
   private _createFontStyleControl(
-    key: string,
-    fontStyle: string,
+    setting: IWebviewSetting,
     defaultFontStyle: string,
     fontStyleKey: string,
   ): HTMLElement {
+    const { key } = setting;
     const container = document.createElement("div");
     container.className = "setting-with-reset";
 
@@ -112,11 +105,12 @@ export class ControlFactory {
       const opt = document.createElement("option");
       opt.value = option;
       opt.textContent = option;
-      if (fontStyle === option) opt.selected = true;
+      if (setting.fontStyle === option) opt.selected = true;
       select.appendChild(opt);
     });
     select.addEventListener("change", (e) => {
       const newValue = (e.target as HTMLSelectElement).value;
+      setting.fontStyle = newValue;
       this.deps.previewState[key].fontStyle = newValue;
       this.deps.onPreviewUpdate();
       this.deps.vscode.postMessage({
@@ -131,6 +125,7 @@ export class ControlFactory {
     resetButton.className = "reset-button";
     resetButton.addEventListener("click", () => {
       select.value = defaultFontStyle;
+      setting.fontStyle = defaultFontStyle;
       this.deps.previewState[key].fontStyle = defaultFontStyle;
       this.deps.onPreviewUpdate();
       this.deps.vscode.postMessage({ command: COMMANDS.RESET_FONT_STYLE, key: fontStyleKey });
@@ -145,12 +140,8 @@ export class ControlFactory {
    * Creates an individual color picker control with its alpha slider and reset button.
    * @returns The container element for the color picker.
    */
-  private _createColorPickerControl(
-    key: string,
-    color: string,
-    defaultColor: string,
-    activeFlavor: string,
-  ): HTMLElement {
+  private _createColorPickerControl(setting: IWebviewSetting, activeFlavor: string): HTMLElement {
+    const { key, defaultColor } = setting;
     const container = document.createElement("div");
     container.className = "setting-with-reset";
 
@@ -176,7 +167,7 @@ export class ControlFactory {
     }
 
     // --- Set initial values from settings ---
-    const initialColor = color || defaultColor || "#ffffffff";
+    const initialColor = setting.color || defaultColor || "#ffffffff";
     const initialRgb = initialColor.substring(0, 7);
     const initialAlphaHex = initialColor.length === 9 ? initialColor.substring(7, 9) : "ff";
     colorInput.value = initialRgb;
@@ -198,6 +189,7 @@ export class ControlFactory {
 
     // --- Helper function to send the final color to the extension backend ---
     const sendFinalColorToVSCode = () => {
+      setting.color = hexInput.value;
       const command = isUiColor ? COMMANDS.UPDATE_UI_COLOR : COMMANDS.UPDATE_SYNTAX_COLOR;
       this.deps.vscode.postMessage({
         command: command,
@@ -257,6 +249,7 @@ export class ControlFactory {
       colorInput.value = defaultRgb;
       alphaSlider.value = parseInt(defaultAlphaHex, 16).toString();
       hexInput.value = isUiColor ? defaultRgb : defaultColor;
+      setting.color = defaultColor;
       this.deps.previewState[key].color = defaultColor;
       this.deps.onPreviewUpdate();
       const command = isUiColor ? COMMANDS.RESET_UI_COLOR : COMMANDS.RESET_SYNTAX_COLOR;

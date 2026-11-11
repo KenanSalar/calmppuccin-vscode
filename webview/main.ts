@@ -97,7 +97,7 @@ export class UIManager {
     ) as HTMLButtonElement,
   };
 
-  /** Holds the current settings payload from the extension. */
+  /** The last payload from the host, which the controls keep current as edits are committed. */
   private settings: ISettingsPayload | null = null;
   /** Holds the current styling state (color and font style) for the live preview pane. */
   private previewState: PreviewState = {};

@@ -67,7 +67,7 @@ export function cloneOverrides<T extends Record<string, Record<string, string>>>
 
 /**
  * Removes a key from a nested override object immutably.
- * Returns undefined if the result would be empty.
+ * Returns undefined if the result would be empty, and `overrides` itself if the key isn't there.
  * @param overrides The overrides object
  * @param flavor The flavor key
  * @param key The nested key to remove

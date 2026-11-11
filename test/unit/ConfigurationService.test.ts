@@ -783,6 +783,30 @@ describe("ConfigurationService", () => {
       vscode.ConfigurationTarget.Global,
     );
   });
+
+  /**
+   * Every control has a Reset button, and writing an unchanged profile would still leave an empty
+   * override object behind and trigger a theme rebuild.
+   */
+  it.each([
+    ["resetSyntaxColor", ConfigurationService.resetSyntaxColor, "comment"],
+    ["resetUiColor", ConfigurationService.resetUiColor, "base"],
+    ["resetFontStyleOverride", ConfigurationService.resetFontStyleOverride, "commentFontStyle"],
+  ])("%s() should write nothing when the key isn't overridden", async (_name, reset, key) => {
+    mockConfiguration.get.mockImplementation((configKey: string) => {
+      if (configKey === C.CONFIG_KEY_PROFILES) {
+        return { Default: {} };
+      }
+      if (configKey === C.CONFIG_KEY_ACTIVE_PROFILE) {
+        return "Default";
+      }
+      return undefined;
+    });
+
+    await reset("mocha", key);
+
+    expect(mockConfiguration.update).not.toHaveBeenCalled();
+  });
   /**
    * @description Tests that getProfileObjectSetting returns the default value when
    * a profile key is explicitly set to null (which is possible via user-edited JSON).
