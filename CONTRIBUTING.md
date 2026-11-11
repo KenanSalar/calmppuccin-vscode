@@ -222,6 +222,6 @@ npm run build-themes
 
 ### Submitting Changes
 
-When you're ready to submit your contribution, please open a pull request against the dev branch of the main repository. Provide a clear description of the changes you've made.
+When you're ready to submit your contribution, please open a pull request against the `main` branch of the main repository. Provide a clear description of the changes you've made.
 
 Thank you again for your contribution!
