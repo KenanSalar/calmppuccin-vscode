@@ -1572,7 +1572,6 @@
         "source.julia storage.modifier",
         "meta.function.powershell storage.type.powershell",
         "punctuation.terminator.function",
-        "keyword.other.rust",
         "keyword.other.declaration-specifier.swift",
         "source.ocaml keyword markup.underline",
         "source.ocaml storage.type markup.underline",
@@ -2075,6 +2074,10 @@
       "fontStyle": "{{keywordFontStyle}}"
     },
     "keyword.controlFlow": {
+      "foreground": "{{keyword}}",
+      "fontStyle": "{{keywordFontStyle}}"
+    },
+    "keyword.async": {
       "foreground": "{{keyword}}",
       "fontStyle": "{{keywordFontStyle}}"
     },
