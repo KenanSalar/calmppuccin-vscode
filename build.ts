@@ -146,7 +146,6 @@ async function buildFlavor(
   return { previous, generated };
 }
 
-/** Builds every flavor's theme file. */
 export async function buildAllFlavors(options: IBuildOptions): Promise<ThemeBuilds> {
   await fs.mkdir(THEME_DIR, { recursive: true });
   const templateStr = await fs.readFile(TEMPLATE_PATH, "utf-8");
@@ -175,7 +174,10 @@ async function replaceFile(filePath: string, content: string): Promise<void> {
     await fs.writeFile(tempPath, content);
     await fs.rename(tempPath, filePath);
   } catch (err: unknown) {
-    await fs.rm(tempPath, { force: true });
+    // The replace's failure is the one to report, not the cleanup's.
+    await fs.rm(tempPath, { force: true }).catch((cleanupErr: unknown) => {
+      console.error("Failed to remove a temporary theme file:", cleanupErr);
+    });
     throw err;
   }
 }

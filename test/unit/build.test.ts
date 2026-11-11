@@ -32,10 +32,10 @@ function findWrite(flavor: string): [string, string] | undefined {
   return calls.find(([filePath]) => filePath.includes(flavor));
 }
 
-/** Serves `template` as the theme template, and an empty themes directory. */
+/** Serves `template` as the theme template, and lets a temporary file be removed. */
 function mockFileSystem(template: string): void {
   jest.mocked(fs.readFile).mockResolvedValue(template);
-  jest.mocked(fs.readdir).mockResolvedValue([]);
+  jest.mocked(fs.rm).mockResolvedValue(undefined);
 }
 
 describe("Build Script Unit Tests", () => {
@@ -376,6 +376,17 @@ describe("Build Script Unit Tests", () => {
 
       const [failedTempPath] = jest.mocked(fs.rename).mock.calls[0];
       expect(jest.mocked(fs.rm).mock.calls).toStrictEqual([[failedTempPath, { force: true }]]);
+    });
+
+    /** A virus scanner can hold the new temporary file open too, so removing it fails. */
+    it("should report the failed replace when removing the temporary file fails too", async () => {
+      mockFileSystem(template);
+      const locked = Object.assign(new Error("operation not permitted"), { code: "EPERM" });
+      jest.mocked(fs.rename).mockRejectedValueOnce(locked);
+      jest.mocked(fs.rm).mockRejectedValueOnce(new Error("resource busy or locked"));
+      jest.spyOn(console, "error").mockImplementation(() => {});
+
+      await expect(buildAllFlavors(options)).rejects.toBe(locked);
     });
   });
 });
