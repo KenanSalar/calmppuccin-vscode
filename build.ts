@@ -4,8 +4,8 @@
  * to produce the final theme JSON files.
  */
 
+import * as fs from "fs/promises";
 import * as path from "path";
-import * as fs from "fs-extra";
 import {
   IFontStyles,
   ISyntaxOverrides,
@@ -143,7 +143,7 @@ async function buildFlavor(
   // Write the generated theme object to a JSON file in the /themes directory.
   const themeFileName = `${C.THEME_FILE_PREFIX}-${flavor}-${C.THEME_FILE_SUFFIX}`;
   const themePath = path.join(THEME_DIR, themeFileName);
-  await fs.writeJson(themePath, themeJson, { spaces: 2 });
+  await fs.writeFile(themePath, JSON.stringify(themeJson, null, 2) + "\n");
 }
 
 /**
@@ -153,8 +153,7 @@ async function buildFlavor(
  */
 export async function buildAllFlavors(options: IBuildOptions): Promise<void> {
   // Ensure the output directory is clean and ready.
-  // Note: emptyDir() creates the directory if it doesn't exist.
-  await fs.emptyDir(THEME_DIR);
+  await emptyDirectory(THEME_DIR);
   const templateStr = await fs.readFile(TEMPLATE_PATH, "utf-8");
 
   // Generate all flavors in parallel for faster theme regeneration.
@@ -164,12 +163,25 @@ export async function buildAllFlavors(options: IBuildOptions): Promise<void> {
 }
 
 /**
+ * Deletes everything inside a directory, creating the directory first if it doesn't exist.
+ * @param {string} dir The directory to empty.
+ * @returns {Promise<void>} A promise that resolves once the directory is empty.
+ */
+async function emptyDirectory(dir: string): Promise<void> {
+  await fs.mkdir(dir, { recursive: true });
+  const entries = await fs.readdir(dir);
+  await Promise.all(
+    entries.map((entry) => fs.rm(path.join(dir, entry), { recursive: true, force: true })),
+  );
+}
+
+/**
  * Reads the project's package.json to get the default font styles defined in the contribution points.
  * @returns {Promise<IFontStyles>} The default font styles object.
  */
 async function getDefaultFontStyles(): Promise<IFontStyles> {
   const packageJsonPath = path.resolve(__dirname, "..", "package.json");
-  const packageJson = (await fs.readJson(packageJsonPath)) as IPackageJson;
+  const packageJson = JSON.parse(await fs.readFile(packageJsonPath, "utf8")) as IPackageJson;
   return (
     packageJson.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.fontStyles`]
       ?.default ?? {}

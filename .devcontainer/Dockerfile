@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/typescript-node:22
+FROM mcr.microsoft.com/devcontainers/typescript-node:24
 
 USER root
 # Install build tools for ble.sh, plus fzf and other utilities.

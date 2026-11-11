@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "moduleResolution": "bundler",
     "target": "es2023",
     "outDir": "dist",
     "sourceMap": true,

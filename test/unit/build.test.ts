@@ -4,11 +4,11 @@
  * and palettes to generate valid theme JSON objects.
  */
 
-import * as fs from "fs-extra";
+import * as fs from "fs/promises";
 import { buildAllFlavors } from "../../build";
 
-// Mock the entire fs-extra module to isolate the test from the file system.
-jest.mock("fs-extra");
+// Mock the entire fs/promises module to isolate the test from the file system.
+jest.mock("fs/promises");
 
 /** Type definition for the theme JSON structure used in tests */
 interface ITestThemeJson {
@@ -23,15 +23,24 @@ interface ITestThemeJson {
   semanticTokenColors?: Record<string, string>;
 }
 
-/** Type for mock call arguments [filePath, themeJson, options] */
-type WriteJsonCall = [string, ITestThemeJson, { spaces: number }];
+/** A theme write as [filePath, themeJson], with the written JSON parsed back */
+type ThemeWrite = [string, ITestThemeJson];
 
 /**
- * Helper to find a specific theme call from writeJson mocks
+ * Helper to find the theme written for a flavor among the writeFile mock calls
  */
-function findThemeCall(flavor: string): WriteJsonCall | undefined {
-  const calls = (fs.writeJson as jest.Mock).mock.calls as WriteJsonCall[];
-  return calls.find((call) => call[0].includes(flavor));
+function findThemeCall(flavor: string): ThemeWrite | undefined {
+  const calls = jest.mocked(fs.writeFile).mock.calls as unknown as Array<[string, string]>;
+  const call = calls.find(([filePath]) => filePath.includes(flavor));
+  return call && [call[0], JSON.parse(call[1]) as ITestThemeJson];
+}
+
+/**
+ * Serves `template` as the theme template and an empty themes directory
+ */
+function mockFileSystem(template: string): void {
+  jest.mocked(fs.readFile).mockResolvedValue(template);
+  jest.mocked(fs.readdir).mockResolvedValue([]);
 }
 
 /**
@@ -44,8 +53,8 @@ describe("Build Script Unit Tests", () => {
 
   /**
    * @description Tests that buildAllFlavors correctly replaces all placeholders in a template string.
-   * @precondition The fs-extra module is mocked. `readFile` returns a mock template.
-   * @assertion The JSON object passed to `writeJson` should have its placeholder
+   * @precondition The fs/promises module is mocked. `readFile` returns a mock template.
+   * @assertion The JSON object written by `writeFile` should have its placeholder
    * values replaced with the correct data from the real palettes and settings.
    */
   it("should correctly replace placeholders in the template", async () => {
@@ -61,11 +70,7 @@ describe("Build Script Unit Tests", () => {
 
     const mockFontStyles = { commentFontStyle: "italic" };
 
-    // Configure mocks for fs-extra, casting to 'unknown' first for overloaded functions.
-    (fs.readFile as unknown as jest.Mock).mockResolvedValue(mockTemplate);
-    (fs.emptyDir as unknown as jest.Mock).mockResolvedValue(undefined);
-    (fs.ensureDir as unknown as jest.Mock).mockResolvedValue(undefined);
-    (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
+    mockFileSystem(mockTemplate);
 
     // 2. Act
     await buildAllFlavors({
@@ -77,7 +82,7 @@ describe("Build Script Unit Tests", () => {
     });
 
     // 3. Assert
-    expect(fs.writeJson).toHaveBeenCalled();
+    expect(fs.writeFile).toHaveBeenCalled();
 
     // Find the call that generated the Latte theme file.
     const latteCall = findThemeCall("latte");
@@ -95,9 +100,9 @@ describe("Build Script Unit Tests", () => {
   /**
    * @description Tests that buildAllFlavors correctly handles and resolves
    * dynamic accent color recipes (e.g., "{{accent}}2f").
-   * @precondition The fs-extra module is mocked. `readFile` returns a template
+   * @precondition The fs/promises module is mocked. `readFile` returns a template
    * containing a color recipe.
-   * @assertion The JSON object passed to `writeJson` should have the recipe
+   * @assertion The JSON object written by `writeFile` should have the recipe
    * placeholder replaced with a correctly concatenated hex color string.
    */
   it("should handle dynamic accent color recipes", async () => {
@@ -110,10 +115,7 @@ describe("Build Script Unit Tests", () => {
     });
 
     // Mock the file system reads to return our test template.
-    (fs.readFile as unknown as jest.Mock).mockResolvedValue(mockTemplate);
-    (fs.emptyDir as unknown as jest.Mock).mockResolvedValue(undefined);
-    (fs.ensureDir as unknown as jest.Mock).mockResolvedValue(undefined);
-    (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
+    mockFileSystem(mockTemplate);
 
     // 2. Act: Run the build process with a known accent color.
     // We'll use the 'mocha' flavor and the 'mauve' accent for this test.
@@ -127,7 +129,7 @@ describe("Build Script Unit Tests", () => {
 
     // 3. Assert: Verify the output for the Mocha theme.
 
-    // Find the specific call to writeJson for the 'mocha' theme file.
+    // Find the specific writeFile call for the 'mocha' theme file.
     const mochaCall = findThemeCall("mocha");
 
     expect(mochaCall).toBeDefined();
@@ -183,10 +185,7 @@ describe("Build Script Unit Tests", () => {
         },
       });
 
-      (fs.readFile as unknown as jest.Mock).mockResolvedValue(mockTemplate);
-      (fs.emptyDir as unknown as jest.Mock).mockResolvedValue(undefined);
-      (fs.ensureDir as unknown as jest.Mock).mockResolvedValue(undefined);
-      (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
+      mockFileSystem(mockTemplate);
 
       // Act
       await buildAllFlavors({
@@ -235,10 +234,7 @@ describe("Build Script Unit Tests", () => {
         numberFontStyle: "none",
       };
 
-      (fs.readFile as unknown as jest.Mock).mockResolvedValue(mockTemplate);
-      (fs.emptyDir as unknown as jest.Mock).mockResolvedValue(undefined);
-      (fs.ensureDir as unknown as jest.Mock).mockResolvedValue(undefined);
-      (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
+      mockFileSystem(mockTemplate);
 
       // Act
       await buildAllFlavors({
@@ -284,10 +280,7 @@ describe("Build Script Unit Tests", () => {
         },
       });
 
-      (fs.readFile as unknown as jest.Mock).mockResolvedValue(mockTemplate);
-      (fs.emptyDir as unknown as jest.Mock).mockResolvedValue(undefined);
-      (fs.ensureDir as unknown as jest.Mock).mockResolvedValue(undefined);
-      (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
+      mockFileSystem(mockTemplate);
 
       // Act
       await buildAllFlavors({
@@ -326,10 +319,7 @@ describe("Build Script Unit Tests", () => {
         },
       });
 
-      (fs.readFile as unknown as jest.Mock).mockResolvedValue(mockTemplate);
-      (fs.emptyDir as unknown as jest.Mock).mockResolvedValue(undefined);
-      (fs.ensureDir as unknown as jest.Mock).mockResolvedValue(undefined);
-      (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
+      mockFileSystem(mockTemplate);
 
       // Act
       await buildAllFlavors({
