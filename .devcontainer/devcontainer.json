@@ -12,7 +12,7 @@
     "vscode": {
       // Automatically install these extensions inside the container for a better dev experience
       "extensions": [
-        "dbaeumer.vscode-eslint",
+        "oxc.oxc-vscode",
         "kenan-salar.calmppuccin-vscode",
         "Catppuccin.catppuccin-vsc-icons",
         "JeronimoEkerdt.color-picker-universal",
@@ -28,7 +28,6 @@
         "DavidAnson.vscode-markdownlint",
         "christian-kohler.npm-intellisense",
         "christian-kohler.path-intellisense",
-        "esbenp.prettier-vscode",
         "albert.TabOut",
         "Gruntfuggly.todo-tree",
         "pflannery.vscode-versionlens",

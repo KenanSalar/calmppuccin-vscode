@@ -8,5 +8,6 @@
     "type": "on-demand",
     "onStartup": "none"
   },
-  "testing.automaticallyOpenTestResults": "neverOpen"
+  "testing.automaticallyOpenTestResults": "neverOpen",
+  "editor.defaultFormatter": "oxc.oxc-vscode"
 }

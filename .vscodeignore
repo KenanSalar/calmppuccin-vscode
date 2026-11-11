@@ -35,7 +35,8 @@ src/WebviewManager.ts
 src/utils/**
 tsconfig.json
 webpack.config.js
-eslint.config.mjs
+.oxlintrc.json
+.oxfmtrc.json
 
 # Source maps - not needed in production (safety measure)
 *.map

@@ -126,7 +126,7 @@ export class UIManager {
     // Reset previewState by clearing all keys and keeping the same object reference
     // (ControlFactory holds a reference to this.previewState).
     for (const key of Object.keys(this.previewState)) {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      // oxlint-disable-next-line typescript/no-dynamic-delete
       delete this.previewState[key];
     }
 

@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": true,
+  "singleQuote": false,
+  "tabWidth": 2,
+  "trailingComma": "all",
+  "printWidth": 100,
+  "sortImports": { "partitionByNewline": true, "newlinesBetween": false },
+  // The sorter doesn't know VS Code manifest fields and moves `engines` below `contributes`.
+  "sortPackageJson": false,
+  "ignorePatterns": ["**/*.md"]
+}

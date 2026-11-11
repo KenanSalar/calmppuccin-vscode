@@ -117,7 +117,7 @@ export class ProfileController {
     }
 
     // Add all profiles (including Default if it exists in profiles)
-    Object.keys(profiles).sort().forEach((profileName) => {
+    Object.keys(profiles).toSorted().forEach((profileName) => {
       const option = document.createElement("option");
       option.value = profileName;
       option.textContent = profileName;

@@ -1141,26 +1141,28 @@
     "package": "npm run build-themes && vsce package --no-dependencies",
     "test": "jest --config jest.config.ts",
     "type-check": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "oxlint",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
     "@types/fs-extra": "^11.0.4",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.19.7",
     "@types/vscode": "^1.104.0",
     "@vscode/vsce": "^4.1.0",
     "cross-env": "^10.1.0",
-    "eslint": "^10.0.0",
     "fs-extra": "^11.3.3",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
     "ovsx": "^1.3.0",
+    "oxfmt": "^0.78.0",
+    "oxlint": "^1.93.0",
+    "oxlint-tsgolint": "^7.0.2006",
     "ts-jest": "^29.4.6",
     "ts-loader": "^9.5.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.56.0",
     "webpack": "^5.104.1",
     "webpack-cli": "^6.0.1"
   }
