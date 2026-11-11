@@ -1,12 +1,11 @@
 /**
- * @file Manages accent color selection and the custom accent color picker.
- * Extracted from UIManager to follow Single Responsibility Principle.
+ * @file The accent dropdown and the custom accent picker. Both recolor the page through
+ * `--dynamic-accent-color` as the user picks, and the picker posts only on `change`.
  */
 
 import { WEBVIEW_CONSTANTS as COMMANDS } from "../src/constants";
 import { IVsCodeApi } from "../types/webview";
 
-/** DOM element references needed by AccentController. */
 export interface IAccentElements {
   accentContainer: HTMLElement;
   customAccentPickerContainer: HTMLElement;
@@ -14,10 +13,6 @@ export interface IAccentElements {
   customAccentHexInput: HTMLInputElement;
 }
 
-/**
- * Handles accent color dropdown creation, custom accent picker events,
- * and live accent color updates.
- */
 export class AccentController {
   private readonly hex6Regex = /^#[0-9a-fA-F]{6}$/;
 
@@ -26,13 +21,7 @@ export class AccentController {
     private readonly elements: IAccentElements,
   ) {}
 
-  /**
-   * Dynamically creates the Accent Color dropdown and the custom color picker controls.
-   * @param currentAccent The currently selected accent value.
-   * @param accentOptions Available accent options from the extension manifest.
-   * @param customAccentColor The current custom accent hex color.
-   * @param accentColorMap Map of accent names to their hex color values.
-   */
+  /** Builds the accent dropdown above the custom picker, and fills the picker in. */
   public createControls(
     currentAccent: string,
     accentOptions: string[],
@@ -79,11 +68,7 @@ export class AccentController {
     this.elements.customAccentHexInput.maxLength = 7;
   }
 
-  /**
-   * Handles the logic for showing/hiding the custom accent picker and updating the UI's accent color.
-   * @param accentValue The newly selected accent value.
-   * @param accentColorMap Map of accent names to hex colors.
-   */
+  /** Shows the custom picker only for `custom`, and recolors the page with the chosen accent. */
   public handleAccentChange(accentValue: string, accentColorMap: { [key: string]: string }): void {
     const isCustom = accentValue === "custom";
     this.elements.customAccentPickerContainer.style.display = isCustom ? "grid" : "none";
@@ -93,19 +78,11 @@ export class AccentController {
     this.updateAccentColor(newColor);
   }
 
-  /**
-   * Updates the `--dynamic-accent-color` CSS variable to change the UI's theme in real-time.
-   * @param newColor The new hex color to apply.
-   */
   public updateAccentColor(newColor: string): void {
     document.documentElement.style.setProperty("--dynamic-accent-color", newColor);
   }
 
-  /**
-   * Sets up event listeners for the custom accent color picker and hex input.
-   */
   public initializeEventListeners(): void {
-    // Use 'input' for immediate UI updates and 'change' for sending to VS Code
     this.elements.customAccentPicker.addEventListener("input", (e) => {
       const newValue = (e.target as HTMLInputElement).value;
       this.elements.customAccentHexInput.value = newValue;

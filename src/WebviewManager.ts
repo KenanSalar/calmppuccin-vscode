@@ -1,7 +1,4 @@
-/**
- * @file This file contains the WebviewManager class, which is responsible for creating,
- * managing, and communicating with the extension's webview panel.
- */
+/** @file The customization panel's lifecycle, and the HTML it loads under a CSP. */
 
 import * as fs from "fs/promises";
 import * as path from "path";
@@ -9,26 +6,13 @@ import * as vscode from "vscode";
 import { MessageToWebview } from "../types/webview";
 import * as C from "./constants";
 
-/**
- * Manages the lifecycle and communication of the Calmppuccin settings webview panel.
- * This class implements a singleton pattern to ensure only one instance of the panel exists at a time.
- */
 export class WebviewManager {
-  /** Holds the single, active instance of the WebviewManager. */
+  /** The open panel, or `undefined` once it's closed; there is at most one. */
   public static currentPanel: WebviewManager | undefined;
-  /** The underlying VS Code WebviewPanel instance. */
   private readonly _panel: vscode.WebviewPanel;
-  /** A list of disposables to be cleaned up when the panel is closed. */
   private _disposables: vscode.Disposable[] = [];
-  /** Tracks whether this instance has already been disposed. */
   private _disposed = false;
 
-  /**
-   * Creates a new WebviewManager instance. This is private to enforce the singleton pattern.
-   * Use the static createOrShow method instead.
-   * @param {vscode.WebviewPanel} panel The webview panel instance.
-   * @param messageHandler Receives each message the webview posts, unchecked.
-   */
   private constructor(
     panel: vscode.WebviewPanel,
     messageHandler: (message: unknown) => Promise<void>,
@@ -50,11 +34,8 @@ export class WebviewManager {
   }
 
   /**
-   * The static method to either create a new webview panel or show the existing one.
-   * Uses async file reading to avoid blocking the extension host thread.
-   * @param {vscode.ExtensionContext} context The extension's context.
-   * @param messageHandler Receives each message the webview posts, unchecked.
-   * @param {() => void} [onReveal] An optional callback to run when an existing panel is revealed.
+   * Reveals the open panel, or creates one and loads its HTML.
+   * @param onReveal - Runs when an open panel is revealed rather than created.
    */
   public static async createOrShow(
     context: vscode.ExtensionContext,
@@ -69,28 +50,23 @@ export class WebviewManager {
       return;
     }
 
-    // Create the panel first so it appears immediately.
     const panel = vscode.window.createWebviewPanel(
       C.WEBVIEW_CONSTANTS.WEBVIEW_ID,
       C.WEBVIEW_CONSTANTS.WEBVIEW_TITLE,
       vscode.ViewColumn.One,
       {
         enableScripts: true,
-        // Restrict the webview to only loading resources from our extension's directories.
         localResourceRoots: [
           vscode.Uri.file(path.join(context.extensionPath, "dist")),
           vscode.Uri.file(path.join(context.extensionPath, "webview")),
         ],
-        // Keep the webview's state even when it's not visible.
         retainContextWhenHidden: true,
       },
     );
 
-    // Set currentPanel IMMEDIATELY after panel creation to prevent race conditions.
-    // The constructor only sets up dispose/message handlers, not HTML content.
+    // Set before the await below, so a second call during it reveals this panel.
     WebviewManager.currentPanel = new WebviewManager(panel, messageHandler);
 
-    // Load HTML asynchronously to avoid blocking the extension host.
     const htmlContent = await WebviewManager._getHtmlForWebview(
       context.extensionPath,
       panel.webview,
@@ -98,24 +74,13 @@ export class WebviewManager {
     panel.webview.html = htmlContent;
   }
 
-  /**
-   * Sends a strongly-typed message to the webview script.
-   * @param {MessageToWebview} message The message object to send.
-   */
   public postMessage(message: MessageToWebview) {
-    this._panel.webview.postMessage(message).then(
-      () => {
-        /* success - no action needed */
-      },
-      (err: unknown) => {
-        console.error("Failed to post a message to the webview:", err);
-      },
-    );
+    this._panel.webview.postMessage(message).then(undefined, (err: unknown) => {
+      console.error("Failed to post a message to the webview:", err);
+    });
   }
 
-  /**
-   * Cleans up all resources associated with the panel when it is closed.
-   */
+  /** Closes the panel; calling it again does nothing. */
   public dispose() {
     if (this._disposed) {
       return;
@@ -128,13 +93,7 @@ export class WebviewManager {
     }
   }
 
-  /**
-   * Reads the webview's HTML file from disk asynchronously and injects the correct URIs for styles and scripts.
-   * @param {string} extensionPath The root path of the extension.
-   * @param {vscode.Webview} webview The webview instance for URI generation.
-   * @returns {Promise<string>} The HTML content with correctly resolved resource paths.
-   * @private
-   */
+  /** Reads `index.html`, points its script and stylesheet at webview URIs, and adds the CSP. */
   private static async _getHtmlForWebview(
     extensionPath: string,
     webview: vscode.Webview,
@@ -142,7 +101,6 @@ export class WebviewManager {
     const htmlPath = path.join(extensionPath, "webview", "index.html");
     let htmlContent = await fs.readFile(htmlPath, "utf8");
 
-    // Use `asWebviewUri` to create a special URI that VS Code allows the webview to load.
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.file(path.join(extensionPath, "dist", "webview.js")),
     );
@@ -150,11 +108,12 @@ export class WebviewManager {
       vscode.Uri.file(path.join(extensionPath, "webview", "style.css")),
     );
 
-    // Replace the placeholder paths in the HTML with the generated URIs.
+    // `index.html` names each file once, by its bare name.
     htmlContent = htmlContent.replace("webview.js", scriptUri.toString());
     htmlContent = htmlContent.replace("style.css", styleUri.toString());
 
-    // Inject a Content Security Policy that restricts resources to our extension's URIs.
+    // No inline script or style passes this policy: a `<script>`, `<style>` or `style=` in the
+    // page is dropped.
     const csp = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} https: data:; style-src ${webview.cspSource}; script-src ${webview.cspSource};">`;
     htmlContent = htmlContent.replace("</head>", `${csp}\n  </head>`);
 

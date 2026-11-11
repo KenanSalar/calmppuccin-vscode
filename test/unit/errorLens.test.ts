@@ -1,8 +1,4 @@
-/**
- * @file Unit tests for the Error Lens extension color generator.
- * Tests that the generateErrorLensColors function produces correct color mappings
- * for all diagnostic categories (error, warning, info, hint).
- */
+/** @file `generateErrorLensColors` over the shared mock palette. */
 
 import { EXTENSION_OPACITY_BACKGROUND } from "../../src/constants";
 import { generateErrorLensColors, IErrorLensColors } from "../../src/extensions/errorLens";

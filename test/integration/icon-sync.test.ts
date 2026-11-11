@@ -1,7 +1,6 @@
 /**
- * @file icon-sync.test.ts
- * @description Integration tests for the icon theme synchronization feature.
- * Verifies that icon themes are correctly synced with color theme flavors.
+ * @file The icon-theme sync, driven through `activate` and the theme listener it registers on the
+ * `vscode` mock.
  */
 
 import * as vscode from "vscode";
@@ -13,9 +12,6 @@ const mockedVscode = vscode as jest.Mocked<typeof vscode>;
 // Activating under a Calmppuccin theme rebuilds the themes, which these tests leave out.
 jest.mock("../../build");
 
-/**
- * Test suite for icon theme synchronization logic.
- */
 describe("Icon Theme Synchronization", () => {
   let mockContext: vscode.ExtensionContext;
   let mockWorkbenchConfig: { get: jest.Mock; update: jest.Mock };
@@ -25,13 +21,11 @@ describe("Icon Theme Synchronization", () => {
     jest.useFakeTimers();
     jest.clearAllMocks();
 
-    // Create mock workbench configuration
     mockWorkbenchConfig = {
       get: jest.fn(),
       update: jest.fn().mockResolvedValue(undefined),
     };
 
-    // Setup workspace configuration mocking
     (mockedVscode.workspace.getConfiguration as jest.Mock).mockImplementation((section: string) => {
       if (section === "workbench") {
         return mockWorkbenchConfig;
@@ -42,7 +36,6 @@ describe("Icon Theme Synchronization", () => {
       return { get: jest.fn(), update: jest.fn() };
     });
 
-    // Capture the theme change listener
     (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation(
       (callback: (event: vscode.ConfigurationChangeEvent) => void) => {
         themeChangeListener = callback;
@@ -50,7 +43,6 @@ describe("Icon Theme Synchronization", () => {
       },
     );
 
-    // Create mock extension context
     mockContext = {
       subscriptions: [],
       globalState: {
@@ -91,11 +83,6 @@ describe("Icon Theme Synchronization", () => {
     jest.useRealTimers();
   });
 
-  /**
-   * @description Tests that icon flavor syncs when theme changes to a Calmppuccin theme.
-   * @precondition Color theme is Calmppuccin Mocha, icon theme is wrong flavor
-   * @assertion Icon theme should be updated to catppuccin-mocha
-   */
   it("should sync icon flavor when theme changes to Calmppuccin Mocha", async () => {
     mockWorkbenchConfig.get.mockImplementation((key: string) => {
       if (key === "colorTheme") return "Calmppuccin Mocha";
@@ -114,11 +101,6 @@ describe("Icon Theme Synchronization", () => {
     );
   });
 
-  /**
-   * @description Tests that icon sync does not run if icon pack is not installed.
-   * @precondition Icon theme is not a Catppuccin theme
-   * @assertion Icon theme should NOT be updated
-   */
   it("should NOT sync if Catppuccin icon pack is not installed", async () => {
     mockWorkbenchConfig.get.mockImplementation((key: string) => {
       if (key === "colorTheme") return "Calmppuccin Mocha";
@@ -138,11 +120,6 @@ describe("Icon Theme Synchronization", () => {
     expect(mockWorkbenchConfig.update).not.toHaveBeenCalled();
   });
 
-  /**
-   * @description Tests that custom flavors (Nitro Cold Brew, Oledppuccin) map to mocha icons.
-   * @precondition Color theme is Calmppuccin Nitro Cold Brew
-   * @assertion Icon theme should be updated to catppuccin-mocha
-   */
   it("should map custom flavors (Nitro Cold Brew) to mocha icons", async () => {
     mockWorkbenchConfig.get.mockImplementation((key: string) => {
       if (key === "colorTheme") return "Calmppuccin Nitro Cold Brew";
@@ -161,11 +138,6 @@ describe("Icon Theme Synchronization", () => {
     );
   });
 
-  /**
-   * @description Tests that Oledppuccin flavor maps to mocha icons.
-   * @precondition Color theme is Calmppuccin Oledppuccin
-   * @assertion Icon theme should be updated to catppuccin-mocha
-   */
   it("should map Oledppuccin flavor to mocha icons", async () => {
     mockWorkbenchConfig.get.mockImplementation((key: string) => {
       if (key === "colorTheme") return "Calmppuccin Oledppuccin";
@@ -184,11 +156,6 @@ describe("Icon Theme Synchronization", () => {
     );
   });
 
-  /**
-   * @description Tests that sync handles invalid theme name gracefully.
-   * @precondition Color theme is not a valid Calmppuccin theme
-   * @assertion Icon theme should NOT be updated
-   */
   it("should handle non-Calmppuccin theme gracefully", async () => {
     mockWorkbenchConfig.get.mockImplementation((key: string) => {
       if (key === "colorTheme") return "Dark+ (default dark)";
@@ -205,7 +172,6 @@ describe("Icon Theme Synchronization", () => {
 
     await jest.advanceTimersByTimeAsync(C.ICON_SYNC_INITIAL_DELAY_MS);
 
-    // Should not update (not a Calmppuccin theme)
     expect(mockWorkbenchConfig.update).not.toHaveBeenCalled();
   });
 

@@ -61,12 +61,12 @@ const PARSERS = {
 /**
  * Returns the message the webview posted when its command and every field are valid, rebuilt
  * from those fields alone, and `undefined` otherwise.
- * @param raw The value `onDidReceiveMessage` delivered.
  */
 export function parseWebviewMessage(raw: unknown): MessageToExtension | undefined {
   if (typeof raw !== "object" || raw === null) {
     return undefined;
   }
+  // Every field still reads as `unknown`, so nothing past here trusts the cast.
   const fields = raw as MessageFields;
   const { command } = fields;
   if (typeof command !== "string" || !isCommand(command)) {

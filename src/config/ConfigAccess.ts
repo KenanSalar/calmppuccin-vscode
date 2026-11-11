@@ -1,6 +1,6 @@
 /**
- * @file Core configuration primitives for accessing VS Code settings.
- * Provides low-level helpers shared by all other config modules.
+ * @file The settings primitives the other `src/config/` modules build on: profile reads and
+ * writes, and the defaults `package.json` contributes.
  */
 
 import * as vscode from "vscode";
@@ -8,33 +8,33 @@ import { IProfile } from "../../types/webview";
 import * as C from "../constants";
 import palettes, { IPalettes } from "../palettes";
 
-/** Defines the shape of the font styles configuration object in settings.json. */
+/** `calmppuccin.fontStyles`, keyed `<token>FontStyle`. */
 export interface IFontStyles {
   [key: string]: string;
 }
 
-/** Defines the shape of the syntax color overrides object in settings.json. */
+/** `calmppuccin.syntaxOverrides`: colors by flavor, then token. */
 export interface ISyntaxOverrides {
   [flavor: string]: {
     [token: string]: string;
   };
 }
 
-/** Defines the shape of the UI color overrides object in settings.json. */
+/** `calmppuccin.uiOverrides`: colors by flavor, then UI key. */
 export interface IUiOverrides {
   [flavor: string]: {
     [token: string]: string;
   };
 }
 
-/** Defines the shape of the font style overrides object in settings.json. */
+/** `calmppuccin.fontStyleOverrides`: styles by flavor, then `<token>FontStyle` key. */
 export interface IFontStyleOverrides {
   [flavor: string]: {
     [fontStyleKey: string]: string;
   };
 }
 
-/** Represents the relevant structure of the extension's package.json. */
+/** The part of `package.json` the contributed defaults are read from. */
 export interface IExtensionPackageJson {
   contributes?: {
     configuration?: {
@@ -43,20 +43,11 @@ export interface IExtensionPackageJson {
   };
 }
 
-/**
- * A type guard to check if a string is a valid flavor key from the palettes.
- * @param key The string to check.
- * @returns {boolean} True if the key is a valid flavor name.
- */
 export function isFlavor(key: string): key is keyof IPalettes {
   return Object.hasOwn(palettes, key);
 }
 
-/**
- * Creates a deep clone of a nested overrides object.
- * @param obj The object to clone.
- * @returns A deep copy of the object.
- */
+/** Copies an overrides object two levels deep, which is as deep as one goes. */
 export function cloneOverrides<T extends Record<string, Record<string, string>>>(obj: T): T {
   const result: Record<string, Record<string, string>> = {};
   for (const [key, value] of Object.entries(obj)) {
@@ -66,11 +57,9 @@ export function cloneOverrides<T extends Record<string, Record<string, string>>>
 }
 
 /**
- * Removes a key from a nested override object immutably.
- * Returns undefined if the result would be empty, and `overrides` itself if the key isn't there.
- * @param overrides The overrides object
- * @param flavor The flavor key
- * @param key The nested key to remove
+ * Returns `overrides` without `flavor`'s `key`, dropping the flavor once it's empty. Returns
+ * `undefined` when nothing is left, which clears the setting, and `overrides` itself when the key
+ * isn't there.
  */
 export function removeOverrideKey<
   T extends { [flavor: string]: { [key: string]: string } | undefined },
@@ -80,7 +69,6 @@ export function removeOverrideKey<
     return overrides;
   }
 
-  // Build new flavor object without the key
   const newFlavorOverrides: Record<string, string> = {};
   for (const [k, v] of Object.entries(flavorOverrides)) {
     if (k !== key) {
@@ -88,7 +76,6 @@ export function removeOverrideKey<
     }
   }
 
-  // Build new overrides object
   const newOverrides: { [f: string]: { [k: string]: string } | undefined } = {};
   for (const [f, v] of Object.entries(overrides)) {
     if (f !== flavor) {
@@ -96,23 +83,16 @@ export function removeOverrideKey<
     } else if (Object.keys(newFlavorOverrides).length > 0) {
       newOverrides[f] = newFlavorOverrides;
     }
-    // If newFlavorOverrides is empty, we skip adding this flavor
   }
 
   return Object.keys(newOverrides).length === 0 ? undefined : (newOverrides as T);
 }
 
-/**
- * Gets the VS Code configuration object scoped to the Calmppuccin extension.
- */
+/** A fresh snapshot of the `calmppuccin` settings; one taken before an `update` doesn't see it. */
 export function getConfig() {
   return vscode.workspace.getConfiguration(C.EXTENSION_NAMESPACE);
 }
 
-/**
- * Gets the user-defined profiles from settings.json.
- * @returns {{ [name: string]: IProfile }} The profiles object.
- */
 export function getProfiles(): { [name: string]: IProfile } {
   return toProfiles(getConfig().get(C.CONFIG_KEY_PROFILES));
 }
@@ -120,13 +100,13 @@ export function getProfiles(): { [name: string]: IProfile } {
 /**
  * Narrows the user-edited `calmppuccin.profiles` value to its profiles, guaranteeing `Default`.
  * An entry that isn't an object, such as `"Default": null`, is dropped.
- * @param rawProfiles The setting's value as read.
  */
 export function toProfiles(rawProfiles: unknown): { [name: string]: IProfile } {
   const profiles: { [name: string]: IProfile } = {};
   if (isPlainObject(rawProfiles)) {
     for (const [name, profile] of Object.entries(rawProfiles)) {
       if (isPlainObject(profile)) {
+        // Only the entry is checked: each reader tests the type of the value it takes.
         profiles[name] = profile as IProfile;
       }
     }
@@ -141,25 +121,15 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-/**
- * Gets the name of the currently active profile.
- * @returns {string} The active profile name.
- */
 export function getActiveProfile(): string {
   return getConfig().get(C.CONFIG_KEY_ACTIVE_PROFILE, "Default");
 }
 
-/**
- * Gets a string setting value, respecting the current profile.
- * @param {string} key The configuration key.
- * @param {string} defaultValue The default value if not found.
- * @returns {string} The value of the setting.
- */
+/** Reads `key` from the active profile, then from the legacy top-level setting. */
 export function getProfileSetting(key: string, defaultValue: string): string {
   const activeProfile = getActiveProfile();
   const profiles = getProfiles();
 
-  // Check if profile exists using hasOwnProperty for proper key check
   if (Object.prototype.hasOwnProperty.call(profiles, activeProfile)) {
     const profile = profiles[activeProfile];
     const value = profile[key];
@@ -168,16 +138,10 @@ export function getProfileSetting(key: string, defaultValue: string): string {
     }
   }
 
-  // Fallback to global config for backward compatibility
   return getConfig().get<string>(key, defaultValue);
 }
 
-/**
- * Gets an object setting value, respecting the current profile.
- * @param {string} key The configuration key.
- * @param {T} defaultValue The default value if not found.
- * @returns {T} The value of the setting.
- */
+/** {@link getProfileSetting} for an object setting. */
 export function getProfileObjectSetting<T extends Record<string, unknown>>(
   key: string,
   defaultValue: T,
@@ -185,31 +149,24 @@ export function getProfileObjectSetting<T extends Record<string, unknown>>(
   const activeProfile = getActiveProfile();
   const profiles = getProfiles();
 
-  // Check if profile exists using hasOwnProperty for proper key check
   if (Object.prototype.hasOwnProperty.call(profiles, activeProfile)) {
     const profile = profiles[activeProfile];
-    // Cast to unknown for runtime safety — user-edited JSON may contain null.
+    // The profile is user-edited JSON, so the value can be null or any other type.
     const value: unknown = profile[key];
     if (typeof value === "object" && value !== null) {
       return value as T;
     }
   }
 
-  // Fallback to global config for backward compatibility
   const globalValue = getConfig().get<T | undefined>(key);
   return globalValue ?? defaultValue;
 }
 
-/**
- * Updates a setting, respecting the current profile.
- * @param {string} key The configuration key.
- * @param {IProfile[keyof IProfile]} value The new value.
- */
+/** Writes `key` into the active profile, creating the profile when it's missing. */
 export async function updateProfileSetting(key: string, value: IProfile[keyof IProfile]) {
   const activeProfile = getActiveProfile();
   const profiles = getProfiles();
 
-  // Get existing profile or create empty one - use hasOwnProperty for proper key check
   const existingProfile = Object.prototype.hasOwnProperty.call(profiles, activeProfile)
     ? profiles[activeProfile]
     : undefined;
@@ -224,10 +181,7 @@ export async function updateProfileSetting(key: string, value: IProfile[keyof IP
   );
 }
 
-/**
- * Gets the default font styles from the extension's package.json configuration.
- * @returns {IFontStyles} The default font styles object.
- */
+/** The `calmppuccin.fontStyles` default `package.json` contributes. */
 export function getDefaultFontStyles(): IFontStyles {
   return getContributedSetting(C.CONFIG_KEY_FONT_STYLES)?.default ?? {};
 }

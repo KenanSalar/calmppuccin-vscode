@@ -10,8 +10,8 @@ paths:
 
 # Theme generation
 
-`buildFlavor` in `build.ts` argues each step of a flavor's build; this file holds what reaches
-across the template, the palettes and the manifest.
+`buildFlavor` in `build.ts` is one flavor's build and argues its non-obvious steps; this file holds
+what reaches across the template, the palettes and the manifest.
 
 - **A placeholder is `{{key}}` inside a JSON string in `src/template.json`.** It resolves from the
   palette with the flavor's `syntaxOverrides` and `uiOverrides` on top, from `accent`, and from

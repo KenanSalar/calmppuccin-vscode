@@ -1,8 +1,4 @@
-/**
- * @file Unit tests for the GitHub Pull Requests extension color generator.
- * Tests that the generateGitHubPullRequestColors function produces correct color mappings
- * for PR and issue states.
- */
+/** @file `generateGitHubPullRequestColors` over the shared mock palette. */
 
 import {
   generateGitHubPullRequestColors,

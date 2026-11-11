@@ -1,9 +1,9 @@
 /**
- * @file This file defines the strict, shared contract for communication
- * between the VS Code extension host (backend) and the settings webview (frontend).
+ * @file Everything the host and the customization webview exchange. Both sides post through
+ * these types, so a message that isn't here doesn't type-check.
  */
 
-/** A single setting item for the webview. */
+/** One row of the settings grid: a key's color and, for syntax and JSON keys, its font style. */
 export interface IWebviewSetting {
   key: string;
   fontStyle?: string;
@@ -11,7 +11,7 @@ export interface IWebviewSetting {
   defaultColor: string;
 }
 
-/** A profile containing theme configuration. */
+/** One entry of `calmppuccin.profiles`. */
 export interface IProfile {
   accent?: string;
   customAccentColor?: string;
@@ -19,7 +19,7 @@ export interface IProfile {
   fontStyleOverrides?: Record<string, Record<string, string>>;
   syntaxOverrides?: Record<string, Record<string, string>>;
   uiOverrides?: Record<string, Record<string, string>>;
-  // Index signature for dynamic key access in internal methods
+  // `updateProfileSetting` writes through a key held in a string.
   [key: string]:
     | string
     | Record<string, string>
@@ -27,7 +27,7 @@ export interface IProfile {
     | undefined;
 }
 
-/** The complete data payload sent from the extension to the webview upon loading. */
+/** Everything the webview builds its controls from, sent whole in `loadSettings`. */
 export interface ISettingsPayload {
   activeFlavor: string;
   syntaxSettings: IWebviewSetting[];
@@ -44,7 +44,7 @@ export interface ISettingsPayload {
   activeProfile: string;
 }
 
-/** A discriminated union of all possible messages that can be sent FROM the webview TO the extension. */
+/** What the webview may post; `parseWebviewMessage` checks each before the host acts on it. */
 export type MessageToExtension =
   | { command: "updateSetting"; key: string; value: string }
   | { command: "resetFontStyle"; key: string }
@@ -59,19 +59,12 @@ export type MessageToExtension =
   | { command: "saveProfile"; profile: string }
   | { command: "deleteProfile"; profile: string };
 
-/** A discriminated union of all possible messages that can be sent FROM the extension TO the webview. */
 export type MessageToWebview = {
   command: "loadSettings";
   settings: ISettingsPayload;
 };
 
-/**
- * Defines the shape of the VS Code API object provided by `acquireVsCodeApi`.
- */
+/** The part of the object `acquireVsCodeApi()` returns that the webview uses. */
 export interface IVsCodeApi {
-  /**
-   * Posts a message from the webview to the extension host.
-   * @param {MessageToExtension} message The strongly-typed message object to send.
-   */
   postMessage(message: MessageToExtension): void;
 }

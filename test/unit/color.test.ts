@@ -1,7 +1,4 @@
-/**
- * @file Unit tests for the color utility functions.
- * Tests the hexWithAlpha function which converts hex colors to hex format with alpha channel.
- */
+/** @file `hexWithAlpha`, at the opacities the generators use and at its rounding edges. */
 
 import { hexWithAlpha } from "../../src/utils/color";
 

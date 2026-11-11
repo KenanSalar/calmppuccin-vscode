@@ -1,6 +1,6 @@
 /**
- * @file This file aggregates all language-specific code snippets into a single, easily importable object.
- * This object is used by the webview's live preview pane to display different code samples.
+ * @file The preview's sample code by language. Every key but `brackets`, `json` and `ui` is a
+ * choice in the language dropdown.
  */
 
 import { bracketsSnippet } from "./snippets/brackets";
@@ -24,18 +24,10 @@ import { sqlSnippet } from "./snippets/sql";
 import { typescriptSnippet } from "./snippets/typescript";
 import { uiSnippet } from "./snippets/ui";
 
-/**
- * Defines the shape for the code snippets object.
- * It's a dictionary mapping a language identifier (string) to its corresponding HTML snippet (string).
- */
 export type CodeSnippets = {
   [language: string]: string;
 };
 
-/**
- * The main exported object containing all code snippets for the live preview.
- * The keys of this object (e.g., "csharp", "python") are used to populate the language selector dropdown in the UI.
- */
 export const codeSnippets: CodeSnippets = {
   c: cSnippet,
   "c++": cppSnippet,

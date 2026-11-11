@@ -198,7 +198,6 @@ section.card.danger-zone button.reset-all-button:active::before {
 /* --- Form Controls & Settings Grid --- */
 #settings-container {
   display: grid;
-  /* This is the key change for responsive behavior */
   grid-template-columns: auto minmax(180px, auto) minmax(240px, auto);
   gap: 12px 18px;
   align-items: center;
@@ -598,7 +597,7 @@ select:focus,
   transition: none !important;
 }
 
-/* Spacer for when delete button is hidden - override display:none with visibility:hidden */
+/* Script hides Delete with display: none; keep its space so Save doesn't move. */
 .profile-selector-container #delete-profile-btn[style*="display: none"] {
   display: block !important;
   visibility: hidden;

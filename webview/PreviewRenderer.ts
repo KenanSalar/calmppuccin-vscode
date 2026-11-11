@@ -1,17 +1,11 @@
-/**
- * @file Handles live preview pane updates for the settings webview.
- * Applies color and font style changes to code preview tokens in real time.
- */
+/** @file Paints the preview's `data-token` spans. */
 
-/** Maps token keys to their current styling state. */
+/** The color and font style each key shows in the preview, whether committed or not. */
 export type PreviewState = { [key: string]: { color?: string; fontStyle?: string } };
 
 /**
- * Iterates through the preview state and applies the current color and font styles
- * to all matching tokens in the code preview pane.
- * @param codePreview The code preview element containing token spans.
- * @param previewPane The preview pane element (used for background color on crust changes).
- * @param previewState The current styling state for each token key.
+ * Applies every key in `previewState` to its spans. Base, mantle and crust color backgrounds,
+ * and crust colors `previewPane` as well.
  */
 export function updatePreviewPane(
   codePreview: HTMLElement,

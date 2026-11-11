@@ -1,6 +1,6 @@
 /**
- * @file This file contains unit tests for the UIManager class in the webview.
- * It verifies DOM manipulation, event handling, and communication with the extension host.
+ * @file `UIManager` and its controllers in jsdom, on a fixture of the page's elements, with
+ * `acquireVsCodeApi` stubbed.
  * @jest-environment jsdom
  */
 
@@ -8,7 +8,6 @@ import { ISettingsPayload } from "../../types/webview";
 import { UIManager } from "../../webview/main";
 import { codeSnippets } from "../../webview/snippets";
 
-// --- Mocking the VS Code API ---
 const mockPostMessage = jest.fn();
 const mockVscode = {
   postMessage: mockPostMessage,
@@ -17,7 +16,6 @@ const mockVscode = {
   () => mockVscode,
 );
 
-// --- HTML Fixture ---
 const htmlFixture = `
   <h2 id="current-flavor"></h2>
   <select id="profile-select"></select>
@@ -55,7 +53,6 @@ const htmlFixture = `
   </div>
 `;
 
-// --- Mock Settings Payload ---
 // Built per test: the controls record committed edits on the payload they were built from.
 const createSettingsPayload = (): ISettingsPayload => ({
   activeFlavor: "mocha",
@@ -94,53 +91,43 @@ describe("UIManager Unit Tests", () => {
     mockPostMessage.mockClear();
     (global as unknown as { acquireVsCodeApi: jest.Mock }).acquireVsCodeApi.mockClear();
     uiManager = new UIManager();
-    // Initialize event listeners before every single test
     uiManager.initializeEventListeners();
   });
 
   it("should initialize event listeners and populate the language selector", () => {
-    // Act is performed in beforeEach, so it just asserts here.
-
-    // Assert
     const languageSelect = document.getElementById("language-select") as HTMLSelectElement;
-    // We filter out brackets and json from the main language selector
+    // `brackets`, `json` and `ui` aren't languages.
     const expectedOptions = Object.keys(codeSnippets).length - 3;
     expect(languageSelect.options.length).toBe(expectedOptions);
     expect(languageSelect.value).toBe("csharp");
 
     const codePreview = document.getElementById("code-preview");
-    expect(codePreview).not.toBeNull(); // Ensure the element exists
+    expect(codePreview).not.toBeNull();
     if (!codePreview) return; // Type guard for TypeScript
 
     const content = codePreview.innerHTML;
 
-    // 1. Check that the content is not empty
     expect(content.length).toBeGreaterThan(100);
 
-    // 2. Check for a unique string from the beginning of the C# snippet
     expect(content).toContain(
       'namespace</span> <span data-token="namespace">MyApp<span data-token="operator">.</span>Core</span>',
     );
 
-    // 3. Check for a unique string from the end of the C# snippet
     expect(content).toContain(
       'GetTypeName</span><span data-token="punctuation">(</span><span data-token="keyword">this</span>',
     );
   });
 
   it("should populate all settings when receiving a 'loadSettings' message", () => {
-    // Act
     const event = new MessageEvent("message", {
       data: { command: "loadSettings", settings: mockSettingsPayload },
     });
     window.dispatchEvent(event);
 
-    // Assert
     const flavorTitle = document.getElementById("current-flavor");
     expect(flavorTitle?.textContent).toBe("Editing: Mocha");
 
     const settingsContainer = document.getElementById("settings-container");
-    // Should render the 'syntax' view by default
     const expectedChildren = mockSettingsPayload.syntaxSettings.length * 3;
     expect(settingsContainer?.children.length).toBe(expectedChildren);
 
@@ -150,16 +137,13 @@ describe("UIManager Unit Tests", () => {
   });
 
   it("should send an 'updateSetting' message when a font style is changed", () => {
-    // Arrange
     uiManager.populateAllSettings(mockSettingsPayload);
     const keywordFontStyleSelect = document.getElementById("keyword") as HTMLSelectElement;
     expect(keywordFontStyleSelect).not.toBeNull();
 
-    // Act
     keywordFontStyleSelect.value = "bold";
     keywordFontStyleSelect.dispatchEvent(new Event("change"));
 
-    // Assert
     expect(mockPostMessage).toHaveBeenCalledTimes(1);
     expect(mockPostMessage).toHaveBeenCalledWith({
       command: "updateSetting",
@@ -169,20 +153,17 @@ describe("UIManager Unit Tests", () => {
   });
 
   it("should send an 'updateSyntaxColor' message when a color hex input is changed", () => {
-    // Arrange
     uiManager.populateAllSettings(mockSettingsPayload);
     const keywordColorControl =
       document.querySelector("label[for='keyword']")?.nextElementSibling?.nextElementSibling;
     const hexInput = keywordColorControl?.querySelector(".hex-input-display") as HTMLInputElement;
     expect(hexInput).not.toBeNull();
 
-    // Act
     const newColor = "#FF00FF";
     hexInput.value = newColor;
     hexInput.dispatchEvent(new Event("input"));
     hexInput.dispatchEvent(new Event("change"));
 
-    // Assert
     expect(mockPostMessage).toHaveBeenCalledTimes(1);
     expect(mockPostMessage).toHaveBeenCalledWith({
       command: "updateSyntaxColor",
@@ -198,27 +179,23 @@ describe("UIManager Unit Tests", () => {
   });
 
   it("should send a 'resetAll' message when the reset dialog is confirmed", () => {
-    // Arrange
     uiManager.populateAllSettings(mockSettingsPayload);
     const resetAllButton = document.querySelector(".reset-all-button") as HTMLButtonElement;
     const dialogOverlay = document.getElementById("reset-dialog-overlay");
     const confirmButton = document.getElementById("dialog-confirm-button") as HTMLButtonElement;
     expect(dialogOverlay?.classList.contains("hidden")).toBe(true);
 
-    // Act
     resetAllButton.click();
     expect(dialogOverlay?.classList.contains("hidden")).toBe(false); // Dialog is visible
     confirmButton.click();
 
-    // Assert
     expect(mockPostMessage).toHaveBeenCalledTimes(1);
     expect(mockPostMessage).toHaveBeenCalledWith({ command: "resetAll" });
     expect(dialogOverlay?.classList.contains("hidden")).toBe(true); // Dialog is hidden again
   });
 
   it("should send 'resetAll' (not 'deleteProfile') after cancelling a delete dialog", () => {
-    // This test validates the fix for the cloneNode bug where cancelling a delete
-    // dialog would leave the delete handler on the confirm button.
+    // A cancelled delete must leave the confirm button resetting, not deleting.
     const settingsWithProfiles = {
       ...mockSettingsPayload,
       profiles: { Default: {}, "My Profile": {} },
@@ -233,28 +210,24 @@ describe("UIManager Unit Tests", () => {
     const deleteProfileBtn = document.getElementById("delete-profile-btn") as HTMLButtonElement;
     const resetAllButton = document.querySelector(".reset-all-button") as HTMLButtonElement;
 
-    // Step 1: Open delete dialog, then cancel.
+    // Open the delete dialog, then cancel.
     deleteProfileBtn.click();
     expect(dialogOverlay.classList.contains("hidden")).toBe(false);
     cancelButton.click();
     expect(dialogOverlay.classList.contains("hidden")).toBe(true);
 
-    // Step 2: Open reset dialog and confirm.
+    // Then open the reset dialog and confirm.
     resetAllButton.click();
     expect(dialogOverlay.classList.contains("hidden")).toBe(false);
     confirmButton.click();
 
-    // Assert: should send resetAll, NOT deleteProfile.
     expect(mockPostMessage).toHaveBeenCalledTimes(1);
     expect(mockPostMessage).toHaveBeenCalledWith({ command: "resetAll" });
     expect(dialogOverlay.classList.contains("hidden")).toBe(true);
   });
 
-  // --- Priority 3: Webview UI Validation Tests ---
-
   describe("Hex Color Input Validation", () => {
     it("should validate hex color input and reject invalid values", () => {
-      // Arrange
       uiManager.populateAllSettings(mockSettingsPayload);
       const customAccentHexInput = document.getElementById(
         "custom-accent-hex-input",
@@ -265,25 +238,20 @@ describe("UIManager Unit Tests", () => {
       accentSelect.value = "custom";
       accentSelect.dispatchEvent(new Event("change"));
 
-      // Act - Test invalid hex value
       customAccentHexInput.value = "invalid";
       customAccentHexInput.dispatchEvent(new Event("input"));
 
-      // Assert - Should show error styling
       expect(customAccentHexInput.style.borderColor).toBe("var(--danger-color)");
       expect(customAccentHexInput.style.outlineColor).toBe("var(--danger-color)");
 
-      // Act - Test valid hex value
       customAccentHexInput.value = "#89b4fa";
       customAccentHexInput.dispatchEvent(new Event("input"));
 
-      // Assert - Should remove error styling
       expect(customAccentHexInput.style.borderColor).toBe("");
       expect(customAccentHexInput.style.outlineColor).toBe("");
     });
 
     it("should only send valid hex colors to VS Code on change event", () => {
-      // Arrange
       uiManager.populateAllSettings(mockSettingsPayload);
       const customAccentHexInput = document.getElementById(
         "custom-accent-hex-input",
@@ -294,20 +262,16 @@ describe("UIManager Unit Tests", () => {
       accentSelect.dispatchEvent(new Event("change"));
       mockPostMessage.mockClear();
 
-      // Act - Enter invalid hex and trigger change
       customAccentHexInput.value = "not-a-color";
       customAccentHexInput.dispatchEvent(new Event("input"));
       customAccentHexInput.dispatchEvent(new Event("change"));
 
-      // Assert - Should NOT send message for invalid color
       expect(mockPostMessage).not.toHaveBeenCalled();
 
-      // Act - Enter valid hex and trigger change
       customAccentHexInput.value = "#ff00ff";
       customAccentHexInput.dispatchEvent(new Event("input"));
       customAccentHexInput.dispatchEvent(new Event("change"));
 
-      // Assert - Should send message for valid color
       expect(mockPostMessage).toHaveBeenCalledTimes(1);
       expect(mockPostMessage).toHaveBeenCalledWith({
         command: "updateCustomAccent",
@@ -316,33 +280,26 @@ describe("UIManager Unit Tests", () => {
     });
 
     it("should validate syntax color hex input with 8-digit support", () => {
-      // Arrange
       uiManager.populateAllSettings(mockSettingsPayload);
       const keywordColorControl =
         document.querySelector("label[for='keyword']")?.nextElementSibling?.nextElementSibling;
       const hexInput = keywordColorControl?.querySelector(".hex-input-display") as HTMLInputElement;
 
-      // Act - Test valid 6-digit hex
       hexInput.value = "#89b4fa";
       hexInput.dispatchEvent(new Event("input"));
 
-      // Assert
       expect(hexInput.style.borderColor).toBe("");
       expect(hexInput.style.outlineColor).toBe("");
 
-      // Act - Test valid 8-digit hex (with alpha)
       hexInput.value = "#89b4fa80";
       hexInput.dispatchEvent(new Event("input"));
 
-      // Assert
       expect(hexInput.style.borderColor).toBe("");
       expect(hexInput.style.outlineColor).toBe("");
 
-      // Act - Test invalid hex
       hexInput.value = "#zzzzzz";
       hexInput.dispatchEvent(new Event("input"));
 
-      // Assert
       expect(hexInput.style.borderColor).toBe("var(--danger-color)");
       expect(hexInput.style.outlineColor).toBe("var(--danger-color)");
     });
@@ -439,47 +396,37 @@ describe("UIManager Unit Tests", () => {
 
   describe("Profile Management Validation", () => {
     it("should prevent profile save with empty string", () => {
-      // Arrange
       uiManager.populateAllSettings(mockSettingsPayload);
       const profileNameInput = document.getElementById("profile-name-input") as HTMLInputElement;
       const saveProfileBtn = document.getElementById("save-profile-btn") as HTMLButtonElement;
 
-      // Act - Try to save with empty name
       profileNameInput.value = "";
       saveProfileBtn.click();
 
-      // Assert - Should NOT send message
       expect(mockPostMessage).not.toHaveBeenCalled();
 
-      // Act - Try to save with whitespace only
       profileNameInput.value = "   ";
       saveProfileBtn.click();
 
-      // Assert - Should NOT send message
       expect(mockPostMessage).not.toHaveBeenCalled();
     });
 
     it("should prevent saving profile with name 'Default'", () => {
-      // Arrange
       uiManager.populateAllSettings(mockSettingsPayload);
       const profileNameInput = document.getElementById("profile-name-input") as HTMLInputElement;
       const saveProfileBtn = document.getElementById("save-profile-btn") as HTMLButtonElement;
 
-      // Act - Try to save with name "Default"
       profileNameInput.value = "Default";
       saveProfileBtn.click();
 
-      // Assert - Should NOT send message
       expect(mockPostMessage).not.toHaveBeenCalled();
     });
 
     it("should handle rapid profile switches correctly", () => {
-      // Arrange
       uiManager.populateAllSettings(mockSettingsPayload);
       const profileSelect = document.getElementById("profile-select") as HTMLSelectElement;
       mockPostMessage.mockClear();
 
-      // Act - Rapidly switch profiles
       profileSelect.value = "Custom Profile 1";
       profileSelect.dispatchEvent(new Event("change"));
 
@@ -489,7 +436,6 @@ describe("UIManager Unit Tests", () => {
       profileSelect.value = "Default";
       profileSelect.dispatchEvent(new Event("change"));
 
-      // Assert - All messages should be sent
       expect(mockPostMessage).toHaveBeenCalledTimes(3);
       expect(mockPostMessage).toHaveBeenNthCalledWith(1, {
         command: "switchProfile",

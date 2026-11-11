@@ -1,7 +1,4 @@
-/**
- * @file Unit tests for the pure utility functions in ConfigAccess.
- * Tests cloneOverrides() and removeOverrideKey() edge cases.
- */
+/** @file `cloneOverrides` and `removeOverrideKey`, which need no `vscode` mock. */
 
 import { cloneOverrides, removeOverrideKey, toProfiles } from "../../src/config/ConfigAccess";
 

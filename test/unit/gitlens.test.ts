@@ -1,8 +1,4 @@
-/**
- * @file Unit tests for the GitLens extension color generator.
- * Tests that the generateGitLensColors function produces correct color mappings
- * for git operations, graph visualization, and branch status.
- */
+/** @file `generateGitLensColors` over the shared mock palette. */
 
 import {
   EXTENSION_OPACITY_BACKGROUND,
@@ -90,12 +86,10 @@ describe("GitLens Color Generator", () => {
         colors["gitlens.graphLane10Color"],
       ];
 
-      // Verify all lanes have colors
       laneColors.forEach((color) => {
         expect(color).toMatch(/^#[0-9a-fA-F]{6}$/);
       });
 
-      // Verify lane 1 is blue (first in the array)
       expect(colors["gitlens.graphLane1Color"]).toBe(mockPalette.blue);
     });
   });

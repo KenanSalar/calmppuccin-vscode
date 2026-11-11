@@ -1,6 +1,6 @@
 /**
- * @file Factory for creating settings controls (font style dropdowns, color pickers, reset button).
- * Extracted from UIManager to follow Single Responsibility Principle.
+ * @file Builds the settings grid's controls and the Reset All button. A control repaints the
+ * preview on `input` and posts to the host only on `change`, so a drag writes the settings once.
  */
 
 import { FONT_STYLE_OPTIONS, WEBVIEW_CONSTANTS as COMMANDS } from "../src/constants";
@@ -8,7 +8,6 @@ import { IVsCodeApi } from "../types/webview";
 import { IWebviewSetting } from "../types/webview";
 import { PreviewState } from "./PreviewRenderer";
 
-/** Dependencies injected into the ControlFactory. */
 export interface IControlFactoryDeps {
   vscode: IVsCodeApi;
   previewState: PreviewState;
@@ -18,10 +17,6 @@ export interface IControlFactoryDeps {
   dialogOverlay: HTMLElement;
 }
 
-/**
- * Creates DOM controls for settings (font style dropdowns, color pickers)
- * and the "Reset All" button.
- */
 export class ControlFactory {
   private readonly hex6Regex = /^#[0-9a-fA-F]{6}$/;
   private readonly hex8Regex = /^#([0-9a-fA-F]{6})([0-9a-fA-F]{2})?$/;
@@ -29,14 +24,11 @@ export class ControlFactory {
   constructor(private readonly deps: IControlFactoryDeps) {}
 
   /**
-   * Dynamically creates the grid of controls for font styles and syntax colors.
+   * Appends a label, a color control and, with `includeFontStyles`, a font style control for each
+   * setting.
    *
    * Each control records a committed edit on its setting, since the host doesn't echo writes back
    * and a view is rebuilt from these settings when it's shown again.
-   * @param settings An array of the syntax settings to build controls for.
-   * @param defaultFontStyles An object containing the default font styles.
-   * @param includeFontStyles Whether to include font style controls.
-   * @param activeFlavor The currently active theme flavor name.
    */
   public createSettingsControls(
     settings: IWebviewSetting[],
@@ -49,10 +41,8 @@ export class ControlFactory {
       const fontStyleKey = `${key}FontStyle`;
       const defaultFontStyle = defaultFontStyles[fontStyleKey] || "none";
 
-      // Initialize the live preview state for this syntax token.
       this.deps.previewState[key] = { color, fontStyle };
 
-      // Create and configure the label for this setting.
       const label = document.createElement("label");
       label.textContent = key.replace(/([A-Z])/g, " $1").trim() + ":";
       label.htmlFor = key;
@@ -64,7 +54,6 @@ export class ControlFactory {
 
       const colorContainer = this._createColorPickerControl(setting, activeFlavor);
 
-      // Add the new elements to the settings grid in the DOM.
       this.deps.settingsContainer.appendChild(label);
       if (fontContainer) {
         this.deps.settingsContainer.appendChild(fontContainer);
@@ -73,9 +62,7 @@ export class ControlFactory {
     });
   }
 
-  /**
-   * Creates the "Reset All" button in the Danger Zone.
-   */
+  /** Its click opens the confirmation dialog, which `ProfileController` answers. */
   public createResetAllButton(): void {
     const resetAllButton = document.createElement("button");
     resetAllButton.textContent = "Reset All Settings to Default";
@@ -86,10 +73,6 @@ export class ControlFactory {
     this.deps.resetAllContainer.appendChild(resetAllButton);
   }
 
-  /**
-   * Creates an individual font style dropdown control with its associated reset button.
-   * @returns The container element for the font style control.
-   */
   private _createFontStyleControl(
     setting: IWebviewSetting,
     defaultFontStyle: string,
@@ -136,10 +119,6 @@ export class ControlFactory {
     return container;
   }
 
-  /**
-   * Creates an individual color picker control with its alpha slider and reset button.
-   * @returns The container element for the color picker.
-   */
   private _createColorPickerControl(setting: IWebviewSetting, activeFlavor: string): HTMLElement {
     const { key, defaultColor } = setting;
     const container = document.createElement("div");
@@ -160,13 +139,13 @@ export class ControlFactory {
     alphaSlider.min = "0";
     alphaSlider.max = "255";
     alphaSlider.step = "1";
+    // A background takes no alpha, so it gets no slider and a six-digit hex.
     const isUiColor = ["base", "mantle", "crust"].includes(key);
     if (isUiColor) {
       alphaSlider.style.display = "none";
       hexInput.maxLength = 7;
     }
 
-    // --- Set initial values from settings ---
     const initialColor = setting.color || defaultColor || "#ffffffff";
     const initialRgb = initialColor.substring(0, 7);
     const initialAlphaHex = initialColor.length === 9 ? initialColor.substring(7, 9) : "ff";
@@ -174,7 +153,6 @@ export class ControlFactory {
     alphaSlider.value = parseInt(initialAlphaHex, 16).toString();
     hexInput.value = isUiColor ? initialRgb : initialColor;
 
-    // --- Helper function to update the UI from the color picker & slider ---
     const updateFromPickers = () => {
       const newRgb = colorInput.value;
       const newAlpha = parseInt(alphaSlider.value);
@@ -187,7 +165,6 @@ export class ControlFactory {
       this.deps.onPreviewUpdate();
     };
 
-    // --- Helper function to send the final color to the extension backend ---
     const sendFinalColorToVSCode = () => {
       setting.color = hexInput.value;
       const command = isUiColor ? COMMANDS.UPDATE_UI_COLOR : COMMANDS.UPDATE_SYNTAX_COLOR;
@@ -199,13 +176,11 @@ export class ControlFactory {
       });
     };
 
-    // --- Event Listeners ---
     colorInput.addEventListener("input", updateFromPickers);
     alphaSlider.addEventListener("input", updateFromPickers);
     colorInput.addEventListener("change", sendFinalColorToVSCode);
     alphaSlider.addEventListener("change", sendFinalColorToVSCode);
 
-    // --- Add event listener for the text input ---
     hexInput.addEventListener("input", () => {
       const typedValue = hexInput.value;
       const regex = isUiColor ? this.hex6Regex : this.hex8Regex;
@@ -216,6 +191,7 @@ export class ControlFactory {
         hexInput.style.outlineColor = "";
 
         const rgb = match[1] ? `#${match[1]}` : "#000000";
+        // An optional group that didn't match is `undefined`, which the match's type leaves out.
         const alphaHex = (match[2] as string | undefined) ?? "ff";
         const alphaDecimal = parseInt(alphaHex, 16);
 
@@ -239,7 +215,6 @@ export class ControlFactory {
       }
     });
 
-    // --- Reset Button Logic ---
     const resetButton = document.createElement("button");
     resetButton.textContent = "Reset";
     resetButton.className = "reset-button";
@@ -256,7 +231,6 @@ export class ControlFactory {
       this.deps.vscode.postMessage({ command, flavor: activeFlavor, key });
     });
 
-    // --- DOM Assembly ---
     topRow.appendChild(colorInput);
     topRow.appendChild(hexInput);
     wrapper.appendChild(topRow);

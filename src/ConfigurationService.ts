@@ -1,7 +1,6 @@
 /**
- * @file Thin facade that preserves the original ConfigurationService public API.
- * All logic has been split into focused modules under src/config/.
- * Callers continue importing from this file with zero changes.
+ * @file One import for the modules under `src/config/`: host code reaches every setting through
+ * these statics, which a test can replace one by one with `jest.spyOn`.
  */
 
 import { getProfiles, getActiveProfile } from "./config/ConfigAccess";
@@ -42,10 +41,6 @@ export type {
   IFontStyleOverrides,
 } from "./config/ConfigAccess";
 
-/**
- * A utility class for managing all Calmppuccin settings in VS Code.
- * Provides static methods for reading and writing extension configuration.
- */
 export class ConfigurationService {
   static getProfiles = getProfiles;
   static getActiveProfile = getActiveProfile;

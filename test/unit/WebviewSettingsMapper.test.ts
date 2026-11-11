@@ -1,7 +1,5 @@
 /**
- * @file Contract test for getWebViewSettings (WebviewSettingsMapper).
- * Verifies that the assembled ISettingsPayload has the correct shape and values,
- * locking down the webview contract to catch regressions from the config split.
+ * @file Pins the `ISettingsPayload` `getWebViewSettings` assembles, through the `vscode` mock.
  */
 
 import * as vscode from "vscode";
@@ -21,9 +19,7 @@ describe("WebviewSettingsMapper contract", () => {
     jest.clearAllMocks();
   });
 
-  /**
-   * Sets up mocks for a full getWebViewSettings call with known profile data.
-   */
+  /** Serves settings through the `vscode` mock; by default Mocha and an empty `Default`. */
   function setupMocks(overrides?: {
     profiles?: Record<string, unknown>;
     activeProfile?: string;
@@ -219,7 +215,6 @@ describe("WebviewSettingsMapper contract", () => {
     setupMocks();
     const result = ConfigurationService.getWebViewSettings();
 
-    // All required fields of ISettingsPayload must be present
     expect(result).toHaveProperty("activeFlavor");
     expect(result).toHaveProperty("syntaxSettings");
     expect(result).toHaveProperty("bracketSettings");

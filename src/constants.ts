@@ -1,9 +1,8 @@
 /**
- * @file This file contains all the static string values for the extension.
- * This makes the code more maintainable by providing a single source of truth for reused strings.
+ * @file The setting keys, command ids, message commands, file names and tunables, so none is a
+ * literal at its use site. The webview bundles this file, so it imports nothing.
  */
 
-/** Constants primarily used in the main `extension.ts` file. */
 export const EXTENSION_ID = "kenan-salar.calmppuccin-vscode";
 export const EXTENSION_NAMESPACE = "calmppuccin";
 export const CONFIG_KEY_ACCENT = "accent";
@@ -18,7 +17,7 @@ export const CONFIG_KEY_SYNTAX_OVERRIDES = "syntaxOverrides";
 export const CONFIG_KEY_UI_OVERRIDES = "uiOverrides";
 export const CONFIG_KEY_PROFILES = "profiles";
 export const CONFIG_KEY_ACTIVE_PROFILE = "activeProfile";
-/** All config keys that trigger theme regeneration when changed. */
+/** The settings whose change rebuilds the themes. */
 export const THEME_AFFECTING_KEYS: readonly string[] = [
   CONFIG_KEY_ACCENT,
   CONFIG_KEY_CUSTOM_ACCENT,
@@ -31,7 +30,6 @@ export const THEME_AFFECTING_KEYS: readonly string[] = [
 ] as const;
 export const CUSTOMIZE_COMMAND_ID = "calmppuccin.customize";
 
-/** Constants used in the `build.ts` script for theme generation. */
 export const THEMES_DIR = "themes";
 export const SRC_DIR = "src";
 export const TEMPLATE_FILE = "template.json";
@@ -45,24 +43,25 @@ export const THEME_FILE_SUFFIX = "color-theme.json";
 export const THEME_TYPE_LIGHT = "light";
 export const THEME_TYPE_DARK = "dark";
 
-/** Debounce delay (in ms) for webview settings updates during rapid changes. */
+/**
+ * How long the panel waits for further changes before sending the settings. A new panel's script
+ * has to be listening by then, or the first payload is lost.
+ */
 export const WEBVIEW_UPDATE_DEBOUNCE_MS = 50;
 
-/** Debounce delay (in ms) for theme regeneration during rapid config changes. */
+/** How long the settings listener waits for further changes before rebuilding the themes. */
 export const REGENERATE_DEBOUNCE_MS = 200;
 
-/** Icon sync configuration: delay before checking theme (ms) and max retry attempts. */
 export const ICON_SYNC_INITIAL_DELAY_MS = 100;
 export const ICON_SYNC_RETRY_DELAY_MS = 150;
 export const ICON_SYNC_MAX_RETRIES = 3;
 
-/** Opacity values for extension color generators (Error Lens, GitLens). */
+// The alphas the third-party color generators in `src/extensions/` blend palette colors at.
 export const EXTENSION_OPACITY_BACKGROUND = 0.15;
 export const EXTENSION_OPACITY_GUTTER = 0.3;
 export const EXTENSION_OPACITY_HIGHLIGHT = 0.8;
 export const EXTENSION_OPACITY_TRAILING = 0.3;
 
-/** User-facing messages and actions used in notifications and dialogs. */
 export const INFO_MESSAGE = "Calmppuccin theme updated. Reload to apply.";
 export const RELOAD_ACTION = "Reload Window";
 export const REPORT_ISSUE_ACTION = "Report Issue";
@@ -70,11 +69,7 @@ export const ERROR_MESSAGE_PREFIX = "Failed to update Calmppuccin themes. Error:
 export const SETTINGS_ERROR_MESSAGE_PREFIX = "Failed to save Calmppuccin settings. Error: ";
 export const REPO_ISSUES_URL = "https://github.com/KenanSalar/calmppuccin-vscode/issues";
 
-/**
- * Defines the command identifiers for communication between the webview and the extension.
- * Using `as const` ensures that the properties are read-only and their values are treated as literal types,
- * which provides stronger type-checking.
- */
+/** The webview message commands, and the panel's id and title. */
 export const WEBVIEW_CONSTANTS = {
   UPDATE_SETTING: "updateSetting",
   RESET_FONT_STYLE: "resetFontStyle",
@@ -93,7 +88,7 @@ export const WEBVIEW_CONSTANTS = {
   WEBVIEW_TITLE: "Calmppuccin Customization",
 } as const;
 
-/** Defines which syntax, bracket, and JSON color keys are exposed in the Customization UI. */
+// The palette keys the customization UI offers, by settings view.
 export const CUSTOMIZABLE_SYNTAX_KEYS = [
   "comment",
   "keyword",
@@ -156,9 +151,8 @@ export const CUSTOMIZABLE_UI_KEYS = ["base", "mantle", "crust", "uiText"];
 export const FONT_STYLE_OPTIONS = ["none", "italic", "bold", "italic bold", "underline"] as const;
 
 /**
- * Parses a Calmppuccin theme name to extract the flavor identifier.
- * @param {string} themeName The full theme name (e.g., "Calmppuccin Mocha", "Calmppuccin Nitro Cold Brew")
- * @returns {string | null} The normalized flavor key (e.g., "mocha", "nitro-cold-brew") or null if not a Calmppuccin theme.
+ * Turns a theme label such as "Calmppuccin Nitro Cold Brew" into its flavor key, or `null` for
+ * any other theme.
  */
 export function parseFlavorFromThemeName(themeName: string): string | null {
   const prefix = "calmppuccin ";
@@ -166,6 +160,7 @@ export function parseFlavorFromThemeName(themeName: string): string | null {
   if (!lowerName.startsWith(prefix)) {
     return null;
   }
+  // Decomposing and dropping the combining marks turns "Frappé" into "frappe".
   return lowerName
     .slice(prefix.length)
     .replace(/ /g, "-")
