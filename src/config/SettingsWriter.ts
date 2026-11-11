@@ -67,9 +67,7 @@ export async function updateCustomAccent(value: string) {
 
 export async function updateSyntaxColor(flavor: string, key: string, value: string) {
   const overrides = cloneOverrides(getSyntaxOverrides());
-  const existingFlavor = Object.prototype.hasOwnProperty.call(overrides, flavor)
-    ? overrides[flavor]
-    : undefined;
+  const existingFlavor = Object.hasOwn(overrides, flavor) ? overrides[flavor] : undefined;
   const flavorOverrides = existingFlavor ? { ...existingFlavor } : {};
   flavorOverrides[key] = value;
   const updatedOverrides: ISyntaxOverrides = { ...overrides, [flavor]: flavorOverrides };
@@ -87,9 +85,7 @@ export async function resetSyntaxColor(flavor: string, key: string) {
 
 export async function updateUiColor(flavor: string, key: string, value: string) {
   const overrides = cloneOverrides(getUiOverrides());
-  const existingFlavor = Object.prototype.hasOwnProperty.call(overrides, flavor)
-    ? overrides[flavor]
-    : undefined;
+  const existingFlavor = Object.hasOwn(overrides, flavor) ? overrides[flavor] : undefined;
   const flavorOverrides = existingFlavor ? { ...existingFlavor } : {};
   flavorOverrides[key] = value;
   const updatedOverrides: IUiOverrides = { ...overrides, [flavor]: flavorOverrides };
@@ -111,7 +107,7 @@ export async function updateFontStyleOverride(flavor: string, key: string, value
   const defaultFontStyles = getDefaultFontStyles();
 
   if (value !== defaultFontStyles[key]) {
-    const existingFlavor = Object.prototype.hasOwnProperty.call(fontStyleOverrides, flavor)
+    const existingFlavor = Object.hasOwn(fontStyleOverrides, flavor)
       ? fontStyleOverrides[flavor]
       : undefined;
     const flavorOverrides = existingFlavor ? { ...existingFlavor } : {};

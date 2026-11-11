@@ -3,7 +3,11 @@
  * preview on `input` and posts to the host only on `change`, so a drag writes the settings once.
  */
 
-import { FONT_STYLE_OPTIONS, WEBVIEW_CONSTANTS as COMMANDS } from "../src/constants";
+import {
+  BACKGROUND_UI_KEYS,
+  FONT_STYLE_OPTIONS,
+  WEBVIEW_CONSTANTS as COMMANDS,
+} from "../src/constants";
 import { IVsCodeApi } from "../types/webview";
 import { IWebviewSetting } from "../types/webview";
 import { PreviewState } from "./PreviewRenderer";
@@ -139,8 +143,7 @@ export class ControlFactory {
     alphaSlider.min = "0";
     alphaSlider.max = "255";
     alphaSlider.step = "1";
-    // A background takes no alpha, so it gets no slider and a six-digit hex.
-    const isUiColor = ["base", "mantle", "crust"].includes(key);
+    const isUiColor = BACKGROUND_UI_KEYS.has(key);
     if (isUiColor) {
       alphaSlider.style.display = "none";
       hexInput.maxLength = 7;

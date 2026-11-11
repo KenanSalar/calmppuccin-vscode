@@ -14,12 +14,12 @@ export class SettingsPanel {
   private static _instance: SettingsPanel | undefined;
   private _pendingUpdate: ReturnType<typeof setTimeout> | undefined;
 
-  private constructor(_context: vscode.ExtensionContext) {}
+  private constructor() {}
 
   /** Opens the customization UI, or reveals it, and sends it the settings. */
   public static createOrShow(context: vscode.ExtensionContext) {
     if (!SettingsPanel._instance) {
-      SettingsPanel._instance = new SettingsPanel(context);
+      SettingsPanel._instance = new SettingsPanel();
     }
     WebviewManager.createOrShow(
       context,

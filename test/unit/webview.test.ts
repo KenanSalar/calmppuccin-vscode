@@ -23,7 +23,7 @@ const htmlFixture = `
   <button id="save-profile-btn"></button>
   <button id="delete-profile-btn"></button>
   <div id="accent-container"></div>
-  <div id="custom-accent-picker-container" style="display: none;">
+  <div id="custom-accent-picker-container">
     <input type="color" id="custom-accent-picker" />
     <input type="text" id="custom-accent-hex-input" />
   </div>

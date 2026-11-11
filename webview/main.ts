@@ -204,12 +204,6 @@ export class UIManager {
       this.populateAllSettings(message.settings);
     };
     window.addEventListener("message", this.messageListener);
-
-    // Hands the overlay to its `hidden` class; the CSP already drops index.html's inline style.
-    setTimeout(() => {
-      this.elements.dialogOverlay.style.opacity = "";
-      this.elements.dialogOverlay.style.pointerEvents = "";
-    }, 50);
   }
 
   public updatePreviewPane() {

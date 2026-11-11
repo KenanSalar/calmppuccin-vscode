@@ -461,8 +461,8 @@ describe("ConfigurationService", () => {
 
     await ConfigurationService.resetAll();
 
-    // The profiles, then the five legacy top-level keys.
-    expect(mockConfiguration.update).toHaveBeenCalledTimes(6);
+    // The profiles, then the six legacy top-level keys.
+    expect(mockConfiguration.update).toHaveBeenCalledTimes(7);
 
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_PROFILES,
@@ -496,6 +496,12 @@ describe("ConfigurationService", () => {
 
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_ACCENT,
+      undefined,
+      vscode.ConfigurationTarget.Global,
+    );
+
+    expect(mockConfiguration.update).toHaveBeenCalledWith(
+      C.CONFIG_KEY_CUSTOM_ACCENT,
       undefined,
       vscode.ConfigurationTarget.Global,
     );
@@ -680,14 +686,6 @@ describe("ConfigurationService.getWebViewSettings", () => {
         },
       },
     });
-
-    jest.spyOn(ConfigurationService, "getFontStyles").mockReturnValue(mockFontStyles);
-    jest.spyOn(ConfigurationService, "getSyntaxOverrides").mockReturnValue(mockSyntaxOverrides);
-    jest.spyOn(ConfigurationService, "getUiOverrides").mockReturnValue(mockUiOverrides);
-    jest
-      .spyOn(ConfigurationService, "getFontStyleOverrides")
-      .mockReturnValue(mockFontStyleOverrides);
-    jest.spyOn(ConfigurationService, "getProfiles").mockReturnValue(mockProfiles);
 
     (mockedVscode.workspace.getConfiguration as jest.Mock).mockImplementation((section: string) => {
       if (section === "workbench") {

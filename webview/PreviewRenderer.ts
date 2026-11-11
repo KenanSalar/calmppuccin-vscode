@@ -1,5 +1,7 @@
 /** @file Paints the preview's `data-token` spans. */
 
+import { BACKGROUND_UI_KEYS } from "../src/constants";
+
 /** The color and font style each key shows in the preview, whether committed or not. */
 export type PreviewState = { [key: string]: { color?: string; fontStyle?: string } };
 
@@ -17,7 +19,7 @@ export function updatePreviewPane(
     elements.forEach((el) => {
       const tokenStyle = previewState[tokenKey];
       if (tokenStyle.color) {
-        if (["base", "mantle", "crust"].includes(tokenKey)) {
+        if (BACKGROUND_UI_KEYS.has(tokenKey)) {
           el.style.backgroundColor = tokenStyle.color;
           if (tokenKey === "crust") {
             previewPane.style.backgroundColor = tokenStyle.color;

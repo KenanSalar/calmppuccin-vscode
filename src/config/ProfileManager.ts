@@ -114,7 +114,7 @@ export async function deleteProfile(profileName: string) {
 export async function resetProfile(profileName: string) {
   const currentProfiles = getProfiles();
 
-  if (Object.prototype.hasOwnProperty.call(currentProfiles, profileName)) {
+  if (Object.hasOwn(currentProfiles, profileName)) {
     const updatedProfiles = { ...currentProfiles, [profileName]: {} };
     await getConfig().update(
       C.CONFIG_KEY_PROFILES,
@@ -123,27 +123,7 @@ export async function resetProfile(profileName: string) {
     );
 
     if (profileName === "Default") {
-      await getConfig().update(
-        C.CONFIG_KEY_FONT_STYLES,
-        undefined,
-        vscode.ConfigurationTarget.Global,
-      );
-      await getConfig().update(
-        C.CONFIG_KEY_FONT_STYLE_OVERRIDES,
-        undefined,
-        vscode.ConfigurationTarget.Global,
-      );
-      await getConfig().update(
-        C.CONFIG_KEY_SYNTAX_OVERRIDES,
-        undefined,
-        vscode.ConfigurationTarget.Global,
-      );
-      await getConfig().update(
-        C.CONFIG_KEY_UI_OVERRIDES,
-        undefined,
-        vscode.ConfigurationTarget.Global,
-      );
-      await getConfig().update(C.CONFIG_KEY_ACCENT, undefined, vscode.ConfigurationTarget.Global);
+      await clearLegacySettings();
     }
   }
 }
@@ -233,19 +213,23 @@ export async function migrateGlobalSettingsToDefault() {
 
   if (needsUpdate) {
     await config.update(C.CONFIG_KEY_PROFILES, profiles, vscode.ConfigurationTarget.Global);
-    await config.update(C.CONFIG_KEY_FONT_STYLES, undefined, vscode.ConfigurationTarget.Global);
-    await config.update(
-      C.CONFIG_KEY_FONT_STYLE_OVERRIDES,
-      undefined,
-      vscode.ConfigurationTarget.Global,
-    );
-    await config.update(
-      C.CONFIG_KEY_SYNTAX_OVERRIDES,
-      undefined,
-      vscode.ConfigurationTarget.Global,
-    );
-    await config.update(C.CONFIG_KEY_UI_OVERRIDES, undefined, vscode.ConfigurationTarget.Global);
-    await config.update(C.CONFIG_KEY_ACCENT, undefined, vscode.ConfigurationTarget.Global);
-    await config.update(C.CONFIG_KEY_CUSTOM_ACCENT, undefined, vscode.ConfigurationTarget.Global);
+    await clearLegacySettings();
+  }
+}
+
+/** The top-level settings that predate profiles, which every read still falls back to. */
+const LEGACY_KEYS = [
+  C.CONFIG_KEY_FONT_STYLES,
+  C.CONFIG_KEY_FONT_STYLE_OVERRIDES,
+  C.CONFIG_KEY_SYNTAX_OVERRIDES,
+  C.CONFIG_KEY_UI_OVERRIDES,
+  C.CONFIG_KEY_ACCENT,
+  C.CONFIG_KEY_CUSTOM_ACCENT,
+] as const;
+
+async function clearLegacySettings() {
+  const config = getConfig();
+  for (const key of LEGACY_KEYS) {
+    await config.update(key, undefined, vscode.ConfigurationTarget.Global);
   }
 }

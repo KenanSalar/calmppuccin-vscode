@@ -130,7 +130,7 @@ export function getProfileSetting(key: string, defaultValue: string): string {
   const activeProfile = getActiveProfile();
   const profiles = getProfiles();
 
-  if (Object.prototype.hasOwnProperty.call(profiles, activeProfile)) {
+  if (Object.hasOwn(profiles, activeProfile)) {
     const profile = profiles[activeProfile];
     const value = profile[key];
     if (typeof value === "string") {
@@ -149,7 +149,7 @@ export function getProfileObjectSetting<T extends Record<string, unknown>>(
   const activeProfile = getActiveProfile();
   const profiles = getProfiles();
 
-  if (Object.prototype.hasOwnProperty.call(profiles, activeProfile)) {
+  if (Object.hasOwn(profiles, activeProfile)) {
     const profile = profiles[activeProfile];
     // The profile is user-edited JSON, so the value can be null or any other type.
     const value: unknown = profile[key];
@@ -167,7 +167,7 @@ export async function updateProfileSetting(key: string, value: IProfile[keyof IP
   const activeProfile = getActiveProfile();
   const profiles = getProfiles();
 
-  const existingProfile = Object.prototype.hasOwnProperty.call(profiles, activeProfile)
+  const existingProfile = Object.hasOwn(profiles, activeProfile)
     ? profiles[activeProfile]
     : undefined;
   const profile: IProfile = existingProfile ? { ...existingProfile } : {};

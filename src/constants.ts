@@ -147,6 +147,9 @@ export const CUSTOMIZABLE_JSON_KEYS = [
 ];
 export const CUSTOMIZABLE_UI_KEYS = ["base", "mantle", "crust", "uiText"];
 
+/** The UI keys that color a background rather than text, so they take no alpha. */
+export const BACKGROUND_UI_KEYS: ReadonlySet<string> = new Set(["base", "mantle", "crust"]);
+
 /** The font style values the customization UI offers, matching `calmppuccin.fontStyleOverrides`. */
 export const FONT_STYLE_OPTIONS = ["none", "italic", "bold", "italic bold", "underline"] as const;
 

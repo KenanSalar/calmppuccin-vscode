@@ -95,7 +95,7 @@ export class ProfileController {
   ): void {
     this.elements.profileSelect.innerHTML = "";
 
-    if (!Object.prototype.hasOwnProperty.call(profiles, "Default")) {
+    if (!Object.hasOwn(profiles, "Default")) {
       const defaultOption = document.createElement("option");
       defaultOption.value = "Default";
       defaultOption.textContent = "Default";

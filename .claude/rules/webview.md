@@ -18,8 +18,8 @@ paths:
 - **The webview gets state only as a whole `ISettingsPayload`** in `loadSettings`, debounced by
   `SettingsPanel._update`.
 - **No inline `<script>`, `<style>` or `style=` in `webview/index.html`**: the CSP that
-  `WebviewManager._getHtmlForWebview` injects drops them silently. The `style=` attributes there
-  today do nothing, and script sets that state. Setting `element.style` from script is allowed.
+  `WebviewManager._getHtmlForWebview` injects drops them silently, as it does a `<style>` in a
+  preview snippet. Setting `element.style` from script is allowed.
 - **`webview/` imports nothing from outside itself but `src/constants.ts` and
   `types/webview.ts`**, so `src/constants.ts` imports nothing. Anything more pulls host code into
   `dist/webview.js` or breaks its web build; the module list `npm run compile` prints shows it.

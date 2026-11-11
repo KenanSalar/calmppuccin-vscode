@@ -9,24 +9,20 @@ import { MessageToWebview } from "../../types/webview";
 jest.mock("fs/promises");
 
 // A file-local `vscode`: the shared mock has no `window.createWebviewPanel`.
-jest.mock(
-  "vscode",
-  () => ({
-    window: {
-      createWebviewPanel: jest.fn(),
-    },
-    ViewColumn: {
-      One: 1,
-    },
-    Uri: {
-      file: jest.fn((filePath: string) => ({
-        fsPath: filePath,
-        with: jest.fn(),
-      })),
-    },
-  }),
-  { virtual: true },
-);
+jest.mock("vscode", () => ({
+  window: {
+    createWebviewPanel: jest.fn(),
+  },
+  ViewColumn: {
+    One: 1,
+  },
+  Uri: {
+    file: jest.fn((filePath: string) => ({
+      fsPath: filePath,
+      with: jest.fn(),
+    })),
+  },
+}));
 
 const mockedVscode = vscode as jest.Mocked<typeof vscode>;
 
