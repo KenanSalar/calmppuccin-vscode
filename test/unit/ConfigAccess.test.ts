@@ -1,34 +1,6 @@
-/** @file `cloneOverrides` and `removeOverrideKey`, which need no `vscode` mock. */
+/** @file `removeOverrideKey` and `toProfiles`, which need no `vscode` mock. */
 
-import { cloneOverrides, removeOverrideKey, toProfiles } from "../../src/config/ConfigAccess";
-
-describe("cloneOverrides", () => {
-  it("should return a new empty object for empty input", () => {
-    const input = {} as Record<string, Record<string, string>>;
-    const result = cloneOverrides(input);
-
-    expect(result).toEqual({});
-    expect(result).not.toBe(input);
-  });
-
-  it("should deep clone a single flavor with a single key", () => {
-    const input = { mocha: { base: "#111" } };
-    const result = cloneOverrides(input);
-
-    expect(result).toEqual({ mocha: { base: "#111" } });
-    expect(result).not.toBe(input);
-    expect(result.mocha).not.toBe(input.mocha);
-  });
-
-  it("should deep clone multiple flavors independently", () => {
-    const input = { mocha: { a: "1" }, latte: { b: "2" } };
-    const result = cloneOverrides(input);
-
-    expect(result).toEqual({ mocha: { a: "1" }, latte: { b: "2" } });
-    expect(result.mocha).not.toBe(input.mocha);
-    expect(result.latte).not.toBe(input.latte);
-  });
-});
+import { removeOverrideKey, toProfiles } from "../../src/config/ConfigAccess";
 
 describe("removeOverrideKey", () => {
   it("should return original object when key doesn't exist in flavor", () => {

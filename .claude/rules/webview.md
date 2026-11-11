@@ -31,7 +31,7 @@ paths:
   key, never reassigned (`webview/main.ts` says so where it clears it).
 - **A preview snippet is static HTML assigned through `innerHTML`**, each token wrapped in
   `<span data-token="<key>">` for `PreviewRenderer` to color. Never interpolate a setting into
-  one. A new language is `webview/snippets/<lang>.ts` plus its entry in `webview/snippets.ts`,
-  whose keys fill the language dropdown (`brackets`, `json` and `ui` excepted).
+  one. A new language is `webview/snippets/<lang>.ts` plus its entry in `languageSnippets`
+  (`webview/snippets.ts`), whose keys fill the language dropdown.
 - **`webview/main.ts` starts the UI only outside Jest** (the guard at its foot), so tests import
   `UIManager` and drive it themselves.

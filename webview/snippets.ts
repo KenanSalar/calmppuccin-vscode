@@ -1,7 +1,4 @@
-/**
- * @file The preview's sample code by language. Every key but `brackets`, `json` and `ui` is a
- * choice in the language dropdown.
- */
+/** @file The preview's sample code. */
 
 import { bracketsSnippet } from "./snippets/brackets";
 import { cSnippet } from "./snippets/c";
@@ -24,11 +21,8 @@ import { sqlSnippet } from "./snippets/sql";
 import { typescriptSnippet } from "./snippets/typescript";
 import { uiSnippet } from "./snippets/ui";
 
-export type CodeSnippets = {
-  [language: string]: string;
-};
-
-export const codeSnippets: CodeSnippets = {
+/** The preview's sample code by language, in the language dropdown's order. */
+export const languageSnippets: Readonly<Record<string, string>> = {
   c: cSnippet,
   "c++": cppSnippet,
   csharp: csharpSnippet,
@@ -46,7 +40,11 @@ export const codeSnippets: CodeSnippets = {
   shell: shellSnippet,
   sql: sqlSnippet,
   typescript: typescriptSnippet,
+};
+
+/** The fixed previews of the settings views that aren't about a language. */
+export const viewSnippets = {
   brackets: bracketsSnippet,
   json: jsonSnippet,
   ui: uiSnippet,
-};
+} as const;

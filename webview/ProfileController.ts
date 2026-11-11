@@ -3,7 +3,7 @@
  * deletes the profile awaiting deletion, or resets everything when none is.
  */
 
-import { WEBVIEW_CONSTANTS } from "../src/constants";
+import { DEFAULT_PROFILE_NAME, WEBVIEW_CONSTANTS } from "../src/constants";
 import { IProfile, IVsCodeApi } from "../types/webview";
 
 export interface IProfileElements {
@@ -12,6 +12,8 @@ export interface IProfileElements {
   saveProfileBtn: HTMLButtonElement;
   deleteProfileBtn: HTMLButtonElement;
   dialogOverlay: HTMLElement;
+  dialogTitle: HTMLElement;
+  dialogMessage: HTMLElement;
   confirmResetButton: HTMLButtonElement;
   cancelResetButton: HTMLElement;
 }
@@ -32,15 +34,14 @@ export class ProfileController {
     this.vscode = vscode;
     this.elements = elements;
 
-    this._originalDialogTitle =
-      elements.dialogOverlay.querySelector("h3")?.textContent ?? "Confirm Reset";
-    this._originalDialogMessage = elements.dialogOverlay.querySelector("p")?.textContent ?? "";
+    this._originalDialogTitle = elements.dialogTitle.textContent;
+    this._originalDialogMessage = elements.dialogMessage.textContent;
     this._originalConfirmText = elements.confirmResetButton.textContent;
   }
 
   public initializeEventListeners(): void {
-    this.elements.profileSelect.addEventListener("change", (e) => {
-      const selectedProfile = (e.target as HTMLSelectElement).value;
+    this.elements.profileSelect.addEventListener("change", () => {
+      const selectedProfile = this.elements.profileSelect.value;
       this.updateProfileUI(selectedProfile);
       this.vscode.postMessage({
         command: WEBVIEW_CONSTANTS.SWITCH_PROFILE,
@@ -50,14 +51,14 @@ export class ProfileController {
 
     this.elements.saveProfileBtn.addEventListener("click", () => {
       const profileName = this.elements.profileNameInput.value.trim();
-      if (profileName && profileName !== "Default") {
+      if (profileName && profileName !== DEFAULT_PROFILE_NAME) {
         this.vscode.postMessage({ command: WEBVIEW_CONSTANTS.SAVE_PROFILE, profile: profileName });
       }
     });
 
     this.elements.deleteProfileBtn.addEventListener("click", () => {
       const currentProfile = this.elements.profileSelect.value;
-      if (currentProfile !== "Default") {
+      if (currentProfile !== DEFAULT_PROFILE_NAME) {
         this.showDeleteConfirmation(currentProfile);
       }
     });
@@ -71,20 +72,17 @@ export class ProfileController {
       } else {
         this.vscode.postMessage({ command: WEBVIEW_CONSTANTS.RESET_ALL });
       }
-      this.elements.dialogOverlay.classList.add("hidden");
-      this._resetDialogState();
+      this._closeDialog();
     });
 
     this.elements.cancelResetButton.addEventListener("click", () => {
-      this.elements.dialogOverlay.classList.add("hidden");
-      this._resetDialogState();
+      this._closeDialog();
     });
 
     // Click-outside dismissal.
     this.elements.dialogOverlay.addEventListener("click", (e) => {
       if (e.target === this.elements.dialogOverlay) {
-        this.elements.dialogOverlay.classList.add("hidden");
-        this._resetDialogState();
+        this._closeDialog();
       }
     });
   }
@@ -95,10 +93,10 @@ export class ProfileController {
   ): void {
     this.elements.profileSelect.innerHTML = "";
 
-    if (!Object.hasOwn(profiles, "Default")) {
+    if (!Object.hasOwn(profiles, DEFAULT_PROFILE_NAME)) {
       const defaultOption = document.createElement("option");
-      defaultOption.value = "Default";
-      defaultOption.textContent = "Default";
+      defaultOption.value = DEFAULT_PROFILE_NAME;
+      defaultOption.textContent = DEFAULT_PROFILE_NAME;
       this.elements.profileSelect.appendChild(defaultOption);
     }
 
@@ -116,38 +114,28 @@ export class ProfileController {
 
   /** Hides Delete for `Default` and clears the name field. */
   public updateProfileUI(selectedProfile: string): void {
-    const isDefaultProfile = selectedProfile === "Default";
+    const isDefaultProfile = selectedProfile === DEFAULT_PROFILE_NAME;
     this.elements.deleteProfileBtn.style.display = isDefaultProfile ? "none" : "inline-block";
     this.elements.profileNameInput.value = "";
   }
 
   /** Opens the Reset All dialog, reworded to delete `profileName`. */
   public showDeleteConfirmation(profileName: string): void {
-    const dialogTitle = this.elements.dialogOverlay.querySelector("h3");
-    const dialogMessage = this.elements.dialogOverlay.querySelector("p");
-
-    if (!dialogTitle || !dialogMessage) {
-      throw new Error("Dialog elements not found");
-    }
-
     this._pendingDeleteProfile = profileName;
-    dialogTitle.textContent = "Delete Profile";
-    dialogMessage.textContent = `Are you sure you want to delete the profile "${profileName}"? This action cannot be undone.`;
+    this.elements.dialogTitle.textContent = "Delete Profile";
+    this.elements.dialogMessage.textContent = `Are you sure you want to delete the profile "${profileName}"? This action cannot be undone.`;
     this.elements.confirmResetButton.textContent = "Delete Profile";
     this.elements.dialogOverlay.classList.remove("hidden");
   }
 
-  /** Clears a pending delete and restores the Reset All wording. */
-  private _resetDialogState(): void {
+  /** Hides the dialog, clearing a pending delete and restoring the Reset All wording. */
+  private _closeDialog(): void {
+    this.elements.dialogOverlay.classList.add("hidden");
     if (this._pendingDeleteProfile === null) return;
 
     this._pendingDeleteProfile = null;
-
-    const dialogTitle = this.elements.dialogOverlay.querySelector("h3");
-    const dialogMessage = this.elements.dialogOverlay.querySelector("p");
-
-    if (dialogTitle) dialogTitle.textContent = this._originalDialogTitle;
-    if (dialogMessage) dialogMessage.textContent = this._originalDialogMessage;
+    this.elements.dialogTitle.textContent = this._originalDialogTitle;
+    this.elements.dialogMessage.textContent = this._originalDialogMessage;
     this.elements.confirmResetButton.textContent = this._originalConfirmText;
   }
 }

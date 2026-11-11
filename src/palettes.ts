@@ -34,3 +34,7 @@ const palettes: IPalettes = {
 };
 
 export default palettes;
+
+export function isFlavor(key: string): key is keyof IPalettes {
+  return Object.hasOwn(palettes, key);
+}

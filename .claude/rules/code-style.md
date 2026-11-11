@@ -57,9 +57,9 @@ tests, holds no duplication, says what it means, and has no more parts than that
   four wants an options object, as `buildAllFlavors` takes `IBuildOptions`. A list long enough
   to count is usually two functions, or one type that hasn't been named yet.
 - **No flag parameters** - a `boolean` argument splits the body before the reader reaches it,
-  and `createSettingsControls(settings, styles, true, flavor)` says nothing at the call site.
-  Ship the two functions the branches already are; where it genuinely is one operation, name
-  the choice with a union of string literals (`typescript.md` says why not an `enum`).
+  and `render(settings, true)` says nothing at the call site. Ship the two functions the
+  branches already are; where it genuinely is one operation, name the choice with a union of
+  string literals (`typescript.md` says why not an `enum`).
 - **Meaning belongs in the type, not the primitive** - a bare `string` at a boundary lets the
   wrong one through in silence, and a flavor, a color key, a hex color and a profile name are
   all `string` here. A literal union (`keyof IPalettes`, `MessageToExtension["command"]`) or a

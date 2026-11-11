@@ -6,6 +6,8 @@
 import {
   BACKGROUND_UI_KEYS,
   FONT_STYLE_OPTIONS,
+  HEX6_COLOR,
+  HEX_COLOR_WITH_ALPHA,
   WEBVIEW_CONSTANTS as COMMANDS,
 } from "../src/constants";
 import { IVsCodeApi } from "../types/webview";
@@ -22,14 +24,11 @@ export interface IControlFactoryDeps {
 }
 
 export class ControlFactory {
-  private readonly hex6Regex = /^#[0-9a-fA-F]{6}$/;
-  private readonly hex8Regex = /^#([0-9a-fA-F]{6})([0-9a-fA-F]{2})?$/;
-
   constructor(private readonly deps: IControlFactoryDeps) {}
 
   /**
-   * Appends a label, a color control and, with `includeFontStyles`, a font style control for each
-   * setting.
+   * Appends a label, a font style control when the setting has a font style, and a color control
+   * for each setting.
    *
    * Each control records a committed edit on its setting, since the host doesn't echo writes back
    * and a view is rebuilt from these settings when it's shown again.
@@ -37,32 +36,27 @@ export class ControlFactory {
   public createSettingsControls(
     settings: IWebviewSetting[],
     defaultFontStyles: { [key: string]: string },
-    includeFontStyles: boolean,
     activeFlavor: string,
   ): void {
     settings.forEach((setting) => {
       const { key, fontStyle, color } = setting;
-      const fontStyleKey = `${key}FontStyle`;
-      const defaultFontStyle = defaultFontStyles[fontStyleKey] || "none";
-
       this.deps.previewState[key] = { color, fontStyle };
 
       const label = document.createElement("label");
       label.textContent = key.replace(/([A-Z])/g, " $1").trim() + ":";
       label.htmlFor = key;
-
-      let fontContainer: HTMLElement | null = null;
-      if (includeFontStyles && fontStyle !== undefined) {
-        fontContainer = this._createFontStyleControl(setting, defaultFontStyle, fontStyleKey);
-      }
-
-      const colorContainer = this._createColorPickerControl(setting, activeFlavor);
-
       this.deps.settingsContainer.appendChild(label);
-      if (fontContainer) {
-        this.deps.settingsContainer.appendChild(fontContainer);
+
+      if (fontStyle !== undefined) {
+        const fontStyleKey = `${key}FontStyle`;
+        const defaultFontStyle = defaultFontStyles[fontStyleKey] || "none";
+        this.deps.settingsContainer.appendChild(
+          this._createFontStyleControl(setting, defaultFontStyle, fontStyleKey),
+        );
       }
-      this.deps.settingsContainer.appendChild(colorContainer);
+      this.deps.settingsContainer.appendChild(
+        this._createColorPickerControl(setting, activeFlavor),
+      );
     });
   }
 
@@ -95,8 +89,8 @@ export class ControlFactory {
       if (setting.fontStyle === option) opt.selected = true;
       select.appendChild(opt);
     });
-    select.addEventListener("change", (e) => {
-      const newValue = (e.target as HTMLSelectElement).value;
+    select.addEventListener("change", () => {
+      const newValue = select.value;
       setting.fontStyle = newValue;
       this.deps.previewState[key].fontStyle = newValue;
       this.deps.onPreviewUpdate();
@@ -148,13 +142,16 @@ export class ControlFactory {
       alphaSlider.style.display = "none";
       hexInput.maxLength = 7;
     }
+    const colorPattern = isUiColor ? HEX6_COLOR : HEX_COLOR_WITH_ALPHA;
 
-    const initialColor = setting.color || defaultColor || "#ffffffff";
-    const initialRgb = initialColor.substring(0, 7);
-    const initialAlphaHex = initialColor.length === 9 ? initialColor.substring(7, 9) : "ff";
-    colorInput.value = initialRgb;
-    alphaSlider.value = parseInt(initialAlphaHex, 16).toString();
-    hexInput.value = isUiColor ? initialRgb : initialColor;
+    const showColor = (color: string) => {
+      const rgb = color.substring(0, 7);
+      const alphaHex = color.length === 9 ? color.substring(7, 9) : "ff";
+      colorInput.value = rgb;
+      alphaSlider.value = parseInt(alphaHex, 16).toString();
+      hexInput.value = isUiColor ? rgb : color;
+    };
+    showColor(setting.color || defaultColor || "#ffffffff");
 
     const updateFromPickers = () => {
       const newRgb = colorInput.value;
@@ -186,14 +183,13 @@ export class ControlFactory {
 
     hexInput.addEventListener("input", () => {
       const typedValue = hexInput.value;
-      const regex = isUiColor ? this.hex6Regex : this.hex8Regex;
-      const match = typedValue.match(regex);
+      const match = typedValue.match(colorPattern);
 
       if (match) {
         hexInput.style.borderColor = "";
         hexInput.style.outlineColor = "";
 
-        const rgb = match[1] ? `#${match[1]}` : "#000000";
+        const rgb = `#${match[1]}`;
         // An optional group that didn't match is `undefined`, which the match's type leaves out.
         const alphaHex = (match[2] as string | undefined) ?? "ff";
         const alphaDecimal = parseInt(alphaHex, 16);
@@ -212,8 +208,7 @@ export class ControlFactory {
     });
 
     hexInput.addEventListener("change", () => {
-      const regex = isUiColor ? this.hex6Regex : this.hex8Regex;
-      if (regex.test(hexInput.value)) {
+      if (colorPattern.test(hexInput.value)) {
         sendFinalColorToVSCode();
       }
     });
@@ -222,11 +217,7 @@ export class ControlFactory {
     resetButton.textContent = "Reset";
     resetButton.className = "reset-button";
     resetButton.addEventListener("click", () => {
-      const defaultRgb = defaultColor.substring(0, 7);
-      const defaultAlphaHex = defaultColor.length === 9 ? defaultColor.substring(7, 9) : "ff";
-      colorInput.value = defaultRgb;
-      alphaSlider.value = parseInt(defaultAlphaHex, 16).toString();
-      hexInput.value = isUiColor ? defaultRgb : defaultColor;
+      showColor(defaultColor);
       setting.color = defaultColor;
       this.deps.previewState[key].color = defaultColor;
       this.deps.onPreviewUpdate();

@@ -9,7 +9,9 @@ export const CONFIG_KEY_ACCENT = "accent";
 export const CONFIG_KEY_CUSTOM_ACCENT = "customAccentColor";
 export const REGENERATE_COMMAND_ID = "calmppuccin.regenerateThemes";
 export const RELOAD_COMMAND_ID = "workbench.action.reloadWindow";
-export const ICON_THEME_KEY = "workbench.iconTheme";
+export const WORKBENCH_SECTION = "workbench";
+export const COLOR_THEME_KEY = "colorTheme";
+export const ICON_THEME_KEY = "iconTheme";
 export const CATPPUCCIN_ICON_PACK_ID = "catppuccin-";
 export const CONFIG_KEY_FONT_STYLES = "fontStyles";
 export const CONFIG_KEY_FONT_STYLE_OVERRIDES = "fontStyleOverrides";
@@ -17,6 +19,12 @@ export const CONFIG_KEY_SYNTAX_OVERRIDES = "syntaxOverrides";
 export const CONFIG_KEY_UI_OVERRIDES = "uiOverrides";
 export const CONFIG_KEY_PROFILES = "profiles";
 export const CONFIG_KEY_ACTIVE_PROFILE = "activeProfile";
+/** The settings that hold overrides by flavor, then key. */
+export const OVERRIDE_SETTING_KEYS = [
+  CONFIG_KEY_SYNTAX_OVERRIDES,
+  CONFIG_KEY_UI_OVERRIDES,
+  CONFIG_KEY_FONT_STYLE_OVERRIDES,
+] as const;
 /** The settings whose change rebuilds the themes. */
 export const THEME_AFFECTING_KEYS: readonly string[] = [
   CONFIG_KEY_ACCENT,
@@ -29,6 +37,7 @@ export const THEME_AFFECTING_KEYS: readonly string[] = [
   CONFIG_KEY_ACTIVE_PROFILE,
 ] as const;
 export const CUSTOMIZE_COMMAND_ID = "calmppuccin.customize";
+export const DEFAULT_PROFILE_NAME = "Default";
 
 export const THEMES_DIR = "themes";
 export const SRC_DIR = "src";
@@ -37,6 +46,8 @@ export const LIGHT_FLAVOR_NAME = "latte";
 export const FALLBACK_ACCENT = "mauve";
 export const DEFAULT_ACCENT = "sapphire";
 export const DEFAULT_CUSTOM_ACCENT = "#89b4fa";
+/** The `calmppuccin.accent` value that selects `calmppuccin.customAccentColor`. */
+export const CUSTOM_ACCENT = "custom";
 export const ACCENT_RECIPE_PREFIX = "{{accent}}";
 export const THEME_FILE_PREFIX = "calmppuccin";
 export const THEME_FILE_SUFFIX = "color-theme.json";
@@ -146,6 +157,11 @@ export const CUSTOMIZABLE_JSON_KEYS = [
   "jsonLvl8",
 ];
 export const CUSTOMIZABLE_UI_KEYS = ["base", "mantle", "crust", "uiText"];
+
+/** A `#rrggbb` color, its hex digits in group 1. */
+export const HEX6_COLOR = /^#([0-9A-Fa-f]{6})$/;
+/** A `#rrggbb` or `#rrggbbaa` color: the RGB digits in group 1, the alpha in group 2. */
+export const HEX_COLOR_WITH_ALPHA = /^#([0-9A-Fa-f]{6})([0-9A-Fa-f]{2})?$/;
 
 /** The UI keys that color a background rather than text, so they take no alpha. */
 export const BACKGROUND_UI_KEYS: ReadonlySet<string> = new Set(["base", "mantle", "crust"]);

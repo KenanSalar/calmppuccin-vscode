@@ -3,12 +3,10 @@
  * these statics, which a test can replace one by one with `jest.spyOn`.
  */
 
-import { getProfiles, getActiveProfile } from "./config/ConfigAccess";
 import {
   updateActiveProfile,
   saveProfile,
   deleteProfile,
-  resetProfile,
   resetAll,
   migrateGlobalSettingsToDefault,
 } from "./config/ProfileManager";
@@ -21,8 +19,6 @@ import {
   getActiveFlavor,
 } from "./config/SettingsReader";
 import {
-  updateFontStyle,
-  resetFontStyle,
   updateAccent,
   updateCustomAccent,
   updateSyntaxColor,
@@ -35,6 +31,7 @@ import {
 import { getWebViewSettings } from "./config/WebviewSettingsMapper";
 
 export type {
+  IExtensionPackageJson,
   IFontStyles,
   ISyntaxOverrides,
   IUiOverrides,
@@ -42,16 +39,12 @@ export type {
 } from "./config/ConfigAccess";
 
 export class ConfigurationService {
-  static getProfiles = getProfiles;
-  static getActiveProfile = getActiveProfile;
   static getAccent = getAccent;
   static getFontStyles = getFontStyles;
   static getSyntaxOverrides = getSyntaxOverrides;
   static getUiOverrides = getUiOverrides;
   static getFontStyleOverrides = getFontStyleOverrides;
   static getActiveFlavor = getActiveFlavor;
-  static updateFontStyle = updateFontStyle;
-  static resetFontStyle = resetFontStyle;
   static updateAccent = updateAccent;
   static updateCustomAccent = updateCustomAccent;
   static updateSyntaxColor = updateSyntaxColor;
@@ -63,7 +56,6 @@ export class ConfigurationService {
   static updateActiveProfile = updateActiveProfile;
   static saveProfile = saveProfile;
   static deleteProfile = deleteProfile;
-  static resetProfile = resetProfile;
   static resetAll = resetAll;
   static migrateGlobalSettingsToDefault = migrateGlobalSettingsToDefault;
   static getWebViewSettings = getWebViewSettings;

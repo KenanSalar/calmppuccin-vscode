@@ -6,7 +6,6 @@
 import * as vscode from "vscode";
 import { IProfile } from "../../types/webview";
 import * as C from "../constants";
-import palettes, { IPalettes } from "../palettes";
 
 /** `calmppuccin.fontStyles`, keyed `<token>FontStyle`. */
 export interface IFontStyles {
@@ -34,6 +33,8 @@ export interface IFontStyleOverrides {
   };
 }
 
+export type FlavorOverrides = Record<string, Record<string, string>>;
+
 /** The part of `package.json` the contributed defaults are read from. */
 export interface IExtensionPackageJson {
   contributes?: {
@@ -41,19 +42,6 @@ export interface IExtensionPackageJson {
       properties?: Record<string, { default?: IFontStyles; enum?: string[] }>;
     };
   };
-}
-
-export function isFlavor(key: string): key is keyof IPalettes {
-  return Object.hasOwn(palettes, key);
-}
-
-/** Copies an overrides object two levels deep, which is as deep as one goes. */
-export function cloneOverrides<T extends Record<string, Record<string, string>>>(obj: T): T {
-  const result: Record<string, Record<string, string>> = {};
-  for (const [key, value] of Object.entries(obj)) {
-    result[key] = { ...value };
-  }
-  return result as T;
 }
 
 /**
@@ -93,8 +81,8 @@ export function getConfig() {
   return vscode.workspace.getConfiguration(C.EXTENSION_NAMESPACE);
 }
 
-export function getProfiles(): { [name: string]: IProfile } {
-  return toProfiles(getConfig().get(C.CONFIG_KEY_PROFILES));
+export function getProfiles(config = getConfig()): { [name: string]: IProfile } {
+  return toProfiles(config.get(C.CONFIG_KEY_PROFILES));
 }
 
 /**
@@ -108,8 +96,8 @@ export function toProfiles(rawProfiles: unknown): { [name: string]: IProfile } {
   const profiles: { [name: string]: IProfile } = Object.fromEntries(
     entries.filter((entry): entry is [string, IProfile] => isPlainObject(entry[1])),
   );
-  if (!Object.hasOwn(profiles, "Default")) {
-    profiles.Default = {};
+  if (!Object.hasOwn(profiles, C.DEFAULT_PROFILE_NAME)) {
+    profiles[C.DEFAULT_PROFILE_NAME] = {};
   }
   return profiles;
 }
@@ -118,45 +106,37 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-export function getActiveProfile(): string {
-  return getConfig().get(C.CONFIG_KEY_ACTIVE_PROFILE, "Default");
+export function getActiveProfile(config = getConfig()): string {
+  return config.get(C.CONFIG_KEY_ACTIVE_PROFILE, C.DEFAULT_PROFILE_NAME);
 }
 
 /** Reads `key` from the active profile, then from the legacy top-level setting. */
-export function getProfileSetting(key: string, defaultValue: string): string {
-  const activeProfile = getActiveProfile();
-  const profiles = getProfiles();
-
-  if (Object.hasOwn(profiles, activeProfile)) {
-    const profile = profiles[activeProfile];
-    const value = profile[key];
-    if (typeof value === "string") {
-      return value;
-    }
+export function getProfileSetting(key: string, defaultValue: string, config = getConfig()): string {
+  const value = getActiveProfileEntry(config)[key];
+  if (typeof value === "string") {
+    return value;
   }
-
-  return getConfig().get<string>(key, defaultValue);
+  return config.get<string>(key, defaultValue);
 }
 
 /** {@link getProfileSetting} for an object setting. */
 export function getProfileObjectSetting<T extends Record<string, unknown>>(
   key: string,
   defaultValue: T,
+  config = getConfig(),
 ): T {
-  const activeProfile = getActiveProfile();
-  const profiles = getProfiles();
-
-  if (Object.hasOwn(profiles, activeProfile)) {
-    const profile = profiles[activeProfile];
-    // The profile is user-edited JSON, so the value can be null or any other type.
-    const value: unknown = profile[key];
-    if (typeof value === "object" && value !== null) {
-      return value as T;
-    }
+  // The profile is user-edited JSON, so the value can be null or any other type.
+  const value: unknown = getActiveProfileEntry(config)[key];
+  if (typeof value === "object" && value !== null) {
+    return value as T;
   }
+  return config.get<T | undefined>(key) ?? defaultValue;
+}
 
-  const globalValue = getConfig().get<T | undefined>(key);
-  return globalValue ?? defaultValue;
+function getActiveProfileEntry(config: vscode.WorkspaceConfiguration): IProfile {
+  const profiles = getProfiles(config);
+  const activeProfile = getActiveProfile(config);
+  return Object.hasOwn(profiles, activeProfile) ? profiles[activeProfile] : {};
 }
 
 /** Writes `key` into the active profile, creating the profile when it's missing. */

@@ -6,7 +6,7 @@
 
 import { ISettingsPayload } from "../../types/webview";
 import { UIManager } from "../../webview/main";
-import { codeSnippets } from "../../webview/snippets";
+import { languageSnippets } from "../../webview/snippets";
 
 const mockPostMessage = jest.fn();
 const mockVscode = {
@@ -43,8 +43,8 @@ const htmlFixture = `
   <select id="language-select"></select>
   <div id="reset-dialog-overlay" class="hidden">
     <div class="dialog-box">
-      <h3>Confirm Reset</h3>
-      <p>Are you sure you want to reset all Calmppuccin settings to their defaults? This action cannot be undone.</p>
+      <h3 id="reset-dialog-title">Confirm Reset</h3>
+      <p id="reset-dialog-message">Are you sure you want to reset all Calmppuccin settings to their defaults? This action cannot be undone.</p>
       <div class="dialog-buttons">
         <button id="dialog-cancel-button"></button>
         <button id="dialog-confirm-button">Reset Settings</button>
@@ -96,8 +96,7 @@ describe("UIManager Unit Tests", () => {
 
   it("should initialize event listeners and populate the language selector", () => {
     const languageSelect = document.getElementById("language-select") as HTMLSelectElement;
-    // `brackets`, `json` and `ui` aren't languages.
-    const expectedOptions = Object.keys(codeSnippets).length - 3;
+    const expectedOptions = Object.keys(languageSnippets).length;
     expect(languageSelect.options.length).toBe(expectedOptions);
     expect(languageSelect.value).toBe("csharp");
 
@@ -303,6 +302,40 @@ describe("UIManager Unit Tests", () => {
       expect(hexInput.style.borderColor).toBe("var(--danger-color)");
       expect(hexInput.style.outlineColor).toBe("var(--danger-color)");
     });
+
+    /** A background color's pattern takes no alpha, and the picker still needs the typed RGB. */
+    it.each(["base", "mantle", "crust"])(
+      "should show a typed %s color in its color picker",
+      (key) => {
+        uiManager.populateAllSettings(mockSettingsPayload);
+        showSettingsView("ui");
+        const { hexInput, colorInput } = getColorInputs(key);
+
+        hexInput.value = "#123456";
+        hexInput.dispatchEvent(new Event("input"));
+
+        expect(colorInput.value).toBe("#123456");
+      },
+    );
+
+    function showSettingsView(view: string) {
+      const viewSelect = document.getElementById("settings-view-select");
+      if (!(viewSelect instanceof HTMLSelectElement)) {
+        throw new Error("The page has no settings view select");
+      }
+      viewSelect.value = view;
+      viewSelect.dispatchEvent(new Event("change"));
+    }
+
+    function getColorInputs(key: string) {
+      const control = document.querySelector(`label[for='${key}']`)?.nextElementSibling;
+      const hexInput = control?.querySelector(".hex-input-display");
+      const colorInput = control?.querySelector("input[type='color']");
+      if (!(hexInput instanceof HTMLInputElement) || !(colorInput instanceof HTMLInputElement)) {
+        throw new Error(`The ${key} setting has no color control`);
+      }
+      return { hexInput, colorInput };
+    }
   });
 
   describe("Committed edits across view switches", () => {

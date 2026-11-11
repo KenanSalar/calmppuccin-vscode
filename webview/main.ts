@@ -8,14 +8,33 @@ import { AccentController } from "./AccentController";
 import { ControlFactory } from "./ControlFactory";
 import { PreviewState, updatePreviewPane } from "./PreviewRenderer";
 import { ProfileController } from "./ProfileController";
-import { codeSnippets } from "./snippets";
+import { languageSnippets, viewSnippets } from "./snippets";
 
 // VS Code defines it in the webview, and a page may call it only once.
 declare function acquireVsCodeApi(): IVsCodeApi;
 
-/** Returns `element`, throwing with its `id` when the lookup found nothing. */
-function assertElement<T extends HTMLElement>(element: T | null, id: string): T {
-  if (!element) {
+const DEFAULT_LANGUAGE = "csharp";
+
+interface ISettingsView {
+  settings: "syntaxSettings" | "uiSettings" | "bracketSettings" | "jsonSettings";
+  /** The preview, or `undefined` for the language dropdown's choice. */
+  snippet: string | undefined;
+  /** The rows have no font style, so the grid drops that column. */
+  colorOnly: boolean;
+}
+
+/** What each option of the settings view dropdown shows. */
+const SETTINGS_VIEWS: Readonly<Record<string, ISettingsView>> = {
+  syntax: { settings: "syntaxSettings", snippet: undefined, colorOnly: false },
+  ui: { settings: "uiSettings", snippet: viewSnippets.ui, colorOnly: true },
+  brackets: { settings: "bracketSettings", snippet: viewSnippets.brackets, colorOnly: true },
+  json: { settings: "jsonSettings", snippet: viewSnippets.json, colorOnly: false },
+};
+
+/** Returns the element with `id`, throwing when it's missing or isn't a `type`. */
+function requireElement<T extends HTMLElement>(id: string, type: new () => T): T {
+  const element = document.getElementById(id);
+  if (!(element instanceof type)) {
     throw new Error(`Required element #${id} not found in DOM`);
   }
   return element;
@@ -25,73 +44,31 @@ export class UIManager {
   private readonly vscode = acquireVsCodeApi();
 
   private readonly elements = {
-    accentContainer: assertElement(document.getElementById("accent-container"), "accent-container"),
-    settingsContainer: assertElement(
-      document.getElementById("settings-container"),
-      "settings-container",
-    ),
-    customAccentPickerContainer: assertElement(
-      document.getElementById("custom-accent-picker-container"),
-      "custom-accent-picker-container",
-    ),
-    flavorTitle: assertElement(document.getElementById("current-flavor"), "current-flavor"),
-    customAccentPicker: assertElement(
-      document.getElementById("custom-accent-picker"),
-      "custom-accent-picker",
-    ) as HTMLInputElement,
-    customAccentHexInput: assertElement(
-      document.getElementById("custom-accent-hex-input"),
-      "custom-accent-hex-input",
-    ) as HTMLInputElement,
-    previewPane: assertElement(document.getElementById("preview-pane"), "preview-pane"),
-    codePreview: assertElement(document.getElementById("code-preview"), "code-preview"),
-    resetAllContainer: assertElement(
-      document.getElementById("reset-all-container"),
-      "reset-all-container",
-    ),
-    languageSelect: assertElement(
-      document.getElementById("language-select"),
-      "language-select",
-    ) as HTMLSelectElement,
-    settingsViewSelect: assertElement(
-      document.getElementById("settings-view-select"),
-      "settings-view-select",
-    ) as HTMLSelectElement,
-    dialogOverlay: assertElement(
-      document.getElementById("reset-dialog-overlay"),
-      "reset-dialog-overlay",
-    ),
-    confirmResetButton: assertElement(
-      document.getElementById("dialog-confirm-button"),
-      "dialog-confirm-button",
-    ) as HTMLButtonElement,
-    cancelResetButton: assertElement(
-      document.getElementById("dialog-cancel-button"),
-      "dialog-cancel-button",
-    ),
-    profileSelect: assertElement(
-      document.getElementById("profile-select"),
-      "profile-select",
-    ) as HTMLSelectElement,
-    profileNameInput: assertElement(
-      document.getElementById("profile-name-input"),
-      "profile-name-input",
-    ) as HTMLInputElement,
-    saveProfileBtn: assertElement(
-      document.getElementById("save-profile-btn"),
-      "save-profile-btn",
-    ) as HTMLButtonElement,
-    deleteProfileBtn: assertElement(
-      document.getElementById("delete-profile-btn"),
-      "delete-profile-btn",
-    ) as HTMLButtonElement,
+    accentContainer: requireElement("accent-container", HTMLElement),
+    settingsContainer: requireElement("settings-container", HTMLElement),
+    customAccentPickerContainer: requireElement("custom-accent-picker-container", HTMLElement),
+    flavorTitle: requireElement("current-flavor", HTMLElement),
+    customAccentPicker: requireElement("custom-accent-picker", HTMLInputElement),
+    customAccentHexInput: requireElement("custom-accent-hex-input", HTMLInputElement),
+    previewPane: requireElement("preview-pane", HTMLElement),
+    codePreview: requireElement("code-preview", HTMLElement),
+    resetAllContainer: requireElement("reset-all-container", HTMLElement),
+    languageSelect: requireElement("language-select", HTMLSelectElement),
+    settingsViewSelect: requireElement("settings-view-select", HTMLSelectElement),
+    dialogOverlay: requireElement("reset-dialog-overlay", HTMLElement),
+    dialogTitle: requireElement("reset-dialog-title", HTMLElement),
+    dialogMessage: requireElement("reset-dialog-message", HTMLElement),
+    confirmResetButton: requireElement("dialog-confirm-button", HTMLButtonElement),
+    cancelResetButton: requireElement("dialog-cancel-button", HTMLElement),
+    profileSelect: requireElement("profile-select", HTMLSelectElement),
+    profileNameInput: requireElement("profile-name-input", HTMLInputElement),
+    saveProfileBtn: requireElement("save-profile-btn", HTMLButtonElement),
+    deleteProfileBtn: requireElement("delete-profile-btn", HTMLButtonElement),
   };
 
   /** The last payload from the host, which the controls keep current as edits are committed. */
   private settings: ISettingsPayload | null = null;
   private previewState: PreviewState = {};
-  private accentColorMap: { [key: string]: string } = {};
-  private activeFlavor = "mocha";
 
   private readonly profileController: ProfileController;
   private readonly accentController: AccentController;
@@ -106,6 +83,8 @@ export class UIManager {
       saveProfileBtn: this.elements.saveProfileBtn,
       deleteProfileBtn: this.elements.deleteProfileBtn,
       dialogOverlay: this.elements.dialogOverlay,
+      dialogTitle: this.elements.dialogTitle,
+      dialogMessage: this.elements.dialogMessage,
       confirmResetButton: this.elements.confirmResetButton,
       cancelResetButton: this.elements.cancelResetButton,
     });
@@ -143,9 +122,6 @@ export class UIManager {
       activeProfile,
     } = settings;
 
-    this.accentColorMap = accentColorPalettes;
-    this.activeFlavor = activeFlavor;
-
     // Cleared in place, since `ControlFactory` holds this object.
     for (const key of Object.keys(this.previewState)) {
       // oxlint-disable-next-line typescript/no-dynamic-delete
@@ -156,7 +132,7 @@ export class UIManager {
     this.elements.resetAllContainer.innerHTML = "";
 
     this.elements.flavorTitle.textContent = `Editing: ${
-      this.activeFlavor.charAt(0).toUpperCase() + this.activeFlavor.slice(1)
+      activeFlavor.charAt(0).toUpperCase() + activeFlavor.slice(1)
     }`;
     this.elements.previewPane.style.backgroundColor = activeThemeBackgroundColor;
 
@@ -166,29 +142,25 @@ export class UIManager {
       currentAccent,
       accentOptions,
       customAccentColor,
-      this.accentColorMap,
+      accentColorPalettes,
     );
     this.controlFactory.createResetAllButton();
     this._handleViewChange();
-    this.accentController.handleAccentChange(currentAccent, this.accentColorMap);
+    this.accentController.handleAccentChange(currentAccent, accentColorPalettes);
     this.updatePreviewPane();
   }
 
   /** Wires the page's listeners; call it once per page load. */
   public initializeEventListeners() {
-    for (const lang in codeSnippets) {
-      if (lang !== "brackets" && lang !== "json" && lang !== "ui") {
-        const option = document.createElement("option");
-        option.value = lang;
-        option.textContent = lang;
-        this.elements.languageSelect.appendChild(option);
-      }
+    for (const language of Object.keys(languageSnippets)) {
+      const option = document.createElement("option");
+      option.value = language;
+      option.textContent = language;
+      this.elements.languageSelect.appendChild(option);
     }
-    this.elements.languageSelect.value = "csharp";
-    this.elements.codePreview.innerHTML = codeSnippets.csharp;
-    this.elements.languageSelect.addEventListener("change", (e) => {
-      const selectedLanguage = (e.target as HTMLSelectElement).value as keyof typeof codeSnippets;
-      this.elements.codePreview.innerHTML = codeSnippets[selectedLanguage];
+    this._showLanguage(DEFAULT_LANGUAGE);
+    this.elements.languageSelect.addEventListener("change", () => {
+      this._showLanguage(this.elements.languageSelect.value);
       this.updatePreviewPane();
     });
 
@@ -212,59 +184,33 @@ export class UIManager {
 
   /** Rebuilds the settings grid and the preview for the selected settings view. */
   private _handleViewChange() {
-    if (!this.settings) return;
-    const { defaultFontStyles } = this.settings;
-    const selectedView = this.elements.settingsViewSelect.value;
+    const viewName = this.elements.settingsViewSelect.value;
+    if (!this.settings || !Object.hasOwn(SETTINGS_VIEWS, viewName)) return;
+    const view = SETTINGS_VIEWS[viewName];
 
     this.elements.settingsContainer.innerHTML = "";
-    this.elements.settingsContainer.className = "card-body";
+    this.elements.settingsContainer.className = view.colorOnly
+      ? "card-body view-brackets"
+      : "card-body";
+    this.controlFactory.createSettingsControls(
+      this.settings[view.settings],
+      this.settings.defaultFontStyles,
+      this.settings.activeFlavor,
+    );
 
-    switch (selectedView) {
-      case "syntax":
-        this.controlFactory.createSettingsControls(
-          this.settings.syntaxSettings,
-          defaultFontStyles,
-          true,
-          this.activeFlavor,
-        );
-        this.elements.languageSelect.style.display = "";
-        this.elements.languageSelect.value = "csharp";
-        this.elements.codePreview.innerHTML = codeSnippets.csharp;
-        break;
-      case "ui":
-        this.elements.settingsContainer.classList.add("view-brackets");
-        this.controlFactory.createSettingsControls(
-          this.settings.uiSettings,
-          {},
-          false,
-          this.activeFlavor,
-        );
-        this.elements.languageSelect.style.display = "none";
-        this.elements.codePreview.innerHTML = codeSnippets.ui;
-        break;
-      case "brackets":
-        this.elements.settingsContainer.classList.add("view-brackets");
-        this.controlFactory.createSettingsControls(
-          this.settings.bracketSettings,
-          {},
-          false,
-          this.activeFlavor,
-        );
-        this.elements.languageSelect.style.display = "none";
-        this.elements.codePreview.innerHTML = codeSnippets.brackets;
-        break;
-      case "json":
-        this.controlFactory.createSettingsControls(
-          this.settings.jsonSettings,
-          defaultFontStyles,
-          true,
-          this.activeFlavor,
-        );
-        this.elements.languageSelect.style.display = "none";
-        this.elements.codePreview.innerHTML = codeSnippets.json;
-        break;
+    if (view.snippet === undefined) {
+      this.elements.languageSelect.style.display = "";
+      this._showLanguage(DEFAULT_LANGUAGE);
+    } else {
+      this.elements.languageSelect.style.display = "none";
+      this.elements.codePreview.innerHTML = view.snippet;
     }
     this.updatePreviewPane();
+  }
+
+  private _showLanguage(language: string) {
+    this.elements.languageSelect.value = language;
+    this.elements.codePreview.innerHTML = languageSnippets[language];
   }
 
   /** Removes the message listener `initializeEventListeners` added. */

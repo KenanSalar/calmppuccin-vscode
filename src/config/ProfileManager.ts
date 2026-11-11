@@ -11,18 +11,12 @@ import {
   getProfiles,
   getActiveProfile,
   getProfileSetting,
+  getProfileObjectSetting,
   getDefaultFontStyles,
+  FlavorOverrides,
   IFontStyles,
-  IFontStyleOverrides,
-  ISyntaxOverrides,
-  IUiOverrides,
 } from "./ConfigAccess";
-import {
-  getFontStyles,
-  getSyntaxOverrides,
-  getUiOverrides,
-  getFontStyleOverrides,
-} from "./SettingsReader";
+import { getFontStyles } from "./SettingsReader";
 
 export async function updateActiveProfile(profileName: string) {
   await getConfig().update(
@@ -34,52 +28,31 @@ export async function updateActiveProfile(profileName: string) {
 
 /** Saves what the active profile resolves to as `profileName`, minus values left at default. */
 export async function saveProfile(profileName: string) {
-  const profiles = getProfiles();
+  const savedProfile: IProfile = {};
 
-  const currentFontStyles = getFontStyles();
-  const defaultFontStyles = getDefaultFontStyles();
-  const customizedFontStyles: IFontStyles = {};
-  for (const [key, value] of Object.entries(currentFontStyles)) {
-    if (defaultFontStyles[key] !== value) {
-      customizedFontStyles[key] = value;
+  const accent = getProfileSetting(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
+  if (accent !== C.DEFAULT_ACCENT) {
+    savedProfile[C.CONFIG_KEY_ACCENT] = accent;
+  }
+
+  const customAccent = getProfileSetting(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
+  if (customAccent !== C.DEFAULT_CUSTOM_ACCENT) {
+    savedProfile[C.CONFIG_KEY_CUSTOM_ACCENT] = customAccent;
+  }
+
+  const fontStyles = customizedFontStyles(getFontStyles());
+  if (Object.keys(fontStyles).length > 0) {
+    savedProfile[C.CONFIG_KEY_FONT_STYLES] = fontStyles;
+  }
+
+  for (const key of C.OVERRIDE_SETTING_KEYS) {
+    const overrides = getProfileObjectSetting<FlavorOverrides>(key, {});
+    if (Object.keys(overrides).length > 0) {
+      savedProfile[key] = overrides;
     }
   }
 
-  const currentAccent = getProfileSetting(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
-  const currentCustomAccent = getProfileSetting(
-    C.CONFIG_KEY_CUSTOM_ACCENT,
-    C.DEFAULT_CUSTOM_ACCENT,
-  );
-
-  const currentSettings: IProfile = {};
-  if (currentAccent !== C.DEFAULT_ACCENT) {
-    currentSettings[C.CONFIG_KEY_ACCENT] = currentAccent;
-  }
-
-  if (currentCustomAccent !== C.DEFAULT_CUSTOM_ACCENT) {
-    currentSettings[C.CONFIG_KEY_CUSTOM_ACCENT] = currentCustomAccent;
-  }
-
-  if (Object.keys(customizedFontStyles).length > 0) {
-    currentSettings[C.CONFIG_KEY_FONT_STYLES] = customizedFontStyles;
-  }
-
-  const syntaxOverrides = getSyntaxOverrides();
-  if (Object.keys(syntaxOverrides).length > 0) {
-    currentSettings[C.CONFIG_KEY_SYNTAX_OVERRIDES] = syntaxOverrides;
-  }
-
-  const uiOverrides = getUiOverrides();
-  if (Object.keys(uiOverrides).length > 0) {
-    currentSettings[C.CONFIG_KEY_UI_OVERRIDES] = uiOverrides;
-  }
-
-  const fontStyleOverrides = getFontStyleOverrides();
-  if (Object.keys(fontStyleOverrides).length > 0) {
-    currentSettings[C.CONFIG_KEY_FONT_STYLE_OVERRIDES] = fontStyleOverrides;
-  }
-
-  const updatedProfiles = { ...profiles, [profileName]: currentSettings };
+  const updatedProfiles = { ...getProfiles(), [profileName]: savedProfile };
   await getConfig().update(
     C.CONFIG_KEY_PROFILES,
     updatedProfiles,
@@ -92,26 +65,28 @@ export async function saveProfile(profileName: string) {
  * an empty `Default` goes too, clearing the setting.
  */
 export async function deleteProfile(profileName: string) {
-  if (profileName === "Default") return;
+  if (profileName === C.DEFAULT_PROFILE_NAME) return;
 
   const profiles = getProfiles();
   const { [profileName]: _removed, ...remainingProfiles } = profiles;
-  const customProfileNames = Object.keys(remainingProfiles).filter((name) => name !== "Default");
+  const customProfileNames = Object.keys(remainingProfiles).filter(
+    (name) => name !== C.DEFAULT_PROFILE_NAME,
+  );
 
   let finalProfiles: { [name: string]: IProfile };
   if (customProfileNames.length > 0) {
     finalProfiles = remainingProfiles;
   } else {
-    const defaultProfile = remainingProfiles["Default"];
+    const defaultProfile = remainingProfiles[C.DEFAULT_PROFILE_NAME];
     if (Object.keys(defaultProfile).length > 0) {
-      finalProfiles = { Default: defaultProfile };
+      finalProfiles = { [C.DEFAULT_PROFILE_NAME]: defaultProfile };
     } else {
       finalProfiles = {};
     }
   }
 
   await getConfig().update(C.CONFIG_KEY_PROFILES, finalProfiles, vscode.ConfigurationTarget.Global);
-  await updateActiveProfile("Default");
+  await updateActiveProfile(C.DEFAULT_PROFILE_NAME);
 }
 
 /** Empties a profile; emptying `Default` also clears the legacy top-level settings. */
@@ -126,7 +101,7 @@ export async function resetProfile(profileName: string) {
       vscode.ConfigurationTarget.Global,
     );
 
-    if (profileName === "Default") {
+    if (profileName === C.DEFAULT_PROFILE_NAME) {
       await clearLegacySettings();
     }
   }
@@ -144,68 +119,35 @@ export async function resetAll() {
  */
 export async function migrateGlobalSettingsToDefault() {
   const config = getConfig();
-  const profiles = getProfiles();
+  const profiles = getProfiles(config);
+  const defaultProfile = profiles[C.DEFAULT_PROFILE_NAME];
   let needsUpdate = false;
-  const defaultProfile: IProfile = profiles.Default;
 
   const globalFontStyles = config.get<IFontStyles | undefined>(C.CONFIG_KEY_FONT_STYLES);
-  const globalFontStyleOverrides = config.get<IFontStyleOverrides | undefined>(
-    C.CONFIG_KEY_FONT_STYLE_OVERRIDES,
-  );
-  const globalSyntaxOverrides = config.get<ISyntaxOverrides | undefined>(
-    C.CONFIG_KEY_SYNTAX_OVERRIDES,
-  );
-  const globalUiOverrides = config.get<IUiOverrides | undefined>(C.CONFIG_KEY_UI_OVERRIDES);
-  const globalAccent = config.get<string | undefined>(C.CONFIG_KEY_ACCENT);
-  const globalCustomAccent = config.get<string | undefined>(C.CONFIG_KEY_CUSTOM_ACCENT);
-
   if (globalFontStyles && !defaultProfile.fontStyles) {
-    const defaults = getDefaultFontStyles();
-    const customizedStyles: { [key: string]: string } = {};
-    for (const [key, value] of Object.entries(globalFontStyles)) {
-      if (defaults[key] !== value) {
-        customizedStyles[key] = value;
-      }
-    }
-    if (Object.keys(customizedStyles).length > 0) {
-      defaultProfile.fontStyles = customizedStyles;
+    const fontStyles = customizedFontStyles(globalFontStyles);
+    if (Object.keys(fontStyles).length > 0) {
+      defaultProfile.fontStyles = fontStyles;
       needsUpdate = true;
     }
   }
 
   // An override has no default to compare with: any entry is a customization.
-  if (
-    globalFontStyleOverrides &&
-    Object.keys(globalFontStyleOverrides).length > 0 &&
-    !defaultProfile.fontStyleOverrides
-  ) {
-    defaultProfile.fontStyleOverrides = globalFontStyleOverrides;
-    needsUpdate = true;
+  for (const key of C.OVERRIDE_SETTING_KEYS) {
+    const globalOverrides = config.get<FlavorOverrides | undefined>(key);
+    if (globalOverrides && Object.keys(globalOverrides).length > 0 && !defaultProfile[key]) {
+      defaultProfile[key] = globalOverrides;
+      needsUpdate = true;
+    }
   }
 
-  if (
-    globalSyntaxOverrides &&
-    Object.keys(globalSyntaxOverrides).length > 0 &&
-    !defaultProfile.syntaxOverrides
-  ) {
-    defaultProfile.syntaxOverrides = globalSyntaxOverrides;
-    needsUpdate = true;
-  }
-
-  if (
-    globalUiOverrides &&
-    Object.keys(globalUiOverrides).length > 0 &&
-    !defaultProfile.uiOverrides
-  ) {
-    defaultProfile.uiOverrides = globalUiOverrides;
-    needsUpdate = true;
-  }
-
+  const globalAccent = config.get<string | undefined>(C.CONFIG_KEY_ACCENT);
   if (globalAccent && globalAccent !== C.DEFAULT_ACCENT && !defaultProfile.accent) {
     defaultProfile.accent = globalAccent;
     needsUpdate = true;
   }
 
+  const globalCustomAccent = config.get<string | undefined>(C.CONFIG_KEY_CUSTOM_ACCENT);
   if (
     globalCustomAccent &&
     globalCustomAccent !== C.DEFAULT_CUSTOM_ACCENT &&
@@ -219,6 +161,14 @@ export async function migrateGlobalSettingsToDefault() {
     await config.update(C.CONFIG_KEY_PROFILES, profiles, vscode.ConfigurationTarget.Global);
     await clearLegacySettings();
   }
+}
+
+/** The styles in `fontStyles` that differ from the contributed defaults. */
+function customizedFontStyles(fontStyles: IFontStyles): IFontStyles {
+  const defaults = getDefaultFontStyles();
+  return Object.fromEntries(
+    Object.entries(fontStyles).filter(([key, value]) => defaults[key] !== value),
+  );
 }
 
 /** The top-level settings that predate profiles, which every read still falls back to. */

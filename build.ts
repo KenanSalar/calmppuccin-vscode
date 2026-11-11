@@ -6,6 +6,7 @@
 import * as fs from "fs/promises";
 import * as path from "path";
 import {
+  IExtensionPackageJson,
   IFontStyles,
   ISyntaxOverrides,
   IUiOverrides,
@@ -24,15 +25,6 @@ interface IThemeJson {
   colors?: Record<string, string>;
   tokenColors?: unknown[];
   semanticTokenColors?: Record<string, string>;
-}
-
-/** The part of `package.json` the build reads. */
-interface IPackageJson {
-  contributes?: {
-    configuration?: {
-      properties?: Record<string, { default?: IFontStyles }>;
-    };
-  };
 }
 
 /** The settings a build applies; packaging passes the defaults. */
@@ -63,73 +55,14 @@ async function buildFlavor(
   templateStr: string,
   options: IBuildOptions,
 ): Promise<IThemeBuild> {
-  const { accentIdentifier, fontStyles, syntaxOverrides, uiOverrides, fontStyleOverrides } =
-    options;
-  const basePalette = palette[flavor];
-  const flavorSyntaxOverrides = syntaxOverrides[flavor] ?? {};
-  const flavorUiOverrides = uiOverrides[flavor] ?? {};
-  const flavorFontStyleOverrides = fontStyleOverrides[flavor] ?? {};
-  const finalPalette = { ...basePalette, ...flavorSyntaxOverrides, ...flavorUiOverrides };
-
-  const accentColor = accentIdentifier.startsWith("#")
-    ? accentIdentifier
-    : (finalPalette[accentIdentifier] ?? finalPalette[C.FALLBACK_ACCENT]);
-  const accentHexValue = accentColor.substring(1);
-
-  // A recipe such as "{{accent}}2f" is the accent's hex with that alpha.
-  const resolvedPalette: { [key: string]: string } = {};
-  for (const [key, value] of Object.entries(finalPalette)) {
-    if (typeof value === "string" && value.startsWith(C.ACCENT_RECIPE_PREFIX)) {
-      const transparency = value.substring(C.ACCENT_RECIPE_PREFIX.length);
-      resolvedPalette[key] = `#${accentHexValue}${transparency}`;
-    } else {
-      resolvedPalette[key] = value;
-    }
-  }
-
-  const finalFontStyles = { ...fontStyles, ...flavorFontStyleOverrides };
-
-  const replacementMap = new Map<string, string>();
-  for (const [key, value] of Object.entries(resolvedPalette)) {
-    replacementMap.set(key, value);
-  }
-  replacementMap.set("accent", accentColor);
-  for (const [key, value] of Object.entries(finalFontStyles)) {
-    // The settings spell "no style" as "none", a theme as "".
-    replacementMap.set(key, value === "none" ? "" : value);
-  }
-
-  // One pass over the template, rather than a rescan per key.
-  const allKeysPattern = new RegExp(
-    `\\{\\{(${[...replacementMap.keys()].map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})\\}\\}`,
-    "g",
-  );
-  const themeContent = templateStr.replace(allKeysPattern, (_, key: string) => {
-    const value = replacementMap.get(key);
-    if (value === undefined) {
-      console.warn(
-        `[Calmppuccin] Placeholder key "{{${key}}}" not found in replacement map for flavor "${flavor}".`,
-      );
-    }
-    // JSON-escaped, so a setting can't break out of its string.
-    return JSON.stringify(value ?? "").slice(1, -1);
-  });
-
-  let themeJson: IThemeJson;
-  try {
-    themeJson = JSON.parse(themeContent) as IThemeJson;
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    throw new Error(`Failed to parse theme JSON for flavor "${flavor}": ${message}`, {
-      cause: err,
-    });
-  }
+  const themeJson = fillTemplate(templateStr, getReplacements(flavor, options), flavor);
   const flavorDisplayName = flavor.charAt(0).toUpperCase() + flavor.slice(1);
   themeJson.name = `Calmppuccin ${flavorDisplayName}`;
   themeJson.type = flavor === C.LIGHT_FLAVOR_NAME ? C.THEME_TYPE_LIGHT : C.THEME_TYPE_DARK;
 
   // A test template may have no "colors".
   if (themeJson.colors) {
+    const basePalette = palette[flavor];
     const errorLensColors = generateErrorLensColors(basePalette);
     const githubPRColors = generateGitHubPullRequestColors(basePalette);
     const gitLensColors = generateGitLensColors(basePalette);
@@ -144,6 +77,61 @@ async function buildFlavor(
     await replaceFile(themePath, generated);
   }
   return { previous, generated };
+}
+
+/** The value each `{{key}}` takes in `flavor`'s theme: palette colors, the accent, font styles. */
+function getReplacements(flavor: keyof IPalettes, options: IBuildOptions): Map<string, string> {
+  const flavorPalette = {
+    ...palette[flavor],
+    ...options.syntaxOverrides[flavor],
+    ...options.uiOverrides[flavor],
+  };
+  const { accentIdentifier } = options;
+  const accentColor = accentIdentifier.startsWith("#")
+    ? accentIdentifier
+    : (flavorPalette[accentIdentifier] ?? flavorPalette[C.FALLBACK_ACCENT]);
+
+  const replacements = new Map<string, string>();
+  for (const [key, value] of Object.entries(flavorPalette)) {
+    // A recipe such as "{{accent}}2f" is the accent's hex with that alpha.
+    if (typeof value === "string" && value.startsWith(C.ACCENT_RECIPE_PREFIX)) {
+      const alpha = value.substring(C.ACCENT_RECIPE_PREFIX.length);
+      replacements.set(key, `#${accentColor.substring(1)}${alpha}`);
+    } else {
+      replacements.set(key, value);
+    }
+  }
+  replacements.set("accent", accentColor);
+
+  const fontStyles = { ...options.fontStyles, ...options.fontStyleOverrides[flavor] };
+  for (const [key, value] of Object.entries(fontStyles)) {
+    // The settings spell "no style" as "none", a theme as "".
+    replacements.set(key, value === "none" ? "" : value);
+  }
+  return replacements;
+}
+
+/** Fills each `{{key}}` that has a replacement in one pass, rather than a rescan per key. */
+function fillTemplate(
+  templateStr: string,
+  replacements: ReadonlyMap<string, string>,
+  flavor: keyof IPalettes,
+): IThemeJson {
+  const keys = [...replacements.keys()].map((key) => RegExp.escape(key));
+  const placeholderPattern = new RegExp(`\\{\\{(${keys.join("|")})\\}\\}`, "g");
+  const themeContent = templateStr.replace(placeholderPattern, (_, key: string) =>
+    // JSON-escaped, so a setting can't break out of its string.
+    JSON.stringify(replacements.get(key) ?? "").slice(1, -1),
+  );
+
+  try {
+    return JSON.parse(themeContent) as IThemeJson;
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    throw new Error(`Failed to parse theme JSON for flavor "${flavor}": ${message}`, {
+      cause: err,
+    });
+  }
 }
 
 export async function buildAllFlavors(options: IBuildOptions): Promise<ThemeBuilds> {
@@ -196,7 +184,9 @@ async function readIfExists(filePath: string): Promise<string | undefined> {
 /** Reads the `calmppuccin.fontStyles` default from `package.json`. */
 async function getDefaultFontStyles(): Promise<IFontStyles> {
   const packageJsonPath = path.resolve(__dirname, "..", "package.json");
-  const packageJson = JSON.parse(await fs.readFile(packageJsonPath, "utf8")) as IPackageJson;
+  const packageJson = JSON.parse(
+    await fs.readFile(packageJsonPath, "utf8"),
+  ) as IExtensionPackageJson;
   return (
     packageJson.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.fontStyles`]
       ?.default ?? {}

@@ -8,7 +8,7 @@ import * as vscode from "vscode";
 import { buildAllFlavors, ThemeBuilds } from "./build";
 import { ConfigurationService } from "./src/ConfigurationService";
 import * as C from "./src/constants";
-import { IPalettes } from "./src/palettes";
+import { IPalettes, isFlavor } from "./src/palettes";
 import { SettingsPanel } from "./src/SettingsPanel";
 
 let settingsChangeListener: vscode.Disposable | undefined;
@@ -22,15 +22,17 @@ let latestBuild: Promise<unknown> = Promise.resolve();
 // window's write, as when windows restart after an update, takes the new files as loaded.
 let loadedThemes: ReadonlyMap<keyof IPalettes, string | undefined> | undefined;
 
+const COLOR_THEME_SETTING = `${C.WORKBENCH_SECTION}.${C.COLOR_THEME_KEY}`;
+
 // Catppuccin Icons has only the four Catppuccin flavors.
-const flavorIconMap: Record<string, string> = {
+const ICON_FLAVORS = {
   latte: "latte",
   frappe: "frappe",
   macchiato: "macchiato",
   mocha: "mocha",
   "nitro-cold-brew": "mocha",
   oledppuccin: "mocha",
-};
+} as const satisfies Record<keyof IPalettes, string>;
 
 /**
  * Switches a Catppuccin icon theme to the flavor matching the selected color theme.
@@ -42,9 +44,9 @@ function syncIconFlavor(retryCount = 0) {
   const delay = retryCount === 0 ? C.ICON_SYNC_INITIAL_DELAY_MS : C.ICON_SYNC_RETRY_DELAY_MS;
 
   setTimeout(() => {
-    const workbenchConfig = vscode.workspace.getConfiguration("workbench");
-    const currentTheme = workbenchConfig.get<string>("colorTheme", "");
-    const currentIconTheme = workbenchConfig.get<string>("iconTheme");
+    const workbenchConfig = vscode.workspace.getConfiguration(C.WORKBENCH_SECTION);
+    const currentTheme = workbenchConfig.get<string>(C.COLOR_THEME_KEY, "");
+    const currentIconTheme = workbenchConfig.get<string>(C.ICON_THEME_KEY);
 
     if (!currentIconTheme || !currentIconTheme.startsWith(C.CATPPUCCIN_ICON_PACK_ID)) {
       return;
@@ -55,14 +57,13 @@ function syncIconFlavor(retryCount = 0) {
       return;
     }
 
-    if (!flavor || !flavorIconMap[flavor]) {
+    if (!flavor || !isFlavor(flavor)) {
       return;
     }
-    const targetIconFlavor = flavorIconMap[flavor];
-    const targetIconThemeId = `${C.CATPPUCCIN_ICON_PACK_ID}${targetIconFlavor}`;
+    const targetIconThemeId = `${C.CATPPUCCIN_ICON_PACK_ID}${ICON_FLAVORS[flavor]}`;
     if (currentIconTheme !== targetIconThemeId) {
       workbenchConfig
-        .update("iconTheme", targetIconThemeId, vscode.ConfigurationTarget.Global)
+        .update(C.ICON_THEME_KEY, targetIconThemeId, vscode.ConfigurationTarget.Global)
         .then(undefined, (err: unknown) => {
           console.error("Failed to sync icon theme:", err);
         });
@@ -92,13 +93,11 @@ async function regenerateThemes(): Promise<void> {
     }
   } catch (error) {
     console.error(error);
-    let errorMessage = C.ERROR_MESSAGE_PREFIX;
-    if (error instanceof Error) {
-      errorMessage += error.message;
-    } else {
-      errorMessage += String(error);
-    }
-    const selection = await vscode.window.showErrorMessage(errorMessage, C.REPORT_ISSUE_ACTION);
+    const reason = error instanceof Error ? error.message : String(error);
+    const selection = await vscode.window.showErrorMessage(
+      C.ERROR_MESSAGE_PREFIX + reason,
+      C.REPORT_ISSUE_ACTION,
+    );
     if (selection === C.REPORT_ISSUE_ACTION) {
       await vscode.env.openExternal(vscode.Uri.parse(C.REPO_ISSUES_URL));
     }
@@ -132,6 +131,13 @@ function differsFromLoaded(
   loaded: ReadonlyMap<keyof IPalettes, string | undefined>,
 ): boolean {
   return themes.entries().some(([flavor, theme]) => theme.generated !== loaded.get(flavor));
+}
+
+function isCalmppuccinThemeSelected(): boolean {
+  const themeName = vscode.workspace
+    .getConfiguration(C.WORKBENCH_SECTION)
+    .get<string>(C.COLOR_THEME_KEY, "");
+  return C.parseFlavorFromThemeName(themeName) !== null;
 }
 
 export function activate(context: vscode.ExtensionContext) {
@@ -186,7 +192,7 @@ export function activate(context: vscode.ExtensionContext) {
           }, C.REGENERATE_DEBOUNCE_MS);
         }
 
-        if (event.affectsConfiguration("workbench.colorTheme")) {
+        if (event.affectsConfiguration(COLOR_THEME_SETTING)) {
           syncIconFlavor();
           SettingsPanel.updateIfVisible();
         }
@@ -202,21 +208,15 @@ export function activate(context: vscode.ExtensionContext) {
 
   // The tripwire: the one listener every window pays for until a Calmppuccin theme is selected.
   tripwireListener = vscode.workspace.onDidChangeConfiguration((event) => {
-    if (event.affectsConfiguration("workbench.colorTheme")) {
-      const currentTheme = vscode.workspace
-        .getConfiguration("workbench")
-        .get<string>("colorTheme", "");
-      if (currentTheme.toLowerCase().startsWith("calmppuccin")) {
-        ensureListenersAreActive();
-      }
+    if (event.affectsConfiguration(COLOR_THEME_SETTING) && isCalmppuccinThemeSelected()) {
+      ensureListenersAreActive();
     }
   });
 
   context.subscriptions.push(tripwireListener);
 
   // A window that starts under a Calmppuccin theme fires no theme change.
-  const currentTheme = vscode.workspace.getConfiguration("workbench").get<string>("colorTheme", "");
-  if (currentTheme.toLowerCase().startsWith("calmppuccin")) {
+  if (isCalmppuccinThemeSelected()) {
     ensureListenersAreActive();
   }
 }

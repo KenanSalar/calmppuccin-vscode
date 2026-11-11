@@ -44,9 +44,9 @@ repeated here.
 - **An `as` is a claim nothing re-checks.** `typescript/no-unsafe-type-assertion` is off here and
   `no-non-null-assertion` is on, so narrow instead: `instanceof HTMLSelectElement` on a DOM
   lookup, the element already in the closure rather than `e.target as …`, and a guard that throws
-  with a message (`assertElement` in `webview/main.ts`) where `!` would go.
+  with a message (`requireElement` in `webview/main.ts`) where `!` would go.
 - **Rethrow with `{ cause }`.** A `catch` binding is `unknown`; take the message after
-  `instanceof Error` and pass the original as `cause` so its stack survives, as `buildFlavor` does.
+  `instanceof Error` and pass the original as `cause` so its stack survives, as `fillTemplate` does.
 
 ## Shaping types
 
@@ -56,13 +56,13 @@ repeated here.
   User-keyed maps (overrides by flavor, then token) take one; a fixed key set is a union of
   literals or a declared shape.
 - **Reading through an index signature, write the `undefined` case yourself**: `?? fallback`, or
-  `Object.hasOwn` first, as `buildFlavor`'s `syntaxOverrides[flavor] ?? {}` does. The type says
-  the value is there and the user's settings.json decides whether it is.
+  `Object.hasOwn` first, as `getWebViewSettings`' `getSyntaxOverrides(config)[activeFlavor] ?? {}`
+  does. The type says the value is there and the user's settings.json decides whether it is.
 - **Check a table with `satisfies`, don't annotate it.** `const t: T = {…}` widens to `T` and
   drops the keys and literal values; `{…} satisfies T` checks the shape and keeps both. A
   widening annotation over `as const` throws the `as const` away (`THEME_AFFECTING_KEYS`). A
   per-flavor table written `satisfies Record<keyof IPalettes, …>` fails type-check until a new
-  flavor has its entry, where `flavorIconMap` relies on someone remembering.
+  flavor has its entry, as `ICON_FLAVORS` in `extension.ts` does.
 - **Shared lists are `as const`.** A module-level `string[]` can be pushed to by any importer and
   its entries widen to `string`; `as const` makes it readonly, and `(typeof KEYS)[number]` is the
   union of its entries with no second copy to keep in step.
@@ -76,10 +76,10 @@ repeated here.
 ## The ES2025 runtime
 
 - **Use the platform before writing a helper.** `target: es2025` emits these as written, and the
-  floor, VS Code 1.125's extension host on Node 24.15, runs them: `RegExp.escape` (which
-  `buildFlavor` writes by hand), `Object.hasOwn`, `Object.groupBy`, `Array.prototype.toSorted`,
-  the `Set` methods, iterator helpers and `Promise.try`. `esnext` APIs such as
-  `Map.prototype.getOrInsert` and `Temporal` are neither typed nor in Node 24.
+  floor, VS Code 1.125's extension host on Node 24.15, runs them: `RegExp.escape`,
+  `Object.hasOwn`, `Object.groupBy`, `Array.prototype.toSorted`, the `Set` methods, iterator
+  helpers and `Promise.try`. `esnext` APIs such as `Map.prototype.getOrInsert` and `Temporal`
+  are neither typed nor in Node 24.
 - **`using` takes an object with `[Symbol.dispose]`**, which Node 24 has. `vscode.Disposable` in
   the pinned 1.125 typings has only `dispose()`, so VS Code resources still go to
   `context.subscriptions` (`vscode-api.md`); `using` is for scoped resources of our own.

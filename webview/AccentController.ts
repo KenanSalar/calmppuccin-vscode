@@ -3,7 +3,7 @@
  * `--dynamic-accent-color` as the user picks, and the picker posts only on `change`.
  */
 
-import { WEBVIEW_CONSTANTS as COMMANDS } from "../src/constants";
+import { CUSTOM_ACCENT, HEX6_COLOR, WEBVIEW_CONSTANTS as COMMANDS } from "../src/constants";
 import { IVsCodeApi } from "../types/webview";
 
 export interface IAccentElements {
@@ -14,8 +14,6 @@ export interface IAccentElements {
 }
 
 export class AccentController {
-  private readonly hex6Regex = /^#[0-9a-fA-F]{6}$/;
-
   constructor(
     private readonly vscode: IVsCodeApi,
     private readonly elements: IAccentElements,
@@ -50,8 +48,8 @@ export class AccentController {
       accentSelect.appendChild(optionElement);
     });
 
-    accentSelect.addEventListener("change", (e) => {
-      const newValue = (e.target as HTMLSelectElement).value;
+    accentSelect.addEventListener("change", () => {
+      const newValue = accentSelect.value;
       this.handleAccentChange(newValue, accentColorMap);
       this.vscode.postMessage({ command: COMMANDS.UPDATE_ACCENT, value: newValue });
     });
@@ -70,7 +68,7 @@ export class AccentController {
 
   /** Shows the custom picker only for `custom`, and recolors the page with the chosen accent. */
   public handleAccentChange(accentValue: string, accentColorMap: { [key: string]: string }): void {
-    const isCustom = accentValue === "custom";
+    const isCustom = accentValue === CUSTOM_ACCENT;
     this.elements.customAccentPickerContainer.style.display = isCustom ? "grid" : "none";
     const newColor = isCustom
       ? this.elements.customAccentPicker.value
@@ -83,37 +81,38 @@ export class AccentController {
   }
 
   public initializeEventListeners(): void {
-    this.elements.customAccentPicker.addEventListener("input", (e) => {
-      const newValue = (e.target as HTMLInputElement).value;
-      this.elements.customAccentHexInput.value = newValue;
-      this.updateAccentColor(newValue);
+    const { customAccentPicker, customAccentHexInput } = this.elements;
+
+    customAccentPicker.addEventListener("input", () => {
+      customAccentHexInput.value = customAccentPicker.value;
+      this.updateAccentColor(customAccentPicker.value);
     });
 
-    this.elements.customAccentPicker.addEventListener("change", (e) => {
-      const newValue = (e.target as HTMLInputElement).value;
-      this.vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
+    customAccentPicker.addEventListener("change", () => {
+      this.vscode.postMessage({
+        command: COMMANDS.UPDATE_CUSTOM_ACCENT,
+        value: customAccentPicker.value,
+      });
     });
 
-    this.elements.customAccentHexInput.addEventListener("input", (e) => {
-      const inputElement = e.target as HTMLInputElement;
-      const newValue = inputElement.value;
+    customAccentHexInput.addEventListener("input", () => {
+      const newValue = customAccentHexInput.value;
 
-      if (this.hex6Regex.test(newValue)) {
-        inputElement.style.borderColor = "";
-        inputElement.style.outlineColor = "";
-        this.elements.customAccentPicker.value = newValue;
+      if (HEX6_COLOR.test(newValue)) {
+        customAccentHexInput.style.borderColor = "";
+        customAccentHexInput.style.outlineColor = "";
+        customAccentPicker.value = newValue;
         this.updateAccentColor(newValue);
       } else {
-        inputElement.style.borderColor = "var(--danger-color)";
-        inputElement.style.outlineColor = "var(--danger-color)";
+        customAccentHexInput.style.borderColor = "var(--danger-color)";
+        customAccentHexInput.style.outlineColor = "var(--danger-color)";
       }
     });
 
-    this.elements.customAccentHexInput.addEventListener("change", (e) => {
-      const inputElement = e.target as HTMLInputElement;
-      const newValue = inputElement.value;
+    customAccentHexInput.addEventListener("change", () => {
+      const newValue = customAccentHexInput.value;
 
-      if (this.hex6Regex.test(newValue)) {
+      if (HEX6_COLOR.test(newValue)) {
         this.vscode.postMessage({ command: COMMANDS.UPDATE_CUSTOM_ACCENT, value: newValue });
       }
     });

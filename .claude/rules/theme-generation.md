@@ -10,8 +10,8 @@ paths:
 
 # Theme generation
 
-`buildFlavor` in `build.ts` is one flavor's build and argues its non-obvious steps; this file holds
-what reaches across the template, the palettes and the manifest.
+`buildFlavor` in `build.ts` and its helpers are one flavor's build and argue its non-obvious steps;
+this file holds what reaches across the template, the palettes and the manifest.
 
 - **A placeholder is `{{key}}` inside a JSON string in `src/template.json`.** It resolves from the
   palette with the flavor's `syntaxOverrides` and `uiOverrides` on top, from `accent`, and from
@@ -31,7 +31,7 @@ what reaches across the template, the palettes and the manifest.
   `properties` entry under `calmppuccin.fontStyles` in `package.json`; `manifest.test.ts` fails
   on either alone.
 - **A new flavor** is a palette file, its `IPalettes` entry (`src/palettes.ts`), a
-  `contributes.themes` entry in `package.json`, and a `flavorIconMap` entry in `extension.ts`. The
+  `contributes.themes` entry in `package.json`, and an `ICON_FLAVORS` entry in `extension.ts`. The
   theme label must reduce to the flavor key through `parseFlavorFromThemeName`
   (`src/constants.ts`), and every flavor but `LIGHT_FLAVOR_NAME` is dark.
 - **The third-party generators see the base palette**, not the user's overrides, and what they
