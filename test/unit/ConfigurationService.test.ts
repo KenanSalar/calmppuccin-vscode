@@ -18,6 +18,7 @@ describe("ConfigurationService", () => {
     };
 
     (mockedVscode.workspace.getConfiguration as jest.Mock).mockReturnValue(mockConfiguration);
+    jest.mocked(vscode.extensions.getExtension).mockReset();
   });
 
   it("getAccent() should return the default accent color when no user setting is present", () => {
@@ -111,6 +112,59 @@ describe("ConfigurationService", () => {
     );
   });
 
+  it("updateFontStyleOverride() should add an override that differs from the default", async () => {
+    mockContributedFontStyles({ commentFontStyle: "italic" });
+    mockConfiguration.get.mockImplementation((key: string) => {
+      if (key === C.CONFIG_KEY_PROFILES) {
+        return { Default: { fontStyleOverrides: { latte: { commentFontStyle: "none" } } } };
+      }
+      if (key === C.CONFIG_KEY_ACTIVE_PROFILE) {
+        return "Default";
+      }
+      return undefined;
+    });
+
+    await ConfigurationService.updateFontStyleOverride("mocha", "commentFontStyle", "bold");
+
+    expect(mockConfiguration.update.mock.calls).toStrictEqual([
+      [
+        C.CONFIG_KEY_PROFILES,
+        {
+          Default: {
+            fontStyleOverrides: {
+              latte: { commentFontStyle: "none" },
+              mocha: { commentFontStyle: "bold" },
+            },
+          },
+        },
+        vscode.ConfigurationTarget.Global,
+      ],
+    ]);
+  });
+
+  it("updateFontStyleOverride() should clear the setting when its last override returns to the default", async () => {
+    mockContributedFontStyles({ commentFontStyle: "italic" });
+    mockConfiguration.get.mockImplementation((key: string) => {
+      if (key === C.CONFIG_KEY_PROFILES) {
+        return { Default: { fontStyleOverrides: { mocha: { commentFontStyle: "bold" } } } };
+      }
+      if (key === C.CONFIG_KEY_ACTIVE_PROFILE) {
+        return "Default";
+      }
+      return undefined;
+    });
+
+    await ConfigurationService.updateFontStyleOverride("mocha", "commentFontStyle", "italic");
+
+    expect(mockConfiguration.update.mock.calls).toStrictEqual([
+      [
+        C.CONFIG_KEY_PROFILES,
+        { Default: { fontStyleOverrides: undefined } },
+        vscode.ConfigurationTarget.Global,
+      ],
+    ]);
+  });
+
   it("resetAll() should call the update method with undefined for all settings", async () => {
     const existingProfiles = {
       Default: {
@@ -175,6 +229,44 @@ describe("ConfigurationService", () => {
       undefined,
       vscode.ConfigurationTarget.Global,
     );
+  });
+
+  it("saveProfile() should save only the values that differ from their defaults", async () => {
+    mockContributedFontStyles({ commentFontStyle: "italic", keywordFontStyle: "none" });
+    const activeProfile = {
+      accent: "lavender",
+      fontStyles: { commentFontStyle: "italic", keywordFontStyle: "bold" },
+      syntaxOverrides: { mocha: { comment: "#ff0000" } },
+      uiOverrides: { latte: { base: "#ffffff" } },
+      fontStyleOverrides: {},
+    };
+    mockConfiguration.get.mockImplementation((key: string, defaultValue?: unknown) => {
+      if (key === C.CONFIG_KEY_PROFILES) {
+        return { Default: activeProfile };
+      }
+      if (key === C.CONFIG_KEY_ACTIVE_PROFILE) {
+        return "Default";
+      }
+      return defaultValue;
+    });
+
+    await ConfigurationService.saveProfile("Work");
+
+    expect(mockConfiguration.update.mock.calls).toStrictEqual([
+      [
+        C.CONFIG_KEY_PROFILES,
+        {
+          Default: activeProfile,
+          Work: {
+            accent: "lavender",
+            fontStyles: { keywordFontStyle: "bold" },
+            syntaxOverrides: { mocha: { comment: "#ff0000" } },
+            uiOverrides: { latte: { base: "#ffffff" } },
+          },
+        },
+        vscode.ConfigurationTarget.Global,
+      ],
+    ]);
   });
 
   it("resetSyntaxColor() should remove a specific color override from a flavor", async () => {
@@ -322,6 +414,7 @@ describe("ConfigurationService", () => {
 describe("ConfigurationService.getWebViewSettings", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.mocked(vscode.extensions.getExtension).mockReset();
   });
 
   it("should correctly assemble the settings payload", () => {
@@ -404,3 +497,13 @@ describe("ConfigurationService.getWebViewSettings", () => {
     expect(baseSetting?.defaultColor).toBeDefined();
   });
 });
+
+function mockContributedFontStyles(defaults: Record<string, string>) {
+  (mockedVscode.extensions.getExtension as jest.Mock).mockReturnValue({
+    packageJSON: {
+      contributes: {
+        configuration: { properties: { "calmppuccin.fontStyles": { default: defaults } } },
+      },
+    },
+  });
+}

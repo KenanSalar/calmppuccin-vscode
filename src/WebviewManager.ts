@@ -33,20 +33,13 @@ export class WebviewManager {
     this._panel.webview.onDidReceiveMessage(messageHandler, null, this._disposables);
   }
 
-  /**
-   * Reveals the open panel, or creates one and loads its HTML.
-   * @param onReveal - Runs when an open panel is revealed rather than created.
-   */
+  /** Reveals the open panel, or creates one and loads its HTML. */
   public static async createOrShow(
     context: vscode.ExtensionContext,
     messageHandler: (message: unknown) => Promise<void>,
-    onReveal?: () => void,
   ): Promise<void> {
     if (WebviewManager.currentPanel) {
       WebviewManager.currentPanel._panel.reveal(vscode.ViewColumn.One);
-      if (onReveal) {
-        onReveal();
-      }
       return;
     }
 

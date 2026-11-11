@@ -94,15 +94,6 @@ describe("WebviewManager Unit Tests", () => {
     expect(revealMock).toHaveBeenCalledWith(vscode.ViewColumn.One);
   });
 
-  it("should call the onReveal callback when revealing an existing panel", async () => {
-    const onRevealCallback = jest.fn();
-    await WebviewManager.createOrShow(mockContext, jest.fn());
-
-    await WebviewManager.createOrShow(mockContext, jest.fn(), onRevealCallback);
-
-    expect(onRevealCallback).toHaveBeenCalledTimes(1);
-  });
-
   it("should delegate postMessage to the underlying webview's postMessage method", async () => {
     const testMessage: MessageToWebview = {
       command: "loadSettings",

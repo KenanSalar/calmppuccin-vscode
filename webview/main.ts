@@ -35,7 +35,7 @@ const SETTINGS_VIEWS: Readonly<Record<string, ISettingsView>> = {
 function requireElement<T extends HTMLElement>(id: string, type: new () => T): T {
   const element = document.getElementById(id);
   if (!(element instanceof type)) {
-    throw new Error(`Required element #${id} not found in DOM`);
+    throw new Error(`Required element #${id} is missing or isn't a ${type.name}`);
   }
   return element;
 }
