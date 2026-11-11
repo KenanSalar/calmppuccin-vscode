@@ -18,4 +18,3 @@ out/
 
 # AI tooling
 .claude/settings.local.json
-!.claude/rules

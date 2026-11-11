@@ -41,6 +41,18 @@ describe("Extension Manifest (package.json) Validation", () => {
     });
   });
 
+  describe("Remote Windows and Restricted Mode", () => {
+    /** One local copy of the themes then serves local and remote windows alike. */
+    it("should prefer running on the local machine", () => {
+      expect(manifest.extensionKind).toStrictEqual(["ui", "workspace"]);
+    });
+
+    /** An undeclared extension is disabled in an untrusted folder, and its themes with it. */
+    it("should stay enabled in untrusted workspaces", () => {
+      expect(manifest.capabilities.untrustedWorkspaces).toStrictEqual({ supported: true });
+    });
+  });
+
   describe("Setting Scopes", () => {
     const settingsByName = new Map(Object.entries(properties));
 

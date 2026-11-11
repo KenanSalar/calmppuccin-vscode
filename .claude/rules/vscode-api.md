@@ -33,13 +33,13 @@ and `testing.md` the Jest `vscode` mock.
   in the Command Palette.
 - **A theme's `label` is its settings ID** while no `id` is declared, so renaming a label breaks
   every user's `workbench.colorTheme`. `uiTheme` is `vs`, `vs-dark`, `hc-black` or `hc-light`.
-- **With `main` and no `extensionKind`, VS Code runs the extension as `["workspace"]`.** In an SSH,
-  WSL or container window it installs and runs on the remote host and rewrites that host's copy of
-  the themes. Nothing here reads the workspace, so `["ui", "workspace"]` would keep it local; the
-  manifest declares no `extensionKind` today.
-- **With `main` and no `capabilities.untrustedWorkspaces`, the extension is disabled in
-  Restricted Mode**, and its themes with it. It reads no workspace content, so `supported: true`
-  is the honest declaration, and the manifest has none today.
+- **`extensionKind` is `["ui", "workspace"]`.** Without it, a `main` makes VS Code run the
+  extension as `["workspace"]`, installed on the SSH, WSL or container host and rewriting that
+  host's copy of the themes. Nothing here reads the workspace, so it runs locally, and `workspace`
+  is the fallback where no local extension host exists, as in VS Code for the Web.
+- **`capabilities.untrustedWorkspaces` is `supported: true`.** Without it, a `main` disables the
+  extension in Restricted Mode, and its themes with it. It reads no workspace content, which is
+  what makes `supported: true` honest.
 - **A contributed setting defaults to `"scope": "window"`**, which lets workspace and remote
   settings override it. `configuration.md` says which settings take `application` instead.
 
