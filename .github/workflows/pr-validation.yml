@@ -42,6 +42,7 @@ jobs:
               - '!.dockerignore'
               - '!.vscode/**'
               - '!.gitignore'
+              - '!.git-blame-ignore-revs'
               - '!assets/images/customUI/**'
               - '!assets/images/preview/**'
               - '!assets/images/screenshots/**'

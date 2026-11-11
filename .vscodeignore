@@ -3,6 +3,7 @@
 .git/**
 .github/**
 .gitignore
+.git-blame-ignore-revs
 .dockerignore
 .vscode-test/**
 .vscode/**
