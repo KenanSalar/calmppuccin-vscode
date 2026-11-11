@@ -63,14 +63,14 @@ describe("ConfigurationService Profile Management", () => {
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_ACTIVE_PROFILE,
       "Default",
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
 
     // Should remove entire profiles (Default is empty, so remove all)
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_PROFILES,
       {}, // Empty because Default is empty and no custom profiles remain
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
@@ -98,7 +98,7 @@ describe("ConfigurationService Profile Management", () => {
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_PROFILES,
       {},
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
@@ -126,7 +126,7 @@ describe("ConfigurationService Profile Management", () => {
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_PROFILES,
       { Default: { accent: "lavender" } },
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
@@ -183,7 +183,7 @@ describe("ConfigurationService Profile Management", () => {
         Profile1: { accent: "mauve" },
         Profile3: { accent: "lavender" },
       },
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 });

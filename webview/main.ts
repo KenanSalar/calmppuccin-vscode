@@ -3,12 +3,12 @@
  * UIManager orchestrates extracted controllers for accent, controls, preview, and profiles.
  */
 
-import { codeSnippets } from "./snippets";
 import { ISettingsPayload, MessageToWebview, IVsCodeApi } from "../types/webview";
-import { ProfileController } from "./ProfileController";
-import { PreviewState, updatePreviewPane } from "./PreviewRenderer";
-import { ControlFactory } from "./ControlFactory";
 import { AccentController } from "./AccentController";
+import { ControlFactory } from "./ControlFactory";
+import { PreviewState, updatePreviewPane } from "./PreviewRenderer";
+import { ProfileController } from "./ProfileController";
+import { codeSnippets } from "./snippets";
 
 // This special function is provided by VS Code in the webview environment to allow communication back to the extension.
 declare function acquireVsCodeApi(): IVsCodeApi;
@@ -36,23 +36,65 @@ export class UIManager {
   /** A single object to hold references to all necessary DOM elements, queried once on instantiation for performance. */
   private readonly elements = {
     accentContainer: assertElement(document.getElementById("accent-container"), "accent-container"),
-    settingsContainer: assertElement(document.getElementById("settings-container"), "settings-container"),
-    customAccentPickerContainer: assertElement(document.getElementById("custom-accent-picker-container"), "custom-accent-picker-container"),
+    settingsContainer: assertElement(
+      document.getElementById("settings-container"),
+      "settings-container",
+    ),
+    customAccentPickerContainer: assertElement(
+      document.getElementById("custom-accent-picker-container"),
+      "custom-accent-picker-container",
+    ),
     flavorTitle: assertElement(document.getElementById("current-flavor"), "current-flavor"),
-    customAccentPicker: assertElement(document.getElementById("custom-accent-picker"), "custom-accent-picker") as HTMLInputElement,
-    customAccentHexInput: assertElement(document.getElementById("custom-accent-hex-input"), "custom-accent-hex-input") as HTMLInputElement,
+    customAccentPicker: assertElement(
+      document.getElementById("custom-accent-picker"),
+      "custom-accent-picker",
+    ) as HTMLInputElement,
+    customAccentHexInput: assertElement(
+      document.getElementById("custom-accent-hex-input"),
+      "custom-accent-hex-input",
+    ) as HTMLInputElement,
     previewPane: assertElement(document.getElementById("preview-pane"), "preview-pane"),
     codePreview: assertElement(document.getElementById("code-preview"), "code-preview"),
-    resetAllContainer: assertElement(document.getElementById("reset-all-container"), "reset-all-container"),
-    languageSelect: assertElement(document.getElementById("language-select"), "language-select") as HTMLSelectElement,
-    settingsViewSelect: assertElement(document.getElementById("settings-view-select"), "settings-view-select") as HTMLSelectElement,
-    dialogOverlay: assertElement(document.getElementById("reset-dialog-overlay"), "reset-dialog-overlay"),
-    confirmResetButton: assertElement(document.getElementById("dialog-confirm-button"), "dialog-confirm-button") as HTMLButtonElement,
-    cancelResetButton: assertElement(document.getElementById("dialog-cancel-button"), "dialog-cancel-button"),
-    profileSelect: assertElement(document.getElementById("profile-select"), "profile-select") as HTMLSelectElement,
-    profileNameInput: assertElement(document.getElementById("profile-name-input"), "profile-name-input") as HTMLInputElement,
-    saveProfileBtn: assertElement(document.getElementById("save-profile-btn"), "save-profile-btn") as HTMLButtonElement,
-    deleteProfileBtn: assertElement(document.getElementById("delete-profile-btn"), "delete-profile-btn") as HTMLButtonElement,
+    resetAllContainer: assertElement(
+      document.getElementById("reset-all-container"),
+      "reset-all-container",
+    ),
+    languageSelect: assertElement(
+      document.getElementById("language-select"),
+      "language-select",
+    ) as HTMLSelectElement,
+    settingsViewSelect: assertElement(
+      document.getElementById("settings-view-select"),
+      "settings-view-select",
+    ) as HTMLSelectElement,
+    dialogOverlay: assertElement(
+      document.getElementById("reset-dialog-overlay"),
+      "reset-dialog-overlay",
+    ),
+    confirmResetButton: assertElement(
+      document.getElementById("dialog-confirm-button"),
+      "dialog-confirm-button",
+    ) as HTMLButtonElement,
+    cancelResetButton: assertElement(
+      document.getElementById("dialog-cancel-button"),
+      "dialog-cancel-button",
+    ),
+    profileSelect: assertElement(
+      document.getElementById("profile-select"),
+      "profile-select",
+    ) as HTMLSelectElement,
+    profileNameInput: assertElement(
+      document.getElementById("profile-name-input"),
+      "profile-name-input",
+    ) as HTMLInputElement,
+    saveProfileBtn: assertElement(
+      document.getElementById("save-profile-btn"),
+      "save-profile-btn",
+    ) as HTMLButtonElement,
+    deleteProfileBtn: assertElement(
+      document.getElementById("delete-profile-btn"),
+      "delete-profile-btn",
+    ) as HTMLButtonElement,
   };
 
   /** Holds the current settings payload from the extension. */
@@ -95,7 +137,9 @@ export class UIManager {
     this.controlFactory = new ControlFactory({
       vscode: this.vscode,
       previewState: this.previewState,
-      onPreviewUpdate: () => { this.updatePreviewPane(); },
+      onPreviewUpdate: () => {
+        this.updatePreviewPane();
+      },
       settingsContainer: this.elements.settingsContainer,
       resetAllContainer: this.elements.resetAllContainer,
       dialogOverlay: this.elements.dialogOverlay,
@@ -143,7 +187,12 @@ export class UIManager {
     // 4. Build each section of the UI dynamically.
     this.profileController.populateProfileDropdown(profiles, activeProfile);
     this.profileController.updateProfileUI(activeProfile);
-    this.accentController.createControls(currentAccent, accentOptions, customAccentColor, this.accentColorMap);
+    this.accentController.createControls(
+      currentAccent,
+      accentOptions,
+      customAccentColor,
+      this.accentColorMap,
+    );
     this.controlFactory.createResetAllButton();
     this._handleViewChange();
 
@@ -226,25 +275,45 @@ export class UIManager {
 
     switch (selectedView) {
       case "syntax":
-        this.controlFactory.createSettingsControls(this.settings.syntaxSettings, defaultFontStyles, true, this.activeFlavor);
+        this.controlFactory.createSettingsControls(
+          this.settings.syntaxSettings,
+          defaultFontStyles,
+          true,
+          this.activeFlavor,
+        );
         this.elements.languageSelect.style.display = "";
         this.elements.languageSelect.value = "csharp";
         this.elements.codePreview.innerHTML = codeSnippets.csharp;
         break;
       case "ui":
         this.elements.settingsContainer.classList.add("view-brackets");
-        this.controlFactory.createSettingsControls(this.settings.uiSettings, {}, false, this.activeFlavor);
+        this.controlFactory.createSettingsControls(
+          this.settings.uiSettings,
+          {},
+          false,
+          this.activeFlavor,
+        );
         this.elements.languageSelect.style.display = "none";
         this.elements.codePreview.innerHTML = codeSnippets.ui;
         break;
       case "brackets":
         this.elements.settingsContainer.classList.add("view-brackets");
-        this.controlFactory.createSettingsControls(this.settings.bracketSettings, {}, false, this.activeFlavor);
+        this.controlFactory.createSettingsControls(
+          this.settings.bracketSettings,
+          {},
+          false,
+          this.activeFlavor,
+        );
         this.elements.languageSelect.style.display = "none";
         this.elements.codePreview.innerHTML = codeSnippets.brackets;
         break;
       case "json":
-        this.controlFactory.createSettingsControls(this.settings.jsonSettings, defaultFontStyles, true, this.activeFlavor);
+        this.controlFactory.createSettingsControls(
+          this.settings.jsonSettings,
+          defaultFontStyles,
+          true,
+          this.activeFlavor,
+        );
         this.elements.languageSelect.style.display = "none";
         this.elements.codePreview.innerHTML = codeSnippets.json;
         break;
@@ -263,7 +332,6 @@ export class UIManager {
       this.messageListener = null;
     }
   }
-
 }
 
 // This conditional check ensures this block of code ONLY runs in the browser/webview context

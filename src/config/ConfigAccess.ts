@@ -4,9 +4,9 @@
  */
 
 import * as vscode from "vscode";
+import { IProfile } from "../../types/webview";
 import * as C from "../constants";
 import palettes, { IPalettes } from "../palettes";
-import { IProfile } from "../../types/webview";
 
 /** Defines the shape of the font styles configuration object in settings.json. */
 export interface IFontStyles {
@@ -72,11 +72,9 @@ export function cloneOverrides<T extends Record<string, Record<string, string>>>
  * @param flavor The flavor key
  * @param key The nested key to remove
  */
-export function removeOverrideKey<T extends { [flavor: string]: { [key: string]: string } | undefined }>(
-  overrides: T,
-  flavor: string,
-  key: string
-): T | undefined {
+export function removeOverrideKey<
+  T extends { [flavor: string]: { [key: string]: string } | undefined },
+>(overrides: T, flavor: string, key: string): T | undefined {
   const flavorOverrides = overrides[flavor];
   if (!flavorOverrides || !(key in flavorOverrides)) {
     return overrides;
@@ -101,7 +99,7 @@ export function removeOverrideKey<T extends { [flavor: string]: { [key: string]:
     // If newFlavorOverrides is empty, we skip adding this flavor
   }
 
-  return Object.keys(newOverrides).length === 0 ? undefined : newOverrides as T;
+  return Object.keys(newOverrides).length === 0 ? undefined : (newOverrides as T);
 }
 
 /**
@@ -120,11 +118,7 @@ export function getProfiles(): { [name: string]: IProfile } {
   const rawProfiles: unknown = getConfig().get(C.CONFIG_KEY_PROFILES);
 
   // Validate and return a safe default if profiles is not a valid object
-  if (
-    typeof rawProfiles !== "object" ||
-    rawProfiles === null ||
-    Array.isArray(rawProfiles)
-  ) {
+  if (typeof rawProfiles !== "object" || rawProfiles === null || Array.isArray(rawProfiles)) {
     return { Default: {} };
   }
 
@@ -175,7 +169,10 @@ export function getProfileSetting(key: string, defaultValue: string): string {
  * @param {T} defaultValue The default value if not found.
  * @returns {T} The value of the setting.
  */
-export function getProfileObjectSetting<T extends Record<string, unknown>>(key: string, defaultValue: T): T {
+export function getProfileObjectSetting<T extends Record<string, unknown>>(
+  key: string,
+  defaultValue: T,
+): T {
   const activeProfile = getActiveProfile();
   const profiles = getProfiles();
 
@@ -211,7 +208,11 @@ export async function updateProfileSetting(key: string, value: IProfile[keyof IP
   profile[key] = value;
 
   const updatedProfiles = { ...profiles, [activeProfile]: profile };
-  await getConfig().update(C.CONFIG_KEY_PROFILES, updatedProfiles, vscode.ConfigurationTarget.Global);
+  await getConfig().update(
+    C.CONFIG_KEY_PROFILES,
+    updatedProfiles,
+    vscode.ConfigurationTarget.Global,
+  );
 }
 
 /**
@@ -219,6 +220,12 @@ export async function updateProfileSetting(key: string, value: IProfile[keyof IP
  * @returns {IFontStyles} The default font styles object.
  */
 export function getDefaultFontStyles(): IFontStyles {
-  const extensionConfig = vscode.extensions.getExtension(C.EXTENSION_ID)?.packageJSON as IExtensionPackageJson | undefined;
-  return extensionConfig?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLES}`]?.default ?? {};
+  const extensionConfig = vscode.extensions.getExtension(C.EXTENSION_ID)?.packageJSON as
+    | IExtensionPackageJson
+    | undefined;
+  return (
+    extensionConfig?.contributes?.configuration?.properties?.[
+      `${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLES}`
+    ]?.default ?? {}
+  );
 }

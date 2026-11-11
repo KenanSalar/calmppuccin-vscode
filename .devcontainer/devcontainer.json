@@ -6,7 +6,12 @@
     "dockerfile": "Dockerfile",
     "context": ".."
   },
-  "runArgs": ["--name", "calmppuccin-dev", "--hostname", "${localEnv:USER:localEnv:USERNAME:hacker-rank}-dc"],
+  "runArgs": [
+    "--name",
+    "calmppuccin-dev",
+    "--hostname",
+    "${localEnv:USER:localEnv:USERNAME:hacker-rank}-dc"
+  ],
   // These settings are applied inside the container once it's running
   "customizations": {
     "vscode": {

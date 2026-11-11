@@ -47,7 +47,8 @@ export async function updateFontStyle(key: string, value: string) {
   }
 
   // If no custom font styles remain, remove the entire setting
-  const finalFontStyles = Object.keys(filteredFontStyles).length === 0 ? undefined : filteredFontStyles;
+  const finalFontStyles =
+    Object.keys(filteredFontStyles).length === 0 ? undefined : filteredFontStyles;
   await updateProfileSetting(C.CONFIG_KEY_FONT_STYLES, finalFontStyles);
 }
 
@@ -68,7 +69,8 @@ export async function resetFontStyle(key: string) {
   }
 
   // If no custom font styles remain, remove the entire setting
-  const finalFontStyles = Object.keys(filteredFontStyles).length === 0 ? undefined : filteredFontStyles;
+  const finalFontStyles =
+    Object.keys(filteredFontStyles).length === 0 ? undefined : filteredFontStyles;
   await updateProfileSetting(C.CONFIG_KEY_FONT_STYLES, finalFontStyles);
 }
 
@@ -97,7 +99,9 @@ export async function updateCustomAccent(value: string) {
 export async function updateSyntaxColor(flavor: string, key: string, value: string) {
   // Clone the settings object to create a mutable copy
   const overrides = cloneOverrides(getSyntaxOverrides());
-  const existingFlavor = Object.prototype.hasOwnProperty.call(overrides, flavor) ? overrides[flavor] : undefined;
+  const existingFlavor = Object.prototype.hasOwnProperty.call(overrides, flavor)
+    ? overrides[flavor]
+    : undefined;
   const flavorOverrides = existingFlavor ? { ...existingFlavor } : {};
   flavorOverrides[key] = value;
   const updatedOverrides: ISyntaxOverrides = { ...overrides, [flavor]: flavorOverrides };
@@ -123,7 +127,9 @@ export async function resetSyntaxColor(flavor: string, key: string) {
  */
 export async function updateUiColor(flavor: string, key: string, value: string) {
   const overrides = cloneOverrides(getUiOverrides());
-  const existingFlavor = Object.prototype.hasOwnProperty.call(overrides, flavor) ? overrides[flavor] : undefined;
+  const existingFlavor = Object.prototype.hasOwnProperty.call(overrides, flavor)
+    ? overrides[flavor]
+    : undefined;
   const flavorOverrides = existingFlavor ? { ...existingFlavor } : {};
   flavorOverrides[key] = value;
   const updatedOverrides: IUiOverrides = { ...overrides, [flavor]: flavorOverrides };
@@ -158,7 +164,10 @@ export async function updateFontStyleOverride(flavor: string, key: string, value
       : undefined;
     const flavorOverrides = existingFlavor ? { ...existingFlavor } : {};
     flavorOverrides[key] = value;
-    const updatedOverrides: IFontStyleOverrides = { ...fontStyleOverrides, [flavor]: flavorOverrides };
+    const updatedOverrides: IFontStyleOverrides = {
+      ...fontStyleOverrides,
+      [flavor]: flavorOverrides,
+    };
     await updateProfileSetting(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, updatedOverrides);
   } else {
     // If setting to default, remove it (same as resetting)

@@ -46,9 +46,23 @@ describe("WebviewSettingsMapper contract", () => {
                 default: { commentFontStyle: "italic", keywordFontStyle: "none" },
               },
               "calmppuccin.accent": {
-                enum: ["rosewater", "flamingo", "pink", "mauve", "red", "maroon",
-                       "peach", "yellow", "green", "teal", "sky", "sapphire",
-                       "blue", "lavender", "custom"],
+                enum: [
+                  "rosewater",
+                  "flamingo",
+                  "pink",
+                  "mauve",
+                  "red",
+                  "maroon",
+                  "peach",
+                  "yellow",
+                  "green",
+                  "teal",
+                  "sky",
+                  "sapphire",
+                  "blue",
+                  "lavender",
+                  "custom",
+                ],
               },
             },
           },
@@ -174,7 +188,7 @@ describe("WebviewSettingsMapper contract", () => {
       },
     });
     const result = ConfigurationService.getWebViewSettings();
-    const commentSetting = result.syntaxSettings.find(s => s.key === "comment");
+    const commentSetting = result.syntaxSettings.find((s) => s.key === "comment");
     expect(commentSetting).toBeDefined();
     expect(commentSetting?.color).toBe("#ff0000");
   });
@@ -188,7 +202,7 @@ describe("WebviewSettingsMapper contract", () => {
       },
     });
     const result = ConfigurationService.getWebViewSettings();
-    const baseSetting = result.uiSettings.find(s => s.key === "base");
+    const baseSetting = result.uiSettings.find((s) => s.key === "base");
     expect(baseSetting).toBeDefined();
     expect(baseSetting?.color).toBe("#000000");
   });
@@ -214,7 +228,10 @@ describe("WebviewSettingsMapper contract", () => {
   });
 
   it("should return the active profile name", () => {
-    setupMocks({ activeProfile: "MyCustomProfile", profiles: { Default: {}, MyCustomProfile: {} } });
+    setupMocks({
+      activeProfile: "MyCustomProfile",
+      profiles: { Default: {}, MyCustomProfile: {} },
+    });
     const result = ConfigurationService.getWebViewSettings();
     expect(result.activeProfile).toBe("MyCustomProfile");
   });

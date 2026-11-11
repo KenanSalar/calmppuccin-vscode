@@ -11,7 +11,9 @@ const mockPostMessage = jest.fn();
 const mockVscode = {
   postMessage: mockPostMessage,
 };
-(global as unknown as { acquireVsCodeApi: () => typeof mockVscode }).acquireVsCodeApi = jest.fn(() => mockVscode);
+(global as unknown as { acquireVsCodeApi: () => typeof mockVscode }).acquireVsCodeApi = jest.fn(
+  () => mockVscode,
+);
 
 // --- HTML Fixture ---
 const htmlFixture = `
@@ -70,7 +72,11 @@ const mockSettingsPayload = {
   customAccentColor: "#89b4fa",
   activeThemeBackgroundColor: "#1d1d2c",
   accentColorPalettes: { sapphire: "#70b7d8", mauve: "#ba9ae2" },
-  defaultFontStyles: { commentFontStyle: "italic", keywordFontStyle: "none", jsonLvl0FontStyle: "none" },
+  defaultFontStyles: {
+    commentFontStyle: "italic",
+    keywordFontStyle: "none",
+    jsonLvl0FontStyle: "none",
+  },
   profiles: { "Custom Profile 1": {}, "Work Theme": {} },
   activeProfile: "Default",
 };
@@ -81,7 +87,7 @@ describe("UIManager Unit Tests", () => {
   beforeEach(() => {
     document.body.innerHTML = htmlFixture;
     mockPostMessage.mockClear();
-    ((global as unknown as { acquireVsCodeApi: jest.Mock }).acquireVsCodeApi).mockClear();
+    (global as unknown as { acquireVsCodeApi: jest.Mock }).acquireVsCodeApi.mockClear();
     uiManager = new UIManager();
     // Initialize event listeners before every single test
     uiManager.initializeEventListeners();
@@ -108,12 +114,12 @@ describe("UIManager Unit Tests", () => {
 
     // 2. Check for a unique string from the beginning of the C# snippet
     expect(content).toContain(
-      'namespace</span> <span data-token="namespace">MyApp<span data-token="operator">.</span>Core</span>'
+      'namespace</span> <span data-token="namespace">MyApp<span data-token="operator">.</span>Core</span>',
     );
 
     // 3. Check for a unique string from the end of the C# snippet
     expect(content).toContain(
-      'GetTypeName</span><span data-token="punctuation">(</span><span data-token="keyword">this</span>'
+      'GetTypeName</span><span data-token="punctuation">(</span><span data-token="keyword">this</span>',
     );
   });
 
@@ -160,7 +166,8 @@ describe("UIManager Unit Tests", () => {
   it("should send an 'updateSyntaxColor' message when a color hex input is changed", () => {
     // Arrange
     uiManager.populateAllSettings(mockSettingsPayload);
-    const keywordColorControl = document.querySelector("label[for='keyword']")?.nextElementSibling?.nextElementSibling;
+    const keywordColorControl =
+      document.querySelector("label[for='keyword']")?.nextElementSibling?.nextElementSibling;
     const hexInput = keywordColorControl?.querySelector(".hex-input-display") as HTMLInputElement;
     expect(hexInput).not.toBeNull();
 
@@ -179,7 +186,9 @@ describe("UIManager Unit Tests", () => {
       value: newColor,
     });
 
-    const keywordTokenInPreview = document.querySelector("#code-preview [data-token='keyword']") as HTMLElement;
+    const keywordTokenInPreview = document.querySelector(
+      "#code-preview [data-token='keyword']",
+    ) as HTMLElement;
     expect(keywordTokenInPreview.style.color).toBe("rgb(255, 0, 255)");
   });
 
@@ -242,7 +251,9 @@ describe("UIManager Unit Tests", () => {
     it("should validate hex color input and reject invalid values", () => {
       // Arrange
       uiManager.populateAllSettings(mockSettingsPayload);
-      const customAccentHexInput = document.getElementById("custom-accent-hex-input") as HTMLInputElement;
+      const customAccentHexInput = document.getElementById(
+        "custom-accent-hex-input",
+      ) as HTMLInputElement;
       const accentSelect = document.querySelector("#accent-container select") as HTMLSelectElement;
 
       // Switch to custom accent to show the hex input
@@ -269,7 +280,9 @@ describe("UIManager Unit Tests", () => {
     it("should only send valid hex colors to VS Code on change event", () => {
       // Arrange
       uiManager.populateAllSettings(mockSettingsPayload);
-      const customAccentHexInput = document.getElementById("custom-accent-hex-input") as HTMLInputElement;
+      const customAccentHexInput = document.getElementById(
+        "custom-accent-hex-input",
+      ) as HTMLInputElement;
       const accentSelect = document.querySelector("#accent-container select") as HTMLSelectElement;
 
       accentSelect.value = "custom";
@@ -300,7 +313,8 @@ describe("UIManager Unit Tests", () => {
     it("should validate syntax color hex input with 8-digit support", () => {
       // Arrange
       uiManager.populateAllSettings(mockSettingsPayload);
-      const keywordColorControl = document.querySelector("label[for='keyword']")?.nextElementSibling?.nextElementSibling;
+      const keywordColorControl =
+        document.querySelector("label[for='keyword']")?.nextElementSibling?.nextElementSibling;
       const hexInput = keywordColorControl?.querySelector(".hex-input-display") as HTMLInputElement;
 
       // Act - Test valid 6-digit hex

@@ -3,15 +3,17 @@
  * This object is used by the webview's live preview pane to display different code samples.
  */
 
+import { bracketsSnippet } from "./snippets/brackets";
 import { cSnippet } from "./snippets/c";
 import { cppSnippet } from "./snippets/cpp";
 import { csharpSnippet } from "./snippets/csharp";
-import { dartSnippet } from "./snippets/dart";
 import { cssSnippet } from "./snippets/css";
+import { dartSnippet } from "./snippets/dart";
 import { goSnippet } from "./snippets/go";
 import { htmlSnippet } from "./snippets/html";
 import { javaSnippet } from "./snippets/java";
 import { javascriptSnippet } from "./snippets/javascript";
+import { jsonSnippet } from "./snippets/json";
 import { kotlinSnippet } from "./snippets/kotlin";
 import { luaSnippet } from "./snippets/lua";
 import { phpSnippet } from "./snippets/php";
@@ -20,8 +22,6 @@ import { rustSnippet } from "./snippets/rust";
 import { shellSnippet } from "./snippets/shell";
 import { sqlSnippet } from "./snippets/sql";
 import { typescriptSnippet } from "./snippets/typescript";
-import { bracketsSnippet } from "./snippets/brackets";
-import { jsonSnippet } from "./snippets/json";
 import { uiSnippet } from "./snippets/ui";
 
 /**

@@ -4,12 +4,12 @@
  * including its creation, revealing, and disposal.
  */
 
-import * as vscode from "vscode";
 import * as fs from "fs/promises";
+import * as vscode from "vscode";
+import * as C from "../../src/constants";
+import { WebviewManager } from "../../src/WebviewManager";
 // Import the shared types from their new, correct location.
 import { MessageToWebview } from "../../types/webview";
-import { WebviewManager } from "../../src/WebviewManager";
-import * as C from "../../src/constants";
 
 // --- Mocking Dependencies ---
 
@@ -38,7 +38,7 @@ jest.mock(
     },
   }),
   // `virtual: true` is required for modules that don't exist in node_modules.
-  { virtual: true }
+  { virtual: true },
 );
 
 // Cast the imported vscode object to its mocked type for type-safe access to mock functions.
@@ -92,7 +92,9 @@ describe("WebviewManager Unit Tests", () => {
 
     // Configure the mocked `readFile` to return a simple HTML string (async version).
     // Includes <head>...</head> so that CSP injection can be tested.
-    (fs.readFile as jest.Mock).mockResolvedValue("<html><head></head><body>webview.js style.css</body></html>");
+    (fs.readFile as jest.Mock).mockResolvedValue(
+      "<html><head></head><body>webview.js style.css</body></html>",
+    );
 
     // Reset the static `currentPanel` property on the WebviewManager before each test.
     WebviewManager.currentPanel = undefined;
@@ -113,7 +115,7 @@ describe("WebviewManager Unit Tests", () => {
       C.WEBVIEW_CONSTANTS.WEBVIEW_ID,
       C.WEBVIEW_CONSTANTS.WEBVIEW_TITLE,
       vscode.ViewColumn.One,
-      expect.any(Object)
+      expect.any(Object),
     );
 
     // Assert: The static `currentPanel` property is now set.
@@ -162,7 +164,10 @@ describe("WebviewManager Unit Tests", () => {
    */
   it("should delegate postMessage to the underlying webview's postMessage method", async () => {
     // Arrange: Define a message payload that conforms to the `MessageToWebview` type.
-    const testMessage: MessageToWebview = { command: "loadSettings", settings: {} as unknown as import("../../types/webview").ISettingsPayload };
+    const testMessage: MessageToWebview = {
+      command: "loadSettings",
+      settings: {} as unknown as import("../../types/webview").ISettingsPayload,
+    };
     await WebviewManager.createOrShow(mockContext, jest.fn());
 
     // Act: Post the message through the manager.

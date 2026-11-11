@@ -4,8 +4,8 @@
  * and palettes to generate valid theme JSON objects.
  */
 
-import { buildAllFlavors } from "../../build";
 import * as fs from "fs-extra";
+import { buildAllFlavors } from "../../build";
 
 // Mock the entire fs-extra module to isolate the test from the file system.
 jest.mock("fs-extra");
@@ -242,12 +242,12 @@ describe("Build Script Unit Tests", () => {
 
       // Act
       await buildAllFlavors({
-      accentIdentifier: "sapphire",
-      fontStyles: mockFontStyles,
-      syntaxOverrides: {},
-      uiOverrides: {},
-      fontStyleOverrides: {},
-    });
+        accentIdentifier: "sapphire",
+        fontStyles: mockFontStyles,
+        syntaxOverrides: {},
+        uiOverrides: {},
+        fontStyleOverrides: {},
+      });
 
       // Assert
       const mochaCall = findThemeCall("mocha");
@@ -308,7 +308,10 @@ describe("Build Script Unit Tests", () => {
       expect(writtenJson?.type).toBe("dark"); // Build script sets this based on flavor
       expect(writtenJson?.tokenColors).toHaveLength(1);
       expect(writtenJson?.tokenColors?.[0].name).toBe("Comment");
-      expect(writtenJson?.tokenColors?.[0].scope).toEqual(["comment", "punctuation.definition.comment"]);
+      expect(writtenJson?.tokenColors?.[0].scope).toEqual([
+        "comment",
+        "punctuation.definition.comment",
+      ]);
       expect(writtenJson?.semanticTokenColors).toBeDefined();
     });
 

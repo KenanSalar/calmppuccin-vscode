@@ -4,13 +4,13 @@
  * for git operations, graph visualization, and branch status.
  */
 
-import { generateGitLensColors, IGitLensColors } from "../../src/extensions/gitlens";
 import {
   EXTENSION_OPACITY_BACKGROUND,
   EXTENSION_OPACITY_GUTTER,
   EXTENSION_OPACITY_HIGHLIGHT,
   EXTENSION_OPACITY_TRAILING,
 } from "../../src/constants";
+import { generateGitLensColors, IGitLensColors } from "../../src/extensions/gitlens";
 import { hexWithAlpha } from "../../src/utils/color";
 import { mockPalette } from "../__fixtures__/mockPalette";
 
@@ -145,7 +145,9 @@ describe("GitLens Color Generator", () => {
     });
 
     it("should use red for missing upstream", () => {
-      expect(colors["gitlens.decorations.branchMissingUpstreamForegroundColor"]).toBe(mockPalette.red);
+      expect(colors["gitlens.decorations.branchMissingUpstreamForegroundColor"]).toBe(
+        mockPalette.red,
+      );
     });
   });
 

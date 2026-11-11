@@ -5,10 +5,10 @@
  */
 
 import * as vscode from "vscode";
+import { ConfigurationService } from "../../src/ConfigurationService";
 import { SettingsPanel } from "../../src/SettingsPanel";
 // Import the shared types from their new, correct location.
 import { MessageToExtension as WebviewMessage } from "../../types/webview";
-import { ConfigurationService } from "../../src/ConfigurationService";
 
 // We only need to mock the parts of ConfigurationService we intend to spy on.
 jest.mock("../../src/ConfigurationService");
@@ -43,7 +43,9 @@ describe("SettingsPanel Integration Tests", () => {
 
     // Create an instance of the panel. Note that we don't need to create a real webview.
     // We are testing the panel's internal logic directly.
-    const panel = new (SettingsPanel as unknown as new (context: vscode.ExtensionContext) => SettingsPanel)(mockContext);
+    const panel = new (SettingsPanel as unknown as new (
+      context: vscode.ExtensionContext,
+    ) => SettingsPanel)(mockContext);
 
     // Create a spy on the specific service method we expect to be called.
     const updateAccentSpy = jest.spyOn(ConfigurationService, "updateAccent");
@@ -73,10 +75,14 @@ describe("SettingsPanel Integration Tests", () => {
    */
   it("should call updateFontStyleOverride on the ConfigurationService when receiving an updateSetting message", async () => {
     // 1. Arrange
-    const panel = new (SettingsPanel as unknown as new (context: vscode.ExtensionContext) => SettingsPanel)(mockContext);
+    const panel = new (SettingsPanel as unknown as new (
+      context: vscode.ExtensionContext,
+    ) => SettingsPanel)(mockContext);
 
     // Mock getActiveFlavor to return a specific flavor
-    const getActiveFlavorSpy = jest.spyOn(ConfigurationService, "getActiveFlavor").mockReturnValue("macchiato");
+    const getActiveFlavorSpy = jest
+      .spyOn(ConfigurationService, "getActiveFlavor")
+      .mockReturnValue("macchiato");
 
     // Create a spy on the specific service method we expect to be called.
     const updateFontStyleOverrideSpy = jest.spyOn(ConfigurationService, "updateFontStyleOverride");
@@ -96,7 +102,11 @@ describe("SettingsPanel Integration Tests", () => {
     // Verify that the correct service method was called, and with the correct data.
     expect(getActiveFlavorSpy).toHaveBeenCalledTimes(1);
     expect(updateFontStyleOverrideSpy).toHaveBeenCalledTimes(1);
-    expect(updateFontStyleOverrideSpy).toHaveBeenCalledWith("macchiato", "commentFontStyle", "italic");
+    expect(updateFontStyleOverrideSpy).toHaveBeenCalledWith(
+      "macchiato",
+      "commentFontStyle",
+      "italic",
+    );
   });
 
   /**
@@ -108,10 +118,14 @@ describe("SettingsPanel Integration Tests", () => {
    */
   it("should call resetFontStyleOverride on the ConfigurationService when receiving a resetFontStyle message", async () => {
     // 1. Arrange
-    const panel = new (SettingsPanel as unknown as new (context: vscode.ExtensionContext) => SettingsPanel)(mockContext);
+    const panel = new (SettingsPanel as unknown as new (
+      context: vscode.ExtensionContext,
+    ) => SettingsPanel)(mockContext);
 
     // Mock getActiveFlavor to return a specific flavor
-    const getActiveFlavorSpy = jest.spyOn(ConfigurationService, "getActiveFlavor").mockReturnValue("macchiato");
+    const getActiveFlavorSpy = jest
+      .spyOn(ConfigurationService, "getActiveFlavor")
+      .mockReturnValue("macchiato");
 
     // Create a spy on the specific service method we expect to be called.
     const resetFontStyleOverrideSpy = jest.spyOn(ConfigurationService, "resetFontStyleOverride");
@@ -142,7 +156,9 @@ describe("SettingsPanel Integration Tests", () => {
    */
   it("should call updateSyntaxColor on the ConfigurationService when receiving an updateSyntaxColor message", async () => {
     // 1. Arrange
-    const panel = new (SettingsPanel as unknown as new (context: vscode.ExtensionContext) => SettingsPanel)(mockContext);
+    const panel = new (SettingsPanel as unknown as new (
+      context: vscode.ExtensionContext,
+    ) => SettingsPanel)(mockContext);
 
     // Create a spy on the specific service method we expect to be called.
     const updateSyntaxColorSpy = jest.spyOn(ConfigurationService, "updateSyntaxColor");
@@ -171,7 +187,9 @@ describe("SettingsPanel Integration Tests", () => {
    */
   it("should call updateUiColor on the ConfigurationService when receiving an updateUiColor message", async () => {
     // 1. Arrange
-    const panel = new (SettingsPanel as unknown as new (context: vscode.ExtensionContext) => SettingsPanel)(mockContext);
+    const panel = new (SettingsPanel as unknown as new (
+      context: vscode.ExtensionContext,
+    ) => SettingsPanel)(mockContext);
     const updateUiColorSpy = jest.spyOn(ConfigurationService, "updateUiColor");
     const mockMessage: WebviewMessage = {
       command: "updateUiColor",
@@ -194,7 +212,9 @@ describe("SettingsPanel Integration Tests", () => {
    */
   it("should call resetUiColor on the ConfigurationService when receiving a resetUiColor message", async () => {
     // 1. Arrange
-    const panel = new (SettingsPanel as unknown as new (context: vscode.ExtensionContext) => SettingsPanel)(mockContext);
+    const panel = new (SettingsPanel as unknown as new (
+      context: vscode.ExtensionContext,
+    ) => SettingsPanel)(mockContext);
     const resetUiColorSpy = jest.spyOn(ConfigurationService, "resetUiColor");
     const mockMessage: WebviewMessage = {
       command: "resetUiColor",
@@ -218,10 +238,14 @@ describe("SettingsPanel Integration Tests", () => {
    */
   it("should call resetAll on the ConfigurationService when receiving a resetAll message", async () => {
     // 1. Arrange
-    const panel = new (SettingsPanel as unknown as new (context: vscode.ExtensionContext) => SettingsPanel)(mockContext);
+    const panel = new (SettingsPanel as unknown as new (
+      context: vscode.ExtensionContext,
+    ) => SettingsPanel)(mockContext);
 
     // Create a spy on the service method we expect to be called.
-    const resetAllSpy = jest.spyOn(ConfigurationService, "resetAll").mockImplementation(() => Promise.resolve());
+    const resetAllSpy = jest
+      .spyOn(ConfigurationService, "resetAll")
+      .mockImplementation(() => Promise.resolve());
 
     // This is our simulated message, as if a user clicked the "Reset All" button.
     const mockMessage: WebviewMessage = {
@@ -243,9 +267,15 @@ describe("SettingsPanel Integration Tests", () => {
    * @assertion updateActiveProfile should be called and _update should be called
    */
   it("should call updateActiveProfile and refresh webview when receiving switchProfile message", async () => {
-    const panel = new (SettingsPanel as unknown as new (context: vscode.ExtensionContext) => SettingsPanel)(mockContext);
-    const updateActiveProfileSpy = jest.spyOn(ConfigurationService, "updateActiveProfile").mockResolvedValue();
-    const updateSpy = jest.spyOn(panel as unknown as { _update: () => void }, "_update").mockImplementation();
+    const panel = new (SettingsPanel as unknown as new (
+      context: vscode.ExtensionContext,
+    ) => SettingsPanel)(mockContext);
+    const updateActiveProfileSpy = jest
+      .spyOn(ConfigurationService, "updateActiveProfile")
+      .mockResolvedValue();
+    const updateSpy = jest
+      .spyOn(panel as unknown as { _update: () => void }, "_update")
+      .mockImplementation();
 
     const mockMessage: WebviewMessage = {
       command: "switchProfile",
@@ -264,7 +294,9 @@ describe("SettingsPanel Integration Tests", () => {
    * @assertion saveProfile should be called with profile name
    */
   it("should call saveProfile when receiving saveProfile message", async () => {
-    const panel = new (SettingsPanel as unknown as new (context: vscode.ExtensionContext) => SettingsPanel)(mockContext);
+    const panel = new (SettingsPanel as unknown as new (
+      context: vscode.ExtensionContext,
+    ) => SettingsPanel)(mockContext);
     const saveProfileSpy = jest.spyOn(ConfigurationService, "saveProfile").mockResolvedValue();
 
     const mockMessage: WebviewMessage = {
@@ -283,9 +315,13 @@ describe("SettingsPanel Integration Tests", () => {
    * @assertion deleteProfile should be called and _update should be called
    */
   it("should call deleteProfile and refresh webview when receiving deleteProfile message", async () => {
-    const panel = new (SettingsPanel as unknown as new (context: vscode.ExtensionContext) => SettingsPanel)(mockContext);
+    const panel = new (SettingsPanel as unknown as new (
+      context: vscode.ExtensionContext,
+    ) => SettingsPanel)(mockContext);
     const deleteProfileSpy = jest.spyOn(ConfigurationService, "deleteProfile").mockResolvedValue();
-    const updateSpy = jest.spyOn(panel as unknown as { _update: () => void }, "_update").mockImplementation();
+    const updateSpy = jest
+      .spyOn(panel as unknown as { _update: () => void }, "_update")
+      .mockImplementation();
 
     const mockMessage: WebviewMessage = {
       command: "deleteProfile",
@@ -304,7 +340,9 @@ describe("SettingsPanel Integration Tests", () => {
    * @assertion deleteProfile should be called even for Default (service handles protection)
    */
   it("should attempt to delete Default profile (ConfigurationService handles protection)", async () => {
-    const panel = new (SettingsPanel as unknown as new (context: vscode.ExtensionContext) => SettingsPanel)(mockContext);
+    const panel = new (SettingsPanel as unknown as new (
+      context: vscode.ExtensionContext,
+    ) => SettingsPanel)(mockContext);
     const deleteProfileSpy = jest.spyOn(ConfigurationService, "deleteProfile").mockResolvedValue();
 
     const mockMessage: WebviewMessage = {
@@ -324,9 +362,13 @@ describe("SettingsPanel Integration Tests", () => {
    * @assertion updateFontStyleOverride should be called with flavor, key and value
    */
   it("should call updateFontStyleOverride when receiving updateSetting message", async () => {
-    const panel = new (SettingsPanel as unknown as new (context: vscode.ExtensionContext) => SettingsPanel)(mockContext);
+    const panel = new (SettingsPanel as unknown as new (
+      context: vscode.ExtensionContext,
+    ) => SettingsPanel)(mockContext);
     jest.spyOn(ConfigurationService, "getActiveFlavor").mockReturnValue("mocha");
-    const updateFontStyleOverrideSpy = jest.spyOn(ConfigurationService, "updateFontStyleOverride").mockResolvedValue();
+    const updateFontStyleOverrideSpy = jest
+      .spyOn(ConfigurationService, "updateFontStyleOverride")
+      .mockResolvedValue();
 
     const mockMessage: WebviewMessage = {
       command: "updateSetting",
@@ -345,8 +387,12 @@ describe("SettingsPanel Integration Tests", () => {
    * @assertion resetSyntaxColor should be called with flavor and key
    */
   it("should call resetSyntaxColor when receiving resetSyntaxColor message", async () => {
-    const panel = new (SettingsPanel as unknown as new (context: vscode.ExtensionContext) => SettingsPanel)(mockContext);
-    const resetSyntaxColorSpy = jest.spyOn(ConfigurationService, "resetSyntaxColor").mockResolvedValue();
+    const panel = new (SettingsPanel as unknown as new (
+      context: vscode.ExtensionContext,
+    ) => SettingsPanel)(mockContext);
+    const resetSyntaxColorSpy = jest
+      .spyOn(ConfigurationService, "resetSyntaxColor")
+      .mockResolvedValue();
 
     const mockMessage: WebviewMessage = {
       command: "resetSyntaxColor",
@@ -365,16 +411,24 @@ describe("SettingsPanel Integration Tests", () => {
    * @assertion All messages should be processed in order
    */
   it("should handle multiple sequential messages correctly", async () => {
-    const panel = new (SettingsPanel as unknown as new (context: vscode.ExtensionContext) => SettingsPanel)(mockContext);
+    const panel = new (SettingsPanel as unknown as new (
+      context: vscode.ExtensionContext,
+    ) => SettingsPanel)(mockContext);
     const updateAccentSpy = jest.spyOn(ConfigurationService, "updateAccent").mockResolvedValue();
     jest.spyOn(ConfigurationService, "getActiveFlavor").mockReturnValue("mocha");
-    const updateFontStyleOverrideSpy = jest.spyOn(ConfigurationService, "updateFontStyleOverride").mockResolvedValue();
+    const updateFontStyleOverrideSpy = jest
+      .spyOn(ConfigurationService, "updateFontStyleOverride")
+      .mockResolvedValue();
     const saveProfileSpy = jest.spyOn(ConfigurationService, "saveProfile").mockResolvedValue();
     jest.spyOn(ConfigurationService, "updateActiveProfile").mockResolvedValue();
     jest.spyOn(panel as unknown as { _update: () => void }, "_update").mockImplementation();
 
     const message1: WebviewMessage = { command: "updateAccent", value: "mauve" };
-    const message2: WebviewMessage = { command: "updateSetting", key: "commentFontStyle", value: "bold" };
+    const message2: WebviewMessage = {
+      command: "updateSetting",
+      key: "commentFontStyle",
+      value: "bold",
+    };
     const message3: WebviewMessage = { command: "saveProfile", profile: "TestProfile" };
 
     await panel._handleMessage(message1);

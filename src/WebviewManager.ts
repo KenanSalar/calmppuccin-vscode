@@ -3,11 +3,11 @@
  * managing, and communicating with the extension's webview panel.
  */
 
-import * as vscode from "vscode";
-import * as path from "path";
 import * as fs from "fs/promises";
-import * as C from "./constants";
+import * as path from "path";
+import * as vscode from "vscode";
 import { MessageToExtension, MessageToWebview } from "../types/webview";
+import * as C from "./constants";
 
 /**
  * Manages the lifecycle and communication of the Calmppuccin settings webview panel.
@@ -29,16 +29,23 @@ export class WebviewManager {
    * @param {vscode.WebviewPanel} panel The webview panel instance.
    * @param {(message: MessageToExtension) => void} messageHandler The callback function to handle messages received from the webview.
    */
-  private constructor(panel: vscode.WebviewPanel, messageHandler: (message: MessageToExtension) => void | Promise<void>) {
+  private constructor(
+    panel: vscode.WebviewPanel,
+    messageHandler: (message: MessageToExtension) => void | Promise<void>,
+  ) {
     this._panel = panel;
-    this._panel.onDidDispose(() => {
-      // VS Code already disposed the panel, so only clean up our own resources.
-      this._disposed = true;
-      WebviewManager.currentPanel = undefined;
-      while (this._disposables.length) {
-        this._disposables.pop()?.dispose();
-      }
-    }, null, this._disposables);
+    this._panel.onDidDispose(
+      () => {
+        // VS Code already disposed the panel, so only clean up our own resources.
+        this._disposed = true;
+        WebviewManager.currentPanel = undefined;
+        while (this._disposables.length) {
+          this._disposables.pop()?.dispose();
+        }
+      },
+      null,
+      this._disposables,
+    );
     this._panel.webview.onDidReceiveMessage(messageHandler, null, this._disposables);
   }
 
@@ -52,7 +59,7 @@ export class WebviewManager {
   public static async createOrShow(
     context: vscode.ExtensionContext,
     messageHandler: (message: MessageToExtension) => void | Promise<void>,
-    onReveal?: () => void
+    onReveal?: () => void,
   ): Promise<void> {
     if (WebviewManager.currentPanel) {
       WebviewManager.currentPanel._panel.reveal(vscode.ViewColumn.One);
@@ -76,7 +83,7 @@ export class WebviewManager {
         ],
         // Keep the webview's state even when it's not visible.
         retainContextWhenHidden: true,
-      }
+      },
     );
 
     // Set currentPanel IMMEDIATELY after panel creation to prevent race conditions.
@@ -84,7 +91,10 @@ export class WebviewManager {
     WebviewManager.currentPanel = new WebviewManager(panel, messageHandler);
 
     // Load HTML asynchronously to avoid blocking the extension host.
-    const htmlContent = await WebviewManager._getHtmlForWebview(context.extensionPath, panel.webview);
+    const htmlContent = await WebviewManager._getHtmlForWebview(
+      context.extensionPath,
+      panel.webview,
+    );
     panel.webview.html = htmlContent;
   }
 
@@ -118,13 +128,20 @@ export class WebviewManager {
    * @returns {Promise<string>} The HTML content with correctly resolved resource paths.
    * @private
    */
-  private static async _getHtmlForWebview(extensionPath: string, webview: vscode.Webview): Promise<string> {
+  private static async _getHtmlForWebview(
+    extensionPath: string,
+    webview: vscode.Webview,
+  ): Promise<string> {
     const htmlPath = path.join(extensionPath, "webview", "index.html");
     let htmlContent = await fs.readFile(htmlPath, "utf8");
 
     // Use `asWebviewUri` to create a special URI that VS Code allows the webview to load.
-    const scriptUri = webview.asWebviewUri(vscode.Uri.file(path.join(extensionPath, "dist", "webview.js")));
-    const styleUri = webview.asWebviewUri(vscode.Uri.file(path.join(extensionPath, "webview", "style.css")));
+    const scriptUri = webview.asWebviewUri(
+      vscode.Uri.file(path.join(extensionPath, "dist", "webview.js")),
+    );
+    const styleUri = webview.asWebviewUri(
+      vscode.Uri.file(path.join(extensionPath, "webview", "style.css")),
+    );
 
     // Replace the placeholder paths in the HTML with the generated URIs.
     htmlContent = htmlContent.replace("webview.js", scriptUri.toString());

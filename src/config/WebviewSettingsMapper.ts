@@ -4,6 +4,7 @@
  */
 
 import * as vscode from "vscode";
+import { ISettingsPayload, IWebviewSetting, IProfile } from "../../types/webview";
 import * as C from "../constants";
 import {
   CUSTOMIZABLE_BRACKET_KEYS,
@@ -13,7 +14,6 @@ import {
   parseFlavorFromThemeName,
 } from "../constants";
 import palettes from "../palettes";
-import { ISettingsPayload, IWebviewSetting, IProfile } from "../../types/webview";
 import {
   IExtensionPackageJson,
   IFontStyles,
@@ -32,7 +32,9 @@ export function getWebViewSettings(): ISettingsPayload {
   // Cache the configuration snapshot once to avoid repeated VS Code API calls.
   const configSnapshot = vscode.workspace.getConfiguration(C.EXTENSION_NAMESPACE);
   const workbenchConfig = vscode.workspace.getConfiguration("workbench");
-  const extensionConfig = vscode.extensions.getExtension(C.EXTENSION_ID)?.packageJSON as IExtensionPackageJson | undefined;
+  const extensionConfig = vscode.extensions.getExtension(C.EXTENSION_ID)?.packageJSON as
+    | IExtensionPackageJson
+    | undefined;
 
   // Get profiles from cached config
   const rawProfiles: unknown = configSnapshot.get(C.CONFIG_KEY_PROFILES);
@@ -47,7 +49,9 @@ export function getWebViewSettings(): ISettingsPayload {
   }
 
   const activeProfile = configSnapshot.get(C.CONFIG_KEY_ACTIVE_PROFILE, "Default");
-  const profile = Object.prototype.hasOwnProperty.call(profiles, activeProfile) ? profiles[activeProfile] : {};
+  const profile = Object.prototype.hasOwnProperty.call(profiles, activeProfile)
+    ? profiles[activeProfile]
+    : {};
 
   // Helper to get string setting from profile with fallback to global config
   const getProfileString = (key: string, defaultValue: string): string => {
@@ -77,14 +81,21 @@ export function getWebViewSettings(): ISettingsPayload {
   const fontStyles = getProfileObject<IFontStyles>(C.CONFIG_KEY_FONT_STYLES, {});
   const syntaxOverrides = getProfileObject<ISyntaxOverrides>(C.CONFIG_KEY_SYNTAX_OVERRIDES, {});
   const uiOverrides = getProfileObject<IUiOverrides>(C.CONFIG_KEY_UI_OVERRIDES, {});
-  const fontStyleOverrides = getProfileObject<IFontStyleOverrides>(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, {});
+  const fontStyleOverrides = getProfileObject<IFontStyleOverrides>(
+    C.CONFIG_KEY_FONT_STYLE_OVERRIDES,
+    {},
+  );
   const currentAccent = getProfileString(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
   const customAccentColor = getProfileString(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
 
-  const defaultFontStyles = extensionConfig?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLES}`]?.default ?? {};
+  const defaultFontStyles =
+    extensionConfig?.contributes?.configuration?.properties?.[
+      `${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLES}`
+    ]?.default ?? {};
   const accentOptions: string[] =
-    extensionConfig?.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACCENT}`]?.enum ??
-    [];
+    extensionConfig?.contributes?.configuration?.properties?.[
+      `${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_ACCENT}`
+    ]?.enum ?? [];
 
   const defaultPalette = palettes[activeFlavor];
   const overrideSyntaxPalette = syntaxOverrides[activeFlavor] ?? {};
@@ -99,39 +110,33 @@ export function getWebViewSettings(): ISettingsPayload {
     return acc;
   }, {});
 
-  const syntaxSettings = CUSTOMIZABLE_SYNTAX_KEYS.map(
-    (key): IWebviewSetting => ({
-      key: key,
-      fontStyle: overrideFontStylePalette[`${key}FontStyle`] || fontStyles[`${key}FontStyle`] || "none",
-      color: overrideSyntaxPalette[key] || defaultPalette[key],
-      defaultColor: defaultPalette[key],
-    })
-  );
+  const syntaxSettings = CUSTOMIZABLE_SYNTAX_KEYS.map((key): IWebviewSetting => ({
+    key: key,
+    fontStyle:
+      overrideFontStylePalette[`${key}FontStyle`] || fontStyles[`${key}FontStyle`] || "none",
+    color: overrideSyntaxPalette[key] || defaultPalette[key],
+    defaultColor: defaultPalette[key],
+  }));
 
-  const bracketSettings = CUSTOMIZABLE_BRACKET_KEYS.map(
-    (key): IWebviewSetting => ({
-      key: key,
-      color: overrideSyntaxPalette[key] || defaultPalette[key],
-      defaultColor: defaultPalette[key],
-    })
-  );
+  const bracketSettings = CUSTOMIZABLE_BRACKET_KEYS.map((key): IWebviewSetting => ({
+    key: key,
+    color: overrideSyntaxPalette[key] || defaultPalette[key],
+    defaultColor: defaultPalette[key],
+  }));
 
-  const jsonSettings = CUSTOMIZABLE_JSON_KEYS.map(
-    (key): IWebviewSetting => ({
-      key: key,
-      fontStyle: overrideFontStylePalette[`${key}FontStyle`] || fontStyles[`${key}FontStyle`] || "none",
-      color: overrideSyntaxPalette[key] || defaultPalette[key],
-      defaultColor: defaultPalette[key],
-    })
-  );
+  const jsonSettings = CUSTOMIZABLE_JSON_KEYS.map((key): IWebviewSetting => ({
+    key: key,
+    fontStyle:
+      overrideFontStylePalette[`${key}FontStyle`] || fontStyles[`${key}FontStyle`] || "none",
+    color: overrideSyntaxPalette[key] || defaultPalette[key],
+    defaultColor: defaultPalette[key],
+  }));
 
-  const uiSettings = CUSTOMIZABLE_UI_KEYS.map(
-    (key): IWebviewSetting => ({
-      key: key,
-      color: overrideUiPalette[key] || defaultPalette[key],
-      defaultColor: defaultPalette[key],
-    })
-  );
+  const uiSettings = CUSTOMIZABLE_UI_KEYS.map((key): IWebviewSetting => ({
+    key: key,
+    color: overrideUiPalette[key] || defaultPalette[key],
+    defaultColor: defaultPalette[key],
+  }));
 
   return {
     activeFlavor,

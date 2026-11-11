@@ -4,8 +4,8 @@
  * for all diagnostic categories (error, warning, info, hint).
  */
 
-import { generateErrorLensColors, IErrorLensColors } from "../../src/extensions/errorLens";
 import { EXTENSION_OPACITY_BACKGROUND } from "../../src/constants";
+import { generateErrorLensColors, IErrorLensColors } from "../../src/extensions/errorLens";
 import { hexWithAlpha } from "../../src/utils/color";
 import { mockPalette } from "../__fixtures__/mockPalette";
 

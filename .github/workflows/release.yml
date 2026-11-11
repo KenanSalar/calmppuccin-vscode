@@ -6,7 +6,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
   # Re-runs a release: pick the tag, not a branch, in the ref dropdown.
   workflow_dispatch:
 
@@ -60,7 +60,7 @@ jobs:
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: vsix
-          path: '*.vsix'
+          path: "*.vsix"
           if-no-files-found: error
 
   # Every step skips what already exists, so a re-run after a partial failure

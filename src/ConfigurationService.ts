@@ -5,12 +5,42 @@
  */
 
 import { getProfiles, getActiveProfile } from "./config/ConfigAccess";
-import { getAccent, getFontStyles, getSyntaxOverrides, getUiOverrides, getFontStyleOverrides, getActiveFlavor } from "./config/SettingsReader";
-import { updateFontStyle, resetFontStyle, updateAccent, updateCustomAccent, updateSyntaxColor, resetSyntaxColor, updateUiColor, resetUiColor, updateFontStyleOverride, resetFontStyleOverride } from "./config/SettingsWriter";
-import { updateActiveProfile, saveProfile, deleteProfile, resetProfile, resetAll, migrateGlobalSettingsToDefault } from "./config/ProfileManager";
+import {
+  updateActiveProfile,
+  saveProfile,
+  deleteProfile,
+  resetProfile,
+  resetAll,
+  migrateGlobalSettingsToDefault,
+} from "./config/ProfileManager";
+import {
+  getAccent,
+  getFontStyles,
+  getSyntaxOverrides,
+  getUiOverrides,
+  getFontStyleOverrides,
+  getActiveFlavor,
+} from "./config/SettingsReader";
+import {
+  updateFontStyle,
+  resetFontStyle,
+  updateAccent,
+  updateCustomAccent,
+  updateSyntaxColor,
+  resetSyntaxColor,
+  updateUiColor,
+  resetUiColor,
+  updateFontStyleOverride,
+  resetFontStyleOverride,
+} from "./config/SettingsWriter";
 import { getWebViewSettings } from "./config/WebviewSettingsMapper";
 
-export type { IFontStyles, ISyntaxOverrides, IUiOverrides, IFontStyleOverrides } from "./config/ConfigAccess";
+export type {
+  IFontStyles,
+  ISyntaxOverrides,
+  IUiOverrides,
+  IFontStyleOverrides,
+} from "./config/ConfigAccess";
 
 /**
  * A utility class for managing all Calmppuccin settings in VS Code.

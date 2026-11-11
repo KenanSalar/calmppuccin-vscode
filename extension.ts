@@ -6,9 +6,9 @@
 
 import * as vscode from "vscode";
 import { buildAllFlavors } from "./build";
+import { ConfigurationService } from "./src/ConfigurationService";
 import * as C from "./src/constants";
 import { SettingsPanel } from "./src/SettingsPanel";
-import { ConfigurationService } from "./src/ConfigurationService";
 
 // This disposable will hold the main settings listener. It's defined here
 // to track its state and ensure it only registers it once.
@@ -68,10 +68,15 @@ function syncIconFlavor(retryCount = 0) {
     const targetIconFlavor = flavorIconMap[flavor];
     const targetIconThemeId = `${C.CATPPUCCIN_ICON_PACK_ID}${targetIconFlavor}`;
     if (currentIconTheme !== targetIconThemeId) {
-      workbenchConfig.update("iconTheme", targetIconThemeId, vscode.ConfigurationTarget.Global)
+      workbenchConfig
+        .update("iconTheme", targetIconThemeId, vscode.ConfigurationTarget.Global)
         .then(
-          () => { /* success - no action needed */ },
-          (err: unknown) => { console.error("Failed to sync icon theme:", err); }
+          () => {
+            /* success - no action needed */
+          },
+          (err: unknown) => {
+            console.error("Failed to sync icon theme:", err);
+          },
         );
     }
   }, delay);
@@ -86,44 +91,52 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Migrate existing global settings to Default profile (skip in test environment)
   if (typeof process === "undefined" || process.env.JEST_WORKER_ID === undefined) {
-    ConfigurationService.migrateGlobalSettingsToDefault()
-      .catch((err: unknown) => {
-        console.error("Failed to migrate settings:", err);
-      });
+    ConfigurationService.migrateGlobalSettingsToDefault().catch((err: unknown) => {
+      console.error("Failed to migrate settings:", err);
+    });
   }
 
   // This internal command is used by the extension itself to regenerate themes.
-  const regenerateThemesCommand = vscode.commands.registerCommand(C.REGENERATE_COMMAND_ID, async () => {
-    try {
-      await buildAllFlavors({
-        accentIdentifier: ConfigurationService.getAccent(),
-        fontStyles: ConfigurationService.getFontStyles(),
-        syntaxOverrides: ConfigurationService.getSyntaxOverrides(),
-        uiOverrides: ConfigurationService.getUiOverrides(),
-        fontStyleOverrides: ConfigurationService.getFontStyleOverrides(),
-      });
-      const selection = await vscode.window.showInformationMessage(C.INFO_MESSAGE, C.RELOAD_ACTION);
-      if (selection === C.RELOAD_ACTION) {
-        vscode.commands.executeCommand(C.RELOAD_COMMAND_ID)
-          .then(
-            () => { /* success - no action needed */ },
-            (err: unknown) => { console.error("Failed to reload window:", err); }
+  const regenerateThemesCommand = vscode.commands.registerCommand(
+    C.REGENERATE_COMMAND_ID,
+    async () => {
+      try {
+        await buildAllFlavors({
+          accentIdentifier: ConfigurationService.getAccent(),
+          fontStyles: ConfigurationService.getFontStyles(),
+          syntaxOverrides: ConfigurationService.getSyntaxOverrides(),
+          uiOverrides: ConfigurationService.getUiOverrides(),
+          fontStyleOverrides: ConfigurationService.getFontStyleOverrides(),
+        });
+        const selection = await vscode.window.showInformationMessage(
+          C.INFO_MESSAGE,
+          C.RELOAD_ACTION,
+        );
+        if (selection === C.RELOAD_ACTION) {
+          vscode.commands.executeCommand(C.RELOAD_COMMAND_ID).then(
+            () => {
+              /* success - no action needed */
+            },
+            (err: unknown) => {
+              console.error("Failed to reload window:", err);
+            },
           );
+        }
+      } catch (error) {
+        console.error(error);
+        let errorMessage = C.ERROR_MESSAGE_PREFIX;
+        if (error instanceof Error) {
+          errorMessage += error.message;
+        } else {
+          errorMessage += String(error);
+        }
+        const selection = await vscode.window.showErrorMessage(errorMessage, C.REPORT_ISSUE_ACTION);
+        if (selection === C.REPORT_ISSUE_ACTION) {
+          vscode.env.openExternal(vscode.Uri.parse(C.REPO_ISSUES_URL));
+        }
       }
-    } catch (error) {
-      console.error(error);
-      let errorMessage = C.ERROR_MESSAGE_PREFIX;
-      if (error instanceof Error) {
-        errorMessage += error.message;
-      } else {
-        errorMessage += String(error);
-      }
-      const selection = await vscode.window.showErrorMessage(errorMessage, C.REPORT_ISSUE_ACTION);
-      if (selection === C.REPORT_ISSUE_ACTION) {
-        vscode.env.openExternal(vscode.Uri.parse(C.REPO_ISSUES_URL));
-      }
-    }
-  });
+    },
+  );
 
   // This is the command that opens the customization UI. Because it's declared in `package.json`,
   // running it will activate the extension for the first time.
@@ -153,28 +166,37 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     // This is the main listener that handles automatic theme regeneration and icon syncing.
-    settingsChangeListener = vscode.workspace.onDidChangeConfiguration((event: vscode.ConfigurationChangeEvent) => {
-      // If a Calmppuccin-specific setting changed, regenerate the themes (debounced).
-      if (C.THEME_AFFECTING_KEYS.some(key => event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${key}`))) {
-        if (regenerateTimer) {
-          clearTimeout(regenerateTimer);
-        }
-        regenerateTimer = setTimeout(() => {
-          regenerateTimer = undefined;
-          vscode.commands.executeCommand(C.REGENERATE_COMMAND_ID)
-            .then(
-              () => { /* success */ },
-              (err: unknown) => { console.error("Failed to regenerate themes:", err); }
+    settingsChangeListener = vscode.workspace.onDidChangeConfiguration(
+      (event: vscode.ConfigurationChangeEvent) => {
+        // If a Calmppuccin-specific setting changed, regenerate the themes (debounced).
+        if (
+          C.THEME_AFFECTING_KEYS.some((key) =>
+            event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${key}`),
+          )
+        ) {
+          if (regenerateTimer) {
+            clearTimeout(regenerateTimer);
+          }
+          regenerateTimer = setTimeout(() => {
+            regenerateTimer = undefined;
+            vscode.commands.executeCommand(C.REGENERATE_COMMAND_ID).then(
+              () => {
+                /* success */
+              },
+              (err: unknown) => {
+                console.error("Failed to regenerate themes:", err);
+              },
             );
-        }, C.REGENERATE_DEBOUNCE_MS);
-      }
+          }, C.REGENERATE_DEBOUNCE_MS);
+        }
 
-      // If the user changed their color theme, sync the icons and update the webview.
-      if (event.affectsConfiguration("workbench.colorTheme")) {
-        syncIconFlavor();
-        SettingsPanel.updateIfVisible();
-      }
-    });
+        // If the user changed their color theme, sync the icons and update the webview.
+        if (event.affectsConfiguration("workbench.colorTheme")) {
+          syncIconFlavor();
+          SettingsPanel.updateIfVisible();
+        }
+      },
+    );
 
     context.subscriptions.push(settingsChangeListener);
     // Run an initial icon sync now that the listeners are active.
@@ -186,7 +208,9 @@ export function activate(context: vscode.ExtensionContext) {
   // It is disposed after full activation to avoid redundant checks.
   tripwireListener = vscode.workspace.onDidChangeConfiguration((event) => {
     if (event.affectsConfiguration("workbench.colorTheme")) {
-      const currentTheme = vscode.workspace.getConfiguration("workbench").get<string>("colorTheme", "");
+      const currentTheme = vscode.workspace
+        .getConfiguration("workbench")
+        .get<string>("colorTheme", "");
       if (currentTheme.toLowerCase().startsWith("calmppuccin")) {
         ensureListenersAreActive();
       }

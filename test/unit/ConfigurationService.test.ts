@@ -119,7 +119,10 @@ describe("ConfigurationService", () => {
 
     // Assert that the API was called twice with the correct keys.
     expect(mockConfiguration.get).toHaveBeenCalledWith(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
-    expect(mockConfiguration.get).toHaveBeenCalledWith(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
+    expect(mockConfiguration.get).toHaveBeenCalledWith(
+      C.CONFIG_KEY_CUSTOM_ACCENT,
+      C.DEFAULT_CUSTOM_ACCENT,
+    );
   });
 
   /**
@@ -132,9 +135,9 @@ describe("ConfigurationService", () => {
   it("updateFontStyle() should only save non-default font styles to the configuration", async () => {
     // 1. Arrange
     const existingProfiles = {
-      "Default": {
-        fontStyles: { keywordFontStyle: "bold" }
-      }
+      Default: {
+        fontStyles: { keywordFontStyle: "bold" },
+      },
     };
     const newKey = "commentFontStyle";
     const newValue = "bold"; // This is different from the default "italic"
@@ -148,7 +151,7 @@ describe("ConfigurationService", () => {
               "calmppuccin.fontStyles": {
                 default: {
                   commentFontStyle: "italic", // Default for comment is italic
-                  keywordFontStyle: "none",   // Default for keyword is none
+                  keywordFontStyle: "none", // Default for keyword is none
                 },
               },
             },
@@ -170,12 +173,12 @@ describe("ConfigurationService", () => {
 
     // The expected result: profiles with updated fontStyles in Default profile
     const expectedUpdatedProfiles = {
-      "Default": {
+      Default: {
         fontStyles: {
           keywordFontStyle: "bold", // This differs from default "none", so keep it
           commentFontStyle: "bold", // This differs from default "italic", so save it
-        }
-      }
+        },
+      },
     };
 
     // 2. Act
@@ -185,7 +188,7 @@ describe("ConfigurationService", () => {
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_PROFILES,
       expectedUpdatedProfiles,
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
@@ -197,13 +200,13 @@ describe("ConfigurationService", () => {
   it("updateFontStyle() should filter out existing default values from configuration", async () => {
     // 1. Arrange
     const existingProfiles = {
-      "Default": {
+      Default: {
         fontStyles: {
-          keywordFontStyle: "bold",   // Custom (default is "none")
+          keywordFontStyle: "bold", // Custom (default is "none")
           commentFontStyle: "italic", // This is the default value
-          typeFontStyle: "underline"  // Custom (default is "italic")
-        }
-      }
+          typeFontStyle: "underline", // Custom (default is "italic")
+        },
+      },
     };
     const newKey = "stringFontStyle";
     const newValue = "bold"; // Custom value
@@ -241,14 +244,14 @@ describe("ConfigurationService", () => {
 
     // Expected: only non-default values should remain
     const expectedUpdatedProfiles = {
-      "Default": {
+      Default: {
         fontStyles: {
-          keywordFontStyle: "bold",    // Custom
-          typeFontStyle: "underline",  // Custom
-          stringFontStyle: "bold"      // New custom value
+          keywordFontStyle: "bold", // Custom
+          typeFontStyle: "underline", // Custom
+          stringFontStyle: "bold", // New custom value
           // commentFontStyle removed because it matches default "italic"
-        }
-      }
+        },
+      },
     };
 
     // 2. Act
@@ -258,7 +261,7 @@ describe("ConfigurationService", () => {
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_PROFILES,
       expectedUpdatedProfiles,
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
@@ -270,12 +273,12 @@ describe("ConfigurationService", () => {
   it("updateFontStyle() should remove a setting when it matches the default value", async () => {
     // 1. Arrange
     const existingProfiles = {
-      "Default": {
+      Default: {
         fontStyles: {
           keywordFontStyle: "bold",
-          commentFontStyle: "bold"
-        }
-      }
+          commentFontStyle: "bold",
+        },
+      },
     };
     const keyToUpdate = "commentFontStyle";
     const newValue = "italic"; // This matches the default
@@ -311,11 +314,11 @@ describe("ConfigurationService", () => {
 
     // Expected: only the keyword style remains since comment matches default
     const expectedUpdatedProfiles = {
-      "Default": {
+      Default: {
         fontStyles: {
           keywordFontStyle: "bold",
-        }
-      }
+        },
+      },
     };
 
     // 2. Act
@@ -325,7 +328,7 @@ describe("ConfigurationService", () => {
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_PROFILES,
       expectedUpdatedProfiles,
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
@@ -337,9 +340,9 @@ describe("ConfigurationService", () => {
   it("updateFontStyle() should remove the entire setting when all styles match defaults", async () => {
     // 1. Arrange
     const existingProfiles = {
-      "Default": {
-        fontStyles: { commentFontStyle: "bold" }
-      }
+      Default: {
+        fontStyles: { commentFontStyle: "bold" },
+      },
     };
     const keyToUpdate = "commentFontStyle";
     const newValue = "italic"; // This matches the default
@@ -374,7 +377,7 @@ describe("ConfigurationService", () => {
 
     // Expected: Default profile with no fontStyles setting
     const expectedUpdatedProfiles = {
-      "Default": {}
+      Default: {},
     };
 
     // 2. Act
@@ -384,7 +387,7 @@ describe("ConfigurationService", () => {
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_PROFILES,
       expectedUpdatedProfiles,
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
@@ -397,13 +400,13 @@ describe("ConfigurationService", () => {
   it("resetFontStyle() should remove a specific font style and filter out defaults", async () => {
     // 1. Arrange
     const existingProfiles = {
-      "Default": {
+      Default: {
         fontStyles: {
-          keywordFontStyle: "bold",    // Custom (default is "none")
-          commentFontStyle: "italic",  // This is the style we will reset
-          typeFontStyle: "italic",     // This matches default, should be filtered out
-        }
-      }
+          keywordFontStyle: "bold", // Custom (default is "none")
+          commentFontStyle: "italic", // This is the style we will reset
+          typeFontStyle: "italic", // This matches default, should be filtered out
+        },
+      },
     };
     const keyToReset = "commentFontStyle";
 
@@ -439,13 +442,13 @@ describe("ConfigurationService", () => {
 
     // Expected: only truly custom values should remain
     const expectedUpdatedProfiles = {
-      "Default": {
+      Default: {
         fontStyles: {
           keywordFontStyle: "bold", // Custom value, should remain
           // commentFontStyle removed (reset)
           // typeFontStyle removed (matches default)
-        }
-      }
+        },
+      },
     };
 
     // 2. Act
@@ -455,7 +458,7 @@ describe("ConfigurationService", () => {
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_PROFILES,
       expectedUpdatedProfiles,
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
@@ -469,12 +472,12 @@ describe("ConfigurationService", () => {
   it("resetFontStyle() should remove the entire setting if no custom styles remain", async () => {
     // 1. Arrange
     const existingProfiles = {
-      "Default": {
+      Default: {
         fontStyles: {
           commentFontStyle: "bold", // This is the only custom style.
-          typeFontStyle: "italic",  // This matches default, so it's not truly custom
-        }
-      }
+          typeFontStyle: "italic", // This matches default, so it's not truly custom
+        },
+      },
     };
     const keyToReset = "commentFontStyle";
 
@@ -509,7 +512,7 @@ describe("ConfigurationService", () => {
 
     // Expected: Default profile with no fontStyles setting
     const expectedUpdatedProfiles = {
-      "Default": {}
+      Default: {},
     };
 
     // 2. Act
@@ -520,7 +523,7 @@ describe("ConfigurationService", () => {
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_PROFILES,
       expectedUpdatedProfiles,
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
@@ -533,14 +536,14 @@ describe("ConfigurationService", () => {
   it("updateSyntaxColor() should add a new color override for a specific flavor", async () => {
     // 1. Arrange
     const existingProfiles = {
-      "Default": {
+      Default: {
         syntaxOverrides: {
           // Simulate that the user has already customized the 'latte' theme.
           latte: {
             keyword: "#ff0000",
           },
-        }
-      }
+        },
+      },
     };
     const flavorToUpdate = "mocha";
     const keyToUpdate = "comment";
@@ -559,7 +562,7 @@ describe("ConfigurationService", () => {
 
     // This is the final, deeply merged object we expect to be written back.
     const expectedUpdatedProfiles = {
-      "Default": {
+      Default: {
         syntaxOverrides: {
           latte: {
             keyword: "#ff0000", // This should remain untouched.
@@ -567,8 +570,8 @@ describe("ConfigurationService", () => {
           mocha: {
             comment: "#00ff00", // This is the new override.
           },
-        }
-      }
+        },
+      },
     };
 
     // 2. Act
@@ -580,7 +583,7 @@ describe("ConfigurationService", () => {
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_PROFILES,
       expectedUpdatedProfiles,
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
@@ -593,10 +596,10 @@ describe("ConfigurationService", () => {
   it("resetAll() should call the update method with undefined for all settings", async () => {
     // 1. Arrange
     const existingProfiles = {
-      "Default": {
+      Default: {
         fontStyles: { keywordFontStyle: "bold" },
-        syntaxOverrides: { mocha: { comment: "#ff0000" } }
-      }
+        syntaxOverrides: { mocha: { comment: "#ff0000" } },
+      },
     };
 
     // Mock the configuration to return profiles and activeProfile
@@ -621,39 +624,39 @@ describe("ConfigurationService", () => {
     // Verify that the 'profiles' setting was updated to clear the Default profile.
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_PROFILES,
-      { "Default": {} },
-      vscode.ConfigurationTarget.Global
+      { Default: {} },
+      vscode.ConfigurationTarget.Global,
     );
 
     // Verify that legacy global settings were cleared
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_FONT_STYLES,
       undefined,
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
 
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_FONT_STYLE_OVERRIDES,
       undefined,
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
 
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_SYNTAX_OVERRIDES,
       undefined,
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
 
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_UI_OVERRIDES,
       undefined,
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
 
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_ACCENT,
       undefined,
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
@@ -668,7 +671,7 @@ describe("ConfigurationService", () => {
   it("resetSyntaxColor() should remove a specific color override from a flavor", async () => {
     // 1. Arrange
     const existingProfiles = {
-      "Default": {
+      Default: {
         syntaxOverrides: {
           latte: {
             keyword: "#ff0000",
@@ -677,8 +680,8 @@ describe("ConfigurationService", () => {
             comment: "#00ff00", // This is the override we will reset.
             string: "#0000ff", // This override should remain.
           },
-        }
-      }
+        },
+      },
     };
     const flavorToReset = "mocha";
     const keyToReset = "comment";
@@ -696,7 +699,7 @@ describe("ConfigurationService", () => {
 
     // This is the final state we expect to be written back to the settings.
     const expectedUpdatedProfiles = {
-      "Default": {
+      Default: {
         syntaxOverrides: {
           latte: {
             keyword: "#ff0000", // Should be untouched.
@@ -704,8 +707,8 @@ describe("ConfigurationService", () => {
           mocha: {
             string: "#0000ff", // Should remain.
           },
-        }
-      }
+        },
+      },
     };
 
     // 2. Act
@@ -717,7 +720,7 @@ describe("ConfigurationService", () => {
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_PROFILES,
       expectedUpdatedProfiles,
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
@@ -732,7 +735,7 @@ describe("ConfigurationService", () => {
   it("resetSyntaxColor() should remove the entire flavor object if the last override is reset", async () => {
     // 1. Arrange
     const existingProfiles = {
-      "Default": {
+      Default: {
         syntaxOverrides: {
           latte: {
             keyword: "#ff0000", // This flavor should remain untouched.
@@ -740,8 +743,8 @@ describe("ConfigurationService", () => {
           mocha: {
             comment: "#00ff00", // This is the single, last override for this flavor.
           },
-        }
-      }
+        },
+      },
     };
     const flavorToReset = "mocha";
     const keyToReset = "comment";
@@ -759,13 +762,13 @@ describe("ConfigurationService", () => {
 
     // This is the final state we expect. The 'mocha' object should be gone entirely.
     const expectedUpdatedProfiles = {
-      "Default": {
+      Default: {
         syntaxOverrides: {
           latte: {
             keyword: "#ff0000",
           },
-        }
-      }
+        },
+      },
     };
 
     // 2. Act
@@ -777,7 +780,7 @@ describe("ConfigurationService", () => {
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_PROFILES,
       expectedUpdatedProfiles,
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
   /**
@@ -791,7 +794,7 @@ describe("ConfigurationService", () => {
     // Arrange: Create a profile where fontStyles is explicitly null,
     // simulating a user who hand-edited their settings.json.
     const profilesWithNull = {
-      "Default": {
+      Default: {
         fontStyles: null,
       },
     };
@@ -842,12 +845,12 @@ describe("ConfigurationService.getWebViewSettings", () => {
     const mockFontStyleOverrides = { mocha: { comment: "italic" } };
     const mockActiveFlavor = "mocha";
     const mockProfiles = {
-      "Default": {
+      Default: {
         fontStyles: mockFontStyles,
         syntaxOverrides: mockSyntaxOverrides,
         uiOverrides: mockUiOverrides,
-        fontStyleOverrides: mockFontStyleOverrides
-      }
+        fontStyleOverrides: mockFontStyleOverrides,
+      },
     };
 
     // Mock the return value of the real package.json structure
@@ -874,7 +877,9 @@ describe("ConfigurationService.getWebViewSettings", () => {
     jest.spyOn(ConfigurationService, "getFontStyles").mockReturnValue(mockFontStyles);
     jest.spyOn(ConfigurationService, "getSyntaxOverrides").mockReturnValue(mockSyntaxOverrides);
     jest.spyOn(ConfigurationService, "getUiOverrides").mockReturnValue(mockUiOverrides);
-    jest.spyOn(ConfigurationService, "getFontStyleOverrides").mockReturnValue(mockFontStyleOverrides);
+    jest
+      .spyOn(ConfigurationService, "getFontStyleOverrides")
+      .mockReturnValue(mockFontStyleOverrides);
     jest.spyOn(ConfigurationService, "getProfiles").mockReturnValue(mockProfiles);
 
     // Since `getActiveFlavor` is a private method, it cannot be spied on directly.
@@ -938,4 +943,3 @@ describe("ConfigurationService.getWebViewSettings", () => {
     expect(baseSetting?.defaultColor).toBeDefined();
   });
 });
-

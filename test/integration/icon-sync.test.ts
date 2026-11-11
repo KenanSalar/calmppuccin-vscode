@@ -4,8 +4,8 @@
  * Verifies that icon themes are correctly synced with color theme flavors.
  */
 
-import { activate } from "../../extension";
 import * as vscode from "vscode";
+import { activate } from "../../extension";
 import * as C from "../../src/constants";
 
 const mockedVscode = vscode as jest.Mocked<typeof vscode>;
@@ -43,7 +43,7 @@ describe("Icon Theme Synchronization", () => {
       (callback: (event: vscode.ConfigurationChangeEvent) => void) => {
         themeChangeListener = callback;
         return { dispose: jest.fn() };
-      }
+      },
     );
 
     // Create mock extension context
@@ -56,7 +56,13 @@ describe("Icon Theme Synchronization", () => {
         setKeysForSync: jest.fn(),
       },
       workspaceState: { get: jest.fn(), update: jest.fn(), keys: jest.fn() },
-      secrets: { get: jest.fn(), store: jest.fn(), onDidChange: jest.fn(), delete: jest.fn(), keys: jest.fn() },
+      secrets: {
+        get: jest.fn(),
+        store: jest.fn(),
+        onDidChange: jest.fn(),
+        delete: jest.fn(),
+        keys: jest.fn(),
+      },
       extensionUri: vscode.Uri.parse("file:///mock/extension/path"),
       extensionPath: "/mock/extension/path",
       storageUri: vscode.Uri.parse("file:///mock/storage/path"),
@@ -97,7 +103,7 @@ describe("Icon Theme Synchronization", () => {
     expect(mockWorkbenchConfig.update).toHaveBeenCalledWith(
       "iconTheme",
       "catppuccin-mocha",
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
@@ -150,7 +156,7 @@ describe("Icon Theme Synchronization", () => {
     expect(mockWorkbenchConfig.update).toHaveBeenCalledWith(
       "iconTheme",
       "catppuccin-mocha", // Maps to mocha
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
@@ -164,7 +170,7 @@ describe("Icon Theme Synchronization", () => {
     jest.resetModules();
     jest.mock("vscode", () => mockedVscode, { virtual: true });
     const { activate: freshActivate } = await import("../../extension");
-    
+
     mockWorkbenchConfig.get.mockImplementation((key: string) => {
       if (key === "colorTheme") return "Calmppuccin Oledppuccin";
       if (key === "iconTheme") return "catppuccin-latte"; // Different flavor
@@ -179,7 +185,7 @@ describe("Icon Theme Synchronization", () => {
     expect(mockWorkbenchConfig.update).toHaveBeenCalledWith(
       "iconTheme",
       "catppuccin-mocha",
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
@@ -214,11 +220,27 @@ describe("Icon Theme Synchronization", () => {
    * @assertion Each flavor should map to correct icon theme
    */
   it("should correctly sync all standard Calmppuccin flavors", async () => {
-    const flavorsMap: Record<string, {theme: string, wrongIcon: string, rightIcon: string}> = {
-      "latte": { theme: "Calmppuccin Latte", wrongIcon: "catppuccin-mocha", rightIcon: "catppuccin-latte" },
-      "frappe": { theme: "Calmppuccin Frappe", wrongIcon: "catppuccin-latte", rightIcon: "catppuccin-frappe" },
-      "macchiato": { theme: "Calmppuccin Macchiato", wrongIcon: "catppuccin-latte", rightIcon: "catppuccin-macchiato" },
-      "mocha": { theme: "Calmppuccin Mocha", wrongIcon: "catppuccin-latte", rightIcon: "catppuccin-mocha" },
+    const flavorsMap: Record<string, { theme: string; wrongIcon: string; rightIcon: string }> = {
+      latte: {
+        theme: "Calmppuccin Latte",
+        wrongIcon: "catppuccin-mocha",
+        rightIcon: "catppuccin-latte",
+      },
+      frappe: {
+        theme: "Calmppuccin Frappe",
+        wrongIcon: "catppuccin-latte",
+        rightIcon: "catppuccin-frappe",
+      },
+      macchiato: {
+        theme: "Calmppuccin Macchiato",
+        wrongIcon: "catppuccin-latte",
+        rightIcon: "catppuccin-macchiato",
+      },
+      mocha: {
+        theme: "Calmppuccin Mocha",
+        wrongIcon: "catppuccin-latte",
+        rightIcon: "catppuccin-mocha",
+      },
     };
 
     for (const [, config] of Object.entries(flavorsMap)) {
@@ -243,7 +265,7 @@ describe("Icon Theme Synchronization", () => {
       expect(mockWorkbenchConfig.update).toHaveBeenCalledWith(
         "iconTheme",
         config.rightIcon,
-        vscode.ConfigurationTarget.Global
+        vscode.ConfigurationTarget.Global,
       );
     }
   });

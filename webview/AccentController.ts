@@ -3,8 +3,8 @@
  * Extracted from UIManager to follow Single Responsibility Principle.
  */
 
-import { IVsCodeApi } from "../types/webview";
 import { WEBVIEW_CONSTANTS as COMMANDS } from "../src/constants";
+import { IVsCodeApi } from "../types/webview";
 
 /** DOM element references needed by AccentController. */
 export interface IAccentElements {
@@ -23,7 +23,7 @@ export class AccentController {
 
   constructor(
     private readonly vscode: IVsCodeApi,
-    private readonly elements: IAccentElements
+    private readonly elements: IAccentElements,
   ) {}
 
   /**
@@ -37,7 +37,7 @@ export class AccentController {
     currentAccent: string,
     accentOptions: string[],
     customAccentColor: string,
-    accentColorMap: { [key: string]: string }
+    accentColorMap: { [key: string]: string },
   ): void {
     this.elements.accentContainer.appendChild(this.elements.customAccentPickerContainer);
 
@@ -69,7 +69,10 @@ export class AccentController {
 
     accentSelectContainer.appendChild(accentLabel);
     accentSelectContainer.appendChild(accentSelect);
-    this.elements.accentContainer.insertBefore(accentSelectContainer, this.elements.customAccentPickerContainer);
+    this.elements.accentContainer.insertBefore(
+      accentSelectContainer,
+      this.elements.customAccentPickerContainer,
+    );
 
     this.elements.customAccentPicker.value = customAccentColor;
     this.elements.customAccentHexInput.value = customAccentColor;
@@ -84,7 +87,9 @@ export class AccentController {
   public handleAccentChange(accentValue: string, accentColorMap: { [key: string]: string }): void {
     const isCustom = accentValue === "custom";
     this.elements.customAccentPickerContainer.style.display = isCustom ? "grid" : "none";
-    const newColor = isCustom ? this.elements.customAccentPicker.value : accentColorMap[accentValue];
+    const newColor = isCustom
+      ? this.elements.customAccentPicker.value
+      : accentColorMap[accentValue];
     this.updateAccentColor(newColor);
   }
 

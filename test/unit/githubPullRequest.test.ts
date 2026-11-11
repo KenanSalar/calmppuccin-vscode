@@ -4,7 +4,10 @@
  * for PR and issue states.
  */
 
-import { generateGitHubPullRequestColors, IGitHubPullRequestColors } from "../../src/extensions/githubPullRequest";
+import {
+  generateGitHubPullRequestColors,
+  IGitHubPullRequestColors,
+} from "../../src/extensions/githubPullRequest";
 import { mockPalette } from "../__fixtures__/mockPalette";
 
 describe("GitHub Pull Request Color Generator", () => {

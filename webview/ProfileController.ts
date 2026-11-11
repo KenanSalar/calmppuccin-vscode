@@ -4,8 +4,8 @@
  * Manages profile dropdown population, UI state updates, and delete confirmation dialogs.
  */
 
-import { IProfile, IVsCodeApi } from "../types/webview";
 import { WEBVIEW_CONSTANTS } from "../src/constants";
+import { IProfile, IVsCodeApi } from "../types/webview";
 
 /** Interface for DOM element references needed by ProfileController. */
 export interface IProfileElements {
@@ -44,7 +44,8 @@ export class ProfileController {
     this.elements = elements;
 
     // Cache the original dialog text so we can restore it after delete confirmations.
-    this._originalDialogTitle = elements.dialogOverlay.querySelector("h3")?.textContent ?? "Confirm Reset";
+    this._originalDialogTitle =
+      elements.dialogOverlay.querySelector("h3")?.textContent ?? "Confirm Reset";
     this._originalDialogMessage = elements.dialogOverlay.querySelector("p")?.textContent ?? "";
     this._originalConfirmText = elements.confirmResetButton.textContent;
   }
@@ -56,7 +57,10 @@ export class ProfileController {
     this.elements.profileSelect.addEventListener("change", (e) => {
       const selectedProfile = (e.target as HTMLSelectElement).value;
       this.updateProfileUI(selectedProfile);
-      this.vscode.postMessage({ command: WEBVIEW_CONSTANTS.SWITCH_PROFILE, profile: selectedProfile });
+      this.vscode.postMessage({
+        command: WEBVIEW_CONSTANTS.SWITCH_PROFILE,
+        profile: selectedProfile,
+      });
     });
 
     this.elements.saveProfileBtn.addEventListener("click", () => {
@@ -76,7 +80,10 @@ export class ProfileController {
     // Dialog confirm button: dispatches deleteProfile or resetAll based on state.
     this.elements.confirmResetButton.addEventListener("click", () => {
       if (this._pendingDeleteProfile) {
-        this.vscode.postMessage({ command: WEBVIEW_CONSTANTS.DELETE_PROFILE, profile: this._pendingDeleteProfile });
+        this.vscode.postMessage({
+          command: WEBVIEW_CONSTANTS.DELETE_PROFILE,
+          profile: this._pendingDeleteProfile,
+        });
       } else {
         this.vscode.postMessage({ command: WEBVIEW_CONSTANTS.RESET_ALL });
       }
@@ -104,7 +111,10 @@ export class ProfileController {
    * @param {Object} profiles The profiles object from settings.
    * @param {string} activeProfile The currently active profile name.
    */
-  public populateProfileDropdown(profiles: { [name: string]: IProfile }, activeProfile: string): void {
+  public populateProfileDropdown(
+    profiles: { [name: string]: IProfile },
+    activeProfile: string,
+  ): void {
     // Clear existing options
     this.elements.profileSelect.innerHTML = "";
 
@@ -117,12 +127,14 @@ export class ProfileController {
     }
 
     // Add all profiles (including Default if it exists in profiles)
-    Object.keys(profiles).toSorted().forEach((profileName) => {
-      const option = document.createElement("option");
-      option.value = profileName;
-      option.textContent = profileName;
-      this.elements.profileSelect.appendChild(option);
-    });
+    Object.keys(profiles)
+      .toSorted()
+      .forEach((profileName) => {
+        const option = document.createElement("option");
+        option.value = profileName;
+        option.textContent = profileName;
+        this.elements.profileSelect.appendChild(option);
+      });
 
     // Set the selected profile
     this.elements.profileSelect.value = activeProfile;

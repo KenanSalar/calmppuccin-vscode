@@ -16,7 +16,7 @@ export type PreviewState = { [key: string]: { color?: string; fontStyle?: string
 export function updatePreviewPane(
   codePreview: HTMLElement,
   previewPane: HTMLElement,
-  previewState: PreviewState
+  previewState: PreviewState,
 ): void {
   for (const tokenKey in previewState) {
     const elements = codePreview.querySelectorAll<HTMLElement>(`[data-token="${tokenKey}"]`);

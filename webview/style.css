@@ -13,7 +13,11 @@
   --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.05);
   --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-strong: 0 10px 30px rgba(0, 0, 0, 0.12);
-  --gradient-subtle: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%);
+  --gradient-subtle: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
 }
 
 body {
@@ -89,7 +93,7 @@ body {
 
 .card-header {
   padding: 20px var(--card-padding);
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.02);
   border-bottom: 1px solid var(--dynamic-accent-color);
   transition: border-bottom-color var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -148,7 +152,9 @@ section.card.danger-zone button.reset-all-button {
   height: 48px;
   padding: 0 32px;
   border-radius: var(--radius);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.2), 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 2px 6px rgba(0, 0, 0, 0.1);
   transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 0.95em;
   letter-spacing: 0.5px;
@@ -159,7 +165,7 @@ section.card.danger-zone button.reset-all-button {
 }
 
 section.card.danger-zone button.reset-all-button::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -168,19 +174,25 @@ section.card.danger-zone button.reset-all-button::before {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(0);
-  transition: transform 0.6s, opacity 0.6s;
+  transition:
+    transform 0.6s,
+    opacity 0.6s;
   opacity: 0;
 }
 
 section.card.danger-zone button.reset-all-button:hover {
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.15);
   transform: translateY(-1px);
 }
 
 section.card.danger-zone button.reset-all-button:active::before {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
-  transition: transform 0s, opacity 0s;
+  transition:
+    transform 0s,
+    opacity 0s;
 }
 
 /* --- Form Controls & Settings Grid --- */
@@ -405,10 +417,15 @@ select:focus,
   border-radius: calc(var(--radius) / 2);
 }
 .syntax-picker-wrapper input[type="color"]::-webkit-color-swatch-wrapper,
-.syntax-picker-top-row input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+.syntax-picker-top-row input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
 
 .syntax-picker-wrapper input[type="color"]::-webkit-color-swatch,
-.syntax-picker-top-row input[type="color"]::-webkit-color-swatch { border: none; border-radius: calc(var(--radius) / 2); }
+.syntax-picker-top-row input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: calc(var(--radius) / 2);
+}
 
 .syntax-picker-wrapper .hex-input-display,
 .syntax-picker-top-row .hex-input-display {
@@ -648,7 +665,6 @@ select:focus,
   box-shadow: 0 0 0 1px var(--dynamic-accent-color) !important;
 }
 
-
 /* Button Styles */
 .btn {
   height: var(--control-height);
@@ -727,7 +743,6 @@ select:focus,
     grid-template-columns: 1fr;
     gap: 8px;
   }
-
 
   .btn {
     width: 100%;

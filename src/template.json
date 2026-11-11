@@ -844,9 +844,9 @@
     {
       "name": "struct",
       "scope": [
-        "variable.other.struct", 
-        "entity.name.type.struct", 
-        "entity.name.struct", 
+        "variable.other.struct",
+        "entity.name.type.struct",
+        "entity.name.struct",
         "entity.other.attribute-name.id",
         "entity.other.attribute-name.id punctuation.definition.entity"
       ],
@@ -881,7 +881,12 @@
     },
     {
       "name": "interface",
-      "scope": ["variable.other.interface", "entity.name.type.interface", "entity.name.type.trait", "entity.name.interface"],
+      "scope": [
+        "variable.other.interface",
+        "entity.name.type.interface",
+        "entity.name.type.trait",
+        "entity.name.interface"
+      ],
       "settings": {
         "foreground": "{{interface}}",
         "fontStyle": "{{interfaceFontStyle}}"
@@ -1167,7 +1172,11 @@
     },
     {
       "name": "type parameter",
-      "scope": ["entity.name.type.type-parameter", "variable.type.type-parameter", "meta.type.parameters entity.name.type"],
+      "scope": [
+        "entity.name.type.type-parameter",
+        "variable.type.type-parameter",
+        "meta.type.parameters entity.name.type"
+      ],
       "settings": {
         "foreground": "{{typeParameter}}",
         "fontStyle": "{{typeParameterFontStyle}}"
@@ -1437,10 +1446,7 @@
     },
     {
       "name": "operator overload",
-      "scope": [
-        "entity.name.function.member.overload",
-        "keyword.other.operator.overload"
-      ],
+      "scope": ["entity.name.function.member.overload", "keyword.other.operator.overload"],
       "settings": {
         "foreground": "{{operatorOverload}}",
         "fontStyle": "{{operatorOverloadFontStyle}}"
@@ -1647,7 +1653,10 @@
     },
     {
       "name": "HTML Attributes",
-      "scope": ["text.html.basic entity.other.attribute-name.html", "text.html.basic entity.other.attribute-name"],
+      "scope": [
+        "text.html.basic entity.other.attribute-name.html",
+        "text.html.basic entity.other.attribute-name"
+      ],
       "settings": {
         "foreground": "{{fieldAndAttribute}}",
         "fontStyle": "{{fieldAndAttributeFontStyle}}"
@@ -1818,7 +1827,11 @@
     },
     {
       "name": "Markdown - Plain",
-      "scope": ["text.html.markdown", "punctuation.definition.list_item.markdown", "meta.paragraph.markdown"],
+      "scope": [
+        "text.html.markdown",
+        "punctuation.definition.list_item.markdown",
+        "meta.paragraph.markdown"
+      ],
       "settings": {
         "foreground": "{{markdownPlain}}"
       }
@@ -1832,7 +1845,9 @@
     },
     {
       "name": "Markdown - Markup Raw Inline Punctuation",
-      "scope": ["text.html.markdown markup.inline.raw.markdown punctuation.definition.raw.markdown"],
+      "scope": [
+        "text.html.markdown markup.inline.raw.markdown punctuation.definition.raw.markdown"
+      ],
       "settings": {
         "foreground": "{{rawInlinePunctuation}}"
       }
@@ -1952,7 +1967,11 @@
     },
     {
       "name": "Markdown - Fenced Bode Block Variable",
-      "scope": ["markup.raw.block.fenced.markdown", "variable.language.fenced.markdown", "punctuation.section.class.end"],
+      "scope": [
+        "markup.raw.block.fenced.markdown",
+        "variable.language.fenced.markdown",
+        "punctuation.section.class.end"
+      ],
       "settings": {
         "foreground": "{{markdownFencedBodeBlockVariable}}"
       }

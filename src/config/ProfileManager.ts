@@ -4,8 +4,8 @@
  */
 
 import * as vscode from "vscode";
-import * as C from "../constants";
 import { IProfile } from "../../types/webview";
+import * as C from "../constants";
 import {
   getConfig,
   getProfiles,
@@ -29,7 +29,11 @@ import {
  * @param {string} profileName The name of the profile to set as active.
  */
 export async function updateActiveProfile(profileName: string) {
-  await getConfig().update(C.CONFIG_KEY_ACTIVE_PROFILE, profileName, vscode.ConfigurationTarget.Global);
+  await getConfig().update(
+    C.CONFIG_KEY_ACTIVE_PROFILE,
+    profileName,
+    vscode.ConfigurationTarget.Global,
+  );
 }
 
 /**
@@ -53,7 +57,10 @@ export async function saveProfile(profileName: string) {
 
   // Get current accent and custom accent, only include if different from defaults
   const currentAccent = getProfileSetting(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
-  const currentCustomAccent = getProfileSetting(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
+  const currentCustomAccent = getProfileSetting(
+    C.CONFIG_KEY_CUSTOM_ACCENT,
+    C.DEFAULT_CUSTOM_ACCENT,
+  );
 
   const currentSettings: IProfile = {};
 
@@ -102,7 +109,7 @@ export async function deleteProfile(profileName: string) {
   const { [profileName]: _removed, ...remainingProfiles } = profiles;
 
   // Check if any custom profiles remain (excluding Default)
-  const customProfileNames = Object.keys(remainingProfiles).filter(name => name !== "Default");
+  const customProfileNames = Object.keys(remainingProfiles).filter((name) => name !== "Default");
 
   // Determine final profiles object
   let finalProfiles: { [name: string]: IProfile };
@@ -135,14 +142,34 @@ export async function resetProfile(profileName: string) {
   if (Object.prototype.hasOwnProperty.call(currentProfiles, profileName)) {
     // Clear all settings but keep the profile (works for both Default and custom profiles)
     const updatedProfiles = { ...currentProfiles, [profileName]: {} };
-    await getConfig().update(C.CONFIG_KEY_PROFILES, updatedProfiles, vscode.ConfigurationTarget.Global);
+    await getConfig().update(
+      C.CONFIG_KEY_PROFILES,
+      updatedProfiles,
+      vscode.ConfigurationTarget.Global,
+    );
 
     // If resetting Default profile, also clear any legacy global settings for cleanup
     if (profileName === "Default") {
-      await getConfig().update(C.CONFIG_KEY_FONT_STYLES, undefined, vscode.ConfigurationTarget.Global);
-      await getConfig().update(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, undefined, vscode.ConfigurationTarget.Global);
-      await getConfig().update(C.CONFIG_KEY_SYNTAX_OVERRIDES, undefined, vscode.ConfigurationTarget.Global);
-      await getConfig().update(C.CONFIG_KEY_UI_OVERRIDES, undefined, vscode.ConfigurationTarget.Global);
+      await getConfig().update(
+        C.CONFIG_KEY_FONT_STYLES,
+        undefined,
+        vscode.ConfigurationTarget.Global,
+      );
+      await getConfig().update(
+        C.CONFIG_KEY_FONT_STYLE_OVERRIDES,
+        undefined,
+        vscode.ConfigurationTarget.Global,
+      );
+      await getConfig().update(
+        C.CONFIG_KEY_SYNTAX_OVERRIDES,
+        undefined,
+        vscode.ConfigurationTarget.Global,
+      );
+      await getConfig().update(
+        C.CONFIG_KEY_UI_OVERRIDES,
+        undefined,
+        vscode.ConfigurationTarget.Global,
+      );
       await getConfig().update(C.CONFIG_KEY_ACCENT, undefined, vscode.ConfigurationTarget.Global);
     }
   }
@@ -169,8 +196,12 @@ export async function migrateGlobalSettingsToDefault() {
 
   // Get global settings with explicit types
   const globalFontStyles = config.get<IFontStyles | undefined>(C.CONFIG_KEY_FONT_STYLES);
-  const globalFontStyleOverrides = config.get<IFontStyleOverrides | undefined>(C.CONFIG_KEY_FONT_STYLE_OVERRIDES);
-  const globalSyntaxOverrides = config.get<ISyntaxOverrides | undefined>(C.CONFIG_KEY_SYNTAX_OVERRIDES);
+  const globalFontStyleOverrides = config.get<IFontStyleOverrides | undefined>(
+    C.CONFIG_KEY_FONT_STYLE_OVERRIDES,
+  );
+  const globalSyntaxOverrides = config.get<ISyntaxOverrides | undefined>(
+    C.CONFIG_KEY_SYNTAX_OVERRIDES,
+  );
   const globalUiOverrides = config.get<IUiOverrides | undefined>(C.CONFIG_KEY_UI_OVERRIDES);
   const globalAccent = config.get<string | undefined>(C.CONFIG_KEY_ACCENT);
   const globalCustomAccent = config.get<string | undefined>(C.CONFIG_KEY_CUSTOM_ACCENT);
@@ -195,19 +226,31 @@ export async function migrateGlobalSettingsToDefault() {
   }
 
   // Migrate fontStyleOverrides (these are always customizations)
-  if (globalFontStyleOverrides && Object.keys(globalFontStyleOverrides).length > 0 && !defaultProfile.fontStyleOverrides) {
+  if (
+    globalFontStyleOverrides &&
+    Object.keys(globalFontStyleOverrides).length > 0 &&
+    !defaultProfile.fontStyleOverrides
+  ) {
     defaultProfile.fontStyleOverrides = globalFontStyleOverrides;
     needsUpdate = true;
   }
 
   // Migrate syntaxOverrides (these are always customizations)
-  if (globalSyntaxOverrides && Object.keys(globalSyntaxOverrides).length > 0 && !defaultProfile.syntaxOverrides) {
+  if (
+    globalSyntaxOverrides &&
+    Object.keys(globalSyntaxOverrides).length > 0 &&
+    !defaultProfile.syntaxOverrides
+  ) {
     defaultProfile.syntaxOverrides = globalSyntaxOverrides;
     needsUpdate = true;
   }
 
   // Migrate uiOverrides (these are always customizations)
-  if (globalUiOverrides && Object.keys(globalUiOverrides).length > 0 && !defaultProfile.uiOverrides) {
+  if (
+    globalUiOverrides &&
+    Object.keys(globalUiOverrides).length > 0 &&
+    !defaultProfile.uiOverrides
+  ) {
     defaultProfile.uiOverrides = globalUiOverrides;
     needsUpdate = true;
   }
@@ -219,7 +262,11 @@ export async function migrateGlobalSettingsToDefault() {
   }
 
   // Only migrate custom accent if it's different from default
-  if (globalCustomAccent && globalCustomAccent !== C.DEFAULT_CUSTOM_ACCENT && !defaultProfile.customAccentColor) {
+  if (
+    globalCustomAccent &&
+    globalCustomAccent !== C.DEFAULT_CUSTOM_ACCENT &&
+    !defaultProfile.customAccentColor
+  ) {
     defaultProfile.customAccentColor = globalCustomAccent;
     needsUpdate = true;
   }
@@ -230,8 +277,16 @@ export async function migrateGlobalSettingsToDefault() {
 
     // Clean up the old global settings after migration
     await config.update(C.CONFIG_KEY_FONT_STYLES, undefined, vscode.ConfigurationTarget.Global);
-    await config.update(C.CONFIG_KEY_FONT_STYLE_OVERRIDES, undefined, vscode.ConfigurationTarget.Global);
-    await config.update(C.CONFIG_KEY_SYNTAX_OVERRIDES, undefined, vscode.ConfigurationTarget.Global);
+    await config.update(
+      C.CONFIG_KEY_FONT_STYLE_OVERRIDES,
+      undefined,
+      vscode.ConfigurationTarget.Global,
+    );
+    await config.update(
+      C.CONFIG_KEY_SYNTAX_OVERRIDES,
+      undefined,
+      vscode.ConfigurationTarget.Global,
+    );
     await config.update(C.CONFIG_KEY_UI_OVERRIDES, undefined, vscode.ConfigurationTarget.Global);
     await config.update(C.CONFIG_KEY_ACCENT, undefined, vscode.ConfigurationTarget.Global);
     await config.update(C.CONFIG_KEY_CUSTOM_ACCENT, undefined, vscode.ConfigurationTarget.Global);

@@ -7,9 +7,9 @@
  * Error Lens extension: https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens
  */
 
+import { EXTENSION_OPACITY_BACKGROUND } from "../constants";
 import { IPalette } from "../palettes";
 import { hexWithAlpha } from "../utils/color";
-import { EXTENSION_OPACITY_BACKGROUND } from "../constants";
 
 /**
  * Interface defining all Error Lens color customization points.

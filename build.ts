@@ -4,14 +4,19 @@
  * to produce the final theme JSON files.
  */
 
-import * as fs from "fs-extra";
 import * as path from "path";
-import palette, { IPalettes } from "./src/palettes";
+import * as fs from "fs-extra";
+import {
+  IFontStyles,
+  ISyntaxOverrides,
+  IUiOverrides,
+  IFontStyleOverrides,
+} from "./src/ConfigurationService";
 import * as C from "./src/constants";
-import { IFontStyles, ISyntaxOverrides, IUiOverrides, IFontStyleOverrides } from "./src/ConfigurationService";
 import { generateErrorLensColors } from "./src/extensions/errorLens";
 import { generateGitHubPullRequestColors } from "./src/extensions/githubPullRequest";
 import { generateGitLensColors } from "./src/extensions/gitlens";
+import palette, { IPalettes } from "./src/palettes";
 
 /** Represents the structure of a VS Code theme JSON file. */
 interface IThemeJson {
@@ -54,9 +59,10 @@ const FLAVORS = Object.keys(palette) as Array<keyof IPalettes>;
 async function buildFlavor(
   flavor: keyof IPalettes,
   templateStr: string,
-  options: IBuildOptions
+  options: IBuildOptions,
 ): Promise<void> {
-  const { accentIdentifier, fontStyles, syntaxOverrides, uiOverrides, fontStyleOverrides } = options;
+  const { accentIdentifier, fontStyles, syntaxOverrides, uiOverrides, fontStyleOverrides } =
+    options;
   const basePalette = palette[flavor];
   const flavorSyntaxOverrides = syntaxOverrides[flavor] ?? {};
   const flavorUiOverrides = uiOverrides[flavor] ?? {};
@@ -67,7 +73,7 @@ async function buildFlavor(
   // Resolve the accent color. If it's a hex code, use it directly. Otherwise, look it up in the palette.
   const accentColor = accentIdentifier.startsWith("#")
     ? accentIdentifier
-    : finalPalette[accentIdentifier] ?? finalPalette[C.FALLBACK_ACCENT];
+    : (finalPalette[accentIdentifier] ?? finalPalette[C.FALLBACK_ACCENT]);
   const accentHexValue = accentColor.substring(1);
 
   // Create the final resolved palette by processing color recipes (e.g., "{{accent}}2f").
@@ -98,13 +104,15 @@ async function buildFlavor(
 
   // Build a single regex pattern to match all placeholders and replace in one pass.
   const allKeysPattern = new RegExp(
-    `\\{\\{(${[...replacementMap.keys()].map(k => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})\\}\\}`,
-    "g"
+    `\\{\\{(${[...replacementMap.keys()].map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})\\}\\}`,
+    "g",
   );
   const themeContent = templateStr.replace(allKeysPattern, (_, key: string) => {
     const value = replacementMap.get(key);
     if (value === undefined) {
-      console.warn(`[Calmppuccin] Placeholder key "{{${key}}}" not found in replacement map for flavor "${flavor}".`);
+      console.warn(
+        `[Calmppuccin] Placeholder key "{{${key}}}" not found in replacement map for flavor "${flavor}".`,
+      );
     }
     // Escape special JSON characters to prevent injection from malformed settings.
     return JSON.stringify(value ?? "").slice(1, -1);
@@ -115,7 +123,9 @@ async function buildFlavor(
     themeJson = JSON.parse(themeContent) as IThemeJson;
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
-    throw new Error(`Failed to parse theme JSON for flavor "${flavor}": ${message}`, { cause: err });
+    throw new Error(`Failed to parse theme JSON for flavor "${flavor}": ${message}`, {
+      cause: err,
+    });
   }
   const flavorDisplayName = flavor.charAt(0).toUpperCase() + flavor.slice(1);
   themeJson.name = `Calmppuccin ${flavorDisplayName}`;
@@ -148,9 +158,7 @@ export async function buildAllFlavors(options: IBuildOptions): Promise<void> {
   const templateStr = await fs.readFile(TEMPLATE_PATH, "utf-8");
 
   // Generate all flavors in parallel for faster theme regeneration.
-  await Promise.all(
-    FLAVORS.map(flavor => buildFlavor(flavor, templateStr, options))
-  );
+  await Promise.all(FLAVORS.map((flavor) => buildFlavor(flavor, templateStr, options)));
 
   console.log(`All Calmppuccin themes built with the "${options.accentIdentifier}" accent.`);
 }
@@ -161,8 +169,11 @@ export async function buildAllFlavors(options: IBuildOptions): Promise<void> {
  */
 async function getDefaultFontStyles(): Promise<IFontStyles> {
   const packageJsonPath = path.resolve(__dirname, "..", "package.json");
-  const packageJson = await fs.readJson(packageJsonPath) as IPackageJson;
-  return packageJson.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.fontStyles`]?.default ?? {};
+  const packageJson = (await fs.readJson(packageJsonPath)) as IPackageJson;
+  return (
+    packageJson.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.fontStyles`]
+      ?.default ?? {}
+  );
 }
 
 /**

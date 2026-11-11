@@ -30,9 +30,9 @@ export interface IPalettes {
   oledppuccin: IPalette;
 }
 
+import frappe from "./palettes/frappe";
 // Import the raw color objects for each individual flavor.
 import latte from "./palettes/latte";
-import frappe from "./palettes/frappe";
 import macchiato from "./palettes/macchiato";
 import mocha from "./palettes/mocha";
 import nitroColdBrew from "./palettes/nitro-cold-brew";

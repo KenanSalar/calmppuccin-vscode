@@ -7,14 +7,14 @@
  * GitLens extension: https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens
  */
 
-import { IPalette } from "../palettes";
-import { hexWithAlpha } from "../utils/color";
 import {
   EXTENSION_OPACITY_BACKGROUND,
   EXTENSION_OPACITY_GUTTER,
   EXTENSION_OPACITY_HIGHLIGHT,
   EXTENSION_OPACITY_TRAILING,
 } from "../constants";
+import { IPalette } from "../palettes";
+import { hexWithAlpha } from "../utils/color";
 
 /**
  * Interface defining all GitLens color customization points.
@@ -148,8 +148,14 @@ export function generateGitLensColors(palette: IPalette): IGitLensColors {
     "gitlens.gutterUncommittedForegroundColor": palette.yellow,
 
     // Line highlights - gentle accent color with low opacity
-    "gitlens.lineHighlightBackgroundColor": hexWithAlpha(palette.blue, EXTENSION_OPACITY_BACKGROUND),
-    "gitlens.lineHighlightOverviewRulerColor": hexWithAlpha(palette.blue, EXTENSION_OPACITY_HIGHLIGHT),
+    "gitlens.lineHighlightBackgroundColor": hexWithAlpha(
+      palette.blue,
+      EXTENSION_OPACITY_BACKGROUND,
+    ),
+    "gitlens.lineHighlightOverviewRulerColor": hexWithAlpha(
+      palette.blue,
+      EXTENSION_OPACITY_HIGHLIGHT,
+    ),
 
     // Trailing line blame - muted for minimal distraction
     "gitlens.trailingLineBackgroundColor": "#00000000",

@@ -3,11 +3,11 @@
  * It verifies that commands are correctly registered and trigger the expected actions.
  */
 
-import { activate } from "../../extension";
-import * as build from "../../build";
 import * as vscode from "vscode";
-import * as C from "../../src/constants";
+import * as build from "../../build";
+import { activate } from "../../extension";
 import { ConfigurationService } from "../../src/ConfigurationService";
+import * as C from "../../src/constants";
 
 // Cast the imported vscode object to its mocked type for type-safe access.
 const mockedVscode = vscode as jest.Mocked<typeof vscode>;
@@ -23,7 +23,7 @@ jest.mock("../../build");
 describe("Extension Integration Tests", () => {
   // A variable to hold the mock ExtensionContext for each test.
   let mockContext: vscode.ExtensionContext;
-  
+
   // This will hold the mock specifically for the 'calmppuccin' configuration section.
   let mockCalmppuccinConfiguration: { get: jest.Mock; update: jest.Mock };
 
@@ -86,7 +86,13 @@ describe("Extension Integration Tests", () => {
         setKeysForSync: jest.fn(),
       },
       workspaceState: { get: jest.fn(), update: jest.fn(), keys: jest.fn() },
-      secrets: { get: jest.fn(), store: jest.fn(), onDidChange: jest.fn(), delete: jest.fn(), keys: jest.fn() },
+      secrets: {
+        get: jest.fn(),
+        store: jest.fn(),
+        onDidChange: jest.fn(),
+        delete: jest.fn(),
+        keys: jest.fn(),
+      },
       extensionUri: vscode.Uri.parse("file:///mock/extension/path"),
       extensionPath: "/mock/extension/path",
       storageUri: vscode.Uri.parse("file:///mock/storage/path"),
@@ -136,7 +142,7 @@ describe("Extension Integration Tests", () => {
           commandCallback = callback;
         }
         return { dispose: () => {} };
-      }
+      },
     );
 
     (mockedVscode.window.showInformationMessage as jest.Mock).mockResolvedValue("Reload Window");
@@ -167,7 +173,7 @@ describe("Extension Integration Tests", () => {
       (callback: (event: vscode.ConfigurationChangeEvent) => void) => {
         listener = callback;
         return { dispose: () => {} };
-      }
+      },
     );
 
     const mockEvent: vscode.ConfigurationChangeEvent = {
@@ -213,7 +219,7 @@ describe("Extension Integration Tests", () => {
       (callback: (event: vscode.ConfigurationChangeEvent) => void) => {
         listener = callback;
         return { dispose: () => {} };
-      }
+      },
     );
 
     const mockEvent: vscode.ConfigurationChangeEvent = {
@@ -250,7 +256,7 @@ describe("Extension Integration Tests", () => {
       (callback: (event: vscode.ConfigurationChangeEvent) => void) => {
         listener = callback;
         return { dispose: () => {} };
-      }
+      },
     );
 
     const mockEvent: vscode.ConfigurationChangeEvent = {
@@ -279,7 +285,7 @@ describe("Extension Integration Tests", () => {
       (callback: (event: vscode.ConfigurationChangeEvent) => void) => {
         listener = callback;
         return { dispose: () => {} };
-      }
+      },
     );
 
     const mockEvent: vscode.ConfigurationChangeEvent = {
@@ -316,7 +322,7 @@ describe("Extension Integration Tests", () => {
       (callback: (event: vscode.ConfigurationChangeEvent) => void) => {
         listener = callback;
         return { dispose: () => {} };
-      }
+      },
     );
 
     const mockEvent: vscode.ConfigurationChangeEvent = {
@@ -384,7 +390,13 @@ describe("Theme Regeneration Error Handling", () => {
         setKeysForSync: jest.fn(),
       },
       workspaceState: { get: jest.fn(), update: jest.fn(), keys: jest.fn() },
-      secrets: { get: jest.fn(), store: jest.fn(), onDidChange: jest.fn(), delete: jest.fn(), keys: jest.fn() },
+      secrets: {
+        get: jest.fn(),
+        store: jest.fn(),
+        onDidChange: jest.fn(),
+        delete: jest.fn(),
+        keys: jest.fn(),
+      },
       extensionUri: vscode.Uri.parse("file:///mock/extension/path"),
       extensionPath: "/mock/extension/path",
       storageUri: vscode.Uri.parse("file:///mock/storage/path"),
@@ -411,7 +423,9 @@ describe("Theme Regeneration Error Handling", () => {
    */
   it("should show error message when buildAllFlavors fails", async () => {
     const errorMessage = "Template file not found";
-    const buildSpy = jest.spyOn(build, "buildAllFlavors").mockRejectedValue(new Error(errorMessage));
+    const buildSpy = jest
+      .spyOn(build, "buildAllFlavors")
+      .mockRejectedValue(new Error(errorMessage));
 
     jest.spyOn(ConfigurationService, "getAccent").mockReturnValue("sapphire");
     jest.spyOn(ConfigurationService, "getFontStyles").mockReturnValue({});
@@ -426,7 +440,7 @@ describe("Theme Regeneration Error Handling", () => {
           commandCallback = callback;
         }
         return { dispose: () => {} };
-      }
+      },
     );
 
     activate(mockContext);
@@ -435,7 +449,7 @@ describe("Theme Regeneration Error Handling", () => {
     expect(buildSpy).toHaveBeenCalled();
     expect(mockedVscode.window.showErrorMessage).toHaveBeenCalledWith(
       expect.stringContaining("Failed to update"),
-      "Report Issue"
+      "Report Issue",
     );
   });
 
@@ -460,7 +474,7 @@ describe("Theme Regeneration Error Handling", () => {
           commandCallback = callback;
         }
         return { dispose: () => {} };
-      }
+      },
     );
 
     (mockedVscode.window.showInformationMessage as jest.Mock).mockResolvedValue("Reload Window");
@@ -471,7 +485,7 @@ describe("Theme Regeneration Error Handling", () => {
     expect(buildSpy).toHaveBeenCalled();
     expect(mockedVscode.window.showInformationMessage).toHaveBeenCalledWith(
       expect.stringContaining("theme updated"),
-      "Reload Window"
+      "Reload Window",
     );
   });
 });

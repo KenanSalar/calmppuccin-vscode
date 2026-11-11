@@ -4,10 +4,10 @@
  */
 
 import * as vscode from "vscode";
+import { MessageToExtension } from "../types/webview";
+import { ConfigurationService } from "./ConfigurationService";
 import * as C from "./constants";
 import { WebviewManager } from "./WebviewManager";
-import { ConfigurationService } from "./ConfigurationService";
-import { MessageToExtension } from "../types/webview";
 
 /**
  * Manages the state and logic of the settings webview panel.
@@ -28,7 +28,10 @@ export class SettingsPanel {
     if (!SettingsPanel._instance) {
       SettingsPanel._instance = new SettingsPanel(context);
     }
-    WebviewManager.createOrShow(context, SettingsPanel._instance._handleMessage.bind(SettingsPanel._instance))
+    WebviewManager.createOrShow(
+      context,
+      SettingsPanel._instance._handleMessage.bind(SettingsPanel._instance),
+    )
       .then(() => {
         SettingsPanel._instance?._update();
       })
@@ -54,7 +57,11 @@ export class SettingsPanel {
     switch (message.command) {
       case C.WEBVIEW_CONSTANTS.UPDATE_SETTING: {
         const activeFlavor = ConfigurationService.getActiveFlavor();
-        await ConfigurationService.updateFontStyleOverride(activeFlavor, message.key, message.value);
+        await ConfigurationService.updateFontStyleOverride(
+          activeFlavor,
+          message.key,
+          message.value,
+        );
         return;
       }
       case C.WEBVIEW_CONSTANTS.RESET_FONT_STYLE: {

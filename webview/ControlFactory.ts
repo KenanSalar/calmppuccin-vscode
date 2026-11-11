@@ -3,9 +3,9 @@
  * Extracted from UIManager to follow Single Responsibility Principle.
  */
 
+import { WEBVIEW_CONSTANTS as COMMANDS } from "../src/constants";
 import { IVsCodeApi } from "../types/webview";
 import { IWebviewSetting } from "../types/webview";
-import { WEBVIEW_CONSTANTS as COMMANDS } from "../src/constants";
 import { PreviewState } from "./PreviewRenderer";
 
 /** Dependencies injected into the ControlFactory. */
@@ -40,7 +40,7 @@ export class ControlFactory {
     settings: IWebviewSetting[],
     defaultFontStyles: { [key: string]: string },
     includeFontStyles: boolean,
-    activeFlavor: string
+    activeFlavor: string,
   ): void {
     settings.forEach((setting) => {
       const { key, fontStyle, color, defaultColor } = setting;
@@ -57,10 +57,20 @@ export class ControlFactory {
 
       let fontContainer: HTMLElement | null = null;
       if (includeFontStyles && fontStyle !== undefined) {
-        fontContainer = this._createFontStyleControl(key, fontStyle, defaultFontStyle, fontStyleKey);
+        fontContainer = this._createFontStyleControl(
+          key,
+          fontStyle,
+          defaultFontStyle,
+          fontStyleKey,
+        );
       }
 
-      const colorContainer = this._createColorPickerControl(key, color || "", defaultColor, activeFlavor);
+      const colorContainer = this._createColorPickerControl(
+        key,
+        color || "",
+        defaultColor,
+        activeFlavor,
+      );
 
       // Add the new elements to the settings grid in the DOM.
       this.deps.settingsContainer.appendChild(label);
@@ -92,7 +102,7 @@ export class ControlFactory {
     key: string,
     fontStyle: string,
     defaultFontStyle: string,
-    fontStyleKey: string
+    fontStyleKey: string,
   ): HTMLElement {
     const container = document.createElement("div");
     container.className = "setting-with-reset";
@@ -110,7 +120,11 @@ export class ControlFactory {
       const newValue = (e.target as HTMLSelectElement).value;
       this.deps.previewState[key].fontStyle = newValue;
       this.deps.onPreviewUpdate();
-      this.deps.vscode.postMessage({ command: COMMANDS.UPDATE_SETTING, key: fontStyleKey, value: newValue });
+      this.deps.vscode.postMessage({
+        command: COMMANDS.UPDATE_SETTING,
+        key: fontStyleKey,
+        value: newValue,
+      });
     });
 
     const resetButton = document.createElement("button");
@@ -132,7 +146,12 @@ export class ControlFactory {
    * Creates an individual color picker control with its alpha slider and reset button.
    * @returns The container element for the color picker.
    */
-  private _createColorPickerControl(key: string, color: string, defaultColor: string, activeFlavor: string): HTMLElement {
+  private _createColorPickerControl(
+    key: string,
+    color: string,
+    defaultColor: string,
+    activeFlavor: string,
+  ): HTMLElement {
     const container = document.createElement("div");
     container.className = "setting-with-reset";
 

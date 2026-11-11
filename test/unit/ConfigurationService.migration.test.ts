@@ -79,7 +79,7 @@ describe("ConfigurationService Migration Logic", () => {
           syntaxOverrides: { mocha: { comment: "#ff0000" } },
         },
       },
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
 
     // Should clean up global settings (7 calls total: 1 profiles + 6 cleanups)
@@ -87,12 +87,12 @@ describe("ConfigurationService Migration Logic", () => {
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_FONT_STYLES,
       undefined,
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_ACCENT,
       undefined,
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
@@ -123,7 +123,7 @@ describe("ConfigurationService Migration Logic", () => {
           fontStyles: { commentFontStyle: "bold" }, // Migrated
         },
       },
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
@@ -169,7 +169,7 @@ describe("ConfigurationService Migration Logic", () => {
           fontStyles: { keywordFontStyle: "bold" }, // Only non-default
         },
       },
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
@@ -238,7 +238,7 @@ describe("ConfigurationService Migration Logic", () => {
           },
         },
       },
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
 
     // Should clean up all 6 global settings
