@@ -2,8 +2,10 @@
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "bundler",
-    "target": "es2023",
+    "target": "es2025",
+    "rootDir": ".",
     "outDir": "dist",
+    "isolatedModules": true,
     "sourceMap": true,
     "strict": true,
     "esModuleInterop": true,

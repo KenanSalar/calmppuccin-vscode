@@ -6,6 +6,15 @@ const path = require("path");
 const isProduction = process.env.NODE_ENV === "production";
 const devtool = isProduction ? false : "source-map";
 
+// Type errors are reported by `npm run type-check`, a required PR check, so the build only transpiles.
+const typescriptRules = [
+  {
+    test: /\.ts$/,
+    exclude: /node_modules/,
+    use: [{ loader: "ts-loader", options: { transpileOnly: true } }],
+  },
+];
+
 /**@type {import('webpack').Configuration[]}*/
 const configs = [
   // Config for the Extension's runtime code
@@ -24,15 +33,7 @@ const configs = [
     resolve: {
       extensions: [".ts", ".js"],
     },
-    module: {
-      rules: [
-        {
-          test: /\.ts$/,
-          exclude: /node_modules/,
-          use: ["ts-loader"],
-        },
-      ],
-    },
+    module: { rules: typescriptRules },
     devtool,
   },
   // Config for the build script
@@ -48,15 +49,7 @@ const configs = [
     resolve: {
       extensions: [".ts", ".js"],
     },
-    module: {
-      rules: [
-        {
-          test: /\.ts$/,
-          exclude: /node_modules/,
-          use: ["ts-loader"],
-        },
-      ],
-    },
+    module: { rules: typescriptRules },
     devtool,
   },
   // Config for the webview's main logic script
@@ -71,15 +64,7 @@ const configs = [
     resolve: {
       extensions: [".ts", ".js"],
     },
-    module: {
-      rules: [
-        {
-          test: /\.ts$/,
-          exclude: /node_modules/,
-          use: ["ts-loader"],
-        },
-      ],
-    },
+    module: { rules: typescriptRules },
     devtool,
   },
 ];

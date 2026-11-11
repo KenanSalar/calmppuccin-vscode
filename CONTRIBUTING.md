@@ -200,6 +200,12 @@ npm test
 npm test -- --watch
 ```
 
+- To also collect a coverage report (written to `coverage/`), use:
+
+```bash
+npm run test:coverage
+```
+
 - To run tests via the UI, you can use the Test Explorer view in the VS Code sidebar. The integrated Jest extension also provides "play" buttons directly in the editor gutter next to each test suite and individual test, allowing you to run specific tests on-demand.
 
 ### Building and Packaging

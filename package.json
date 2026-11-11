@@ -1140,6 +1140,7 @@
     "build-themes": "npm run compile && node ./dist/build.js",
     "package": "vsce package --no-dependencies",
     "test": "jest --config jest.config.ts",
+    "test:coverage": "jest --config jest.config.ts --coverage",
     "type-check": "tsc --noEmit",
     "lint": "oxlint",
     "format": "oxfmt",
