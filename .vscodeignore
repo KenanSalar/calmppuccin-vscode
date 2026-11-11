@@ -3,6 +3,7 @@
 .git/**
 .github/**
 .gitignore
+.git-blame-ignore-revs
 .dockerignore
 .vscode-test/**
 .vscode/**
@@ -32,10 +33,12 @@ src/palettes.ts
 src/extensions/**
 src/SettingsPanel.ts
 src/WebviewManager.ts
+src/webviewMessages.ts
 src/utils/**
 tsconfig.json
 webpack.config.js
-eslint.config.mjs
+.oxlintrc.json
+.oxfmtrc.json
 
 # Source maps - not needed in production (safety measure)
 *.map

@@ -1,0 +1,6 @@
+* @KenanSalar
+
+# Workflows and the composite actions they call run with the repo's secrets.
+/.github/CODEOWNERS @KenanSalar
+/.github/workflows/ @KenanSalar
+/.github/actions/ @KenanSalar

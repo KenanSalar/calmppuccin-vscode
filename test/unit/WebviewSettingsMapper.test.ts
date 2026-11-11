@@ -1,7 +1,5 @@
 /**
- * @file Contract test for getWebViewSettings (WebviewSettingsMapper).
- * Verifies that the assembled ISettingsPayload has the correct shape and values,
- * locking down the webview contract to catch regressions from the config split.
+ * @file Pins the `ISettingsPayload` `getWebViewSettings` assembles, through the `vscode` mock.
  */
 
 import * as vscode from "vscode";
@@ -21,11 +19,9 @@ describe("WebviewSettingsMapper contract", () => {
     jest.clearAllMocks();
   });
 
-  /**
-   * Sets up mocks for a full getWebViewSettings call with known profile data.
-   */
+  /** Serves settings through the `vscode` mock; by default Mocha and an empty `Default`. */
   function setupMocks(overrides?: {
-    profiles?: Record<string, Record<string, unknown>>;
+    profiles?: Record<string, unknown>;
     activeProfile?: string;
     themeName?: string;
     accent?: string;
@@ -46,9 +42,23 @@ describe("WebviewSettingsMapper contract", () => {
                 default: { commentFontStyle: "italic", keywordFontStyle: "none" },
               },
               "calmppuccin.accent": {
-                enum: ["rosewater", "flamingo", "pink", "mauve", "red", "maroon",
-                       "peach", "yellow", "green", "teal", "sky", "sapphire",
-                       "blue", "lavender", "custom"],
+                enum: [
+                  "rosewater",
+                  "flamingo",
+                  "pink",
+                  "mauve",
+                  "red",
+                  "maroon",
+                  "peach",
+                  "yellow",
+                  "green",
+                  "teal",
+                  "sky",
+                  "sapphire",
+                  "blue",
+                  "lavender",
+                  "custom",
+                ],
               },
             },
           },
@@ -78,6 +88,14 @@ describe("WebviewSettingsMapper contract", () => {
       return { get: jest.fn(), update: jest.fn() };
     });
   }
+
+  /** `calmppuccin.profiles` is hand-edited JSON, so an entry can be anything. */
+  it("should treat a profile that isn't an object as empty", () => {
+    setupMocks({ profiles: { Default: null } });
+    const result = ConfigurationService.getWebViewSettings();
+    expect(result.profiles).toStrictEqual({ Default: {} });
+    expect(result.currentAccent).toBe(C.DEFAULT_ACCENT);
+  });
 
   it("should return activeFlavor matching the theme name", () => {
     setupMocks({ themeName: "Calmppuccin Mocha" });
@@ -174,7 +192,7 @@ describe("WebviewSettingsMapper contract", () => {
       },
     });
     const result = ConfigurationService.getWebViewSettings();
-    const commentSetting = result.syntaxSettings.find(s => s.key === "comment");
+    const commentSetting = result.syntaxSettings.find((s) => s.key === "comment");
     expect(commentSetting).toBeDefined();
     expect(commentSetting?.color).toBe("#ff0000");
   });
@@ -188,7 +206,7 @@ describe("WebviewSettingsMapper contract", () => {
       },
     });
     const result = ConfigurationService.getWebViewSettings();
-    const baseSetting = result.uiSettings.find(s => s.key === "base");
+    const baseSetting = result.uiSettings.find((s) => s.key === "base");
     expect(baseSetting).toBeDefined();
     expect(baseSetting?.color).toBe("#000000");
   });
@@ -197,7 +215,6 @@ describe("WebviewSettingsMapper contract", () => {
     setupMocks();
     const result = ConfigurationService.getWebViewSettings();
 
-    // All required fields of ISettingsPayload must be present
     expect(result).toHaveProperty("activeFlavor");
     expect(result).toHaveProperty("syntaxSettings");
     expect(result).toHaveProperty("bracketSettings");
@@ -214,7 +231,10 @@ describe("WebviewSettingsMapper contract", () => {
   });
 
   it("should return the active profile name", () => {
-    setupMocks({ activeProfile: "MyCustomProfile", profiles: { Default: {}, MyCustomProfile: {} } });
+    setupMocks({
+      activeProfile: "MyCustomProfile",
+      profiles: { Default: {}, MyCustomProfile: {} },
+    });
     const result = ConfigurationService.getWebViewSettings();
     expect(result.activeProfile).toBe("MyCustomProfile");
   });

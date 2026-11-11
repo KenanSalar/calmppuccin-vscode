@@ -1,14 +1,7 @@
-/**
- * @file Shared mock palette fixture for extension color generator tests.
- * Provides a complete IPalette implementation with known values for predictable testing.
- */
+/** @file A complete `IPalette` with fixed values, for the third-party color generators' tests. */
 
 import { IPalette } from "../../src/palettes";
 
-/**
- * Mock palette with known values for predictable testing.
- * Used by Error Lens, GitHub Pull Request, and GitLens color generator tests.
- */
 export const mockPalette: IPalette = {
   themeName: "Test Theme",
   themeType: "dark",

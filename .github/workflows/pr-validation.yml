@@ -2,74 +2,138 @@ name: PR Validation
 
 on:
   pull_request:
-    branches: [dev]
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
-  packages: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
 
 jobs:
+  changes:
+    name: detect-changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read # paths-filter lists a PR's changed files via the API
+      actions: write # skip-duplicate-actions' documented minimum
+    outputs:
+      # `workflow_dispatch` has no base ref to diff against, so it always runs.
+      run: >-
+        ${{ github.event_name == 'workflow_dispatch' ||
+        (steps.paths.outputs.code == 'true' && steps.skip_check.outputs.should_skip != 'true') }}
+    steps:
+      # A denylist, never source globs: the gate counts `skipped` as a pass, so an
+      # allowlist would merge an unlisted path green with nothing run. A path
+      # belongs here only once nothing builds, packages or runs it before a merge.
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        id: paths
+        if: github.event_name == 'pull_request'
+        with:
+          predicate-quantifier: every
+          filters: |
+            code:
+              - '**'
+              - '!CONTRIBUTING.md'
+              - '!CLAUDE.md'
+              - '!.claude/**'
+              - '!.devcontainer/**'
+              - '!.dockerignore'
+              - '!.vscode/**'
+              - '!.gitignore'
+              - '!.git-blame-ignore-revs'
+              - '!assets/images/customUI/**'
+              - '!assets/images/preview/**'
+              - '!assets/images/screenshots/**'
+
+      # Skips a tree that already passed, e.g. after a rebase or a revert.
+      - uses: fkirc/skip-duplicate-actions@b974a9395958c231af965b70070979a577efa578 # v5.3.2
+        id: skip_check
+
   type-check:
     name: type-check
     runs-on: ubuntu-latest
-
+    needs: [changes]
+    if: needs.changes.outputs.run == 'true'
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-node
+      - run: npm run type-check
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Type check
-        run: npm run type-check
-
-  lint-check:
-    name: lint-check
+  lint:
+    name: lint
     runs-on: ubuntu-latest
-
+    needs: [changes]
+    if: needs.changes.outputs.run == 'true'
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-node
+      - run: npm run lint
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Lint
-        run: npm run lint
-
-  tests:
-    name: tests
+  format:
+    name: format
     runs-on: ubuntu-latest
-
+    needs: [changes]
+    if: needs.changes.outputs.run == 'true'
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-node
+      - run: npm run format:check
 
-      - name: Set lowercase OWNER
-        id: set_owner
-        run: echo "owner_lc=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    needs: [changes]
+    if: needs.changes.outputs.run == 'true'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-node
+      - run: npm test
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
+  # Builds the same VSIX a release tag would, so a packaging failure surfaces
+  # here instead of after the tag is pushed. The artifact is installable for a
+  # manual check before merging.
+  package:
+    name: package
+    runs-on: ubuntu-latest
+    needs: [changes]
+    if: needs.changes.outputs.run == 'true'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-node
+      - run: npm run package
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          name: vsix
+          path: "*.vsix"
+          if-no-files-found: error
+          retention-days: 14
 
-      - name: Pull Dev Container Image
-        run: docker pull ghcr.io/${{ steps.set_owner.outputs.owner_lc }}/calmppuccin-builder:latest
+  # The required status check in the main ruleset. Green iff every job passed or
+  # was skipped, which is what lets a docs-only PR merge without a build.
+  pr-validation:
+    name: pr-validation
+    if: always()
+    needs: [changes, type-check, lint, format, test, package]
+    runs-on: ubuntu-latest
+    steps:
+      # Derived from `needs:` so adding a job is one edit. Through `env:` because
+      # interpolating `${{ }}` into a script is the shape that goes wrong.
+      - name: Check job results
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          not_green="$(jq -r '
+            to_entries[]
+            | select(.value.result != "success" and .value.result != "skipped")
+            | "  \(.key): \(.value.result)"' <<<"$NEEDS")"
 
-      - name: Run Tests
-        run: docker run --rm --workdir /workspaces/calmppuccin-vscode ghcr.io/${{ steps.set_owner.outputs.owner_lc }}/calmppuccin-builder:latest npm test
+          if [[ -n "$not_green" ]]; then
+            echo "Jobs that failed or were cancelled:"
+            echo "$not_green"
+            exit 1
+          fi
+          echo "All jobs passed or were skipped"

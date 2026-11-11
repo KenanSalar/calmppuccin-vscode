@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -24,7 +24,7 @@
               <div class="profile-selector-container">
                 <label for="profile-select">Active Profile:</label>
                 <select id="profile-select"></select>
-                <button id="delete-profile-btn" class="btn btn-danger" style="display: none;">Delete Profile</button>
+                <button id="delete-profile-btn" class="btn btn-danger">Delete Profile</button>
               </div>
               <div class="profile-actions">
                 <div class="profile-input-container">
@@ -42,7 +42,7 @@
             <h3>Accent Color</h3>
           </div>
           <div class="card-body" id="accent-container">
-            <div id="custom-accent-picker-container" style="display: none">
+            <div id="custom-accent-picker-container">
               <label for="custom-accent-hex-input">Custom Color:</label>
               <div class="syntax-picker-top-row">
                 <input type="color" id="custom-accent-picker" />
@@ -93,10 +93,13 @@
       </div>
     </div>
 
-    <div id="reset-dialog-overlay" class="dialog-overlay hidden" style="opacity: 0; pointer-events: none">
+    <div id="reset-dialog-overlay" class="dialog-overlay hidden">
       <div class="dialog-box">
-        <h3>Confirm Reset</h3>
-        <p>Are you sure you want to reset all Calmppuccin settings to their defaults? This action cannot be undone.</p>
+        <h3 id="reset-dialog-title">Confirm Reset</h3>
+        <p id="reset-dialog-message">
+          Are you sure you want to reset all Calmppuccin settings to their defaults? This action
+          cannot be undone.
+        </p>
         <div class="dialog-buttons">
           <button id="dialog-cancel-button" class="dialog-button secondary">Cancel</button>
           <button id="dialog-confirm-button" class="dialog-button danger">Reset Settings</button>

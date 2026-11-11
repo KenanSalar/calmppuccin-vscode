@@ -1,110 +1,104 @@
-name: Build and Release Extension
+name: Release
+
+# A pushed `v*.*.*` tag publishes the version in package.json, which `prepare`
+# requires the tag to match. Merging to main publishes nothing.
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*.*.*"
+  # Re-runs a release: pick the tag, not a branch, in the ref dropdown.
   workflow_dispatch:
 
 permissions:
-  contents: write
-  actions: write
+  contents: read
+
+# Releases share the marketplaces, not a ref, so one group for every run.
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
-  # Build and package the extension
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      # Full history so the tagged commit can be checked against main.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Check the tag matches package.json and is on main
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          if [[ "$REF_TYPE" != "tag" ]]; then
+            echo "::error::Run this on a release tag, not on branch $REF_NAME."
+            exit 1
+          fi
+
+          VERSION="$(jq -r .version package.json)"
+          if [[ "$REF_NAME" != "v$VERSION" ]]; then
+            echo "::error::Tag $REF_NAME does not match package.json's v$VERSION."
+            echo "::error::Bump the version on main, then tag that commit."
+            exit 1
+          fi
+
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tag $REF_NAME points at a commit that is not on main."
+            exit 1
+          fi
+          echo "Releasing $REF_NAME"
+
   build:
+    needs: prepare
     runs-on: ubuntu-latest
-    # Define job outputs for the release job
-    outputs:
-      vsix_path: ${{ steps.find_vsix.outputs.vsix_path }}
-      version: ${{ steps.get_version.outputs.current-version }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build container image
-        uses: docker/build-push-action@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-node
+      - run: npm run package
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          context: .
-          file: ./.devcontainer/Dockerfile
-          tags: calmppuccin-builder:local
-          push: false
-          load: true
-          no-cache: true
-
-      - name: Get Package Version
-        id: get_version
-        uses: martinbeentjes/npm-get-version-action@v1.3.1
-
-      - name: Build and Package Extension
-        run: |
-          set -euo pipefail
-          docker run --rm \
-            -u 0 \
-            -e NODE_ENV=production \
-            -v "$PWD":/workspace \
-            --workdir /workspace \
-            calmppuccin-builder:local \
-            bash -c 'npm install --production=false && npm run package'
-
-      - name: Find VSIX file
-        id: find_vsix
-        run: |
-          set -euo pipefail
-          VSIX=$(ls -1 *.vsix)
-          echo "vsix_path=${VSIX}" >> "$GITHUB_OUTPUT"
-          echo "Found VSIX: ${VSIX}"
-
-      # Upload VSIX as an artifact for the release job
-      - name: Upload VSIX Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: calmppuccin-vsix
+          name: vsix
           path: "*.vsix"
+          if-no-files-found: error
 
-  # Download artifact and publish the release
-  release:
-    runs-on: ubuntu-latest
-    # Run this job only on the 'main' branch
-    if: github.ref == 'refs/heads/main'
-    # Requires the 'build' job to succeed
+  # Every step skips what already exists, so a re-run after a partial failure
+  # finishes the release instead of failing on the half that went out.
+  publish:
     needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      # Download the VSIX package from the previous job
-      - name: Download VSIX Artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup-node
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: calmppuccin-vsix
+          name: vsix
+          path: vsix
 
-      - name: Display structure of downloaded files
-        run: ls -R
-
-      - name: Publish to Marketplaces and Create Release
+      - name: Publish to the VS Code Marketplace
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: npx vsce publish --packagePath vsix/*.vsix --skip-duplicate
+
+      - name: Publish to Open VSX
+        env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx ovsx publish vsix/*.vsix --skip-duplicate
+
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
         run: |
-          set -euo pipefail
-          VERSION="${{ needs.build.outputs.version }}"
-          VSIX_PATH="${{ needs.build.outputs.vsix_path }}"
-
-          echo "Version: ${VERSION}"
-          echo "VSIX Path: ${VSIX_PATH}"
-
-          npm install -g @vscode/vsce ovsx
-
-          echo "Publishing to VS Code Marketplace..."
-          vsce publish --packagePath "${VSIX_PATH}"
-
-          echo "Publishing to Open VSX Registry..."
-          ovsx publish "${VSIX_PATH}"
-
-          gh release create "v${VERSION}" \
-            --repo "$GITHUB_REPOSITORY" \
-            --title "Release v${VERSION}" \
-            --notes "New release." \
-            "${VSIX_PATH}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" vsix/*.vsix --clobber
+          else
+            gh release create "$TAG" vsix/*.vsix \
+              --verify-tag \
+              --title "Release $TAG" \
+              --generate-notes
+          fi

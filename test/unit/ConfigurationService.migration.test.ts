@@ -1,8 +1,4 @@
-/**
- * @file ConfigurationService.migration.test.ts
- * @description Tests for the migration logic that converts pre-v1.8.0 global settings
- * to the new profile-based system. These tests verify data integrity during upgrades.
- */
+/** @file `migrateGlobalSettingsToDefault`, against the `vscode` mock's configuration. */
 
 import * as vscode from "vscode";
 import { ConfigurationService } from "../../src/ConfigurationService";
@@ -10,9 +6,6 @@ import * as C from "../../src/constants";
 
 const mockedVscode = vscode as jest.Mocked<typeof vscode>;
 
-/**
- * Test suite for migration logic from global settings to profile-based system.
- */
 describe("ConfigurationService Migration Logic", () => {
   let mockConfiguration: { get: jest.Mock; update: jest.Mock };
 
@@ -24,7 +17,6 @@ describe("ConfigurationService Migration Logic", () => {
     };
     (mockedVscode.workspace.getConfiguration as jest.Mock).mockReturnValue(mockConfiguration);
 
-    // Mock extension package.json with default values
     (mockedVscode.extensions.getExtension as jest.Mock).mockReturnValue({
       packageJSON: {
         contributes: {
@@ -48,12 +40,6 @@ describe("ConfigurationService Migration Logic", () => {
     });
   });
 
-  /**
-   * @description Tests that migrateGlobalSettingsToDefault migrates non-default global settings
-   * to the Default profile while filtering out default values.
-   * @precondition Global settings exist with mixed default and custom values
-   * @assertion Only non-default values should be migrated to Default profile
-   */
   it("should migrate non-default global settings to Default profile", async () => {
     mockConfiguration.get.mockImplementation((key: string) => {
       if (key === C.CONFIG_KEY_PROFILES) return { Default: {} };
@@ -69,7 +55,6 @@ describe("ConfigurationService Migration Logic", () => {
 
     await ConfigurationService.migrateGlobalSettingsToDefault();
 
-    // Should save profiles with only non-default values
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_PROFILES,
       {
@@ -79,28 +64,23 @@ describe("ConfigurationService Migration Logic", () => {
           syntaxOverrides: { mocha: { comment: "#ff0000" } },
         },
       },
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
 
-    // Should clean up global settings (7 calls total: 1 profiles + 6 cleanups)
+    // The profiles, then the six legacy top-level keys.
     expect(mockConfiguration.update).toHaveBeenCalledTimes(7);
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_FONT_STYLES,
       undefined,
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_ACCENT,
       undefined,
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
-  /**
-   * @description Tests that migration does not overwrite existing Default profile settings.
-   * @precondition Default profile already contains customizations + global settings exist
-   * @assertion Migration should add global settings that don't exist in profile yet
-   */
   it("should add new global settings but not overwrite existing Default profile settings", async () => {
     mockConfiguration.get.mockImplementation((key: string) => {
       if (key === C.CONFIG_KEY_PROFILES) {
@@ -114,7 +94,7 @@ describe("ConfigurationService Migration Logic", () => {
 
     await ConfigurationService.migrateGlobalSettingsToDefault();
 
-    // Should migrate fontStyles (not in profile yet) but keep existing accent
+    // The global fontStyles moves in; the profile's own accent stays.
     expect(mockConfiguration.update).toHaveBeenCalledWith(
       C.CONFIG_KEY_PROFILES,
       {
@@ -123,15 +103,10 @@ describe("ConfigurationService Migration Logic", () => {
           fontStyles: { commentFontStyle: "bold" }, // Migrated
         },
       },
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
-  /**
-   * @description Tests that migration handles clean installations with no global settings.
-   * @precondition No global settings exist, only empty Default profile
-   * @assertion No updates should be made to configuration
-   */
   it("should handle clean install (no global settings)", async () => {
     mockConfiguration.get.mockImplementation((key: string) => {
       if (key === C.CONFIG_KEY_PROFILES) return { Default: {} };
@@ -143,11 +118,6 @@ describe("ConfigurationService Migration Logic", () => {
     expect(mockConfiguration.update).not.toHaveBeenCalled();
   });
 
-  /**
-   * @description Tests that migration filters out default-valued font styles.
-   * @precondition Font styles exist with both default and custom values
-   * @assertion Only custom values should be migrated
-   */
   it("should filter out default-valued font styles during migration", async () => {
     mockConfiguration.get.mockImplementation((key: string) => {
       if (key === C.CONFIG_KEY_PROFILES) return { Default: {} };
@@ -169,15 +139,10 @@ describe("ConfigurationService Migration Logic", () => {
           fontStyles: { keywordFontStyle: "bold" }, // Only non-default
         },
       },
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
   });
 
-  /**
-   * @description Tests that migration skips if all global settings match defaults.
-   * @precondition Global settings exist but all values are defaults
-   * @assertion No updates should be made to configuration
-   */
   it("should skip migration if global settings are all defaults", async () => {
     mockConfiguration.get.mockImplementation((key: string) => {
       if (key === C.CONFIG_KEY_PROFILES) return { Default: {} };
@@ -193,11 +158,6 @@ describe("ConfigurationService Migration Logic", () => {
     expect(mockConfiguration.update).not.toHaveBeenCalled();
   });
 
-  /**
-   * @description Tests that migration handles complex nested objects correctly.
-   * @precondition Multiple types of settings exist with nested structures
-   * @assertion All nested structures should be migrated correctly
-   */
   it("should handle complex nested objects (syntax overrides, UI overrides)", async () => {
     mockConfiguration.get.mockImplementation((key: string) => {
       if (key === C.CONFIG_KEY_PROFILES) return { Default: {} };
@@ -238,10 +198,10 @@ describe("ConfigurationService Migration Logic", () => {
           },
         },
       },
-      vscode.ConfigurationTarget.Global
+      vscode.ConfigurationTarget.Global,
     );
 
-    // Should clean up all 6 global settings
+    // The profiles, then the six legacy top-level keys.
     expect(mockConfiguration.update).toHaveBeenCalledTimes(7);
   });
 });

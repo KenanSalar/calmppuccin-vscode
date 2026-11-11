@@ -1,19 +1,24 @@
 /**
- * @file This script handles the dynamic generation of all Calmppuccin theme flavors.
- * It reads a single template file and combines it with various color palettes
- * to produce the final theme JSON files.
+ * @file Fills `src/template.json`'s placeholders from each flavor's palette and the user's
+ * settings, and writes the theme files.
  */
 
-import * as fs from "fs-extra";
+import * as fs from "fs/promises";
 import * as path from "path";
-import palette, { IPalettes } from "./src/palettes";
+import {
+  IExtensionPackageJson,
+  IFontStyles,
+  ISyntaxOverrides,
+  IUiOverrides,
+  IFontStyleOverrides,
+} from "./src/ConfigurationService";
 import * as C from "./src/constants";
-import { IFontStyles, ISyntaxOverrides, IUiOverrides, IFontStyleOverrides } from "./src/ConfigurationService";
 import { generateErrorLensColors } from "./src/extensions/errorLens";
 import { generateGitHubPullRequestColors } from "./src/extensions/githubPullRequest";
 import { generateGitLensColors } from "./src/extensions/gitlens";
+import palette, { IPalettes } from "./src/palettes";
 
-/** Represents the structure of a VS Code theme JSON file. */
+/** The part of a theme file the build sets or reads. */
 interface IThemeJson {
   name: string;
   type: string;
@@ -22,16 +27,7 @@ interface IThemeJson {
   semanticTokenColors?: Record<string, string>;
 }
 
-/** Represents the relevant structure of the extension's package.json. */
-interface IPackageJson {
-  contributes?: {
-    configuration?: {
-      properties?: Record<string, { default?: IFontStyles }>;
-    };
-  };
-}
-
-/** Options for building theme flavors, consolidating multiple parameters into a single object. */
+/** The settings a build applies; packaging passes the defaults. */
 export interface IBuildOptions {
   accentIdentifier: string;
   fontStyles: IFontStyles;
@@ -40,135 +36,164 @@ export interface IBuildOptions {
   fontStyleOverrides: IFontStyleOverrides;
 }
 
+/** A theme file as a build found it, `undefined` when there was none, and as it left it. */
+export interface IThemeBuild {
+  previous: string | undefined;
+  generated: string;
+}
+
+export type ThemeBuilds = ReadonlyMap<keyof IPalettes, IThemeBuild>;
+
+// Resolved from `dist/`, where both bundles that run the build live.
 const THEME_DIR = path.resolve(__dirname, "..", C.THEMES_DIR);
 const TEMPLATE_PATH = path.resolve(__dirname, "..", C.SRC_DIR, C.TEMPLATE_FILE);
 const FLAVORS = Object.keys(palette) as Array<keyof IPalettes>;
 
-/**
- * Generates a single theme file for a given flavor.
- * @param {keyof IPalettes} flavor The flavor to generate (e.g., "mocha").
- * @param {string} templateStr The raw template string.
- * @param {IBuildOptions} options The build configuration options.
- * @returns {Promise<void>} A promise that resolves when the theme file has been written.
- */
+/** Builds one flavor's theme file, writing it only when its content changes. */
 async function buildFlavor(
   flavor: keyof IPalettes,
   templateStr: string,
-  options: IBuildOptions
-): Promise<void> {
-  const { accentIdentifier, fontStyles, syntaxOverrides, uiOverrides, fontStyleOverrides } = options;
-  const basePalette = palette[flavor];
-  const flavorSyntaxOverrides = syntaxOverrides[flavor] ?? {};
-  const flavorUiOverrides = uiOverrides[flavor] ?? {};
-  const flavorFontStyleOverrides = fontStyleOverrides[flavor] ?? {};
-  // Merge the base flavor palette with any user-defined color overrides.
-  const finalPalette = { ...basePalette, ...flavorSyntaxOverrides, ...flavorUiOverrides };
-
-  // Resolve the accent color. If it's a hex code, use it directly. Otherwise, look it up in the palette.
-  const accentColor = accentIdentifier.startsWith("#")
-    ? accentIdentifier
-    : finalPalette[accentIdentifier] ?? finalPalette[C.FALLBACK_ACCENT];
-  const accentHexValue = accentColor.substring(1);
-
-  // Create the final resolved palette by processing color recipes (e.g., "{{accent}}2f").
-  const resolvedPalette: { [key: string]: string } = {};
-  for (const [key, value] of Object.entries(finalPalette)) {
-    if (typeof value === "string" && value.startsWith(C.ACCENT_RECIPE_PREFIX)) {
-      // This is a dynamic color. Construct it by combining the accent hex with a transparency value.
-      const transparency = value.substring(C.ACCENT_RECIPE_PREFIX.length);
-      resolvedPalette[key] = `#${accentHexValue}${transparency}`;
-    } else {
-      resolvedPalette[key] = value;
-    }
-  }
-
-  // Merge global font styles with flavor-specific font style overrides, with overrides taking precedence.
-  const finalFontStyles = { ...fontStyles, ...flavorFontStyleOverrides };
-
-  // Combine all colors, the resolved accent, and font styles into a single replacement map.
-  const replacementMap = new Map<string, string>();
-  for (const [key, value] of Object.entries(resolvedPalette)) {
-    replacementMap.set(key, value);
-  }
-  replacementMap.set("accent", accentColor);
-  for (const [key, value] of Object.entries(finalFontStyles)) {
-    // Handle the special case for font styles where "none" should be an empty string.
-    replacementMap.set(key, value === "none" ? "" : value);
-  }
-
-  // Build a single regex pattern to match all placeholders and replace in one pass.
-  const allKeysPattern = new RegExp(
-    `\\{\\{(${[...replacementMap.keys()].map(k => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})\\}\\}`,
-    "g"
-  );
-  const themeContent = templateStr.replace(allKeysPattern, (_, key: string) => {
-    const value = replacementMap.get(key);
-    if (value === undefined) {
-      console.warn(`[Calmppuccin] Placeholder key "{{${key}}}" not found in replacement map for flavor "${flavor}".`);
-    }
-    // Escape special JSON characters to prevent injection from malformed settings.
-    return JSON.stringify(value ?? "").slice(1, -1);
-  });
-
-  let themeJson: IThemeJson;
-  try {
-    themeJson = JSON.parse(themeContent) as IThemeJson;
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    throw new Error(`Failed to parse theme JSON for flavor "${flavor}": ${message}`, { cause: err });
-  }
+  options: IBuildOptions,
+): Promise<IThemeBuild> {
+  const themeJson = fillTemplate(templateStr, getReplacements(flavor, options), flavor);
   const flavorDisplayName = flavor.charAt(0).toUpperCase() + flavor.slice(1);
   themeJson.name = `Calmppuccin ${flavorDisplayName}`;
   themeJson.type = flavor === C.LIGHT_FLAVOR_NAME ? C.THEME_TYPE_LIGHT : C.THEME_TYPE_DARK;
 
-  // Add all extension color customizations in a single assignment.
-  // Ensure colors object exists for test templates that may omit it.
+  // A test template may have no "colors".
   if (themeJson.colors) {
+    const basePalette = palette[flavor];
     const errorLensColors = generateErrorLensColors(basePalette);
     const githubPRColors = generateGitHubPullRequestColors(basePalette);
     const gitLensColors = generateGitLensColors(basePalette);
     Object.assign(themeJson.colors, errorLensColors, githubPRColors, gitLensColors);
   }
 
-  // Write the generated theme object to a JSON file in the /themes directory.
   const themeFileName = `${C.THEME_FILE_PREFIX}-${flavor}-${C.THEME_FILE_SUFFIX}`;
   const themePath = path.join(THEME_DIR, themeFileName);
-  await fs.writeJson(themePath, themeJson, { spaces: 2 });
+  const generated = JSON.stringify(themeJson, null, 2) + "\n";
+  const previous = await readIfExists(themePath);
+  if (generated !== previous) {
+    await replaceFile(themePath, generated);
+  }
+  return { previous, generated };
 }
 
-/**
- * Generates all Calmppuccin theme files based on the template, palettes, and user settings.
- * @param {IBuildOptions} options The build configuration options.
- * @returns {Promise<void>} A promise that resolves when all theme files have been written to disk.
- */
-export async function buildAllFlavors(options: IBuildOptions): Promise<void> {
-  // Ensure the output directory is clean and ready.
-  // Note: emptyDir() creates the directory if it doesn't exist.
-  await fs.emptyDir(THEME_DIR);
+/** The value each `{{key}}` takes in `flavor`'s theme: palette colors, the accent, font styles. */
+function getReplacements(flavor: keyof IPalettes, options: IBuildOptions): Map<string, string> {
+  const flavorPalette = {
+    ...palette[flavor],
+    ...options.syntaxOverrides[flavor],
+    ...options.uiOverrides[flavor],
+  };
+  const { accentIdentifier } = options;
+  const accentColor = accentIdentifier.startsWith("#")
+    ? accentIdentifier
+    : (flavorPalette[accentIdentifier] ?? flavorPalette[C.FALLBACK_ACCENT]);
+
+  const replacements = new Map<string, string>();
+  for (const [key, value] of Object.entries(flavorPalette)) {
+    // A recipe such as "{{accent}}2f" is the accent's hex with that alpha.
+    if (typeof value === "string" && value.startsWith(C.ACCENT_RECIPE_PREFIX)) {
+      const alpha = value.substring(C.ACCENT_RECIPE_PREFIX.length);
+      replacements.set(key, `#${accentColor.substring(1)}${alpha}`);
+    } else {
+      replacements.set(key, value);
+    }
+  }
+  replacements.set("accent", accentColor);
+
+  const fontStyles = { ...options.fontStyles, ...options.fontStyleOverrides[flavor] };
+  for (const [key, value] of Object.entries(fontStyles)) {
+    // The settings spell "no style" as "none", a theme as "".
+    replacements.set(key, value === "none" ? "" : value);
+  }
+  return replacements;
+}
+
+/** Fills each `{{key}}` that has a replacement in one pass, rather than a rescan per key. */
+function fillTemplate(
+  templateStr: string,
+  replacements: ReadonlyMap<string, string>,
+  flavor: keyof IPalettes,
+): IThemeJson {
+  const keys = [...replacements.keys()].map((key) => RegExp.escape(key));
+  const placeholderPattern = new RegExp(`\\{\\{(${keys.join("|")})\\}\\}`, "g");
+  const themeContent = templateStr.replace(placeholderPattern, (_, key: string) =>
+    // JSON-escaped, so a setting can't break out of its string.
+    JSON.stringify(replacements.get(key) ?? "").slice(1, -1),
+  );
+
+  try {
+    return JSON.parse(themeContent) as IThemeJson;
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    throw new Error(`Failed to parse theme JSON for flavor "${flavor}": ${message}`, {
+      cause: err,
+    });
+  }
+}
+
+export async function buildAllFlavors(options: IBuildOptions): Promise<ThemeBuilds> {
+  await fs.mkdir(THEME_DIR, { recursive: true });
   const templateStr = await fs.readFile(TEMPLATE_PATH, "utf-8");
 
-  // Generate all flavors in parallel for faster theme regeneration.
-  await Promise.all(
-    FLAVORS.map(flavor => buildFlavor(flavor, templateStr, options))
+  // Each flavor writes its own file, so they can build concurrently.
+  const builds = await Promise.all(
+    FLAVORS.map(
+      async (flavor) => [flavor, await buildFlavor(flavor, templateStr, options)] as const,
+    ),
   );
 
   console.log(`All Calmppuccin themes built with the "${options.accentIdentifier}" accent.`);
+  return new Map(builds);
 }
 
 /**
- * Reads the project's package.json to get the default font styles defined in the contribution points.
- * @returns {Promise<IFontStyles>} The default font styles object.
+ * Replaces `filePath` with `content` through a rename.
+ *
+ * Every open window rebuilds the same files after a settings change, and VS Code may load a theme
+ * meanwhile, so a reader sees the old file or the new one, never a half-written one.
  */
+async function replaceFile(filePath: string, content: string): Promise<void> {
+  // One temp file per extension host, since every window's host may be writing this file.
+  const tempPath = `${filePath}.${String(process.pid)}.tmp`;
+  try {
+    await fs.writeFile(tempPath, content);
+    await fs.rename(tempPath, filePath);
+  } catch (err: unknown) {
+    // The replace's failure is the one to report, not the cleanup's.
+    await fs.rm(tempPath, { force: true }).catch((cleanupErr: unknown) => {
+      console.error("Failed to remove a temporary theme file:", cleanupErr);
+    });
+    throw err;
+  }
+}
+
+async function readIfExists(filePath: string): Promise<string | undefined> {
+  try {
+    return await fs.readFile(filePath, "utf8");
+  } catch (err: unknown) {
+    if (err instanceof Error && (err as NodeJS.ErrnoException).code === "ENOENT") {
+      return undefined;
+    }
+    throw err;
+  }
+}
+
+/** Reads the `calmppuccin.fontStyles` default from `package.json`. */
 async function getDefaultFontStyles(): Promise<IFontStyles> {
   const packageJsonPath = path.resolve(__dirname, "..", "package.json");
-  const packageJson = await fs.readJson(packageJsonPath) as IPackageJson;
-  return packageJson.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.fontStyles`]?.default ?? {};
+  const packageJson = JSON.parse(
+    await fs.readFile(packageJsonPath, "utf8"),
+  ) as IExtensionPackageJson;
+  return (
+    packageJson.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.fontStyles`]
+      ?.default ?? {}
+  );
 }
 
-/**
- * This block allows the script to be executed directly from the command line (e.g., `node dist/build.js`),
- * which is useful for development and testing purposes. It generates the themes using default values.
- */
+// `node dist/build.js`, as packaging runs it: the themes with default settings.
 if (require.main === module) {
   void (async () => {
     const defaultFontStyles = await getDefaultFontStyles();

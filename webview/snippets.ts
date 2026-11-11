@@ -1,17 +1,16 @@
-/**
- * @file This file aggregates all language-specific code snippets into a single, easily importable object.
- * This object is used by the webview's live preview pane to display different code samples.
- */
+/** @file The preview's sample code. */
 
+import { bracketsSnippet } from "./snippets/brackets";
 import { cSnippet } from "./snippets/c";
 import { cppSnippet } from "./snippets/cpp";
 import { csharpSnippet } from "./snippets/csharp";
-import { dartSnippet } from "./snippets/dart";
 import { cssSnippet } from "./snippets/css";
+import { dartSnippet } from "./snippets/dart";
 import { goSnippet } from "./snippets/go";
 import { htmlSnippet } from "./snippets/html";
 import { javaSnippet } from "./snippets/java";
 import { javascriptSnippet } from "./snippets/javascript";
+import { jsonSnippet } from "./snippets/json";
 import { kotlinSnippet } from "./snippets/kotlin";
 import { luaSnippet } from "./snippets/lua";
 import { phpSnippet } from "./snippets/php";
@@ -20,23 +19,10 @@ import { rustSnippet } from "./snippets/rust";
 import { shellSnippet } from "./snippets/shell";
 import { sqlSnippet } from "./snippets/sql";
 import { typescriptSnippet } from "./snippets/typescript";
-import { bracketsSnippet } from "./snippets/brackets";
-import { jsonSnippet } from "./snippets/json";
 import { uiSnippet } from "./snippets/ui";
 
-/**
- * Defines the shape for the code snippets object.
- * It's a dictionary mapping a language identifier (string) to its corresponding HTML snippet (string).
- */
-export type CodeSnippets = {
-  [language: string]: string;
-};
-
-/**
- * The main exported object containing all code snippets for the live preview.
- * The keys of this object (e.g., "csharp", "python") are used to populate the language selector dropdown in the UI.
- */
-export const codeSnippets: CodeSnippets = {
+/** The preview's sample code by language, in the language dropdown's order. */
+export const languageSnippets: Readonly<Record<string, string>> = {
   c: cSnippet,
   "c++": cppSnippet,
   csharp: csharpSnippet,
@@ -54,7 +40,11 @@ export const codeSnippets: CodeSnippets = {
   shell: shellSnippet,
   sql: sqlSnippet,
   typescript: typescriptSnippet,
+};
+
+/** The fixed previews of the settings views that aren't about a language. */
+export const viewSnippets = {
   brackets: bracketsSnippet,
   json: jsonSnippet,
   ui: uiSnippet,
-};
+} as const;

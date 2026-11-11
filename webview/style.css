@@ -13,7 +13,11 @@
   --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.05);
   --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-strong: 0 10px 30px rgba(0, 0, 0, 0.12);
-  --gradient-subtle: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%);
+  --gradient-subtle: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
 }
 
 body {
@@ -89,7 +93,7 @@ body {
 
 .card-header {
   padding: 20px var(--card-padding);
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.02);
   border-bottom: 1px solid var(--dynamic-accent-color);
   transition: border-bottom-color var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -116,8 +120,9 @@ body {
   gap: var(--gap-size);
 }
 
+/* Script shows it as a grid while the accent is custom. */
 #custom-accent-picker-container {
-  display: grid;
+  display: none;
   grid-template-columns: auto 1fr;
   align-items: center;
   gap: 10px 20px;
@@ -148,7 +153,9 @@ section.card.danger-zone button.reset-all-button {
   height: 48px;
   padding: 0 32px;
   border-radius: var(--radius);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.2), 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 2px 6px rgba(0, 0, 0, 0.1);
   transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 0.95em;
   letter-spacing: 0.5px;
@@ -159,7 +166,7 @@ section.card.danger-zone button.reset-all-button {
 }
 
 section.card.danger-zone button.reset-all-button::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -168,25 +175,30 @@ section.card.danger-zone button.reset-all-button::before {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(0);
-  transition: transform 0.6s, opacity 0.6s;
+  transition:
+    transform 0.6s,
+    opacity 0.6s;
   opacity: 0;
 }
 
 section.card.danger-zone button.reset-all-button:hover {
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.15);
   transform: translateY(-1px);
 }
 
 section.card.danger-zone button.reset-all-button:active::before {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
-  transition: transform 0s, opacity 0s;
+  transition:
+    transform 0s,
+    opacity 0s;
 }
 
 /* --- Form Controls & Settings Grid --- */
 #settings-container {
   display: grid;
-  /* This is the key change for responsive behavior */
   grid-template-columns: auto minmax(180px, auto) minmax(240px, auto);
   gap: 12px 18px;
   align-items: center;
@@ -327,6 +339,70 @@ select:focus,
   height: 100%;
 }
 
+/* The UI view's mock workbench. Its token elements take their colors from script. */
+.ui-layout-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #11111a;
+}
+
+.ui-layout-titlebar {
+  flex-shrink: 0;
+  height: 30px;
+  transition: background-color 250ms ease;
+}
+
+.ui-layout-main-area {
+  display: flex;
+  flex-grow: 1;
+  height: 100%;
+}
+
+.ui-layout-activitybar {
+  flex-shrink: 0;
+  width: 48px; /* VS Code's activity bar */
+  transition: background-color 250ms ease;
+}
+
+.ui-layout-sidebar {
+  flex-shrink: 0;
+  width: 150px;
+  padding: 8px;
+  box-sizing: border-box;
+  transition: background-color 250ms ease;
+}
+
+.ui-layout-file-text {
+  font-size: 0.9em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 250ms ease;
+}
+
+.ui-layout-editor-wrapper {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.ui-layout-tabbar {
+  flex-shrink: 0;
+  height: 35px; /* VS Code's tab bar */
+  transition: background-color 250ms ease;
+}
+
+.ui-layout-editor {
+  flex-grow: 1;
+  transition: background-color 250ms ease;
+}
+
 /* --- Scrollbar Styling --- */
 ::-webkit-scrollbar {
   width: 10px;
@@ -405,10 +481,15 @@ select:focus,
   border-radius: calc(var(--radius) / 2);
 }
 .syntax-picker-wrapper input[type="color"]::-webkit-color-swatch-wrapper,
-.syntax-picker-top-row input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+.syntax-picker-top-row input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
 
 .syntax-picker-wrapper input[type="color"]::-webkit-color-swatch,
-.syntax-picker-top-row input[type="color"]::-webkit-color-swatch { border: none; border-radius: calc(var(--radius) / 2); }
+.syntax-picker-top-row input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: calc(var(--radius) / 2);
+}
 
 .syntax-picker-wrapper .hex-input-display,
 .syntax-picker-top-row .hex-input-display {
@@ -581,7 +662,12 @@ select:focus,
   transition: none !important;
 }
 
-/* Spacer for when delete button is hidden - override display:none with visibility:hidden */
+/* Until script shows or hides Delete, it holds its space unseen, as it does once hidden. */
+.profile-selector-container #delete-profile-btn:not([style]) {
+  visibility: hidden;
+}
+
+/* Script hides Delete with display: none; keep its space so Save doesn't move. */
 .profile-selector-container #delete-profile-btn[style*="display: none"] {
   display: block !important;
   visibility: hidden;
@@ -647,7 +733,6 @@ select:focus,
   border-color: var(--dynamic-accent-color) !important;
   box-shadow: 0 0 0 1px var(--dynamic-accent-color) !important;
 }
-
 
 /* Button Styles */
 .btn {
@@ -727,7 +812,6 @@ select:focus,
     grid-template-columns: 1fr;
     gap: 8px;
   }
-
 
   .btn {
     width: 100%;

@@ -1,34 +1,30 @@
 /**
- * @file This file manages the logic for the Calmppuccin Customization webview panel.
- * It acts as a controller, handling communication between the webview UI and the extension's configuration.
+ * @file The host side of the customization UI: it checks each webview message, applies it through
+ * `ConfigurationService`, and sends the settings back where the webview can't know the outcome.
  */
 
 import * as vscode from "vscode";
+import { MessageToExtension } from "../types/webview";
+import { ConfigurationService } from "./ConfigurationService";
 import * as C from "./constants";
 import { WebviewManager } from "./WebviewManager";
-import { ConfigurationService } from "./ConfigurationService";
-import { MessageToExtension } from "../types/webview";
+import { parseWebviewMessage } from "./webviewMessages";
 
-/**
- * Manages the state and logic of the settings webview panel.
- * This class follows a singleton pattern to ensure only one panel exists.
- */
 export class SettingsPanel {
   private static _instance: SettingsPanel | undefined;
-  /** Timer handle for debouncing webview updates. */
   private _pendingUpdate: ReturnType<typeof setTimeout> | undefined;
 
-  private constructor(_context: vscode.ExtensionContext) {}
+  private constructor() {}
 
-  /**
-   * Creates a new settings panel or reveals the existing one.
-   * @param {vscode.ExtensionContext} context The extension context from VS Code.
-   */
+  /** Opens the customization UI, or reveals it, and sends it the settings. */
   public static createOrShow(context: vscode.ExtensionContext) {
     if (!SettingsPanel._instance) {
-      SettingsPanel._instance = new SettingsPanel(context);
+      SettingsPanel._instance = new SettingsPanel();
     }
-    WebviewManager.createOrShow(context, SettingsPanel._instance._handleMessage.bind(SettingsPanel._instance))
+    WebviewManager.createOrShow(
+      context,
+      SettingsPanel._instance._receiveMessage.bind(SettingsPanel._instance),
+    )
       .then(() => {
         SettingsPanel._instance?._update();
       })
@@ -37,24 +33,43 @@ export class SettingsPanel {
       });
   }
 
-  /**
-   * Sends updated settings to the webview panel if it is currently visible.
-   */
+  /** Sends the settings again if the panel is open, as after a theme switch changes the flavor. */
   public static updateIfVisible() {
     SettingsPanel._instance?._update();
   }
 
   /**
-   * Handles incoming messages from the webview panel.
-   * @param {MessageToExtension} message The deserialized message object sent from the webview.
+   * Checks a message from the webview and acts on it, reporting a failed settings write to the
+   * user: VS Code ignores the promise a message listener returns.
+   */
+  private async _receiveMessage(raw: unknown) {
+    const message = parseWebviewMessage(raw);
+    if (!message) {
+      console.warn("Ignored an invalid webview message:", raw);
+      return;
+    }
+    try {
+      await this._handleMessage(message);
+    } catch (error) {
+      console.error("Failed to apply a webview message:", error);
+      const reason = error instanceof Error ? error.message : String(error);
+      void vscode.window.showErrorMessage(C.SETTINGS_ERROR_MESSAGE_PREFIX + reason);
+    }
+  }
+
+  /**
+   * Applies a checked message. Only the commands whose outcome the webview can't know send the
+   * settings back, since rebuilding the controls drops the user's focus.
    */
   public async _handleMessage(message: MessageToExtension) {
-    // The 'command' property is used as a discriminator for the message type.
-    // TypeScript correctly infers the shape of 'message' in each case block.
     switch (message.command) {
       case C.WEBVIEW_CONSTANTS.UPDATE_SETTING: {
         const activeFlavor = ConfigurationService.getActiveFlavor();
-        await ConfigurationService.updateFontStyleOverride(activeFlavor, message.key, message.value);
+        await ConfigurationService.updateFontStyleOverride(
+          activeFlavor,
+          message.key,
+          message.value,
+        );
         return;
       }
       case C.WEBVIEW_CONSTANTS.RESET_FONT_STYLE: {
@@ -98,33 +113,23 @@ export class SettingsPanel {
         this._update();
         return;
       default: {
-        // Exhaustive check: TypeScript will error if a new command is added to MessageToExtension
-        // but not handled above.
         const _exhaustiveCheck: never = message;
         console.warn("Unhandled webview message:", _exhaustiveCheck);
       }
     }
   }
 
-  /**
-   * Gathers all current settings via the ConfigurationService and posts them to the webview.
-   * This method is debounced to prevent excessive recomputation during rapid changes
-   * (e.g., dragging a color picker slider).
-   */
+  /** Posts the settings to the panel, debounced so a burst of calls sends one payload. */
   private _update() {
     if (!WebviewManager.currentPanel) return;
 
-    // Clear any pending update to implement debouncing.
     if (this._pendingUpdate) {
       clearTimeout(this._pendingUpdate);
     }
-
-    // Debounce updates to coalesce rapid setting changes.
     this._pendingUpdate = setTimeout(() => {
       this._pendingUpdate = undefined;
       if (!WebviewManager.currentPanel) return;
 
-      // The ONLY responsibility of this method now is to get the complete settings payload and post it.
       const settings = ConfigurationService.getWebViewSettings();
 
       WebviewManager.currentPanel.postMessage({

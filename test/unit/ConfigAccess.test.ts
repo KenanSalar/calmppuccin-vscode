@@ -1,37 +1,6 @@
-/**
- * @file Unit tests for the pure utility functions in ConfigAccess.
- * Tests cloneOverrides() and removeOverrideKey() edge cases.
- */
+/** @file `removeOverrideKey` and `toProfiles`, which need no `vscode` mock. */
 
-import { cloneOverrides, removeOverrideKey } from "../../src/config/ConfigAccess";
-
-describe("cloneOverrides", () => {
-  it("should return a new empty object for empty input", () => {
-    const input = {} as Record<string, Record<string, string>>;
-    const result = cloneOverrides(input);
-
-    expect(result).toEqual({});
-    expect(result).not.toBe(input);
-  });
-
-  it("should deep clone a single flavor with a single key", () => {
-    const input = { mocha: { base: "#111" } };
-    const result = cloneOverrides(input);
-
-    expect(result).toEqual({ mocha: { base: "#111" } });
-    expect(result).not.toBe(input);
-    expect(result.mocha).not.toBe(input.mocha);
-  });
-
-  it("should deep clone multiple flavors independently", () => {
-    const input = { mocha: { a: "1" }, latte: { b: "2" } };
-    const result = cloneOverrides(input);
-
-    expect(result).toEqual({ mocha: { a: "1" }, latte: { b: "2" } });
-    expect(result.mocha).not.toBe(input.mocha);
-    expect(result.latte).not.toBe(input.latte);
-  });
-});
+import { removeOverrideKey, toProfiles } from "../../src/config/ConfigAccess";
 
 describe("removeOverrideKey", () => {
   it("should return original object when key doesn't exist in flavor", () => {
@@ -75,5 +44,41 @@ describe("removeOverrideKey", () => {
     const result = removeOverrideKey(input, "mocha", "a");
 
     expect(result).toBe(input);
+  });
+
+  it("should return original object when the key is only inherited", () => {
+    const input = { mocha: { a: "1" } };
+    const result = removeOverrideKey(input, "mocha", "constructor");
+
+    expect(result).toBe(input);
+  });
+});
+
+describe("toProfiles", () => {
+  it.each([
+    ["undefined", undefined],
+    ["null", null],
+    ["an array", [{ accent: "red" }]],
+    ["a string", "Default"],
+  ])("should give only Default for %s", (_label, raw) => {
+    expect(toProfiles(raw)).toStrictEqual({ Default: {} });
+  });
+
+  it("should drop entries that aren't objects and keep the rest", () => {
+    const raw = { Default: null, Work: { accent: "red" }, Broken: [1], Text: "x" };
+
+    expect(toProfiles(raw)).toStrictEqual({ Default: {}, Work: { accent: "red" } });
+  });
+
+  it("should keep a profile named __proto__ as its own entry", () => {
+    const raw: unknown = JSON.parse('{ "__proto__": { "accent": "red" } }');
+
+    expect(Object.keys(toProfiles(raw)).toSorted()).toStrictEqual(["Default", "__proto__"]);
+  });
+
+  it("should keep an existing Default profile", () => {
+    expect(toProfiles({ Default: { accent: "mauve" } })).toStrictEqual({
+      Default: { accent: "mauve" },
+    });
   });
 });

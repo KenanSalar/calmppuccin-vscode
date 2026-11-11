@@ -3,7 +3,7 @@
   "displayName": "Calmppuccin",
   "description": "Calmppuccin is a visually refined theme for Visual Studio Code, designed to offer a harmonious coding experience. Inspired by the popular Catppuccin theme, Calmppuccin takes the beloved pastel palette and transforms it into a gentler, less intense version, perfect for long coding sessions without eye strain.",
   "icon": "assets/images/logo/icon.png",
-  "version": "1.9.9",
+  "version": "1.10.0",
   "publisher": "kenan-salar",
   "license": "MIT",
   "sideEffects": false,
@@ -12,7 +12,7 @@
     "url": "https://github.com/KenanSalar/calmppuccin-vscode.git"
   },
   "engines": {
-    "vscode": "^1.104.0"
+    "vscode": "^1.125.0"
   },
   "categories": [
     "Themes"
@@ -63,13 +63,17 @@
   ],
   "main": "./dist/extension.js",
   "activationEvents": [
-    "onColorTheme:Calmppuccin Macchiato",
-    "onColorTheme:Calmppuccin Mocha",
-    "onColorTheme:Calmppuccin Nitro Cold Brew",
-    "onColorTheme:Calmppuccin Oledppuccin",
-    "onColorTheme:Calmppuccin Frappé",
-    "onColorTheme:Calmppuccin Latte"
+    "onStartupFinished"
   ],
+  "extensionKind": [
+    "ui",
+    "workspace"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
   "contributes": {
     "commands": [
       {
@@ -114,6 +118,7 @@
       "title": "Calmppuccin",
       "properties": {
         "calmppuccin.accent": {
+          "scope": "application",
           "type": "string",
           "default": "sapphire",
           "description": "The accent color for all Calmppuccin themes.",
@@ -136,6 +141,7 @@
           ]
         },
         "calmppuccin.customAccentColor": {
+          "scope": "application",
           "type": "string",
           "default": "#89b4fa",
           "pattern": "^#([A-Fa-f0-9]{6})$",
@@ -147,6 +153,7 @@
           "markdownDescription": "Click the link to open the graphical UI for customizing colors and font styles. [**Open Customization UI**](command:calmppuccin.customize)"
         },
         "calmppuccin.fontStyles": {
+          "scope": "application",
           "type": "object",
           "description": "The raw JSON configuration for font styles. For a better experience, use the Customization UI.",
           "default": {
@@ -727,6 +734,7 @@
           }
         },
         "calmppuccin.syntaxOverrides": {
+          "scope": "application",
           "type": "object",
           "default": {},
           "description": "Override specific syntax colors for each Calmppuccin flavor. Use the Customization UI for a better experience.",
@@ -1033,6 +1041,7 @@
           }
         },
         "calmppuccin.uiOverrides": {
+          "scope": "application",
           "type": "object",
           "default": {},
           "description": "Override specific UI colors for each Calmppuccin flavor. Use the Customization UI for a better experience.",
@@ -1063,6 +1072,7 @@
           }
         },
         "calmppuccin.fontStyleOverrides": {
+          "scope": "application",
           "type": "object",
           "default": {},
           "description": "Override specific font styles for each Calmppuccin flavor. Font styles are applied on top of the global font styles. Use the Customization UI for a better experience.",
@@ -1085,6 +1095,7 @@
           }
         },
         "calmppuccin.profiles": {
+          "scope": "application",
           "type": "object",
           "default": {
             "Default": {}
@@ -1126,6 +1137,7 @@
           }
         },
         "calmppuccin.activeProfile": {
+          "scope": "application",
           "type": "string",
           "default": "Default",
           "description": "The currently active profile name"
@@ -1134,33 +1146,33 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "cross-env NODE_ENV=production webpack --mode production",
+    "vscode:prepublish": "npm run build-themes",
+    "compile": "webpack --config-node-env production",
     "watch": "webpack --watch",
     "build-themes": "npm run compile && node ./dist/build.js",
-    "package": "npm run build-themes && npx vsce package --no-dependencies",
-    "publish:ci": "npm run build-themes && npx vsce publish --no-dependencies",
+    "package": "vsce package --no-dependencies",
     "test": "jest --config jest.config.ts",
+    "test:coverage": "jest --config jest.config.ts --coverage",
     "type-check": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "oxlint",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "cross-env": "^10.1.0",
-    "@types/fs-extra": "^11.0.4",
     "@types/jest": "^30.0.0",
-    "@types/node": "^22.19.7",
-    "@types/vscode": "^1.104.0",
-    "eslint": "^10.0.0",
-    "fs-extra": "^11.3.3",
-    "jest": "^30.2.0",
-    "jest-environment-jsdom": "^30.2.0",
-    "ts-jest": "^29.4.6",
-    "ts-loader": "^9.5.4",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.56.0",
-    "webpack": "^5.104.1",
-    "webpack-cli": "^6.0.1"
+    "@types/node": "~24.13.6",
+    "@types/vscode": "1.125.0",
+    "@vscode/vsce": "^4.1.0",
+    "jest": "^30.5.2",
+    "jest-environment-jsdom": "^30.5.2",
+    "ovsx": "^1.4.0",
+    "oxfmt": "^0.78.0",
+    "oxlint": "^1.93.0",
+    "oxlint-tsgolint": "^7.0.2006",
+    "ts-jest": "^29.4.15",
+    "ts-loader": "^9.6.2",
+    "typescript": "^6.0.3",
+    "webpack": "^5.112.2",
+    "webpack-cli": "^7.3.1"
   }
 }

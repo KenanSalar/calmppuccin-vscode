@@ -1,16 +1,11 @@
-/**
- * @file This file contains the unit tests for the theme build script.
- * It verifies that the buildAllFlavors function correctly processes templates
- * and palettes to generate valid theme JSON objects.
- */
+/** @file `buildAllFlavors` over the real palettes, with `fs/promises` mocked. */
 
-import { buildAllFlavors } from "../../build";
-import * as fs from "fs-extra";
+import * as fs from "fs/promises";
+import { buildAllFlavors, ThemeBuilds } from "../../build";
 
-// Mock the entire fs-extra module to isolate the test from the file system.
-jest.mock("fs-extra");
+// Under Jest the themes directory resolves outside the repo.
+jest.mock("fs/promises");
 
-/** Type definition for the theme JSON structure used in tests */
 interface ITestThemeJson {
   name: string;
   type?: string;
@@ -23,33 +18,32 @@ interface ITestThemeJson {
   semanticTokenColors?: Record<string, string>;
 }
 
-/** Type for mock call arguments [filePath, themeJson, options] */
-type WriteJsonCall = [string, ITestThemeJson, { spaces: number }];
+/** A theme write as [filePath, themeJson], with the written JSON parsed back */
+type ThemeWrite = [string, ITestThemeJson];
 
-/**
- * Helper to find a specific theme call from writeJson mocks
- */
-function findThemeCall(flavor: string): WriteJsonCall | undefined {
-  const calls = (fs.writeJson as jest.Mock).mock.calls as WriteJsonCall[];
-  return calls.find((call) => call[0].includes(flavor));
+function findThemeCall(flavor: string): ThemeWrite | undefined {
+  const call = findWrite(flavor);
+  return call && [call[0], JSON.parse(call[1]) as ITestThemeJson];
 }
 
-/**
- * Test suite for the build script.
- */
+/** A theme write as [temporary path, content]. */
+function findWrite(flavor: string): [string, string] | undefined {
+  const calls = jest.mocked(fs.writeFile).mock.calls as unknown as Array<[string, string]>;
+  return calls.find(([filePath]) => filePath.includes(flavor));
+}
+
+/** Serves `template` as the theme template, and lets a temporary file be removed. */
+function mockFileSystem(template: string): void {
+  jest.mocked(fs.readFile).mockResolvedValue(template);
+  jest.mocked(fs.rm).mockResolvedValue(undefined);
+}
+
 describe("Build Script Unit Tests", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  /**
-   * @description Tests that buildAllFlavors correctly replaces all placeholders in a template string.
-   * @precondition The fs-extra module is mocked. `readFile` returns a mock template.
-   * @assertion The JSON object passed to `writeJson` should have its placeholder
-   * values replaced with the correct data from the real palettes and settings.
-   */
   it("should correctly replace placeholders in the template", async () => {
-    // 1. Arrange
     const mockTemplate = JSON.stringify({
       name: "Calmppuccin {{themeName}}",
       colors: {
@@ -61,13 +55,8 @@ describe("Build Script Unit Tests", () => {
 
     const mockFontStyles = { commentFontStyle: "italic" };
 
-    // Configure mocks for fs-extra, casting to 'unknown' first for overloaded functions.
-    (fs.readFile as unknown as jest.Mock).mockResolvedValue(mockTemplate);
-    (fs.emptyDir as unknown as jest.Mock).mockResolvedValue(undefined);
-    (fs.ensureDir as unknown as jest.Mock).mockResolvedValue(undefined);
-    (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
+    mockFileSystem(mockTemplate);
 
-    // 2. Act
     await buildAllFlavors({
       accentIdentifier: "sapphire",
       fontStyles: mockFontStyles,
@@ -76,32 +65,20 @@ describe("Build Script Unit Tests", () => {
       fontStyleOverrides: {},
     });
 
-    // 3. Assert
-    expect(fs.writeJson).toHaveBeenCalled();
+    expect(fs.writeFile).toHaveBeenCalled();
 
-    // Find the call that generated the Latte theme file.
     const latteCall = findThemeCall("latte");
     expect(latteCall).toBeDefined();
 
     const writtenJson = latteCall?.[1];
     expect(writtenJson).toBeDefined();
 
-    // Verify that the placeholders match the actual correct values from the palette.
     expect(writtenJson?.colors["activityBar.background"]).toBe("#cfd1d4");
     expect(writtenJson?.colors["activityBar.foreground"]).toBe("#1c8da1");
     expect(writtenJson?.tokenColors?.[0].settings.fontStyle).toBe("italic");
   });
 
-  /**
-   * @description Tests that buildAllFlavors correctly handles and resolves
-   * dynamic accent color recipes (e.g., "{{accent}}2f").
-   * @precondition The fs-extra module is mocked. `readFile` returns a template
-   * containing a color recipe.
-   * @assertion The JSON object passed to `writeJson` should have the recipe
-   * placeholder replaced with a correctly concatenated hex color string.
-   */
   it("should handle dynamic accent color recipes", async () => {
-    // 1. Arrange: Set up a template with a recipe.
     const mockTemplate = JSON.stringify({
       colors: {
         "statusBar.background": "{{accent}}", // A solid accent color
@@ -109,14 +86,8 @@ describe("Build Script Unit Tests", () => {
       },
     });
 
-    // Mock the file system reads to return our test template.
-    (fs.readFile as unknown as jest.Mock).mockResolvedValue(mockTemplate);
-    (fs.emptyDir as unknown as jest.Mock).mockResolvedValue(undefined);
-    (fs.ensureDir as unknown as jest.Mock).mockResolvedValue(undefined);
-    (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
+    mockFileSystem(mockTemplate);
 
-    // 2. Act: Run the build process with a known accent color.
-    // We'll use the 'mocha' flavor and the 'mauve' accent for this test.
     await buildAllFlavors({
       accentIdentifier: "mauve",
       fontStyles: {},
@@ -125,33 +96,23 @@ describe("Build Script Unit Tests", () => {
       fontStyleOverrides: {},
     });
 
-    // 3. Assert: Verify the output for the Mocha theme.
-
-    // Find the specific call to writeJson for the 'mocha' theme file.
     const mochaCall = findThemeCall("mocha");
 
     expect(mochaCall).toBeDefined();
 
-    // Capture the generated JSON data.
     const writtenJson = mochaCall?.[1];
     expect(writtenJson).toBeDefined();
 
     // The 'mauve' accent in the Mocha palette is '#ba9ae2'.
     const mauveHex = "#ba9ae2";
 
-    // Verify the solid accent color was replaced correctly.
     expect(writtenJson?.colors["statusBar.background"]).toBe(mauveHex);
 
-    // Verify the recipe was correctly resolved by concatenating the hex value
-    // (without the '#') and the transparency value.
     expect(writtenJson?.colors["statusBar.dropBorder"]).toBe(`${mauveHex}2f`);
   });
 
-  // --- Priority 4: Theme Template Validation Tests ---
-
   describe("Template Structure Validation", () => {
     it("should handle templates with all valid accent placeholders", async () => {
-      // Arrange - Template with all possible accent color names from palette
       const mockTemplate = JSON.stringify({
         colors: {
           "test.rosewater": "{{rosewater}}",
@@ -183,12 +144,8 @@ describe("Build Script Unit Tests", () => {
         },
       });
 
-      (fs.readFile as unknown as jest.Mock).mockResolvedValue(mockTemplate);
-      (fs.emptyDir as unknown as jest.Mock).mockResolvedValue(undefined);
-      (fs.ensureDir as unknown as jest.Mock).mockResolvedValue(undefined);
-      (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
+      mockFileSystem(mockTemplate);
 
-      // Act
       await buildAllFlavors({
         accentIdentifier: "sapphire",
         fontStyles: {},
@@ -197,14 +154,12 @@ describe("Build Script Unit Tests", () => {
         fontStyleOverrides: {},
       });
 
-      // Assert - Should successfully write mocha theme without errors
       const mochaCall = findThemeCall("mocha");
       expect(mochaCall).toBeDefined();
 
       const writtenJson = mochaCall?.[1];
       expect(writtenJson).toBeDefined();
 
-      // Verify all placeholders were replaced with hex colors
       expect(writtenJson?.colors["test.rosewater"]).toMatch(/^#[0-9a-f]{6}$/i);
       expect(writtenJson?.colors["test.flamingo"]).toMatch(/^#[0-9a-f]{6}$/i);
       expect(writtenJson?.colors["test.base"]).toMatch(/^#[0-9a-f]{6}$/i);
@@ -212,7 +167,6 @@ describe("Build Script Unit Tests", () => {
     });
 
     it("should validate all font style keys exist in defaults", async () => {
-      // Arrange - Template with all possible font style placeholders
       const mockTemplate = JSON.stringify({
         tokenColors: [
           { name: "comment", settings: { fontStyle: "{{commentFontStyle}}" } },
@@ -235,35 +189,28 @@ describe("Build Script Unit Tests", () => {
         numberFontStyle: "none",
       };
 
-      (fs.readFile as unknown as jest.Mock).mockResolvedValue(mockTemplate);
-      (fs.emptyDir as unknown as jest.Mock).mockResolvedValue(undefined);
-      (fs.ensureDir as unknown as jest.Mock).mockResolvedValue(undefined);
-      (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
+      mockFileSystem(mockTemplate);
 
-      // Act
       await buildAllFlavors({
-      accentIdentifier: "sapphire",
-      fontStyles: mockFontStyles,
-      syntaxOverrides: {},
-      uiOverrides: {},
-      fontStyleOverrides: {},
-    });
+        accentIdentifier: "sapphire",
+        fontStyles: mockFontStyles,
+        syntaxOverrides: {},
+        uiOverrides: {},
+        fontStyleOverrides: {},
+      });
 
-      // Assert
       const mochaCall = findThemeCall("mocha");
       const writtenJson = mochaCall?.[1];
       expect(writtenJson).toBeDefined();
 
-      // Verify all font style placeholders were replaced correctly
       expect(writtenJson?.tokenColors?.[0].settings.fontStyle).toBe("italic");
       expect(writtenJson?.tokenColors?.[1].settings.fontStyle).toBe("bold");
       expect(writtenJson?.tokenColors?.[2].settings.fontStyle).toBe(""); // "none" becomes ""
     });
 
     it("should validate template JSON structure is preserved", async () => {
-      // Arrange - Complex template with nested structures
       const mockTemplate = JSON.stringify({
-        name: "Test Theme", // Note: This will be overwritten by build script
+        name: "Test Theme", // The build overwrites this.
         type: "dark",
         colors: {
           "editor.background": "{{base}}",
@@ -284,12 +231,8 @@ describe("Build Script Unit Tests", () => {
         },
       });
 
-      (fs.readFile as unknown as jest.Mock).mockResolvedValue(mockTemplate);
-      (fs.emptyDir as unknown as jest.Mock).mockResolvedValue(undefined);
-      (fs.ensureDir as unknown as jest.Mock).mockResolvedValue(undefined);
-      (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
+      mockFileSystem(mockTemplate);
 
-      // Act
       await buildAllFlavors({
         accentIdentifier: "sapphire",
         fontStyles: { commentFontStyle: "italic" },
@@ -298,22 +241,22 @@ describe("Build Script Unit Tests", () => {
         fontStyleOverrides: {},
       });
 
-      // Assert
       const mochaCall = findThemeCall("mocha");
       const writtenJson = mochaCall?.[1];
       expect(writtenJson).toBeDefined();
 
-      // Verify structure is preserved (note: name and type are overwritten by build script)
       expect(writtenJson?.name).toBe("Calmppuccin Mocha"); // Build script sets this
       expect(writtenJson?.type).toBe("dark"); // Build script sets this based on flavor
       expect(writtenJson?.tokenColors).toHaveLength(1);
       expect(writtenJson?.tokenColors?.[0].name).toBe("Comment");
-      expect(writtenJson?.tokenColors?.[0].scope).toEqual(["comment", "punctuation.definition.comment"]);
+      expect(writtenJson?.tokenColors?.[0].scope).toEqual([
+        "comment",
+        "punctuation.definition.comment",
+      ]);
       expect(writtenJson?.semanticTokenColors).toBeDefined();
     });
 
     it("should handle malformed accent recipes gracefully", async () => {
-      // Arrange - Template with invalid recipe patterns
       const mockTemplate = JSON.stringify({
         colors: {
           "test.valid": "{{accent}}2f",
@@ -323,12 +266,8 @@ describe("Build Script Unit Tests", () => {
         },
       });
 
-      (fs.readFile as unknown as jest.Mock).mockResolvedValue(mockTemplate);
-      (fs.emptyDir as unknown as jest.Mock).mockResolvedValue(undefined);
-      (fs.ensureDir as unknown as jest.Mock).mockResolvedValue(undefined);
-      (fs.writeJson as unknown as jest.Mock).mockResolvedValue(undefined);
+      mockFileSystem(mockTemplate);
 
-      // Act
       await buildAllFlavors({
         accentIdentifier: "sapphire",
         fontStyles: {},
@@ -337,7 +276,6 @@ describe("Build Script Unit Tests", () => {
         fontStyleOverrides: {},
       });
 
-      // Assert - Should not throw, verify output
       const mochaCall = findThemeCall("mocha");
       expect(mochaCall).toBeDefined();
 
@@ -345,16 +283,110 @@ describe("Build Script Unit Tests", () => {
       expect(writtenJson).toBeDefined();
       const sapphireHex = "#70b7d8"; // Mocha sapphire color
 
-      // Valid recipe should be replaced correctly
       expect(writtenJson?.colors["test.valid"]).toBe(`${sapphireHex}2f`);
 
-      // Plain accent should be replaced correctly
       expect(writtenJson?.colors["test.plain"]).toBe(sapphireHex);
 
-      // Malformed recipes should be replaced as literals (current behavior)
-      // The build script doesn't validate recipe format, it just replaces {{accent}} with the color
+      // A recipe's suffix isn't validated: the accent replaces {{accent}} and the rest stays.
       expect(writtenJson?.colors["test.invalidSuffix"]).toBe(`${sapphireHex}zz`);
       expect(writtenJson?.colors["test.tooLong"]).toBe(`${sapphireHex}2f3a`);
+    });
+  });
+
+  describe("Writing theme files", () => {
+    const template = JSON.stringify({ colors: { "editor.background": "{{base}}" } });
+    const options = {
+      accentIdentifier: "sapphire",
+      fontStyles: {},
+      syntaxOverrides: {},
+      uiOverrides: {},
+      fontStyleOverrides: {},
+    };
+
+    /** Records each theme the first build writes, then serves those files back as they'd be. */
+    async function buildTwiceUnchanged(): Promise<ThemeBuilds> {
+      mockFileSystem(template);
+      await buildAllFlavors(options);
+      const written = new Map(
+        (jest.mocked(fs.writeFile).mock.calls as unknown as Array<[string, string]>).map(
+          ([tempPath, content]) => [tempPath.replace(/\.\d+\.tmp$/, ""), content],
+        ),
+      );
+      jest
+        .mocked(fs.readFile)
+        .mockImplementation((filePath) =>
+          Promise.resolve((typeof filePath === "string" && written.get(filePath)) || template),
+        );
+      jest.mocked(fs.writeFile).mockClear();
+      return buildAllFlavors(options);
+    }
+
+    /** The host compares what a build generated with what its window loaded. */
+    it("should report a theme file as it found it and as it wrote it", async () => {
+      mockFileSystem(template);
+
+      const themes = await buildAllFlavors(options);
+
+      const [, written] = findWrite("mocha") ?? [];
+      expect(themes.get("mocha")).toStrictEqual({ previous: template, generated: written });
+    });
+
+    /** VS Code may load a theme while another window rebuilds it. */
+    it("should replace a theme file by renaming a finished temporary file over it", async () => {
+      mockFileSystem(template);
+
+      await buildAllFlavors(options);
+
+      const [tempPath] = findThemeCall("mocha") ?? [""];
+      expect(tempPath).toMatch(/calmppuccin-mocha-color-theme\.json\.\d+\.tmp$/);
+      expect(fs.rename).toHaveBeenCalledWith(tempPath, tempPath.replace(/\.\d+\.tmp$/, ""));
+    });
+
+    it("should write a theme file that doesn't exist yet", async () => {
+      mockFileSystem(template);
+      const missing = Object.assign(new Error("no such file"), { code: "ENOENT" });
+      jest
+        .mocked(fs.readFile)
+        .mockImplementation((filePath) =>
+          typeof filePath === "string" && filePath.endsWith("template.json")
+            ? Promise.resolve(template)
+            : Promise.reject(missing),
+        );
+
+      const themes = await buildAllFlavors(options);
+
+      expect(themes.get("mocha")?.previous).toBeUndefined();
+      expect(findThemeCall("mocha")).toBeDefined();
+    });
+
+    it("should leave a theme file alone when it already holds what the build generates", async () => {
+      const themes = await buildTwiceUnchanged();
+
+      expect(fs.writeFile).not.toHaveBeenCalled();
+      expect(themes.get("mocha")?.previous).toBe(themes.get("mocha")?.generated);
+    });
+
+    /** On Windows a rename fails while another process holds the theme file open. */
+    it("should remove the temporary file when replacing a theme file fails", async () => {
+      mockFileSystem(template);
+      const locked = Object.assign(new Error("operation not permitted"), { code: "EPERM" });
+      jest.mocked(fs.rename).mockRejectedValueOnce(locked);
+
+      await expect(buildAllFlavors(options)).rejects.toThrow("operation not permitted");
+
+      const [failedTempPath] = jest.mocked(fs.rename).mock.calls[0];
+      expect(jest.mocked(fs.rm).mock.calls).toStrictEqual([[failedTempPath, { force: true }]]);
+    });
+
+    /** A virus scanner can hold the new temporary file open too, so removing it fails. */
+    it("should report the failed replace when removing the temporary file fails too", async () => {
+      mockFileSystem(template);
+      const locked = Object.assign(new Error("operation not permitted"), { code: "EPERM" });
+      jest.mocked(fs.rename).mockRejectedValueOnce(locked);
+      jest.mocked(fs.rm).mockRejectedValueOnce(new Error("resource busy or locked"));
+      jest.spyOn(console, "error").mockImplementation(() => {});
+
+      await expect(buildAllFlavors(options)).rejects.toBe(locked);
     });
   });
 });

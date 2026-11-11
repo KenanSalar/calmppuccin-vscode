@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.10.0] - 2026-11-11
+
+- **Breaking**: Requires VS Code 1.125 or newer, or Cursor 3.12 or newer.
+- **Breaking**: Calmppuccin settings are read from your user settings only. Every window shares the same theme files, so values in a workspace or folder `settings.json` are ignored. If you set any there, move them to your user settings.
+- **Improvement**: In SSH, WSL and container windows, the extension runs on your local machine instead of being installed on each remote host.
+- **Fix**: Calmppuccin stays enabled in Restricted Mode, so an untrusted folder no longer falls back to the default theme.
+- **Fix**: Your customizations survive extension updates. Before, an update brought back the default colors until you opened the customization UI.
+- **Fix**: Editing Calmppuccin settings directly in `settings.json` updates the theme.
+- **Fix**: Catppuccin Icons follow your Calmppuccin flavor from startup, not only after you open the customization UI.
+- **Fix**: After a settings change, every open window using Calmppuccin offers to reload. Before, some windows kept the old colors without asking.
+- **Fix**: `async` and `await` get the keyword color when semantic highlighting is on.
+- **Fix**: Rust control-flow keywords such as `if`, `match` and `return` get the keyword color.
+- **Fix**: Edits in the customization UI no longer appear to revert when you switch between the Syntax, UI, Brackets and JSON views. They were saved, but the controls and the preview showed the old values.
+- **Fix**: The live preview of the UI view is laid out correctly again.
+- **Fix**: The base, mantle and crust color pickers no longer turn black when you type a hex value.
+- **Fix**: Resetting the Default profile also clears a custom accent color left over from older versions.
+- **Fix**: If a setting can't be saved, you get an error message instead of the change quietly not sticking.
+- **Fix**: A hand-edited profile that isn't an object, such as `"Default": null`, no longer breaks the extension.
+- **Chore**: Development moved to Node 24, with oxlint and oxfmt replacing ESLint. Releases are published from version tags.
+
 ## [1.9.9] - 2026-02-19
 
 - **Improvement**: Replaced extension icon with an optimized 256x256 8-bit PNG (from 500x500 16-bit), reducing VSIX package size by ~69% (699KB → 220KB).

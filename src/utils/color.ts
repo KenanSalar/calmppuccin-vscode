@@ -1,14 +1,6 @@
-/**
- * @file Color utility functions shared across the extension.
- * @description Provides helper functions for color manipulation, including alpha channel operations.
- */
+/** @file Color arithmetic for the third-party color generators. */
 
-/**
- * Converts a hex color to hex format with alpha channel.
- * @param {string} hex - The hex color code (e.g., "#e4829e").
- * @param {number} opacity - The opacity value between 0 and 1.
- * @returns {string} The color in hex format with alpha (e.g., "#e4829e26").
- */
+/** Appends `opacity`, from 0 to 1, to a `#rrggbb` color as its alpha: 0.15 makes `26`. */
 export function hexWithAlpha(hex: string, opacity: number): string {
   const cleanHex = hex.replace("#", "");
   const alpha = Math.round(opacity * 255)

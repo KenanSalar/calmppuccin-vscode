@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/typescript-node:22
+FROM mcr.microsoft.com/devcontainers/typescript-node:24
 
 USER root
 # Install build tools for ble.sh, plus fzf and other utilities.
@@ -22,9 +22,6 @@ RUN mkdir -p /etc/apt/keyrings \
     && apt-get install -y eza
 
 WORKDIR /workspaces/calmppuccin-vscode
-
-# Global CLI tools for packaging
-RUN npm install -g @vscode/vsce
 
 # Copy deps files and install dependencies
 COPY --chown=node:node package*.json ./
