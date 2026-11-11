@@ -35,8 +35,9 @@ and `testing.md` the Jest `vscode` mock.
   every user's `workbench.colorTheme`. `uiTheme` is `vs`, `vs-dark`, `hc-black` or `hc-light`.
 - **`extensionKind` is `["ui", "workspace"]`.** Without it, a `main` makes VS Code run the
   extension as `["workspace"]`, installed on the SSH, WSL or container host and rewriting that
-  host's copy of the themes. Nothing here reads the workspace, so it runs locally, and `workspace`
-  is the fallback where no local extension host exists, as in VS Code for the Web.
+  host's copy of the themes. Nothing here reads the workspace, so a local copy runs locally; a
+  copy installed only on the remote host still runs there, as it does in Codespaces in the
+  browser. With a `main` and no `browser` entry, it doesn't load in VS Code for the Web alone.
 - **`capabilities.untrustedWorkspaces` is `supported: true`.** Without it, a `main` disables the
   extension in Restricted Mode, and its themes with it. It reads no workspace content, which is
   what makes `supported: true` honest.

@@ -42,7 +42,7 @@ describe("Extension Manifest (package.json) Validation", () => {
   });
 
   describe("Remote Windows and Restricted Mode", () => {
-    /** One local copy of the themes then serves local and remote windows alike. */
+    /** Run locally, one copy of the themes serves local and remote windows alike. */
     it("should prefer running on the local machine", () => {
       expect(manifest.extensionKind).toStrictEqual(["ui", "workspace"]);
     });
