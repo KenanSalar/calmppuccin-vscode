@@ -11,7 +11,8 @@ oxfmt, on Node 24.
 - **It runs twice**: at package time (`node dist/build.js`, default settings), and inside the
   extension host whenever a Calmppuccin theme becomes active or a setting in
   `THEME_AFFECTING_KEYS` changes, rewriting the installed extension's own `themes/` and offering
-  a window reload when a file changed (`regenerateThemes` says why both).
+  a window reload when the files differ from what that window loaded (`regenerateThemes` says
+  why both).
 - **The customization UI** (`webview/`) reaches the host only through the message unions in
   `types/webview.ts`. `src/SettingsPanel.ts` hands each message to `ConfigurationService`, which
   writes the active profile in `calmppuccin.profiles`; the settings listener in `extension.ts`

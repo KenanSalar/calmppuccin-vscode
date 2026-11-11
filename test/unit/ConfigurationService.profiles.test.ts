@@ -1,4 +1,4 @@
-/** @file `deleteProfile`'s edge cases, against the `vscode` mock's configuration. */
+/** @file `deleteProfile`'s and `saveProfile`'s edge cases, against the `vscode` mock's configuration. */
 
 import * as vscode from "vscode";
 import { ConfigurationService } from "../../src/ConfigurationService";
@@ -16,6 +16,18 @@ describe("ConfigurationService Profile Management", () => {
       update: jest.fn(),
     };
     (mockedVscode.workspace.getConfiguration as jest.Mock).mockReturnValue(mockConfiguration);
+  });
+
+  /** Assigning `profiles["__proto__"]` sets the prototype, so the profile never reaches settings. */
+  it("should save a profile named __proto__ as its own entry", async () => {
+    mockConfiguration.get.mockImplementation((key: string) =>
+      key === C.CONFIG_KEY_PROFILES ? { Default: {} } : undefined,
+    );
+
+    await ConfigurationService.saveProfile("__proto__");
+
+    const [, savedProfiles] = mockConfiguration.update.mock.calls[0] as [string, object];
+    expect(Object.keys(savedProfiles).toSorted()).toStrictEqual(["Default", "__proto__"]);
   });
 
   it("should prevent deletion of Default profile silently", async () => {

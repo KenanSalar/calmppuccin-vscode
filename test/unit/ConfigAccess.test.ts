@@ -73,6 +73,13 @@ describe("removeOverrideKey", () => {
 
     expect(result).toBe(input);
   });
+
+  it("should return original object when the key is only inherited", () => {
+    const input = { mocha: { a: "1" } };
+    const result = removeOverrideKey(input, "mocha", "constructor");
+
+    expect(result).toBe(input);
+  });
 });
 
 describe("toProfiles", () => {
@@ -89,6 +96,12 @@ describe("toProfiles", () => {
     const raw = { Default: null, Work: { accent: "red" }, Broken: [1], Text: "x" };
 
     expect(toProfiles(raw)).toStrictEqual({ Default: {}, Work: { accent: "red" } });
+  });
+
+  it("should keep a profile named __proto__ as its own entry", () => {
+    const raw: unknown = JSON.parse('{ "__proto__": { "accent": "red" } }');
+
+    expect(Object.keys(toProfiles(raw)).toSorted()).toStrictEqual(["Default", "__proto__"]);
   });
 
   it("should keep an existing Default profile", () => {

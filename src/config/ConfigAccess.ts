@@ -65,7 +65,7 @@ export function removeOverrideKey<
   T extends { [flavor: string]: { [key: string]: string } | undefined },
 >(overrides: T, flavor: string, key: string): T | undefined {
   const flavorOverrides = overrides[flavor];
-  if (!flavorOverrides || !(key in flavorOverrides)) {
+  if (!flavorOverrides || !Object.hasOwn(flavorOverrides, key)) {
     return overrides;
   }
 
@@ -102,15 +102,12 @@ export function getProfiles(): { [name: string]: IProfile } {
  * An entry that isn't an object, such as `"Default": null`, is dropped.
  */
 export function toProfiles(rawProfiles: unknown): { [name: string]: IProfile } {
-  const profiles: { [name: string]: IProfile } = {};
-  if (isPlainObject(rawProfiles)) {
-    for (const [name, profile] of Object.entries(rawProfiles)) {
-      if (isPlainObject(profile)) {
-        // Only the entry is checked: each reader tests the type of the value it takes.
-        profiles[name] = profile as IProfile;
-      }
-    }
-  }
+  const entries = isPlainObject(rawProfiles) ? Object.entries(rawProfiles) : [];
+  // Only the entry is checked: each reader tests the type of the value it takes. `fromEntries`
+  // keeps a profile named `__proto__`, which assigning it would turn into the prototype.
+  const profiles: { [name: string]: IProfile } = Object.fromEntries(
+    entries.filter((entry): entry is [string, IProfile] => isPlainObject(entry[1])),
+  );
   if (!Object.hasOwn(profiles, "Default")) {
     profiles.Default = {};
   }

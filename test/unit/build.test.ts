@@ -1,7 +1,7 @@
 /** @file `buildAllFlavors` over the real palettes, with `fs/promises` mocked. */
 
 import * as fs from "fs/promises";
-import { buildAllFlavors } from "../../build";
+import { buildAllFlavors, ThemeBuilds } from "../../build";
 
 // Under Jest the themes directory resolves outside the repo.
 jest.mock("fs/promises");
@@ -22,9 +22,14 @@ interface ITestThemeJson {
 type ThemeWrite = [string, ITestThemeJson];
 
 function findThemeCall(flavor: string): ThemeWrite | undefined {
-  const calls = jest.mocked(fs.writeFile).mock.calls as unknown as Array<[string, string]>;
-  const call = calls.find(([filePath]) => filePath.includes(flavor));
+  const call = findWrite(flavor);
   return call && [call[0], JSON.parse(call[1]) as ITestThemeJson];
+}
+
+/** A theme write as [temporary path, content]. */
+function findWrite(flavor: string): [string, string] | undefined {
+  const calls = jest.mocked(fs.writeFile).mock.calls as unknown as Array<[string, string]>;
+  return calls.find(([filePath]) => filePath.includes(flavor));
 }
 
 /** Serves `template` as the theme template, and an empty themes directory. */
@@ -299,7 +304,7 @@ describe("Build Script Unit Tests", () => {
     };
 
     /** Records each theme the first build writes, then serves those files back as they'd be. */
-    async function buildTwiceUnchanged(): Promise<boolean> {
+    async function buildTwiceUnchanged(): Promise<ThemeBuilds> {
       mockFileSystem(template);
       await buildAllFlavors(options);
       const written = new Map(
@@ -316,10 +321,14 @@ describe("Build Script Unit Tests", () => {
       return buildAllFlavors(options);
     }
 
-    it("should report a change when a theme file differs", async () => {
+    /** The host compares what a build generated with what its window loaded. */
+    it("should report a theme file as it found it and as it wrote it", async () => {
       mockFileSystem(template);
 
-      await expect(buildAllFlavors(options)).resolves.toBe(true);
+      const themes = await buildAllFlavors(options);
+
+      const [, written] = findWrite("mocha") ?? [];
+      expect(themes.get("mocha")).toStrictEqual({ previous: template, generated: written });
     });
 
     /** VS Code may load a theme while another window rebuilds it. */
@@ -344,13 +353,29 @@ describe("Build Script Unit Tests", () => {
             : Promise.reject(missing),
         );
 
-      await expect(buildAllFlavors(options)).resolves.toBe(true);
+      const themes = await buildAllFlavors(options);
+
+      expect(themes.get("mocha")?.previous).toBeUndefined();
       expect(findThemeCall("mocha")).toBeDefined();
     });
 
-    it("should leave theme files alone and report no change when nothing differs", async () => {
-      await expect(buildTwiceUnchanged()).resolves.toBe(false);
+    it("should leave a theme file alone when it already holds what the build generates", async () => {
+      const themes = await buildTwiceUnchanged();
+
       expect(fs.writeFile).not.toHaveBeenCalled();
+      expect(themes.get("mocha")?.previous).toBe(themes.get("mocha")?.generated);
+    });
+
+    /** On Windows a rename fails while another process holds the theme file open. */
+    it("should remove the temporary file when replacing a theme file fails", async () => {
+      mockFileSystem(template);
+      const locked = Object.assign(new Error("operation not permitted"), { code: "EPERM" });
+      jest.mocked(fs.rename).mockRejectedValueOnce(locked);
+
+      await expect(buildAllFlavors(options)).rejects.toThrow("operation not permitted");
+
+      const [failedTempPath] = jest.mocked(fs.rename).mock.calls[0];
+      expect(jest.mocked(fs.rm).mock.calls).toStrictEqual([[failedTempPath, { force: true }]]);
     });
   });
 });

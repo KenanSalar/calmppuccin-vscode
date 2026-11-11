@@ -14,6 +14,30 @@ const mockedVscode = vscode as jest.Mocked<typeof vscode>;
 // Activating under a Calmppuccin theme rebuilds the themes, which would write to disk.
 jest.mock("../../build");
 
+/** A build that found one theme file holding `previous` and left it holding `generated`. */
+function builtThemes(previous: string, generated: string): build.ThemeBuilds {
+  return new Map([["mocha", { previous, generated }]]);
+}
+
+/** Captures the regenerate command as `activate` registers it. */
+function captureRegenerateCommand(): () => Promise<void> {
+  let regenerate: (() => Promise<void>) | undefined;
+  jest
+    .mocked(mockedVscode.commands.registerCommand)
+    .mockImplementation((command: string, callback: () => Promise<void>) => {
+      if (command === C.REGENERATE_COMMAND_ID) {
+        regenerate = callback;
+      }
+      return { dispose: () => {} };
+    });
+  return () => {
+    if (!regenerate) {
+      throw new Error("the regenerate command was never registered");
+    }
+    return regenerate();
+  };
+}
+
 describe("Extension Integration Tests", () => {
   let mockContext: vscode.ExtensionContext;
 
@@ -94,7 +118,9 @@ describe("Extension Integration Tests", () => {
 
   it("should trigger the theme build process when the regenerateThemes command is executed", async () => {
     currentColorTheme = "Default Dark Modern";
-    const buildSpy = jest.spyOn(build, "buildAllFlavors").mockResolvedValue(true);
+    const buildSpy = jest
+      .spyOn(build, "buildAllFlavors")
+      .mockResolvedValue(builtThemes("old", "new"));
 
     // `queueBuild` reads the settings through these.
     jest.spyOn(ConfigurationService, "getAccent").mockReturnValue("sapphire");
@@ -124,7 +150,9 @@ describe("Extension Integration Tests", () => {
 
   /** An update installs the packaged default themes, and settings may change while inactive. */
   it("should rebuild the themes when activated with a Calmppuccin theme", async () => {
-    const buildSpy = jest.spyOn(build, "buildAllFlavors").mockResolvedValue(false);
+    const buildSpy = jest
+      .spyOn(build, "buildAllFlavors")
+      .mockResolvedValue(builtThemes("same", "same"));
 
     activate(mockContext);
     await jest.advanceTimersByTimeAsync(0);
@@ -134,7 +162,9 @@ describe("Extension Integration Tests", () => {
 
   it("should not rebuild on activation under another theme", async () => {
     currentColorTheme = "Default Dark Modern";
-    const buildSpy = jest.spyOn(build, "buildAllFlavors").mockResolvedValue(false);
+    const buildSpy = jest
+      .spyOn(build, "buildAllFlavors")
+      .mockResolvedValue(builtThemes("same", "same"));
 
     activate(mockContext);
     await jest.advanceTimersByTimeAsync(0);
@@ -142,8 +172,8 @@ describe("Extension Integration Tests", () => {
     expect(buildSpy).not.toHaveBeenCalled();
   });
 
-  it("should not offer a reload when no theme file changed", async () => {
-    jest.spyOn(build, "buildAllFlavors").mockResolvedValue(false);
+  it("should not offer a reload when the themes are as the window loaded them", async () => {
+    jest.spyOn(build, "buildAllFlavors").mockResolvedValue(builtThemes("same", "same"));
 
     activate(mockContext);
     await jest.advanceTimersByTimeAsync(0);
@@ -151,21 +181,53 @@ describe("Extension Integration Tests", () => {
     expect(mockedVscode.window.showInformationMessage).not.toHaveBeenCalled();
   });
 
+  /** Every window rebuilds the same files, and only the first to get there writes them. */
+  it("should offer a reload when another window already wrote the new themes", async () => {
+    jest
+      .spyOn(build, "buildAllFlavors")
+      .mockResolvedValueOnce(builtThemes("loaded", "loaded"))
+      .mockResolvedValueOnce(builtThemes("edited", "edited"));
+    const regenerate = captureRegenerateCommand();
+    activate(mockContext);
+    await jest.advanceTimersByTimeAsync(0);
+
+    await regenerate();
+
+    expect(mockedVscode.window.showInformationMessage).toHaveBeenCalledWith(
+      C.INFO_MESSAGE,
+      C.RELOAD_ACTION,
+    );
+  });
+
+  it("should not offer a reload when a rebuild restores the themes the window loaded", async () => {
+    jest
+      .spyOn(build, "buildAllFlavors")
+      .mockResolvedValueOnce(builtThemes("loaded", "edited"))
+      .mockResolvedValueOnce(builtThemes("edited", "loaded"));
+    const regenerate = captureRegenerateCommand();
+    activate(mockContext);
+    await jest.advanceTimersByTimeAsync(0);
+
+    await regenerate();
+
+    expect(mockedVscode.window.showInformationMessage).toHaveBeenCalledTimes(1);
+  });
+
   /** Two builds in flight could land the older settings' files last. */
   it("should not start a build before the previous one settles", async () => {
     currentColorTheme = "Default Dark Modern";
-    let finishFirstBuild: (changed: boolean) => void = () => {
+    let finishFirstBuild: (themes: build.ThemeBuilds) => void = () => {
       throw new Error("the first build never started");
     };
     const buildSpy = jest
       .spyOn(build, "buildAllFlavors")
       .mockImplementationOnce(
         () =>
-          new Promise<boolean>((resolve) => {
+          new Promise<build.ThemeBuilds>((resolve) => {
             finishFirstBuild = resolve;
           }),
       )
-      .mockResolvedValue(false);
+      .mockResolvedValue(builtThemes("same", "same"));
     let regenerate: () => Promise<void> = () => {
       throw new Error("the regenerate command was never registered");
     };
@@ -182,7 +244,7 @@ describe("Extension Integration Tests", () => {
     const regenerations = [regenerate(), regenerate()];
     await jest.advanceTimersByTimeAsync(0);
     const callsWhileFirstRuns = buildSpy.mock.calls.length;
-    finishFirstBuild(false);
+    finishFirstBuild(builtThemes("same", "same"));
     await Promise.all(regenerations);
 
     expect(callsWhileFirstRuns).toBe(1);
@@ -418,7 +480,9 @@ describe("Theme Regeneration Error Handling", () => {
   });
 
   it("should show success message when buildAllFlavors succeeds", async () => {
-    const buildSpy = jest.spyOn(build, "buildAllFlavors").mockResolvedValue(true);
+    const buildSpy = jest
+      .spyOn(build, "buildAllFlavors")
+      .mockResolvedValue(builtThemes("old", "new"));
 
     jest.spyOn(ConfigurationService, "getAccent").mockReturnValue("sapphire");
     jest.spyOn(ConfigurationService, "getFontStyles").mockReturnValue({});

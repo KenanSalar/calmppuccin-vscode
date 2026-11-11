@@ -57,8 +57,9 @@ and `testing.md` the Jest `vscode` mock.
   contributed, so each call sits on a path that reports the failure to the user.
 - **A user-settings change reaches every window's extension host.** With several windows open each
   one regenerates the same `themes/` folder at once while VS Code may be loading a theme, so
-  `writeIfChanged` (`build.ts`) lands each file through a rename and `queueBuild`
-  (`extension.ts`) runs one build at a time per host.
+  `replaceFile` (`build.ts`) lands each file through a rename and `queueBuild`
+  (`extension.ts`) runs one build at a time per host. Only the first window writes, so each
+  decides on a reload against the files it loaded (`loadedThemes`), not against what it wrote.
 - **The API gives the active theme's kind, never its name.** `window.activeColorTheme` has only
   `kind`. The name is a setting, and with `window.autoDetectColorScheme` on it is
   `workbench.preferredDarkColorTheme` or `workbench.preferredLightColorTheme`, not the
@@ -73,7 +74,7 @@ and `testing.md` the Jest `vscode` mock.
   locations.
 - **Each update installs into a new `<publisher>.<name>-<version>` folder** holding the packaged
   default themes, so `regenerateThemes` (`extension.ts`) rebuilds once a Calmppuccin theme is
-  active and offers a reload only when a file changed.
+  active and offers a reload only when the files differ from what the window loaded.
 - **The folder can be read-only** (Nix Home Manager, an admin's `--extensions-dir`). A failed
   build reaches the user through `showErrorMessage`, as the regenerate command's `catch` does.
 - **Extension files are addressed as `vscode.Uri.joinPath(context.extensionUri, …)`.**
@@ -97,7 +98,7 @@ and `testing.md` the Jest `vscode` mock.
 
 - **No notification repeats per edit.** The UX guidelines say not to send repeated notifications
   and to offer "Do not show again". The reload prompt in `extension.ts` follows every build that
-  changes a file, so it still returns after each edit.
+  leaves the files other than the window loaded them, so it still returns after each edit.
 - **A rebuilt theme applies on reload.** VS Code watches a theme file only during extension
   development (or under the unsupported `_watch` contribution flag), so the prompt offers
   `workbench.action.reloadWindow`.

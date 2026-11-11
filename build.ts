@@ -44,20 +44,25 @@ export interface IBuildOptions {
   fontStyleOverrides: IFontStyleOverrides;
 }
 
+/** A theme file as a build found it, `undefined` when there was none, and as it left it. */
+export interface IThemeBuild {
+  previous: string | undefined;
+  generated: string;
+}
+
+export type ThemeBuilds = ReadonlyMap<keyof IPalettes, IThemeBuild>;
+
 // Resolved from `dist/`, where both bundles that run the build live.
 const THEME_DIR = path.resolve(__dirname, "..", C.THEMES_DIR);
 const TEMPLATE_PATH = path.resolve(__dirname, "..", C.SRC_DIR, C.TEMPLATE_FILE);
 const FLAVORS = Object.keys(palette) as Array<keyof IPalettes>;
 
-/**
- * Builds one flavor's theme file.
- * @returns Whether the file changed.
- */
+/** Builds one flavor's theme file, writing it only when its content changes. */
 async function buildFlavor(
   flavor: keyof IPalettes,
   templateStr: string,
   options: IBuildOptions,
-): Promise<boolean> {
+): Promise<IThemeBuild> {
   const { accentIdentifier, fontStyles, syntaxOverrides, uiOverrides, fontStyleOverrides } =
     options;
   const basePalette = palette[flavor];
@@ -133,43 +138,46 @@ async function buildFlavor(
 
   const themeFileName = `${C.THEME_FILE_PREFIX}-${flavor}-${C.THEME_FILE_SUFFIX}`;
   const themePath = path.join(THEME_DIR, themeFileName);
-  return writeIfChanged(themePath, JSON.stringify(themeJson, null, 2) + "\n");
+  const generated = JSON.stringify(themeJson, null, 2) + "\n";
+  const previous = await readIfExists(themePath);
+  if (generated !== previous) {
+    await replaceFile(themePath, generated);
+  }
+  return { previous, generated };
 }
 
-/**
- * Builds every flavor's theme file.
- * @returns Whether any file changed, which is when a window needs a reload to show it.
- */
-export async function buildAllFlavors(options: IBuildOptions): Promise<boolean> {
+/** Builds every flavor's theme file. */
+export async function buildAllFlavors(options: IBuildOptions): Promise<ThemeBuilds> {
   await fs.mkdir(THEME_DIR, { recursive: true });
   const templateStr = await fs.readFile(TEMPLATE_PATH, "utf-8");
 
   // Each flavor writes its own file, so they can build concurrently.
-  const changed = await Promise.all(
-    FLAVORS.map((flavor) => buildFlavor(flavor, templateStr, options)),
+  const builds = await Promise.all(
+    FLAVORS.map(
+      async (flavor) => [flavor, await buildFlavor(flavor, templateStr, options)] as const,
+    ),
   );
 
   console.log(`All Calmppuccin themes built with the "${options.accentIdentifier}" accent.`);
-  return changed.includes(true);
+  return new Map(builds);
 }
 
 /**
- * Writes `content` to `filePath` unless the file already holds exactly that.
+ * Replaces `filePath` with `content` through a rename.
  *
  * Every open window rebuilds the same files after a settings change, and VS Code may load a theme
- * meanwhile, so the content lands through a rename: a reader sees the old file or the new one,
- * never a half-written one.
- * @returns Whether the file was written.
+ * meanwhile, so a reader sees the old file or the new one, never a half-written one.
  */
-async function writeIfChanged(filePath: string, content: string): Promise<boolean> {
-  if ((await readIfExists(filePath)) === content) {
-    return false;
-  }
+async function replaceFile(filePath: string, content: string): Promise<void> {
   // One temp file per extension host, since every window's host may be writing this file.
   const tempPath = `${filePath}.${String(process.pid)}.tmp`;
-  await fs.writeFile(tempPath, content);
-  await fs.rename(tempPath, filePath);
-  return true;
+  try {
+    await fs.writeFile(tempPath, content);
+    await fs.rename(tempPath, filePath);
+  } catch (err: unknown) {
+    await fs.rm(tempPath, { force: true });
+    throw err;
+  }
 }
 
 async function readIfExists(filePath: string): Promise<string | undefined> {

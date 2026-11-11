@@ -79,8 +79,12 @@ export async function saveProfile(profileName: string) {
     currentSettings[C.CONFIG_KEY_FONT_STYLE_OVERRIDES] = fontStyleOverrides;
   }
 
-  profiles[profileName] = currentSettings;
-  await getConfig().update(C.CONFIG_KEY_PROFILES, profiles, vscode.ConfigurationTarget.Global);
+  const updatedProfiles = { ...profiles, [profileName]: currentSettings };
+  await getConfig().update(
+    C.CONFIG_KEY_PROFILES,
+    updatedProfiles,
+    vscode.ConfigurationTarget.Global,
+  );
 }
 
 /**

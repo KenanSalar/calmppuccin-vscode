@@ -120,8 +120,9 @@ body {
   gap: var(--gap-size);
 }
 
+/* Script shows it as a grid while the accent is custom. */
 #custom-accent-picker-container {
-  display: grid;
+  display: none;
   grid-template-columns: auto 1fr;
   align-items: center;
   gap: 10px 20px;
@@ -659,6 +660,11 @@ select:focus,
 /* Disable transitions for delete button to prevent text animation */
 #delete-profile-btn {
   transition: none !important;
+}
+
+/* Until script shows or hides Delete, it holds its space unseen, as it does once hidden. */
+.profile-selector-container #delete-profile-btn:not([style]) {
+  visibility: hidden;
 }
 
 /* Script hides Delete with display: none; keep its space so Save doesn't move. */

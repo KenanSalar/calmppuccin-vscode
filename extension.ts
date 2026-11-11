@@ -5,15 +5,22 @@
  */
 
 import * as vscode from "vscode";
-import { buildAllFlavors } from "./build";
+import { buildAllFlavors, ThemeBuilds } from "./build";
 import { ConfigurationService } from "./src/ConfigurationService";
 import * as C from "./src/constants";
+import { IPalettes } from "./src/palettes";
 import { SettingsPanel } from "./src/SettingsPanel";
 
 let settingsChangeListener: vscode.Disposable | undefined;
 let tripwireListener: vscode.Disposable | undefined;
 let regenerateTimer: ReturnType<typeof setTimeout> | undefined;
 let latestBuild: Promise<unknown> = Promise.resolve();
+
+// Each theme file as this host's first build found it, which is what the window shows until it
+// reloads. Every window rebuilds the same files and only the first writes them, so a window asks
+// whether they differ from these, not whether it wrote. A first build that follows another
+// window's write, as when windows restart after an update, takes the new files as loaded.
+let loadedThemes: ReadonlyMap<keyof IPalettes, string | undefined> | undefined;
 
 // Catppuccin Icons has only the four Catppuccin flavors.
 const flavorIconMap: Record<string, string> = {
@@ -64,7 +71,8 @@ function syncIconFlavor(retryCount = 0) {
 }
 
 /**
- * Rebuilds the themes from the current settings and offers a reload when a file changed.
+ * Rebuilds the themes from the current settings and offers a reload when they no longer match
+ * what this window loaded.
  *
  * Runs whenever a Calmppuccin theme becomes relevant as well as after a settings change, because
  * an update installs the packaged default themes and settings can change while the extension is
@@ -72,8 +80,8 @@ function syncIconFlavor(retryCount = 0) {
  */
 async function regenerateThemes(): Promise<void> {
   try {
-    const changed = await queueBuild();
-    if (!changed) {
+    const outdated = await queueBuild();
+    if (!outdated) {
       return;
     }
     const selection = await vscode.window.showInformationMessage(C.INFO_MESSAGE, C.RELOAD_ACTION);
@@ -100,21 +108,30 @@ async function regenerateThemes(): Promise<void> {
 /**
  * Starts a build once the previous one has settled, reading the settings only then, so the files
  * a later build writes always land last.
- * @returns Whether any theme file changed.
+ * @returns Whether a theme file now differs from the one this window loaded.
  */
 function queueBuild(): Promise<boolean> {
-  const build = latestBuild.then(() =>
-    buildAllFlavors({
+  const build = latestBuild.then(async () => {
+    const themes = await buildAllFlavors({
       accentIdentifier: ConfigurationService.getAccent(),
       fontStyles: ConfigurationService.getFontStyles(),
       syntaxOverrides: ConfigurationService.getSyntaxOverrides(),
       uiOverrides: ConfigurationService.getUiOverrides(),
       fontStyleOverrides: ConfigurationService.getFontStyleOverrides(),
-    }),
-  );
+    });
+    loadedThemes ??= new Map(themes.entries().map(([flavor, theme]) => [flavor, theme.previous]));
+    return differsFromLoaded(themes, loadedThemes);
+  });
   // The caller reports a failure; the queue only needs to know the build settled.
   latestBuild = build.catch(() => undefined);
   return build;
+}
+
+function differsFromLoaded(
+  themes: ThemeBuilds,
+  loaded: ReadonlyMap<keyof IPalettes, string | undefined>,
+): boolean {
+  return themes.entries().some(([flavor, theme]) => theme.generated !== loaded.get(flavor));
 }
 
 export function activate(context: vscode.ExtensionContext) {
@@ -209,8 +226,9 @@ export function deactivate() {
     clearTimeout(regenerateTimer);
     regenerateTimer = undefined;
   }
-  // VS Code disposes the listeners through `context.subscriptions`; forgetting them here lets a
-  // later activation in the same host register them again.
+  // VS Code disposes the listeners through `context.subscriptions`; forgetting them and the loaded
+  // themes here lets a later activation in the same host start over.
   settingsChangeListener = undefined;
   tripwireListener = undefined;
+  loadedThemes = undefined;
 }

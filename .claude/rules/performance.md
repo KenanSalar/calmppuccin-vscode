@@ -54,11 +54,11 @@ correctness, `webview.md` the message protocol and CSP, `ci-packaging.md` what t
 
 - **A theme-affecting write is a full rebuild.** Writing any `THEME_AFFECTING_KEYS` setting fires
   `onDidChangeConfiguration`, and `REGENERATE_DEBOUNCE_MS` later `buildAllFlavors` rewrites all
-  six theme files and asks for a reload. Writes happen once per committed user action (`change`,
+  six theme files and offers a reload. Writes happen once per committed user action (`change`,
   a button), never per keystroke or drag tick.
 - **Builds in one host run one at a time** (`queueBuild`), and a file that comes out the same
   is left alone, so the rebuild every activation under a Calmppuccin theme triggers usually
-  writes nothing and offers no reload.
+  writes nothing, and with the files as the window loaded them, offers no reload.
 - **One pass per flavor over the template.** The template is read once per build and shared; each
   flavor does one combined-regex replace, one `JSON.parse` and one `JSON.stringify`. A per-key
   `replaceAll` loop rescans the whole template once per key.
