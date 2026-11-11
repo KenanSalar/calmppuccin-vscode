@@ -3,7 +3,7 @@
  * Extracted from UIManager to follow Single Responsibility Principle.
  */
 
-import { WEBVIEW_CONSTANTS as COMMANDS } from "../src/constants";
+import { FONT_STYLE_OPTIONS, WEBVIEW_CONSTANTS as COMMANDS } from "../src/constants";
 import { IVsCodeApi } from "../types/webview";
 import { IWebviewSetting } from "../types/webview";
 import { PreviewState } from "./PreviewRenderer";
@@ -23,7 +23,6 @@ export interface IControlFactoryDeps {
  * and the "Reset All" button.
  */
 export class ControlFactory {
-  private readonly fontStyleOptions = ["none", "italic", "bold", "italic bold", "underline"];
   private readonly hex6Regex = /^#[0-9a-fA-F]{6}$/;
   private readonly hex8Regex = /^#([0-9a-fA-F]{6})([0-9a-fA-F]{2})?$/;
 
@@ -109,7 +108,7 @@ export class ControlFactory {
 
     const select = document.createElement("select");
     select.id = key;
-    this.fontStyleOptions.forEach((option) => {
+    FONT_STYLE_OPTIONS.forEach((option) => {
       const opt = document.createElement("option");
       opt.value = option;
       opt.textContent = option;

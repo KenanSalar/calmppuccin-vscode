@@ -38,6 +38,8 @@ jobs:
             code:
               - '**'
               - '!CONTRIBUTING.md'
+              - '!CLAUDE.md'
+              - '!.claude/**'
               - '!.devcontainer/**'
               - '!.dockerignore'
               - '!.vscode/**'

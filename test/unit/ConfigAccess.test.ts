@@ -3,7 +3,7 @@
  * Tests cloneOverrides() and removeOverrideKey() edge cases.
  */
 
-import { cloneOverrides, removeOverrideKey } from "../../src/config/ConfigAccess";
+import { cloneOverrides, removeOverrideKey, toProfiles } from "../../src/config/ConfigAccess";
 
 describe("cloneOverrides", () => {
   it("should return a new empty object for empty input", () => {
@@ -75,5 +75,28 @@ describe("removeOverrideKey", () => {
     const result = removeOverrideKey(input, "mocha", "a");
 
     expect(result).toBe(input);
+  });
+});
+
+describe("toProfiles", () => {
+  it.each([
+    ["undefined", undefined],
+    ["null", null],
+    ["an array", [{ accent: "red" }]],
+    ["a string", "Default"],
+  ])("should give only Default for %s", (_label, raw) => {
+    expect(toProfiles(raw)).toStrictEqual({ Default: {} });
+  });
+
+  it("should drop entries that aren't objects and keep the rest", () => {
+    const raw = { Default: null, Work: { accent: "red" }, Broken: [1], Text: "x" };
+
+    expect(toProfiles(raw)).toStrictEqual({ Default: {}, Work: { accent: "red" } });
+  });
+
+  it("should keep an existing Default profile", () => {
+    expect(toProfiles({ Default: { accent: "mauve" } })).toStrictEqual({
+      Default: { accent: "mauve" },
+    });
   });
 });

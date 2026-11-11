@@ -33,6 +33,7 @@ src/palettes.ts
 src/extensions/**
 src/SettingsPanel.ts
 src/WebviewManager.ts
+src/webviewMessages.ts
 src/utils/**
 tsconfig.json
 webpack.config.js

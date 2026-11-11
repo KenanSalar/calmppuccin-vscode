@@ -1,0 +1,163 @@
+---
+paths:
+  - "**/*.ts"
+  - webview/**/*.html
+  - webview/**/*.css
+---
+
+# Code style and comments
+
+## Writing Code Like a Senior Engineer
+
+Write every change as an experienced human engineer would — code a senior colleague
+would approve without rewriting, indistinguishable from thoughtful hand-crafted work.
+Optimize for the next person who reads it (usually your future self), not for looking
+clever or finishing fast.
+
+- **Clarity over cleverness** - clear beats clever every time. Expand a clever one-liner
+  into a few obvious lines when it reads better. Readable code scales; clever code ages badly.
+- **Write for the reader** - code is read far more than written. Make intent obvious on the
+  page; don't make the reader hold state in their head or decode `u`, `s`, `tmp`.
+- **Name things precisely** - intention-revealing names (`calculateTotalPrice`,
+  `isSubscriptionActive`), never `d`, `x`, `foo`, or a bare `data`. A good name removes the
+  need for a comment.
+- **Small, single-purpose functions** - one job, one level of abstraction. If you're
+  narrating "step 1… step 2…", split it into functions a reader can hold in their head.
+- **Guard clauses over nesting** - return early and flatten arrow-shaped `if/else` pyramids;
+  handle the edge/error case first, then the happy path.
+- **No magic values** - lift magic numbers/strings into named constants or config; the name
+  documents the intent.
+- **Minimize side effects** - prefer functions that take input and return output; centralize
+  state mutation and I/O rather than scattering it.
+- **Reduce, don't just add** - seniors delete. Remove dead code, collapse duplication, prefer
+  the smaller solution, and leave each file a little cleaner than you found it (boy-scout rule).
+- **Match the surrounding code** - mirror the existing naming, structure, error-handling, and
+  style of the file. Consistency beats personal preference.
+- **Handle errors and edges deliberately** - no silent catches or ignored failures; make
+  failure modes explicit and intentional.
+- **Be pragmatic, not dogmatic** - these are defaults, not laws; knowing when to bend one for
+  clarity or simplicity is what separates senior from junior.
+
+Avoid the tells of machine-generated code: comments that restate the code, defensive
+boilerplate nobody asked for, needless abstraction, over-verbose names, and style that drifts
+within a file. The result should look like a thoughtful human wrote it.
+
+## Clean code
+
+The list above is the half of clean code that gets quoted: names, small functions, guard
+clauses, no magic values, no duplication. What follows is the rest of it, and it is the half
+that bites in review. The frame underneath both is that code is finished when it passes its
+tests, holds no duplication, says what it means, and has no more parts than that.
+
+**Signatures**
+
+- **Few parameters** - none, one or two read at a glance; three is worth a second look and
+  four wants a parameter object. A list long enough to count is usually two functions, or one type that
+  hasn't been named yet.
+- **No flag parameters** - a `bool` argument splits the body before the reader reaches it, and
+  `foo(path, true)` says nothing at the call site. Ship the two functions the branches already
+  are; where it genuinely is one operation, name the choice with an enum.
+- **Meaning belongs in the type, not the primitive** - a bare boolean, integer or string at a
+  boundary lets the wrong one through in silence. An enum or a wrapper type makes that a type
+  error and retires the comment explaining the unit.
+- **Command or query, never both** - a function either changes state or answers a question.
+  One that does both leaves every call site working out whether calling it twice is safe.
+- **Don't reach through** - `a.b().c().d()` couples the caller to the shape of everything in
+  the middle. Ask the neighbour for the answer instead of walking its internals; the method
+  you want usually belongs on the type you already hold.
+
+**Reading order**
+
+- **Newspaper order** - a file opens with what it is and descends into detail: caller above
+  callee, related functions adjacent, blank lines separating concepts rather than decorating
+  them.
+- **Declare close to first use** - a binding introduced far above the line that reads it is
+  state the reader has to carry until then.
+- **Name the sub-expression** - lift a dense condition or a nested call into a local whose name
+  is the explanation. That is the comment you never have to keep true.
+- **Say it positively** - `if !not_ready` costs a mental flip at every read. Name the positive
+  condition and negate at the one site that needs it.
+
+**Vocabulary and shape**
+
+- **One word per concept** - `get`, `fetch` and `load` for the same act, or two names for one
+  thing, force the reader to check whether the difference means something. Rename it; never
+  add the synonym.
+- **A distinction that isn't in the name isn't a distinction** - `data`, `info`, `manager`,
+  `helper` and a trailing `2` name nothing. If two things need telling apart, the names do it.
+- **One home per boundary condition** - the cap, the clamp, the off-by-one. A named place that
+  owns it beats the literal repeated at each call: tuning is one edit, reviewing is one read.
+- **A dispatch repeated is a method missing** - the same `switch` or `match` spelled in three
+  files wants to be one method on the enum, interface or trait. Adding a variant should break one file, not find three.
+
+## Comments
+
+Comments are a liability, not an asset — each one is prose you must keep true. Write few, make
+each earn its place, and re-read every comment before moving on.
+
+- **Explain *why*, not *what*** - the code already shows what it does; a comment justifies a
+  non-obvious choice, trade-off, or gotcha. If you're narrating the code, delete it.
+- **Prefer self-documenting code** - clear names and small functions beat comments. If a comment
+  has to explain "step 1… step 2…", the function is too big — split it instead.
+- **No redundant comments** - never restate a name, type, or the obvious (`// increment i` over
+  `i++`; `// the user's name` over `userName`).
+- **Be terse** - one line where one line works; no decorative banners, ASCII art, or boilerplate.
+- **Sound like a senior engineer, not a generator** - write comments in plain, natural prose,
+  the way a human colleague jots a note: terse, direct, peer-to-peer. Avoid the machine tells —
+  restating the signature, "This function…", robotic step-by-step narration, hedging, and
+  decorative filler. Assume the reader knows the language.
+- **Double-check every comment** - confirm it is accurate and *still* true. When you touch code,
+  update or delete the comments around it; a stale or wrong comment is worse than none.
+- **Comment the genuinely non-obvious** - empty catch blocks, unsafe casts, workarounds (link the
+  issue/PR), non-trivial regexes, magic constants, and concurrency/ordering assumptions.
+- **No commented-out code** - delete it; version control remembers.
+- **Match the file** - follow the surrounding code's existing comment *style*. Not its density:
+  a dense neighbour is not a budget, and the rules above outrank it.
+- **Document public APIs** using the doc-comment format below. Start with a single-sentence
+  summary; don't just repeat the member name.
+- **No changelog** - no "used to", "no longer" or "previously", no bug story, nothing about what
+  shipped before. Git holds the history.
+- **No second copy** - an argument lives at its anchor, the doc comment on what it constrains.
+  Anywhere else names the anchor rather than arguing it again.
+- **A module header is the module's contract and its one non-obvious why** - not its history,
+  and not a tour of the functions below it.
+- **One or two sentences carry a rationale** - a paragraph means a name, a type or a split should
+  be saying it.
+- **Don't overstate** - no "never", "always" or "forever" without the mechanism that makes it so;
+  no benchmark figures, which go stale with the next change; a tunable's doc says what it does,
+  not the value or rank it has today.
+- **Some comments are kept whole** - an `oxlint-disable` line's reason, and a comment a rule or
+  test points at, condensed with the pointer kept true.
+
+**The budget is about 0.25 comment lines per line of code**, production code only:
+
+```bash
+# tests and build output left out
+cloc --include-lang=TypeScript,CSS --exclude-dir=test,node_modules,dist,coverage,themes \
+  --not-match-f='^jest\.config\.ts$' .
+```
+
+It holds across the corpus, not per file: a module of tuned constants can sit above it while a
+plain one sits well below. It shows drift and is never an allowance; a comment the rules above
+don't justify goes whatever the count says.
+
+**Auditing a change.** After `npm run format` and `npm run lint` pass, and before the work is
+reported done:
+
+```bash
+# every comment line the change adds; `main...` in place of `HEAD` for a whole branch
+git diff -U0 HEAD -- '*.ts' '*.css' '*.html' | rg '^\+\s*(//|/\*|\*|<!--)'
+# each file the change created, against the budget
+cloc --by-file <new files>
+```
+
+- Each listed line passes the rules above or goes. A reworded or moved comment counts as new, so
+  a rename that pushes a comment onto a second line gets rewritten back to one.
+- The corpus command above confirms the tree-wide figure hasn't drifted.
+
+**Doc comments in this tree:**
+
+| Language | Doc syntax | Notes |
+|----------|-----------|-------|
+| TypeScript | `/** */` (TSDoc) | A module opens with a `@file` block. `@param name` takes no `{type}`, which the signature already carries; `@returns` only when the summary doesn't say it |
+| CSS, HTML | `/* */`, `<!-- -->` | No doc form; the generic rules above are the whole contract |

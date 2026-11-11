@@ -350,4 +350,70 @@ describe("Build Script Unit Tests", () => {
       expect(writtenJson?.colors["test.tooLong"]).toBe(`${sapphireHex}2f3a`);
     });
   });
+
+  describe("Writing theme files", () => {
+    const template = JSON.stringify({ colors: { "editor.background": "{{base}}" } });
+    const options = {
+      accentIdentifier: "sapphire",
+      fontStyles: {},
+      syntaxOverrides: {},
+      uiOverrides: {},
+      fontStyleOverrides: {},
+    };
+
+    /** Records each theme the first build writes, then serves those files back as they'd be. */
+    async function buildTwiceUnchanged(): Promise<boolean> {
+      mockFileSystem(template);
+      await buildAllFlavors(options);
+      const written = new Map(
+        (jest.mocked(fs.writeFile).mock.calls as unknown as Array<[string, string]>).map(
+          ([tempPath, content]) => [tempPath.replace(/\.\d+\.tmp$/, ""), content],
+        ),
+      );
+      jest
+        .mocked(fs.readFile)
+        .mockImplementation((filePath) =>
+          Promise.resolve((typeof filePath === "string" && written.get(filePath)) || template),
+        );
+      jest.mocked(fs.writeFile).mockClear();
+      return buildAllFlavors(options);
+    }
+
+    it("should report a change when a theme file differs", async () => {
+      mockFileSystem(template);
+
+      await expect(buildAllFlavors(options)).resolves.toBe(true);
+    });
+
+    /** VS Code may load a theme while another window rebuilds it. */
+    it("should replace a theme file by renaming a finished temporary file over it", async () => {
+      mockFileSystem(template);
+
+      await buildAllFlavors(options);
+
+      const [tempPath] = findThemeCall("mocha") ?? [""];
+      expect(tempPath).toMatch(/calmppuccin-mocha-color-theme\.json\.\d+\.tmp$/);
+      expect(fs.rename).toHaveBeenCalledWith(tempPath, tempPath.replace(/\.\d+\.tmp$/, ""));
+    });
+
+    it("should write a theme file that doesn't exist yet", async () => {
+      mockFileSystem(template);
+      const missing = Object.assign(new Error("no such file"), { code: "ENOENT" });
+      jest
+        .mocked(fs.readFile)
+        .mockImplementation((filePath) =>
+          typeof filePath === "string" && filePath.endsWith("template.json")
+            ? Promise.resolve(template)
+            : Promise.reject(missing),
+        );
+
+      await expect(buildAllFlavors(options)).resolves.toBe(true);
+      expect(findThemeCall("mocha")).toBeDefined();
+    });
+
+    it("should leave theme files alone and report no change when nothing differs", async () => {
+      await expect(buildTwiceUnchanged()).resolves.toBe(false);
+      expect(fs.writeFile).not.toHaveBeenCalled();
+    });
+  });
 });

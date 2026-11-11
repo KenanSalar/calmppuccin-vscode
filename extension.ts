@@ -1,7 +1,8 @@
 /**
  * @file This file is the main entry point for the Calmppuccin VS Code extension.
- * It uses a lazy-activation strategy, meaning its core logic only runs when a user
- * interacts with the theme (by selecting it or opening the customizer).
+ * It activates once startup finishes, since VS Code has no activation event for selecting a
+ * color theme, and stays behind one theme-change listener until a Calmppuccin theme is selected
+ * or the customizer opens.
  */
 
 import * as vscode from "vscode";
@@ -18,6 +19,7 @@ let settingsChangeListener: vscode.Disposable | undefined;
 // a user switches to a Calmppuccin theme. It is disposed after full activation.
 let tripwireListener: vscode.Disposable | undefined;
 let regenerateTimer: ReturnType<typeof setTimeout> | undefined;
+let latestBuild: Promise<unknown> = Promise.resolve();
 
 /**
  * Maps Calmppuccin theme flavors to their corresponding Catppuccin Icon flavors.
@@ -83,6 +85,65 @@ function syncIconFlavor(retryCount = 0) {
 }
 
 /**
+ * Rebuilds the themes from the current settings and offers a reload when a file changed.
+ *
+ * Runs whenever a Calmppuccin theme becomes relevant as well as after a settings change, because
+ * an update installs the packaged default themes and settings can change while the extension is
+ * inactive.
+ */
+async function regenerateThemes(): Promise<void> {
+  try {
+    const changed = await queueBuild();
+    if (!changed) {
+      return;
+    }
+    const selection = await vscode.window.showInformationMessage(C.INFO_MESSAGE, C.RELOAD_ACTION);
+    if (selection === C.RELOAD_ACTION) {
+      vscode.commands.executeCommand(C.RELOAD_COMMAND_ID).then(
+        () => {
+          /* success - no action needed */
+        },
+        (err: unknown) => {
+          console.error("Failed to reload window:", err);
+        },
+      );
+    }
+  } catch (error) {
+    console.error(error);
+    let errorMessage = C.ERROR_MESSAGE_PREFIX;
+    if (error instanceof Error) {
+      errorMessage += error.message;
+    } else {
+      errorMessage += String(error);
+    }
+    const selection = await vscode.window.showErrorMessage(errorMessage, C.REPORT_ISSUE_ACTION);
+    if (selection === C.REPORT_ISSUE_ACTION) {
+      await vscode.env.openExternal(vscode.Uri.parse(C.REPO_ISSUES_URL));
+    }
+  }
+}
+
+/**
+ * Starts a build once the previous one has settled, reading the settings only then, so the files
+ * a later build writes always land last.
+ * @returns Whether any theme file changed.
+ */
+function queueBuild(): Promise<boolean> {
+  const build = latestBuild.then(() =>
+    buildAllFlavors({
+      accentIdentifier: ConfigurationService.getAccent(),
+      fontStyles: ConfigurationService.getFontStyles(),
+      syntaxOverrides: ConfigurationService.getSyntaxOverrides(),
+      uiOverrides: ConfigurationService.getUiOverrides(),
+      fontStyleOverrides: ConfigurationService.getFontStyleOverrides(),
+    }),
+  );
+  // The caller reports a failure; the queue only needs to know the build settled.
+  latestBuild = build.catch(() => undefined);
+  return build;
+}
+
+/**
  * This is the main activation function for the extension.
  * @param {vscode.ExtensionContext} context The extension context provided by VS Code.
  */
@@ -99,43 +160,7 @@ export function activate(context: vscode.ExtensionContext) {
   // This internal command is used by the extension itself to regenerate themes.
   const regenerateThemesCommand = vscode.commands.registerCommand(
     C.REGENERATE_COMMAND_ID,
-    async () => {
-      try {
-        await buildAllFlavors({
-          accentIdentifier: ConfigurationService.getAccent(),
-          fontStyles: ConfigurationService.getFontStyles(),
-          syntaxOverrides: ConfigurationService.getSyntaxOverrides(),
-          uiOverrides: ConfigurationService.getUiOverrides(),
-          fontStyleOverrides: ConfigurationService.getFontStyleOverrides(),
-        });
-        const selection = await vscode.window.showInformationMessage(
-          C.INFO_MESSAGE,
-          C.RELOAD_ACTION,
-        );
-        if (selection === C.RELOAD_ACTION) {
-          vscode.commands.executeCommand(C.RELOAD_COMMAND_ID).then(
-            () => {
-              /* success - no action needed */
-            },
-            (err: unknown) => {
-              console.error("Failed to reload window:", err);
-            },
-          );
-        }
-      } catch (error) {
-        console.error(error);
-        let errorMessage = C.ERROR_MESSAGE_PREFIX;
-        if (error instanceof Error) {
-          errorMessage += error.message;
-        } else {
-          errorMessage += String(error);
-        }
-        const selection = await vscode.window.showErrorMessage(errorMessage, C.REPORT_ISSUE_ACTION);
-        if (selection === C.REPORT_ISSUE_ACTION) {
-          vscode.env.openExternal(vscode.Uri.parse(C.REPO_ISSUES_URL));
-        }
-      }
-    },
+    regenerateThemes,
   );
 
   // This is the command that opens the customization UI. Because it's declared in `package.json`,
@@ -201,6 +226,9 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(settingsChangeListener);
     // Run an initial icon sync now that the listeners are active.
     syncIconFlavor();
+    regenerateThemes().catch((err: unknown) => {
+      console.error("Failed to regenerate themes:", err);
+    });
   }
 
   // This lightweight, always-on listener acts as a "tripwire". Its only job is to
@@ -236,4 +264,8 @@ export function deactivate() {
     clearTimeout(regenerateTimer);
     regenerateTimer = undefined;
   }
+  // VS Code disposes the listeners through `context.subscriptions`; forgetting them here lets a
+  // later activation in the same host register them again.
+  settingsChangeListener = undefined;
+  tripwireListener = undefined;
 }

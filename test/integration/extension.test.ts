@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import * as build from "../../build";
-import { activate } from "../../extension";
+import { activate, deactivate } from "../../extension";
 import { ConfigurationService } from "../../src/ConfigurationService";
 import * as C from "../../src/constants";
 
@@ -26,6 +26,7 @@ describe("Extension Integration Tests", () => {
 
   // This will hold the mock specifically for the 'calmppuccin' configuration section.
   let mockCalmppuccinConfiguration: { get: jest.Mock; update: jest.Mock };
+  let currentColorTheme: string;
 
   /**
    * This function runs before each test in this suite.
@@ -37,6 +38,7 @@ describe("Extension Integration Tests", () => {
     jest.useFakeTimers();
     // Reset the state of all mocks to ensure tests are isolated.
     jest.clearAllMocks();
+    currentColorTheme = "Calmppuccin Mocha";
 
     // --- Create separate mocks for each configuration section ---
 
@@ -56,7 +58,7 @@ describe("Extension Integration Tests", () => {
         // Calmppuccin theme is already active. This ensures that the
         // `ensureListenersAreActive` function is called during activation.
         if (key === "colorTheme") {
-          return "Calmppuccin Mocha";
+          return currentColorTheme;
         }
         return undefined;
       }),
@@ -113,6 +115,7 @@ describe("Extension Integration Tests", () => {
   });
 
   afterEach(() => {
+    deactivate();
     jest.useRealTimers();
   });
 
@@ -125,7 +128,8 @@ describe("Extension Integration Tests", () => {
    */
   it("should trigger the theme build process when the regenerateThemes command is executed", async () => {
     // 1. Arrange: Set up spies and mock return values.
-    const buildSpy = jest.spyOn(build, "buildAllFlavors");
+    currentColorTheme = "Default Dark Modern";
+    const buildSpy = jest.spyOn(build, "buildAllFlavors").mockResolvedValue(true);
 
     // We still need to spy on these because the command's callback uses them directly.
     jest.spyOn(ConfigurationService, "getAccent").mockReturnValue("sapphire");
@@ -156,6 +160,73 @@ describe("Extension Integration Tests", () => {
     // 3. Assert:
     expect(buildSpy).toHaveBeenCalledTimes(1);
     expect(mockedVscode.window.showInformationMessage).toHaveBeenCalled();
+  });
+
+  /** An update installs the packaged default themes, and settings may change while inactive. */
+  it("should rebuild the themes when activated with a Calmppuccin theme", async () => {
+    const buildSpy = jest.spyOn(build, "buildAllFlavors").mockResolvedValue(false);
+
+    activate(mockContext);
+    await jest.advanceTimersByTimeAsync(0);
+
+    expect(buildSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("should not rebuild on activation under another theme", async () => {
+    currentColorTheme = "Default Dark Modern";
+    const buildSpy = jest.spyOn(build, "buildAllFlavors").mockResolvedValue(false);
+
+    activate(mockContext);
+    await jest.advanceTimersByTimeAsync(0);
+
+    expect(buildSpy).not.toHaveBeenCalled();
+  });
+
+  it("should not offer a reload when no theme file changed", async () => {
+    jest.spyOn(build, "buildAllFlavors").mockResolvedValue(false);
+
+    activate(mockContext);
+    await jest.advanceTimersByTimeAsync(0);
+
+    expect(mockedVscode.window.showInformationMessage).not.toHaveBeenCalled();
+  });
+
+  /** Two builds in flight could land the older settings' files last. */
+  it("should not start a build before the previous one settles", async () => {
+    currentColorTheme = "Default Dark Modern";
+    let finishFirstBuild: (changed: boolean) => void = () => {
+      throw new Error("the first build never started");
+    };
+    const buildSpy = jest
+      .spyOn(build, "buildAllFlavors")
+      .mockImplementationOnce(
+        () =>
+          new Promise<boolean>((resolve) => {
+            finishFirstBuild = resolve;
+          }),
+      )
+      .mockResolvedValue(false);
+    let regenerate: () => Promise<void> = () => {
+      throw new Error("the regenerate command was never registered");
+    };
+    jest
+      .mocked(mockedVscode.commands.registerCommand)
+      .mockImplementation((command: string, callback: () => Promise<void>) => {
+        if (command === C.REGENERATE_COMMAND_ID) {
+          regenerate = callback;
+        }
+        return { dispose: () => {} };
+      });
+
+    activate(mockContext);
+    const regenerations = [regenerate(), regenerate()];
+    await jest.advanceTimersByTimeAsync(0);
+    const callsWhileFirstRuns = buildSpy.mock.calls.length;
+    finishFirstBuild(false);
+    await Promise.all(regenerations);
+
+    expect(callsWhileFirstRuns).toBe(1);
+    expect(buildSpy).toHaveBeenCalledTimes(2);
   });
 
   /**
@@ -205,15 +276,7 @@ describe("Extension Integration Tests", () => {
    * @precondition The configuration change listener is registered
    * @assertion The regenerateThemes command should be executed when font styles change
    */
-  it("should trigger regenerateThemes when font style configuration changes", async () => {
-    // Use dynamic import to get a fresh module instance
-    jest.resetModules();
-
-    // Re-mock vscode module
-    jest.mock("vscode", () => mockedVscode, { virtual: true });
-
-    const { activate: freshActivate } = await import("../../extension");
-
+  it("should trigger regenerateThemes when font style configuration changes", () => {
     let listener: (event: vscode.ConfigurationChangeEvent) => void = () => {};
     (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation(
       (callback: (event: vscode.ConfigurationChangeEvent) => void) => {
@@ -230,7 +293,7 @@ describe("Extension Integration Tests", () => {
 
     const executeCommandSpy = mockedVscode.commands.executeCommand;
 
-    freshActivate(mockContext);
+    activate(mockContext);
     listener(mockEvent);
     jest.advanceTimersByTime(C.REGENERATE_DEBOUNCE_MS);
 
@@ -242,15 +305,7 @@ describe("Extension Integration Tests", () => {
    * @precondition The configuration change listener is registered
    * @assertion The regenerateThemes command should be executed when syntax overrides change
    */
-  it("should trigger regenerateThemes when syntax overrides change", async () => {
-    // Use dynamic import to get a fresh module instance
-    jest.resetModules();
-
-    // Re-mock vscode module
-    jest.mock("vscode", () => mockedVscode, { virtual: true });
-
-    const { activate: freshActivate } = await import("../../extension");
-
+  it("should trigger regenerateThemes when syntax overrides change", () => {
     let listener: (event: vscode.ConfigurationChangeEvent) => void = () => {};
     (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation(
       (callback: (event: vscode.ConfigurationChangeEvent) => void) => {
@@ -267,7 +322,7 @@ describe("Extension Integration Tests", () => {
 
     const executeCommandSpy = mockedVscode.commands.executeCommand;
 
-    freshActivate(mockContext);
+    activate(mockContext);
     listener(mockEvent);
     jest.advanceTimersByTime(C.REGENERATE_DEBOUNCE_MS);
 
@@ -308,15 +363,7 @@ describe("Extension Integration Tests", () => {
    * @precondition The configuration change listener is registered with debouncing
    * @assertion executeCommand should be called only once after 5 rapid events
    */
-  it("should debounce rapid config changes into a single regeneration", async () => {
-    // Use dynamic import to get a fresh module instance (avoids stale module-level state).
-    jest.resetModules();
-
-    // Re-mock vscode module
-    jest.mock("vscode", () => mockedVscode, { virtual: true });
-
-    const { activate: freshActivate } = await import("../../extension");
-
+  it("should debounce rapid config changes into a single regeneration", () => {
     let listener: (event: vscode.ConfigurationChangeEvent) => void = () => {};
     (mockedVscode.workspace.onDidChangeConfiguration as jest.Mock).mockImplementation(
       (callback: (event: vscode.ConfigurationChangeEvent) => void) => {
@@ -333,7 +380,7 @@ describe("Extension Integration Tests", () => {
 
     const executeCommandSpy = mockedVscode.commands.executeCommand;
 
-    freshActivate(mockContext);
+    activate(mockContext);
 
     // Fire 5 rapid config change events.
     for (let i = 0; i < 5; i++) {
@@ -365,7 +412,7 @@ describe("Theme Regeneration Error Handling", () => {
 
     const mockWorkbenchConfiguration = {
       get: jest.fn((key: string) => {
-        if (key === "colorTheme") return "Calmppuccin Mocha";
+        if (key === "colorTheme") return "Default Dark Modern";
         return undefined;
       }),
       update: jest.fn(),
@@ -416,6 +463,10 @@ describe("Theme Regeneration Error Handling", () => {
     };
   });
 
+  afterEach(() => {
+    deactivate();
+  });
+
   /**
    * @description Tests that buildAllFlavors errors show user-friendly error messages.
    * @precondition buildAllFlavors is mocked to throw an error
@@ -459,7 +510,7 @@ describe("Theme Regeneration Error Handling", () => {
    * @assertion Success message should be shown to user
    */
   it("should show success message when buildAllFlavors succeeds", async () => {
-    const buildSpy = jest.spyOn(build, "buildAllFlavors").mockResolvedValue();
+    const buildSpy = jest.spyOn(build, "buildAllFlavors").mockResolvedValue(true);
 
     jest.spyOn(ConfigurationService, "getAccent").mockReturnValue("sapphire");
     jest.spyOn(ConfigurationService, "getFontStyles").mockReturnValue({});

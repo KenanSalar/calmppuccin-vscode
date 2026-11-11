@@ -8,6 +8,7 @@ import { MessageToExtension } from "../types/webview";
 import { ConfigurationService } from "./ConfigurationService";
 import * as C from "./constants";
 import { WebviewManager } from "./WebviewManager";
+import { parseWebviewMessage } from "./webviewMessages";
 
 /**
  * Manages the state and logic of the settings webview panel.
@@ -30,7 +31,7 @@ export class SettingsPanel {
     }
     WebviewManager.createOrShow(
       context,
-      SettingsPanel._instance._handleMessage.bind(SettingsPanel._instance),
+      SettingsPanel._instance._receiveMessage.bind(SettingsPanel._instance),
     )
       .then(() => {
         SettingsPanel._instance?._update();
@@ -45,6 +46,26 @@ export class SettingsPanel {
    */
   public static updateIfVisible() {
     SettingsPanel._instance?._update();
+  }
+
+  /**
+   * Checks a message from the webview and acts on it, reporting a failed settings write to the
+   * user: VS Code ignores the promise a message listener returns.
+   * @param raw The value the webview posted.
+   */
+  private async _receiveMessage(raw: unknown) {
+    const message = parseWebviewMessage(raw);
+    if (!message) {
+      console.warn("Ignored an invalid webview message:", raw);
+      return;
+    }
+    try {
+      await this._handleMessage(message);
+    } catch (error) {
+      console.error("Failed to apply a webview message:", error);
+      const reason = error instanceof Error ? error.message : String(error);
+      void vscode.window.showErrorMessage(C.SETTINGS_ERROR_MESSAGE_PREFIX + reason);
+    }
   }
 
   /**

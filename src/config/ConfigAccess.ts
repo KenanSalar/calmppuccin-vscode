@@ -49,7 +49,7 @@ export interface IExtensionPackageJson {
  * @returns {boolean} True if the key is a valid flavor name.
  */
 export function isFlavor(key: string): key is keyof IPalettes {
-  return key in palettes;
+  return Object.hasOwn(palettes, key);
 }
 
 /**
@@ -114,22 +114,31 @@ export function getConfig() {
  * @returns {{ [name: string]: IProfile }} The profiles object.
  */
 export function getProfiles(): { [name: string]: IProfile } {
-  // Get profiles with unknown type for runtime safety validation
-  const rawProfiles: unknown = getConfig().get(C.CONFIG_KEY_PROFILES);
+  return toProfiles(getConfig().get(C.CONFIG_KEY_PROFILES));
+}
 
-  // Validate and return a safe default if profiles is not a valid object
-  if (typeof rawProfiles !== "object" || rawProfiles === null || Array.isArray(rawProfiles)) {
-    return { Default: {} };
+/**
+ * Narrows the user-edited `calmppuccin.profiles` value to its profiles, guaranteeing `Default`.
+ * An entry that isn't an object, such as `"Default": null`, is dropped.
+ * @param rawProfiles The setting's value as read.
+ */
+export function toProfiles(rawProfiles: unknown): { [name: string]: IProfile } {
+  const profiles: { [name: string]: IProfile } = {};
+  if (isPlainObject(rawProfiles)) {
+    for (const [name, profile] of Object.entries(rawProfiles)) {
+      if (isPlainObject(profile)) {
+        profiles[name] = profile as IProfile;
+      }
+    }
   }
-
-  const profiles = rawProfiles as { [name: string]: IProfile };
-
-  // Ensure Default profile exists
-  if (!Object.prototype.hasOwnProperty.call(profiles, "Default")) {
-    return { ...profiles, Default: {} };
+  if (!Object.hasOwn(profiles, "Default")) {
+    profiles.Default = {};
   }
-
   return profiles;
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 /**
@@ -220,12 +229,21 @@ export async function updateProfileSetting(key: string, value: IProfile[keyof IP
  * @returns {IFontStyles} The default font styles object.
  */
 export function getDefaultFontStyles(): IFontStyles {
+  return getContributedSetting(C.CONFIG_KEY_FONT_STYLES)?.default ?? {};
+}
+
+/**
+ * Gets the accent names `calmppuccin.accent` accepts, `custom` included.
+ */
+export function getAccentOptions(): string[] {
+  return getContributedSetting(C.CONFIG_KEY_ACCENT)?.enum ?? [];
+}
+
+function getContributedSetting(key: string) {
   const extensionConfig = vscode.extensions.getExtension(C.EXTENSION_ID)?.packageJSON as
     | IExtensionPackageJson
     | undefined;
-  return (
-    extensionConfig?.contributes?.configuration?.properties?.[
-      `${C.EXTENSION_NAMESPACE}.${C.CONFIG_KEY_FONT_STYLES}`
-    ]?.default ?? {}
-  );
+  return extensionConfig?.contributes?.configuration?.properties?.[
+    `${C.EXTENSION_NAMESPACE}.${key}`
+  ];
 }

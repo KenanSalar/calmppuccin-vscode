@@ -5,10 +5,13 @@
  */
 
 import * as vscode from "vscode";
-import { activate } from "../../extension";
+import { activate, deactivate } from "../../extension";
 import * as C from "../../src/constants";
 
 const mockedVscode = vscode as jest.Mocked<typeof vscode>;
+
+// Activating under a Calmppuccin theme rebuilds the themes, which these tests leave out.
+jest.mock("../../build");
 
 /**
  * Test suite for icon theme synchronization logic.
@@ -19,6 +22,7 @@ describe("Icon Theme Synchronization", () => {
   let themeChangeListener: (event: vscode.ConfigurationChangeEvent) => void = () => {};
 
   beforeEach(() => {
+    jest.useFakeTimers();
     jest.clearAllMocks();
 
     // Create mock workbench configuration
@@ -82,6 +86,11 @@ describe("Icon Theme Synchronization", () => {
     };
   });
 
+  afterEach(() => {
+    deactivate();
+    jest.useRealTimers();
+  });
+
   /**
    * @description Tests that icon flavor syncs when theme changes to a Calmppuccin theme.
    * @precondition Color theme is Calmppuccin Mocha, icon theme is wrong flavor
@@ -96,9 +105,7 @@ describe("Icon Theme Synchronization", () => {
 
     activate(mockContext);
 
-    // The theme listener is automatically triggered because "Calmppuccin Mocha" is set
-    // Wait for the initial icon sync (100ms timeout in syncIconFlavor)
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    await jest.advanceTimersByTimeAsync(C.ICON_SYNC_INITIAL_DELAY_MS);
 
     expect(mockWorkbenchConfig.update).toHaveBeenCalledWith(
       "iconTheme",
@@ -126,7 +133,7 @@ describe("Icon Theme Synchronization", () => {
     };
     themeChangeListener(mockEvent);
 
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    await jest.advanceTimersByTimeAsync(C.ICON_SYNC_INITIAL_DELAY_MS);
 
     expect(mockWorkbenchConfig.update).not.toHaveBeenCalled();
   });
@@ -137,21 +144,15 @@ describe("Icon Theme Synchronization", () => {
    * @assertion Icon theme should be updated to catppuccin-mocha
    */
   it("should map custom flavors (Nitro Cold Brew) to mocha icons", async () => {
-    // Use dynamic import to get a fresh module instance
-    jest.resetModules();
-    jest.mock("vscode", () => mockedVscode, { virtual: true });
-    const { activate: freshActivate } = await import("../../extension");
-
     mockWorkbenchConfig.get.mockImplementation((key: string) => {
       if (key === "colorTheme") return "Calmppuccin Nitro Cold Brew";
       if (key === "iconTheme") return "catppuccin-frappe"; // Different flavor
       return undefined;
     });
 
-    freshActivate(mockContext);
+    activate(mockContext);
 
-    // Wait for the initial icon sync
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    await jest.advanceTimersByTimeAsync(C.ICON_SYNC_INITIAL_DELAY_MS);
 
     expect(mockWorkbenchConfig.update).toHaveBeenCalledWith(
       "iconTheme",
@@ -166,21 +167,15 @@ describe("Icon Theme Synchronization", () => {
    * @assertion Icon theme should be updated to catppuccin-mocha
    */
   it("should map Oledppuccin flavor to mocha icons", async () => {
-    // Use dynamic import to get a fresh module instance
-    jest.resetModules();
-    jest.mock("vscode", () => mockedVscode, { virtual: true });
-    const { activate: freshActivate } = await import("../../extension");
-
     mockWorkbenchConfig.get.mockImplementation((key: string) => {
       if (key === "colorTheme") return "Calmppuccin Oledppuccin";
       if (key === "iconTheme") return "catppuccin-latte"; // Different flavor
       return undefined;
     });
 
-    freshActivate(mockContext);
+    activate(mockContext);
 
-    // Wait for the initial icon sync
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    await jest.advanceTimersByTimeAsync(C.ICON_SYNC_INITIAL_DELAY_MS);
 
     expect(mockWorkbenchConfig.update).toHaveBeenCalledWith(
       "iconTheme",
@@ -208,65 +203,35 @@ describe("Icon Theme Synchronization", () => {
     };
     themeChangeListener(mockEvent);
 
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    await jest.advanceTimersByTimeAsync(C.ICON_SYNC_INITIAL_DELAY_MS);
 
     // Should not update (not a Calmppuccin theme)
     expect(mockWorkbenchConfig.update).not.toHaveBeenCalled();
   });
 
-  /**
-   * @description Tests that sync correctly handles all standard flavors.
-   * @precondition Each standard flavor is tested
-   * @assertion Each flavor should map to correct icon theme
-   */
-  it("should correctly sync all standard Calmppuccin flavors", async () => {
-    const flavorsMap: Record<string, { theme: string; wrongIcon: string; rightIcon: string }> = {
-      latte: {
-        theme: "Calmppuccin Latte",
-        wrongIcon: "catppuccin-mocha",
-        rightIcon: "catppuccin-latte",
-      },
-      frappe: {
-        theme: "Calmppuccin Frappe",
-        wrongIcon: "catppuccin-latte",
-        rightIcon: "catppuccin-frappe",
-      },
-      macchiato: {
-        theme: "Calmppuccin Macchiato",
-        wrongIcon: "catppuccin-latte",
-        rightIcon: "catppuccin-macchiato",
-      },
-      mocha: {
-        theme: "Calmppuccin Mocha",
-        wrongIcon: "catppuccin-latte",
-        rightIcon: "catppuccin-mocha",
-      },
-    };
+  it.each([
+    { theme: "Calmppuccin Latte", wrongIcon: "catppuccin-mocha", rightIcon: "catppuccin-latte" },
+    { theme: "Calmppuccin Frappe", wrongIcon: "catppuccin-latte", rightIcon: "catppuccin-frappe" },
+    {
+      theme: "Calmppuccin Macchiato",
+      wrongIcon: "catppuccin-latte",
+      rightIcon: "catppuccin-macchiato",
+    },
+    { theme: "Calmppuccin Mocha", wrongIcon: "catppuccin-latte", rightIcon: "catppuccin-mocha" },
+  ])("should sync $theme to $rightIcon", async ({ theme, wrongIcon, rightIcon }) => {
+    mockWorkbenchConfig.get.mockImplementation((key: string) => {
+      if (key === "colorTheme") return theme;
+      if (key === "iconTheme") return wrongIcon;
+      return undefined;
+    });
 
-    for (const [, config] of Object.entries(flavorsMap)) {
-      jest.clearAllMocks();
+    activate(mockContext);
+    await jest.advanceTimersByTimeAsync(C.ICON_SYNC_INITIAL_DELAY_MS);
 
-      // Reset modules for each iteration to get fresh module state
-      jest.resetModules();
-      jest.mock("vscode", () => mockedVscode, { virtual: true });
-      const { activate: freshActivate } = await import("../../extension");
-
-      mockWorkbenchConfig.get.mockImplementation((key: string) => {
-        if (key === "colorTheme") return config.theme;
-        if (key === "iconTheme") return config.wrongIcon; // Start with wrong flavor
-        return undefined;
-      });
-
-      freshActivate(mockContext);
-
-      // Wait for the initial icon sync
-      await new Promise((resolve) => setTimeout(resolve, 150));
-
-      expect(mockWorkbenchConfig.update).toHaveBeenCalledWith(
-        "iconTheme",
-        config.rightIcon,
-        vscode.ConfigurationTarget.Global,
-      );
-    }
+    expect(mockWorkbenchConfig.update).toHaveBeenCalledWith(
+      "iconTheme",
+      rightIcon,
+      vscode.ConfigurationTarget.Global,
+    );
   });
 });

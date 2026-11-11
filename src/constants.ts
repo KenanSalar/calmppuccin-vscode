@@ -67,6 +67,7 @@ export const INFO_MESSAGE = "Calmppuccin theme updated. Reload to apply.";
 export const RELOAD_ACTION = "Reload Window";
 export const REPORT_ISSUE_ACTION = "Report Issue";
 export const ERROR_MESSAGE_PREFIX = "Failed to update Calmppuccin themes. Error: ";
+export const SETTINGS_ERROR_MESSAGE_PREFIX = "Failed to save Calmppuccin settings. Error: ";
 export const REPO_ISSUES_URL = "https://github.com/KenanSalar/calmppuccin-vscode/issues";
 
 /**
@@ -150,6 +151,9 @@ export const CUSTOMIZABLE_JSON_KEYS = [
   "jsonLvl8",
 ];
 export const CUSTOMIZABLE_UI_KEYS = ["base", "mantle", "crust", "uiText"];
+
+/** The font style values the customization UI offers, matching `calmppuccin.fontStyleOverrides`. */
+export const FONT_STYLE_OPTIONS = ["none", "italic", "bold", "italic bold", "underline"] as const;
 
 /**
  * Parses a Calmppuccin theme name to extract the flavor identifier.

@@ -5,8 +5,10 @@
  */
 
 import * as vscode from "vscode";
+import * as manifest from "../../package.json";
 import { ConfigurationService } from "../../src/ConfigurationService";
 import { SettingsPanel } from "../../src/SettingsPanel";
+import { WebviewManager } from "../../src/WebviewManager";
 // Import the shared types from their new, correct location.
 import { MessageToExtension as WebviewMessage } from "../../types/webview";
 
@@ -438,5 +440,47 @@ describe("SettingsPanel Integration Tests", () => {
     expect(updateAccentSpy).toHaveBeenCalledWith("mauve");
     expect(updateFontStyleOverrideSpy).toHaveBeenCalledWith("mocha", "commentFontStyle", "bold");
     expect(saveProfileSpy).toHaveBeenCalledWith("TestProfile");
+  });
+
+  describe("messages arriving from the webview", () => {
+    let receive: (raw: unknown) => Promise<void> = () => {
+      throw new Error("SettingsPanel never registered a message handler");
+    };
+
+    beforeEach(() => {
+      jest.mocked(vscode.extensions.getExtension).mockReturnValue({
+        packageJSON: manifest,
+      } as unknown as vscode.Extension<unknown>);
+      jest.spyOn(WebviewManager, "createOrShow").mockImplementation((_context, handler) => {
+        receive = handler;
+        return Promise.resolve();
+      });
+      SettingsPanel.createOrShow(mockContext);
+    });
+
+    it("should apply a valid message", async () => {
+      await receive({ command: "updateAccent", value: "mauve" });
+
+      expect(ConfigurationService.updateAccent).toHaveBeenCalledWith("mauve");
+    });
+
+    it("should ignore a message that fails validation", async () => {
+      await receive({ command: "updateAccent", value: "<img src=x>" });
+
+      expect(ConfigurationService.updateAccent).not.toHaveBeenCalled();
+    });
+
+    /** VS Code ignores the promise a message listener returns, so nobody else would report it. */
+    it("should tell the user when a settings write fails", async () => {
+      jest
+        .mocked(ConfigurationService.updateAccent)
+        .mockRejectedValue(new Error("settings.json has errors"));
+
+      await receive({ command: "updateAccent", value: "mauve" });
+
+      expect(vscode.window.showErrorMessage).toHaveBeenCalledWith(
+        "Failed to save Calmppuccin settings. Error: settings.json has errors",
+      );
+    });
   });
 });

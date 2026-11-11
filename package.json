@@ -63,12 +63,7 @@
   ],
   "main": "./dist/extension.js",
   "activationEvents": [
-    "onColorTheme:Calmppuccin Macchiato",
-    "onColorTheme:Calmppuccin Mocha",
-    "onColorTheme:Calmppuccin Nitro Cold Brew",
-    "onColorTheme:Calmppuccin Oledppuccin",
-    "onColorTheme:Calmppuccin Frappé",
-    "onColorTheme:Calmppuccin Latte"
+    "onStartupFinished"
   ],
   "contributes": {
     "commands": [
@@ -114,6 +109,7 @@
       "title": "Calmppuccin",
       "properties": {
         "calmppuccin.accent": {
+          "scope": "application",
           "type": "string",
           "default": "sapphire",
           "description": "The accent color for all Calmppuccin themes.",
@@ -136,6 +132,7 @@
           ]
         },
         "calmppuccin.customAccentColor": {
+          "scope": "application",
           "type": "string",
           "default": "#89b4fa",
           "pattern": "^#([A-Fa-f0-9]{6})$",
@@ -147,6 +144,7 @@
           "markdownDescription": "Click the link to open the graphical UI for customizing colors and font styles. [**Open Customization UI**](command:calmppuccin.customize)"
         },
         "calmppuccin.fontStyles": {
+          "scope": "application",
           "type": "object",
           "description": "The raw JSON configuration for font styles. For a better experience, use the Customization UI.",
           "default": {
@@ -727,6 +725,7 @@
           }
         },
         "calmppuccin.syntaxOverrides": {
+          "scope": "application",
           "type": "object",
           "default": {},
           "description": "Override specific syntax colors for each Calmppuccin flavor. Use the Customization UI for a better experience.",
@@ -1033,6 +1032,7 @@
           }
         },
         "calmppuccin.uiOverrides": {
+          "scope": "application",
           "type": "object",
           "default": {},
           "description": "Override specific UI colors for each Calmppuccin flavor. Use the Customization UI for a better experience.",
@@ -1063,6 +1063,7 @@
           }
         },
         "calmppuccin.fontStyleOverrides": {
+          "scope": "application",
           "type": "object",
           "default": {},
           "description": "Override specific font styles for each Calmppuccin flavor. Font styles are applied on top of the global font styles. Use the Customization UI for a better experience.",
@@ -1085,6 +1086,7 @@
           }
         },
         "calmppuccin.profiles": {
+          "scope": "application",
           "type": "object",
           "default": {
             "Default": {}
@@ -1126,6 +1128,7 @@
           }
         },
         "calmppuccin.activeProfile": {
+          "scope": "application",
           "type": "string",
           "default": "Default",
           "description": "The currently active profile name"

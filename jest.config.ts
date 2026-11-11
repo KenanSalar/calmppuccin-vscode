@@ -8,6 +8,8 @@ const config: Config = {
   testEnvironment: "jsdom",
   // Automatically clear mock calls, instances, contexts and results before every test
   clearMocks: true,
+  // A `jest.spyOn` replacement would otherwise outlive the test that made it.
+  restoreMocks: true,
   // The directory where Jest should output its coverage files
   coverageDirectory: "coverage",
   // Indicates which provider should be used to instrument code for coverage

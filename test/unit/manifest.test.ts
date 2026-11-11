@@ -7,6 +7,7 @@
 // Import the package.json file directly as a JSON module.
 // The `resolveJsonModule` option in tsconfig.json makes this possible.
 import * as manifest from "../../package.json";
+import { EXTENSION_NAMESPACE, THEME_AFFECTING_KEYS } from "../../src/constants";
 
 /**
  * @description Test suite for validating the structure and content of package.json.
@@ -67,25 +68,22 @@ describe("Extension Manifest (package.json) Validation", () => {
     });
   });
 
-  /**
-   * @description Verifies that all activation events are correctly formatted.
-   */
   describe("Activation Events", () => {
-    const activationEvents = manifest.activationEvents;
+    /** VS Code fires no event when a color theme is selected, so the theme listener starts here. */
+    it("should activate once startup finishes and on nothing else", () => {
+      expect(manifest.activationEvents).toStrictEqual(["onStartupFinished"]);
+    });
+  });
 
-    /**
-     * @description Checks that every color theme listed in the 'themes' contribution
-     * point has a corresponding `onColorTheme` activation event. This is crucial for
-     * the lazy-loading strategy to work correctly for all theme flavors.
-     * @assertion For each theme, an `onColorTheme` event must exist.
-     */
-    it("should have a corresponding onColorTheme activation event for every registered theme", () => {
-      const themeEvents = activationEvents.filter((event) => event.startsWith("onColorTheme:"));
+  describe("Setting Scopes", () => {
+    const settingsByName = new Map(Object.entries(properties));
 
-      manifest.contributes.themes.forEach((theme) => {
-        const expectedEvent = `onColorTheme:${theme.label}`;
-        expect(themeEvents).toContain(expectedEvent);
-      });
+    /** One set of theme files serves every window, so a workspace can't be allowed to differ. */
+    it.each(THEME_AFFECTING_KEYS)("should limit calmppuccin.%s to user settings", (key) => {
+      expect(settingsByName.get(`${EXTENSION_NAMESPACE}.${key}`)).toHaveProperty(
+        "scope",
+        "application",
+      );
     });
   });
 });

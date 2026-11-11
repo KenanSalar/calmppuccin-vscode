@@ -43,6 +43,8 @@
     "typescript/no-dynamic-delete": "error",
     "typescript/no-empty-object-type": "error",
     "typescript/no-explicit-any": "error",
+    // The VS Code API returns `Thenable`, which the rule skips by default.
+    "typescript/no-floating-promises": ["error", { "checkThenables": true }],
     "typescript/no-extraneous-class": ["error", { "allowStaticOnly": true }],
     "typescript/no-invalid-void-type": "error",
     "typescript/no-misused-promises": "error",

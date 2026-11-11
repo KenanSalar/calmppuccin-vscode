@@ -20,6 +20,8 @@ import {
   ISyntaxOverrides,
   IUiOverrides,
   IFontStyleOverrides,
+  isFlavor,
+  toProfiles,
 } from "./ConfigAccess";
 
 /**
@@ -36,22 +38,9 @@ export function getWebViewSettings(): ISettingsPayload {
     | IExtensionPackageJson
     | undefined;
 
-  // Get profiles from cached config
-  const rawProfiles: unknown = configSnapshot.get(C.CONFIG_KEY_PROFILES);
-  let profiles: { [name: string]: IProfile };
-  if (typeof rawProfiles !== "object" || rawProfiles === null || Array.isArray(rawProfiles)) {
-    profiles = { Default: {} };
-  } else {
-    profiles = rawProfiles as { [name: string]: IProfile };
-    if (!Object.prototype.hasOwnProperty.call(profiles, "Default")) {
-      profiles = { ...profiles, Default: {} };
-    }
-  }
-
+  const profiles = toProfiles(configSnapshot.get(C.CONFIG_KEY_PROFILES));
   const activeProfile = configSnapshot.get(C.CONFIG_KEY_ACTIVE_PROFILE, "Default");
-  const profile = Object.prototype.hasOwnProperty.call(profiles, activeProfile)
-    ? profiles[activeProfile]
-    : {};
+  const profile: IProfile = Object.hasOwn(profiles, activeProfile) ? profiles[activeProfile] : {};
 
   // Helper to get string setting from profile with fallback to global config
   const getProfileString = (key: string, defaultValue: string): string => {
@@ -73,8 +62,8 @@ export function getWebViewSettings(): ISettingsPayload {
   const themeName = workbenchConfig.get<string>("colorTheme", "");
   let activeFlavor: keyof typeof palettes = "mocha";
   const parsedFlavor = parseFlavorFromThemeName(themeName);
-  if (parsedFlavor && parsedFlavor in palettes) {
-    activeFlavor = parsedFlavor as keyof typeof palettes;
+  if (parsedFlavor && isFlavor(parsedFlavor)) {
+    activeFlavor = parsedFlavor;
   }
 
   // Get all settings using cached helpers

@@ -54,13 +54,13 @@ const FLAVORS = Object.keys(palette) as Array<keyof IPalettes>;
  * @param {keyof IPalettes} flavor The flavor to generate (e.g., "mocha").
  * @param {string} templateStr The raw template string.
  * @param {IBuildOptions} options The build configuration options.
- * @returns {Promise<void>} A promise that resolves when the theme file has been written.
+ * @returns Whether the flavor's theme file changed.
  */
 async function buildFlavor(
   flavor: keyof IPalettes,
   templateStr: string,
   options: IBuildOptions,
-): Promise<void> {
+): Promise<boolean> {
   const { accentIdentifier, fontStyles, syntaxOverrides, uiOverrides, fontStyleOverrides } =
     options;
   const basePalette = palette[flavor];
@@ -140,39 +140,56 @@ async function buildFlavor(
     Object.assign(themeJson.colors, errorLensColors, githubPRColors, gitLensColors);
   }
 
-  // Write the generated theme object to a JSON file in the /themes directory.
   const themeFileName = `${C.THEME_FILE_PREFIX}-${flavor}-${C.THEME_FILE_SUFFIX}`;
   const themePath = path.join(THEME_DIR, themeFileName);
-  await fs.writeFile(themePath, JSON.stringify(themeJson, null, 2) + "\n");
+  return writeIfChanged(themePath, JSON.stringify(themeJson, null, 2) + "\n");
 }
 
 /**
  * Generates all Calmppuccin theme files based on the template, palettes, and user settings.
- * @param {IBuildOptions} options The build configuration options.
- * @returns {Promise<void>} A promise that resolves when all theme files have been written to disk.
+ * @param options The build configuration options.
+ * @returns Whether any theme file changed, which is when a window needs a reload to show it.
  */
-export async function buildAllFlavors(options: IBuildOptions): Promise<void> {
-  // Ensure the output directory is clean and ready.
-  await emptyDirectory(THEME_DIR);
+export async function buildAllFlavors(options: IBuildOptions): Promise<boolean> {
+  await fs.mkdir(THEME_DIR, { recursive: true });
   const templateStr = await fs.readFile(TEMPLATE_PATH, "utf-8");
 
-  // Generate all flavors in parallel for faster theme regeneration.
-  await Promise.all(FLAVORS.map((flavor) => buildFlavor(flavor, templateStr, options)));
+  // Each flavor writes its own file, so they can build concurrently.
+  const changed = await Promise.all(
+    FLAVORS.map((flavor) => buildFlavor(flavor, templateStr, options)),
+  );
 
   console.log(`All Calmppuccin themes built with the "${options.accentIdentifier}" accent.`);
+  return changed.includes(true);
 }
 
 /**
- * Deletes everything inside a directory, creating the directory first if it doesn't exist.
- * @param {string} dir The directory to empty.
- * @returns {Promise<void>} A promise that resolves once the directory is empty.
+ * Writes `content` to `filePath` unless the file already holds exactly that.
+ *
+ * Every open window rebuilds the same files after a settings change, and VS Code may load a theme
+ * meanwhile, so the content lands through a rename: a reader sees the old file or the new one,
+ * never a half-written one.
+ * @returns Whether the file was written.
  */
-async function emptyDirectory(dir: string): Promise<void> {
-  await fs.mkdir(dir, { recursive: true });
-  const entries = await fs.readdir(dir);
-  await Promise.all(
-    entries.map((entry) => fs.rm(path.join(dir, entry), { recursive: true, force: true })),
-  );
+async function writeIfChanged(filePath: string, content: string): Promise<boolean> {
+  if ((await readIfExists(filePath)) === content) {
+    return false;
+  }
+  const tempPath = `${filePath}.${String(process.pid)}.tmp`;
+  await fs.writeFile(tempPath, content);
+  await fs.rename(tempPath, filePath);
+  return true;
+}
+
+async function readIfExists(filePath: string): Promise<string | undefined> {
+  try {
+    return await fs.readFile(filePath, "utf8");
+  } catch (err: unknown) {
+    if (err instanceof Error && (err as NodeJS.ErrnoException).code === "ENOENT") {
+      return undefined;
+    }
+    throw err;
+  }
 }
 
 /**

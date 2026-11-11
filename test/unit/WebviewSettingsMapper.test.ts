@@ -25,7 +25,7 @@ describe("WebviewSettingsMapper contract", () => {
    * Sets up mocks for a full getWebViewSettings call with known profile data.
    */
   function setupMocks(overrides?: {
-    profiles?: Record<string, Record<string, unknown>>;
+    profiles?: Record<string, unknown>;
     activeProfile?: string;
     themeName?: string;
     accent?: string;
@@ -92,6 +92,14 @@ describe("WebviewSettingsMapper contract", () => {
       return { get: jest.fn(), update: jest.fn() };
     });
   }
+
+  /** `calmppuccin.profiles` is hand-edited JSON, so an entry can be anything. */
+  it("should treat a profile that isn't an object as empty", () => {
+    setupMocks({ profiles: { Default: null } });
+    const result = ConfigurationService.getWebViewSettings();
+    expect(result.profiles).toStrictEqual({ Default: {} });
+    expect(result.currentAccent).toBe(C.DEFAULT_ACCENT);
+  });
 
   it("should return activeFlavor matching the theme name", () => {
     setupMocks({ themeName: "Calmppuccin Mocha" });

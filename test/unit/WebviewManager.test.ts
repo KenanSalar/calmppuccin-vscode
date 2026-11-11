@@ -65,7 +65,7 @@ describe("WebviewManager Unit Tests", () => {
 
     // Create mock functions that we'll reference directly in tests
     revealMock = jest.fn();
-    postMessageMock = jest.fn();
+    postMessageMock = jest.fn().mockResolvedValue(true);
 
     // Create a mock WebviewPanel object that simulates the real VS Code panel.
     mockPanel = {

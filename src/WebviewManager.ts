@@ -6,7 +6,7 @@
 import * as fs from "fs/promises";
 import * as path from "path";
 import * as vscode from "vscode";
-import { MessageToExtension, MessageToWebview } from "../types/webview";
+import { MessageToWebview } from "../types/webview";
 import * as C from "./constants";
 
 /**
@@ -27,11 +27,11 @@ export class WebviewManager {
    * Creates a new WebviewManager instance. This is private to enforce the singleton pattern.
    * Use the static createOrShow method instead.
    * @param {vscode.WebviewPanel} panel The webview panel instance.
-   * @param {(message: MessageToExtension) => void} messageHandler The callback function to handle messages received from the webview.
+   * @param messageHandler Receives each message the webview posts, unchecked.
    */
   private constructor(
     panel: vscode.WebviewPanel,
-    messageHandler: (message: MessageToExtension) => void | Promise<void>,
+    messageHandler: (message: unknown) => Promise<void>,
   ) {
     this._panel = panel;
     this._panel.onDidDispose(
@@ -53,12 +53,12 @@ export class WebviewManager {
    * The static method to either create a new webview panel or show the existing one.
    * Uses async file reading to avoid blocking the extension host thread.
    * @param {vscode.ExtensionContext} context The extension's context.
-   * @param {(message: MessageToExtension) => void} messageHandler The callback for messages from the webview.
+   * @param messageHandler Receives each message the webview posts, unchecked.
    * @param {() => void} [onReveal] An optional callback to run when an existing panel is revealed.
    */
   public static async createOrShow(
     context: vscode.ExtensionContext,
-    messageHandler: (message: MessageToExtension) => void | Promise<void>,
+    messageHandler: (message: unknown) => Promise<void>,
     onReveal?: () => void,
   ): Promise<void> {
     if (WebviewManager.currentPanel) {
@@ -103,7 +103,14 @@ export class WebviewManager {
    * @param {MessageToWebview} message The message object to send.
    */
   public postMessage(message: MessageToWebview) {
-    this._panel.webview.postMessage(message);
+    this._panel.webview.postMessage(message).then(
+      () => {
+        /* success - no action needed */
+      },
+      (err: unknown) => {
+        console.error("Failed to post a message to the webview:", err);
+      },
+    );
   }
 
   /**
