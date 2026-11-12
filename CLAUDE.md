@@ -124,3 +124,7 @@ change. Suggest F5 only for breakpoints; Known gaps says why.
   network inspection ([nodejs/node#64308](https://github.com/nodejs/node/issues/64308)). It is
   not this extension's code, and the customization UI asks for a reload after every theme change,
   so anything that reloads is tested under Ctrl+F5, or the debug session is restarted instead.
+  
+## User Conventions
+
+- Always call big files/objects/functions **'monolithic'** — no synonyms.
