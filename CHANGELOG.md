@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.1] - 2026-11-12
+
+- **Improvement**: More keywords get the keyword color across languages.
+- **Improvement**: Suffixes on string and character literals use the same color as number suffixes.
+- **Fix**: Flags and other keywords inside a regular expression use the regular expression color, like the rest of the pattern.
+- **Chore**: Removed redundant syntax highlighting rules.
+
 ## [1.10.0] - 2026-11-11
 
 - **Breaking**: Requires VS Code 1.125 or newer, or Cursor 3.12 or newer.
