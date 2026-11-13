@@ -201,7 +201,6 @@ any gate runs.
 - **Newly keyword-colored, as intended:**
   - The issue's GraphQL keywords (`query`, `fragment`, `enum`, `implements`, `on`), GDScript's
     `extends` and `class_name`, and Julia's `const`.
-  - C# preprocessor directives such as `region` in `#region`, whose `#` is already keyword-colored.
   - Dart's `as` and `new`, the `*` in TS/JS `function*`, Batch commands, and Java and CoffeeScript
     reserved words.
   - `.env`'s `export` and `${ }`, and Python's illegal names.
@@ -221,6 +220,35 @@ any gate runs.
   Dark VS.
 - **A new "Diff range" rule:** `meta.diff.range` → `{{annotation}}`, also foreground only. The teal
   matches git's cyan for hunk headers.
+
+### 2.4 C# grammar follows Roslyn (done)
+
+Roslyn's semantic tokens for a .NET sample, resolved the way VS Code's `getTokenStyle` does, were
+compared with the C# grammar's colors. Each fix below has a C#-only scope, so no other language
+moves.
+
+- **The keyword rule gains `source.cs keyword.type`, `source.cs constant.language.boolean` and
+  `source.cs constant.language.null`.** Roslyn sends `int`, `string`, `null` and `true` as plain
+  `keyword` tokens, the same as `public`, so the editor can only show them keyword-colored. In C#
+  these are reserved keywords. The two constant entries name the depth the constant rule uses, so
+  they outrank it.
+- **The operator rule loses `keyword.operator.expression.pattern`**, which only C# emits, so `is`,
+  `not`, `and` and `or` fall to the keyword color with `keyword.operator.expression`. The keyword
+  rule's `keyword.operator.expression.pattern.if` went with it, since no grammar emits it.
+- **The macro rule gains `source.cs keyword.preprocessor`, `source.cs punctuation.separator.hash`
+  and `source.cs meta.preprocessor`**: Roslyn colors a whole directive such as `#nullable enable`
+  as a macro.
+- **The punctuation rule gains `punctuation.definition.interpolation.begin.cs` and `.end.cs`**, the
+  braces of `$"…{x}…"`. SCSS shares the prefix for `#{ }`, so the names stay exact.
+- **`punctuation.separator.question-mark` moves from punctuation to operator, and
+  `punctuation.separator.asterisk` joins it.** Only C# emits either, for the `?` of `string?` and
+  the `*` of `byte*`, and Roslyn calls both operators.
+- **XML doc comments:** the comment rule gains `source.cs comment.block.documentation
+  punctuation.definition.tag` and `… punctuation.separator.equals`, and the Attributes rule gains
+  `source.cs comment.block.documentation entity.other.attribute-name`, matching Roslyn's
+  `xmlDocCommentDelimiter` and `xmlDocCommentAttributeName`.
+- **Left as they are:** Roslyn calls the ternary `:` and the range `..` punctuation while it calls
+  `?` an operator, and the grammar misreads the `u8` suffix as a member.
 
 ## Not in this change
 
@@ -245,5 +273,6 @@ any gate runs.
   - A Go file using `bool` and `error`.
   - An F# file with `->` and `%d`.
   - A Python `# TODO` comment.
-  - A C# `#region`.
+  - The C# sample: `int` and `null` keyword-colored in a hover as in the editor, `#region` in the
+    macro color, and the braces of `$"…"` in the punctuation color.
   - Real `git diff` output saved as `.diff`.

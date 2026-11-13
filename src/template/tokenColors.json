@@ -14,7 +14,9 @@
       "punctuation.definition.italic.markdown",
       "punctuation.definition.strikethrough.markdown",
       "comment.line.dotenv",
-      "keyword.codetag"
+      "keyword.codetag",
+      "source.cs comment.block.documentation punctuation.definition.tag",
+      "source.cs comment.block.documentation punctuation.separator.equals"
     ],
     "settings": {
       "foreground": "{{comment}}",
@@ -292,7 +294,13 @@
   },
   {
     "name": "macro",
-    "scope": ["entity.name.function.macro", "entity.name.type.macro.rust"],
+    "scope": [
+      "entity.name.function.macro",
+      "entity.name.type.macro.rust",
+      "source.cs keyword.preprocessor",
+      "source.cs punctuation.separator.hash",
+      "source.cs meta.preprocessor"
+    ],
     "settings": {
       "foreground": "{{macro}}",
       "fontStyle": "{{macroFontStyle}}"
@@ -316,7 +324,6 @@
       "keyword.operator.expression",
       "keyword.operator.expression.new",
       "keyword.operator.expression.typeof",
-      "keyword.operator.expression.pattern.if",
       "keyword.operator.new",
       "keyword.package",
       "markup.heading",
@@ -337,6 +344,9 @@
       "source.apex storage.type",
       "source.clojure storage.control",
       "source.cpp storage.type.cpp",
+      "source.cs constant.language.boolean",
+      "source.cs constant.language.null",
+      "source.cs keyword.type",
       "source.css entity.name.tag.custom",
       "source.elm storage.type",
       "source.hlsl storage.type.basic",
@@ -694,7 +704,6 @@
       "keyword.operator.arrow",
       "keyword.operator.null-conditional",
       "keyword.operator.nullable-type",
-      "keyword.operator.expression.pattern",
       "keyword.operator.ternary",
       "punctuation.accessor",
       "punctuation.definition.colon",
@@ -711,7 +720,9 @@
       "keyword.operator.redirect",
       "punctuation.definition.assignment",
       "keyword.symbol",
-      "keyword.accessor"
+      "keyword.accessor",
+      "punctuation.separator.question-mark",
+      "punctuation.separator.asterisk"
     ],
     "settings": {
       "foreground": "{{operator}}",
@@ -730,7 +741,6 @@
     "name": "punctuation",
     "scope": [
       "punctuation.terminator",
-      "punctuation.separator.question-mark",
       "punctuation.definition.typeparameters",
       "punctuation.separator.comma",
       "punctuation.curlybrace",
@@ -753,7 +763,9 @@
       "punctuation.brackets.angle",
       "punctuation.brackets.square",
       "punctuation.definition.bracket.named-array",
-      "punctuation.definition.interpolation.rust"
+      "punctuation.definition.interpolation.rust",
+      "punctuation.definition.interpolation.begin.cs",
+      "punctuation.definition.interpolation.end.cs"
     ],
     "settings": {
       "foreground": "{{punctuation}}",
@@ -908,7 +920,8 @@
       "meta.attribute",
       "support.attribute",
       "punctuation.brackets.attribute",
-      "punctuation.definition.attribute"
+      "punctuation.definition.attribute",
+      "source.cs comment.block.documentation entity.other.attribute-name"
     ],
     "settings": {
       "foreground": "{{fieldAndAttribute}}",
