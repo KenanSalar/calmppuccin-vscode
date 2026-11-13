@@ -62,7 +62,7 @@ repeated here.
   drops the keys and literal values; `{…} satisfies T` checks the shape and keeps both. A
   widening annotation over `as const` throws the `as const` away (`THEME_AFFECTING_KEYS`). A
   per-flavor table written `satisfies Record<keyof IPalettes, …>` fails type-check until a new
-  flavor has its entry, as `ICON_FLAVORS` in `extension.ts` does.
+  flavor has its entry, as `ICON_FLAVORS` in `src/selectedTheme.ts` does.
 - **Shared lists are `as const`.** A module-level `string[]` can be pushed to by any importer and
   its entries widen to `string`; `as const` makes it readonly, and `(typeof KEYS)[number]` is the
   union of its entries with no second copy to keep in step.

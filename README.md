@@ -58,12 +58,18 @@ To install the Calmppuccin extension in Visual Studio Code, open the Extensions 
 by clicking the Extensions icon in the Activity Bar or pressing `Ctrl+Shift+X`. In the search bar,\
 enter `Calmppuccin`, locate the extension in the results, and select Install to add it to your editor.
 
+It installs the same way in [vscode.dev](https://vscode.dev) and [github.dev](https://github.dev).
+
 <br/>
 
 ## Customization
 
 You can easily tailor Calmppuccin to fit your personal preferences using the\
 built-in graphical interface or by editing your `settings.json` directly.
+
+Calmppuccin can't apply customizations in VS Code for the Web (vscode.dev and github.dev), so\
+the themes keep their default colors there, even with settings synced from your desktop.\
+Customize it in VS Code desktop.
 
 ### 1. Using the Customization UI (Recommended)
 

@@ -81,6 +81,13 @@ export function getConfig() {
   return vscode.workspace.getConfiguration(C.EXTENSION_NAMESPACE);
 }
 
+/** Whether `event` changes a setting in `THEME_AFFECTING_KEYS`. */
+export function affectsThemeSettings(event: vscode.ConfigurationChangeEvent): boolean {
+  return C.THEME_AFFECTING_KEYS.some((key) =>
+    event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${key}`),
+  );
+}
+
 export function getProfiles(config = getConfig()): { [name: string]: IProfile } {
   return toProfiles(config.get(C.CONFIG_KEY_PROFILES));
 }
@@ -102,7 +109,7 @@ export function toProfiles(rawProfiles: unknown): { [name: string]: IProfile } {
   return profiles;
 }
 
-function isPlainObject(value: unknown): value is Record<string, unknown> {
+export function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
@@ -161,6 +168,14 @@ export async function updateProfileSetting(key: string, value: IProfile[keyof IP
 /** The `calmppuccin.fontStyles` default `package.json` contributes. */
 export function getDefaultFontStyles(): IFontStyles {
   return getContributedSetting(C.CONFIG_KEY_FONT_STYLES)?.default ?? {};
+}
+
+/** The styles in `fontStyles` that differ from the contributed defaults. */
+export function customizedFontStyles(fontStyles: IFontStyles): IFontStyles {
+  const defaults = getDefaultFontStyles();
+  return Object.fromEntries(
+    Object.entries(fontStyles).filter(([key, value]) => defaults[key] !== value),
+  );
 }
 
 /**

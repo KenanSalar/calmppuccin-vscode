@@ -1,8 +1,10 @@
 ---
 paths:
   - extension.ts
+  - browser.ts
   - build.ts
   - package.json
+  - src/selectedTheme.ts
   - src/SettingsPanel.ts
   - src/WebviewManager.ts
   - src/config/**
@@ -36,8 +38,10 @@ and `testing.md` the Jest `vscode` mock.
 - **`extensionKind` is `["ui", "workspace"]`.** Without it, a `main` makes VS Code run the
   extension as `["workspace"]`, installed on the SSH, WSL or container host and rewriting that
   host's copy of the themes. Nothing here reads the workspace, so a local copy runs locally; a
-  copy installed only on the remote host still runs there, as it does in Codespaces in the
-  browser. With a `main` and no `browser` entry, it doesn't load in VS Code for the Web alone.
+  copy installed only on the remote host still runs there. A web workbench appends `web` after
+  the declared kinds and walks them in order, so Codespaces in the browser reaches `workspace`
+  before `web` and keeps customization, while VS Code for the Web alone runs the `browser` entry.
+  `["ui"]` alone would reach `web` first and give Codespaces in the browser the web build.
 - **`capabilities.untrustedWorkspaces` is `supported: true`.** Without it, a `main` disables the
   extension in Restricted Mode, and its themes with it. It reads no workspace content, which is
   what makes `supported: true` honest.

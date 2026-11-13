@@ -62,6 +62,7 @@
     "relaxing theme"
   ],
   "main": "./dist/extension.js",
+  "browser": "./dist/browser.js",
   "activationEvents": [
     "onStartupFinished"
   ],
@@ -1163,13 +1164,13 @@
     "@types/jest": "^30.0.0",
     "@types/node": "~24.13.6",
     "@types/vscode": "1.125.0",
-    "@vscode/vsce": "^4.1.0",
+    "@vscode/vsce": "^4.1.1",
     "jest": "^30.5.2",
     "jest-environment-jsdom": "^30.5.2",
     "ovsx": "^1.4.0",
     "oxfmt": "^0.78.0",
     "oxlint": "^1.93.0",
-    "oxlint-tsgolint": "^7.0.2006",
+    "oxlint-tsgolint": "^7.0.2007",
     "ts-jest": "^29.4.15",
     "ts-loader": "^9.6.2",
     "typescript": "^6.0.3",

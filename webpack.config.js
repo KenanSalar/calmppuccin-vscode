@@ -16,57 +16,68 @@ const typescriptRules = [
   },
 ];
 
+const distPath = path.resolve(__dirname, "dist");
+
+// Each extension host supplies the `vscode` module at runtime.
+const externals = { vscode: "commonjs vscode" };
+
+/**@type {import('webpack').Configuration}*/
+const sharedConfig = {
+  mode,
+  resolve: {
+    extensions: [".ts", ".js"],
+  },
+  module: { rules: typescriptRules },
+  devtool,
+};
+
 /**@type {import('webpack').Configuration[]}*/
 const configs = [
   // Config for the Extension's runtime code
   {
+    ...sharedConfig,
     target: "node",
-    mode,
     entry: "./extension.ts",
     output: {
-      path: path.resolve(__dirname, "dist"),
+      path: distPath,
       filename: "extension.js",
       libraryTarget: "commonjs2",
     },
-    externals: {
-      vscode: "commonjs vscode",
+    externals,
+  },
+  // Config for the web extension host, a Web Worker: webpack 5 polyfills no Node module, so an
+  // import that reaches `fs` or `path` fails the build rather than the extension.
+  {
+    ...sharedConfig,
+    target: "webworker",
+    entry: "./browser.ts",
+    output: {
+      path: distPath,
+      filename: "browser.js",
+      libraryTarget: "commonjs2",
     },
-    resolve: {
-      extensions: [".ts", ".js"],
-    },
-    module: { rules: typescriptRules },
-    devtool,
+    externals,
   },
   // Config for the build script
   {
+    ...sharedConfig,
     target: "node",
-    mode,
     entry: "./build.ts",
     output: {
-      path: path.resolve(__dirname, "dist"),
+      path: distPath,
       filename: "build.js",
       libraryTarget: "commonjs",
     },
-    resolve: {
-      extensions: [".ts", ".js"],
-    },
-    module: { rules: typescriptRules },
-    devtool,
   },
   // Config for the webview's main logic script
   {
+    ...sharedConfig,
     target: "web",
-    mode,
     entry: "./webview/main.ts",
     output: {
-      path: path.resolve(__dirname, "dist"),
+      path: distPath,
       filename: "webview.js",
     },
-    resolve: {
-      extensions: [".ts", ".js"],
-    },
-    module: { rules: typescriptRules },
-    devtool,
   },
 ];
 module.exports = configs;

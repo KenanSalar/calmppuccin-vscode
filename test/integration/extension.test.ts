@@ -8,6 +8,7 @@ import * as build from "../../build";
 import { activate, deactivate } from "../../extension";
 import { ConfigurationService } from "../../src/ConfigurationService";
 import * as C from "../../src/constants";
+import { createExtensionContext } from "../__fixtures__/extensionContext";
 
 const mockedVscode = vscode as jest.Mocked<typeof vscode>;
 
@@ -46,7 +47,6 @@ describe("Extension Integration Tests", () => {
 
   beforeEach(() => {
     jest.useFakeTimers();
-    jest.clearAllMocks();
     currentColorTheme = "Calmppuccin Mocha";
 
     mockCalmppuccinConfiguration = {
@@ -76,39 +76,7 @@ describe("Extension Integration Tests", () => {
       return { get: jest.fn(), update: jest.fn() };
     });
 
-    mockContext = {
-      subscriptions: [],
-      globalState: {
-        get: jest.fn(),
-        update: jest.fn(),
-        keys: jest.fn(),
-        setKeysForSync: jest.fn(),
-      },
-      workspaceState: { get: jest.fn(), update: jest.fn(), keys: jest.fn() },
-      secrets: {
-        get: jest.fn(),
-        store: jest.fn(),
-        onDidChange: jest.fn(),
-        delete: jest.fn(),
-        keys: jest.fn(),
-      },
-      extensionUri: vscode.Uri.parse("file:///mock/extension/path"),
-      extensionPath: "/mock/extension/path",
-      storageUri: vscode.Uri.parse("file:///mock/storage/path"),
-      storagePath: undefined,
-      globalStorageUri: vscode.Uri.parse("file:///mock/global/storage/path"),
-      globalStoragePath: "/mock/global/storage/path",
-      logUri: vscode.Uri.parse("file:///mock/log/path"),
-      logPath: "/mock/log/path",
-      extensionMode: vscode.ExtensionMode.Test,
-      environmentVariableCollection: {} as unknown as vscode.GlobalEnvironmentVariableCollection,
-      asAbsolutePath: jest.fn((relativePath) => `/mock/extension/path/${relativePath}`),
-      extension: {} as unknown as vscode.Extension<unknown>,
-      languageModelAccessInformation: {
-        onDidChange: jest.fn(),
-        canSendRequest: jest.fn(),
-      },
-    };
+    mockContext = createExtensionContext();
   });
 
   afterEach(() => {
@@ -383,8 +351,6 @@ describe("Theme Regeneration Error Handling", () => {
   let mockCalmppuccinConfiguration: { get: jest.Mock; update: jest.Mock };
 
   beforeEach(() => {
-    jest.clearAllMocks();
-
     mockCalmppuccinConfiguration = {
       get: jest.fn(),
       update: jest.fn(),
@@ -408,39 +374,7 @@ describe("Theme Regeneration Error Handling", () => {
       return { get: jest.fn(), update: jest.fn() };
     });
 
-    mockContext = {
-      subscriptions: [],
-      globalState: {
-        get: jest.fn(),
-        update: jest.fn(),
-        keys: jest.fn(),
-        setKeysForSync: jest.fn(),
-      },
-      workspaceState: { get: jest.fn(), update: jest.fn(), keys: jest.fn() },
-      secrets: {
-        get: jest.fn(),
-        store: jest.fn(),
-        onDidChange: jest.fn(),
-        delete: jest.fn(),
-        keys: jest.fn(),
-      },
-      extensionUri: vscode.Uri.parse("file:///mock/extension/path"),
-      extensionPath: "/mock/extension/path",
-      storageUri: vscode.Uri.parse("file:///mock/storage/path"),
-      storagePath: undefined,
-      globalStorageUri: vscode.Uri.parse("file:///mock/global/storage/path"),
-      globalStoragePath: "/mock/global/storage/path",
-      logUri: vscode.Uri.parse("file:///mock/log/path"),
-      logPath: "/mock/log/path",
-      extensionMode: vscode.ExtensionMode.Test,
-      environmentVariableCollection: {} as unknown as vscode.GlobalEnvironmentVariableCollection,
-      asAbsolutePath: jest.fn((relativePath) => `/mock/extension/path/${relativePath}`),
-      extension: {} as unknown as vscode.Extension<unknown>,
-      languageModelAccessInformation: {
-        onDidChange: jest.fn(),
-        canSendRequest: jest.fn(),
-      },
-    };
+    mockContext = createExtensionContext();
   });
 
   afterEach(() => {

@@ -85,6 +85,11 @@ export const REPORT_ISSUE_ACTION = "Report Issue";
 export const ERROR_MESSAGE_PREFIX = "Failed to update Calmppuccin themes. Error: ";
 export const SETTINGS_ERROR_MESSAGE_PREFIX = "Failed to save Calmppuccin settings. Error: ";
 export const REPO_ISSUES_URL = "https://github.com/KenanSalar/calmppuccin-vscode/issues";
+export const WEB_CUSTOMIZATION_NOTE =
+  "Calmppuccin can't apply customizations in VS Code for the Web. Customize it in VS Code desktop.";
+export const DONT_SHOW_AGAIN_ACTION = "Don't Show Again";
+/** The `globalState` key set once the web note is dismissed for good. */
+export const WEB_NOTE_DISMISSED_KEY = "webCustomizationNoteDismissed";
 
 /** The webview message commands, and the panel's id and title. */
 export const WEBVIEW_CONSTANTS = {
@@ -174,21 +179,3 @@ export const BACKGROUND_UI_KEYS: ReadonlySet<string> = new Set(["base", "mantle"
 
 /** The font style values the customization UI offers, matching `calmppuccin.fontStyleOverrides`. */
 export const FONT_STYLE_OPTIONS = ["none", "italic", "bold", "italic bold", "underline"] as const;
-
-/**
- * Turns a theme label such as "Calmppuccin Nitro Cold Brew" into its flavor key, or `null` for
- * any other theme.
- */
-export function parseFlavorFromThemeName(themeName: string): string | null {
-  const prefix = "calmppuccin ";
-  const lowerName = themeName.toLowerCase();
-  if (!lowerName.startsWith(prefix)) {
-    return null;
-  }
-  // Decomposing and dropping the combining marks turns "Frappé" into "frappe".
-  return lowerName
-    .slice(prefix.length)
-    .replace(/ /g, "-")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}

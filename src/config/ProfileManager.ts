@@ -12,7 +12,7 @@ import {
   getActiveProfile,
   getProfileSetting,
   getProfileObjectSetting,
-  getDefaultFontStyles,
+  customizedFontStyles,
   FlavorOverrides,
   IFontStyles,
 } from "./ConfigAccess";
@@ -161,14 +161,6 @@ export async function migrateGlobalSettingsToDefault() {
     await config.update(C.CONFIG_KEY_PROFILES, profiles, vscode.ConfigurationTarget.Global);
     await clearLegacySettings();
   }
-}
-
-/** The styles in `fontStyles` that differ from the contributed defaults. */
-function customizedFontStyles(fontStyles: IFontStyles): IFontStyles {
-  const defaults = getDefaultFontStyles();
-  return Object.fromEntries(
-    Object.entries(fontStyles).filter(([key, value]) => defaults[key] !== value),
-  );
 }
 
 /** The top-level settings that predate profiles, which every read still falls back to. */
