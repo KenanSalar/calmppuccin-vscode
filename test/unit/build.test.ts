@@ -1,7 +1,9 @@
 /** @file `buildAllFlavors` over the real palettes, with `fs/promises` mocked. */
 
 import * as fs from "fs/promises";
+import * as path from "path";
 import { buildAllFlavors, ThemeBuilds } from "../../build";
+import * as C from "../../src/constants";
 
 // Under Jest the themes directory resolves outside the repo.
 jest.mock("fs/promises");
@@ -32,9 +34,32 @@ function findWrite(flavor: string): [string, string] | undefined {
   return calls.find(([filePath]) => filePath.includes(flavor));
 }
 
-/** Serves `template` as the theme template, and lets a temporary file be removed. */
-function mockFileSystem(template: string): void {
-  jest.mocked(fs.readFile).mockResolvedValue(template);
+/** The template's files as values; a file left out is served empty. */
+interface ITemplateFixture {
+  colors?: Record<string, string>;
+  tokenColors?: unknown[];
+  semanticTokenColors?: Record<string, unknown>;
+}
+
+/**
+ * Serves `template` as the template's files and `themes` as the theme files found, by file name.
+ * Any other read fails as a missing file, and a temporary file can be removed.
+ */
+function mockFileSystem(
+  template: ITemplateFixture,
+  themes: ReadonlyMap<string, string> = new Map(),
+): void {
+  const files = new Map<string, string>([
+    [C.TEMPLATE_FILES.colors, JSON.stringify(template.colors ?? {})],
+    [C.TEMPLATE_FILES.tokenColors, JSON.stringify(template.tokenColors ?? [])],
+    [C.TEMPLATE_FILES.semanticTokenColors, JSON.stringify(template.semanticTokenColors ?? {})],
+    ...themes,
+  ]);
+  const missing = Object.assign(new Error("no such file"), { code: "ENOENT" });
+  jest.mocked(fs.readFile).mockImplementation((filePath) => {
+    const content = typeof filePath === "string" ? files.get(path.basename(filePath)) : undefined;
+    return content === undefined ? Promise.reject(missing) : Promise.resolve(content);
+  });
   jest.mocked(fs.rm).mockResolvedValue(undefined);
 }
 
@@ -44,14 +69,13 @@ describe("Build Script Unit Tests", () => {
   });
 
   it("should correctly replace placeholders in the template", async () => {
-    const mockTemplate = JSON.stringify({
-      name: "Calmppuccin {{themeName}}",
+    const mockTemplate = {
       colors: {
         "activityBar.background": "{{base}}",
         "activityBar.foreground": "{{accent}}",
       },
       tokenColors: [{ name: "comment", settings: { fontStyle: "{{commentFontStyle}}" } }],
-    });
+    };
 
     const mockFontStyles = { commentFontStyle: "italic" };
 
@@ -79,12 +103,12 @@ describe("Build Script Unit Tests", () => {
   });
 
   it("should handle dynamic accent color recipes", async () => {
-    const mockTemplate = JSON.stringify({
+    const mockTemplate = {
       colors: {
         "statusBar.background": "{{accent}}", // A solid accent color
         "statusBar.dropBorder": "{{accent}}2f", // A transparent accent color
       },
-    });
+    };
 
     mockFileSystem(mockTemplate);
 
@@ -113,7 +137,7 @@ describe("Build Script Unit Tests", () => {
 
   describe("Template Structure Validation", () => {
     it("should handle templates with all valid accent placeholders", async () => {
-      const mockTemplate = JSON.stringify({
+      const mockTemplate = {
         colors: {
           "test.rosewater": "{{rosewater}}",
           "test.flamingo": "{{flamingo}}",
@@ -142,7 +166,7 @@ describe("Build Script Unit Tests", () => {
           "test.mantle": "{{mantle}}",
           "test.crust": "{{crust}}",
         },
-      });
+      };
 
       mockFileSystem(mockTemplate);
 
@@ -167,7 +191,7 @@ describe("Build Script Unit Tests", () => {
     });
 
     it("should validate all font style keys exist in defaults", async () => {
-      const mockTemplate = JSON.stringify({
+      const mockTemplate = {
         tokenColors: [
           { name: "comment", settings: { fontStyle: "{{commentFontStyle}}" } },
           { name: "keyword", settings: { fontStyle: "{{keywordFontStyle}}" } },
@@ -177,7 +201,7 @@ describe("Build Script Unit Tests", () => {
           { name: "variable", settings: { fontStyle: "{{variableFontStyle}}" } },
           { name: "number", settings: { fontStyle: "{{numberFontStyle}}" } },
         ],
-      });
+      };
 
       const mockFontStyles = {
         commentFontStyle: "italic",
@@ -209,9 +233,7 @@ describe("Build Script Unit Tests", () => {
     });
 
     it("should validate template JSON structure is preserved", async () => {
-      const mockTemplate = JSON.stringify({
-        name: "Test Theme", // The build overwrites this.
-        type: "dark",
+      const mockTemplate = {
         colors: {
           "editor.background": "{{base}}",
           "editor.foreground": "{{text}}",
@@ -229,7 +251,7 @@ describe("Build Script Unit Tests", () => {
         semanticTokenColors: {
           variable: "{{variable}}",
         },
-      });
+      };
 
       mockFileSystem(mockTemplate);
 
@@ -257,14 +279,14 @@ describe("Build Script Unit Tests", () => {
     });
 
     it("should handle malformed accent recipes gracefully", async () => {
-      const mockTemplate = JSON.stringify({
+      const mockTemplate = {
         colors: {
           "test.valid": "{{accent}}2f",
           "test.invalidSuffix": "{{accent}}zz", // Invalid hex suffix
           "test.tooLong": "{{accent}}2f3a", // Too many characters
           "test.plain": "{{accent}}",
         },
-      });
+      };
 
       mockFileSystem(mockTemplate);
 
@@ -294,7 +316,7 @@ describe("Build Script Unit Tests", () => {
   });
 
   describe("Writing theme files", () => {
-    const template = JSON.stringify({ colors: { "editor.background": "{{base}}" } });
+    const template = { colors: { "editor.background": "{{base}}" } };
     const options = {
       accentIdentifier: "sapphire",
       fontStyles: {},
@@ -309,26 +331,23 @@ describe("Build Script Unit Tests", () => {
       await buildAllFlavors(options);
       const written = new Map(
         (jest.mocked(fs.writeFile).mock.calls as unknown as Array<[string, string]>).map(
-          ([tempPath, content]) => [tempPath.replace(/\.\d+\.tmp$/, ""), content],
+          ([tempPath, content]) => [path.basename(tempPath.replace(/\.\d+\.tmp$/, "")), content],
         ),
       );
-      jest
-        .mocked(fs.readFile)
-        .mockImplementation((filePath) =>
-          Promise.resolve((typeof filePath === "string" && written.get(filePath)) || template),
-        );
+      mockFileSystem(template, written);
       jest.mocked(fs.writeFile).mockClear();
       return buildAllFlavors(options);
     }
 
     /** The host compares what a build generated with what its window loaded. */
     it("should report a theme file as it found it and as it wrote it", async () => {
-      mockFileSystem(template);
+      const found = '{ "name": "An earlier build" }\n';
+      mockFileSystem(template, new Map([["calmppuccin-mocha-color-theme.json", found]]));
 
       const themes = await buildAllFlavors(options);
 
       const [, written] = findWrite("mocha") ?? [];
-      expect(themes.get("mocha")).toStrictEqual({ previous: template, generated: written });
+      expect(themes.get("mocha")).toStrictEqual({ previous: found, generated: written });
     });
 
     /** VS Code may load a theme while another window rebuilds it. */
@@ -344,14 +363,6 @@ describe("Build Script Unit Tests", () => {
 
     it("should write a theme file that doesn't exist yet", async () => {
       mockFileSystem(template);
-      const missing = Object.assign(new Error("no such file"), { code: "ENOENT" });
-      jest
-        .mocked(fs.readFile)
-        .mockImplementation((filePath) =>
-          typeof filePath === "string" && filePath.endsWith("template.json")
-            ? Promise.resolve(template)
-            : Promise.reject(missing),
-        );
 
       const themes = await buildAllFlavors(options);
 

@@ -1,6 +1,4 @@
 export default {
-  themeName: "Calmppuccin Latte",
-  themeType: "light",
   // Accent colors
   rosewater: "#c97e6d",
   flamingo: "#c46a6a",

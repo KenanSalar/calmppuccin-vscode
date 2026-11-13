@@ -1,6 +1,4 @@
 export default {
-  themeName: "Calmppuccin Frappé",
-  themeType: "dark",
   // Accent colors
   rosewater: "#f2d5cf",
   flamingo: "#eebebe",

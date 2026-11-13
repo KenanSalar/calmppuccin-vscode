@@ -1,6 +1,4 @@
 export default {
-  themeName: "Calmppuccin Nitro Cold Brew",
-  themeType: "dark",
   // Accent colors
   rosewater: "#dbc9c5",
   flamingo: "#ddbbbb",

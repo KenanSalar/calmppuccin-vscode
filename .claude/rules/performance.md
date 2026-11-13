@@ -59,9 +59,9 @@ correctness, `webview.md` the message protocol and CSP, `ci-packaging.md` what t
 - **Builds in one host run one at a time** (`queueBuild`), and a file that comes out the same
   is left alone, so the rebuild every activation under a Calmppuccin theme triggers usually
   writes nothing, and with the files as the window loaded them, offers no reload.
-- **One pass per flavor over the template.** The template is read once per build and shared; each
-  flavor does one combined-regex replace, one `JSON.parse` and one `JSON.stringify`. A per-key
-  `replaceAll` loop rescans the whole template once per key.
+- **One pass per flavor over each template file.** The files are read once per build and shared;
+  each flavor builds one combined regex, replaces with it once per file, and does one `JSON.parse`
+  per file and one `JSON.stringify`. A per-key `replaceAll` loop rescans them once per key.
 - **Flavors build concurrently because each writes its own file.** Node's promise `fs` calls
   aren't synchronized, and concurrent writes to one file can corrupt it.
 - **The build stays on the host thread.** `worker_threads` adds a bundle entry and message

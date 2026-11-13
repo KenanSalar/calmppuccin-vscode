@@ -3,8 +3,6 @@
 import { IPalette } from "../../src/palettes";
 
 export const mockPalette: IPalette = {
-  themeName: "Test Theme",
-  themeType: "dark",
   // Accent colors
   rosewater: "#f5e0dc",
   flamingo: "#f2cdcd",

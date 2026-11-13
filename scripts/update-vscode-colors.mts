@@ -1,8 +1,8 @@
 /**
  * @file Writes VS Code's workbench color keys, and which of them are deprecated, to
- * `test/__fixtures__/workbenchColors.json` for checking `src/template.json` against. The fixture
- * names the extract-vscode-schemas commit it came from, so the check runs offline and its list
- * traces back to one VS Code release.
+ * `test/__fixtures__/workbenchColors.json` for checking `src/template/colors.json` against.
+ * The fixture names the extract-vscode-schemas commit it came from, so the check runs offline
+ * and its list traces back to one VS Code release.
  */
 
 import * as fs from "fs/promises";

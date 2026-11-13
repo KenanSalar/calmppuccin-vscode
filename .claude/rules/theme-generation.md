@@ -1,7 +1,7 @@
 ---
 paths:
   - build.ts
-  - src/template.json
+  - src/template/**
   - src/palettes.ts
   - src/palettes/**
   - src/extensions/**
@@ -13,9 +13,11 @@ paths:
 `buildFlavor` in `build.ts` and its helpers are one flavor's build and argue its non-obvious steps;
 this file holds what reaches across the template, the palettes and the manifest.
 
-- **A placeholder is `{{key}}` inside a JSON string in `src/template.json`.** It resolves from the
-  palette with the flavor's `syntaxOverrides` and `uiOverrides` on top, from `accent`, and from
-  the font styles with the flavor's `fontStyleOverrides` on top.
+- **A placeholder is `{{key}}` inside a JSON string in a file under `src/template/`.** It resolves
+  from the palette with the flavor's `syntaxOverrides` and `uiOverrides` on top, from `accent`,
+  and from the font styles with the flavor's `fontStyleOverrides` on top.
+- **`tokenColors.json` stays one file.** When two rules match a token equally well the later one
+  wins, so splitting it would let the order of the files decide colors where neither shows it.
 - **A value is JSON-escaped as it goes in**, so a placeholder only ever sits inside a string,
   never where a number, boolean or object belongs.
 - **An accent recipe is a palette value, `"{{accent}}XX"`**, resolved to the accent's hex with
@@ -23,7 +25,7 @@ this file holds what reaches across the template, the palettes and the manifest.
 - **The accent arrives as a palette key or a `#rrggbb`.** An unknown key falls back to
   `FALLBACK_ACCENT`; a custom hex is validated in `SettingsReader.getAccent` before it gets here.
 - **Font style `"none"` becomes `""`** in the theme.
-- **A key in the template's `colors` is one VS Code knows and hasn't deprecated**:
+- **A key in `src/template/colors.json` is one VS Code knows and hasn't deprecated**:
   `template.test.ts` checks it against `test/__fixtures__/workbenchColors.json`, which
   `npm run update-vscode-colors` refreshes.
 - **A new color key goes into all six palettes** (`palettes.test.ts` fails otherwise), and into

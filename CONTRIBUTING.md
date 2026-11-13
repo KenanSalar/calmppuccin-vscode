@@ -18,7 +18,7 @@ Press Ctrl+F5 (**Run → Run Without Debugging**). A second VS Code window opens
 Development Host, running your build; pick a Calmppuccin flavor from its color theme picker. The
 launch builds nothing by itself, so after a change rebuild what you touched:
 
-- a palette, `src/template.json` or `build.ts`: `npm run build-themes`
+- a palette, a file in `src/template/` or `build.ts`: `npm run build-themes`
 - the extension or the customization UI: `npm run compile`, or leave `npm run watch` running
 
 and run **Developer: Reload Window** in the Development Host.

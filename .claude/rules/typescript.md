@@ -36,7 +36,7 @@ repeated here.
   and rule out arrays and `null`, which are objects too.
 - **`get<T>()`, `JSON.parse(…) as T` and a generic that returns `value as T` assert; they don't
   check.** The caller picks `T` and nothing verifies it. That's fine for files this repo writes
-  (`src/template.json`, `package.json`) and wrong for settings, which reach a type-guard function
+  (`src/template/`, `package.json`) and wrong for settings, which reach a type-guard function
   (`(v: unknown): v is IFontStyles`) that tests what callers will touch.
 - **A key guard uses `Object.hasOwn`, never `in`.** `in` walks the prototype chain, so
   `isFlavor("constructor")` is true and yields a `keyof IPalettes` that indexes a function.

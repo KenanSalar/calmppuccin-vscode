@@ -1,10 +1,7 @@
 /** @file Every flavor's palette, keyed by flavor. */
 
-/** One flavor's colors, keyed as `src/template.json`'s placeholders name them. */
+/** One flavor's colors, keyed as the placeholders in `src/template/` name them. */
 export interface IPalette {
-  /** The theme's label, such as "Calmppuccin Mocha". */
-  themeName: string;
-  themeType: "light" | "dark";
   [colorName: string]: string;
 }
 

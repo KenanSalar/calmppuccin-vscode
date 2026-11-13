@@ -1,6 +1,4 @@
 export default {
-  themeName: "Calmppuccin Macchiato",
-  themeType: "dark",
   // Accent colors
   rosewater: "#e7d0cb",
   flamingo: "#e4bcbc",

@@ -1,5 +1,5 @@
 /**
- * @file Fills `src/template.json`'s placeholders from each flavor's palette and the user's
+ * @file Fills the placeholders in `src/template/` from each flavor's palette and the user's
  * settings, and writes the theme files.
  */
 
@@ -18,13 +18,13 @@ import { generateGitHubPullRequestColors } from "./src/extensions/githubPullRequ
 import { generateGitLensColors } from "./src/extensions/gitlens";
 import palette, { IPalettes } from "./src/palettes";
 
-/** The part of a theme file the build sets or reads. */
-interface IThemeJson {
-  name: string;
-  type: string;
-  colors?: Record<string, string>;
-  tokenColors?: unknown[];
-  semanticTokenColors?: Record<string, string>;
+type TemplatePart = keyof typeof C.TEMPLATE_FILES;
+type TemplateSources = Readonly<Record<TemplatePart, string>>;
+
+interface IFilledTemplate {
+  colors: Record<string, string>;
+  tokenColors: unknown[];
+  semanticTokenColors: Record<string, unknown>;
 }
 
 /** The settings a build applies; packaging passes the defaults. */
@@ -46,28 +46,35 @@ export type ThemeBuilds = ReadonlyMap<keyof IPalettes, IThemeBuild>;
 
 // Resolved from `dist/`, where both bundles that run the build live.
 const THEME_DIR = path.resolve(__dirname, "..", C.THEMES_DIR);
-const TEMPLATE_PATH = path.resolve(__dirname, "..", C.SRC_DIR, C.TEMPLATE_FILE);
+const TEMPLATE_PATH = path.resolve(__dirname, "..", C.SRC_DIR, C.TEMPLATE_DIR);
 const FLAVORS = Object.keys(palette) as Array<keyof IPalettes>;
 
 /** Builds one flavor's theme file, writing it only when its content changes. */
 async function buildFlavor(
   flavor: keyof IPalettes,
-  templateStr: string,
+  template: TemplateSources,
   options: IBuildOptions,
 ): Promise<IThemeBuild> {
-  const themeJson = fillTemplate(templateStr, getReplacements(flavor, options), flavor);
+  const { colors, tokenColors, semanticTokenColors } = fillTemplate(
+    template,
+    getReplacements(flavor, options),
+    flavor,
+  );
+  const basePalette = palette[flavor];
   const flavorDisplayName = flavor.charAt(0).toUpperCase() + flavor.slice(1);
-  themeJson.name = `Calmppuccin ${flavorDisplayName}`;
-  themeJson.type = flavor === C.LIGHT_FLAVOR_NAME ? C.THEME_TYPE_LIGHT : C.THEME_TYPE_DARK;
-
-  // A test template may have no "colors".
-  if (themeJson.colors) {
-    const basePalette = palette[flavor];
-    const errorLensColors = generateErrorLensColors(basePalette);
-    const githubPRColors = generateGitHubPullRequestColors(basePalette);
-    const gitLensColors = generateGitLensColors(basePalette);
-    Object.assign(themeJson.colors, errorLensColors, githubPRColors, gitLensColors);
-  }
+  const themeJson = {
+    name: `Calmppuccin ${flavorDisplayName}`,
+    type: flavor === C.LIGHT_FLAVOR_NAME ? C.THEME_TYPE_LIGHT : C.THEME_TYPE_DARK,
+    colors: {
+      ...colors,
+      ...generateErrorLensColors(basePalette),
+      ...generateGitHubPullRequestColors(basePalette),
+      ...generateGitLensColors(basePalette),
+    },
+    tokenColors,
+    semanticHighlighting: true,
+    semanticTokenColors,
+  };
 
   const themeFileName = `${C.THEME_FILE_PREFIX}-${flavor}-${C.THEME_FILE_SUFFIX}`;
   const themePath = path.join(THEME_DIR, themeFileName);
@@ -111,38 +118,57 @@ function getReplacements(flavor: keyof IPalettes, options: IBuildOptions): Map<s
   return replacements;
 }
 
-/** Fills each `{{key}}` that has a replacement in one pass, rather than a rescan per key. */
+/** Fills each `{{key}}` that has a replacement in one pass per file, not a rescan per key. */
 function fillTemplate(
-  templateStr: string,
+  template: TemplateSources,
   replacements: ReadonlyMap<string, string>,
   flavor: keyof IPalettes,
-): IThemeJson {
+): IFilledTemplate {
   const keys = [...replacements.keys()].map((key) => RegExp.escape(key));
+  // `replace` starts a global pattern from the beginning each call, so the files can share it.
   const placeholderPattern = new RegExp(`\\{\\{(${keys.join("|")})\\}\\}`, "g");
-  const themeContent = templateStr.replace(placeholderPattern, (_, key: string) =>
-    // JSON-escaped, so a setting can't break out of its string.
-    JSON.stringify(replacements.get(key) ?? "").slice(1, -1),
-  );
 
-  try {
-    return JSON.parse(themeContent) as IThemeJson;
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    throw new Error(`Failed to parse theme JSON for flavor "${flavor}": ${message}`, {
-      cause: err,
-    });
-  }
+  const fill = (part: TemplatePart): unknown => {
+    const filledJson = template[part].replace(placeholderPattern, (_, key: string) =>
+      // JSON-escaped, so a setting can't break out of its string.
+      JSON.stringify(replacements.get(key) ?? "").slice(1, -1),
+    );
+    try {
+      return JSON.parse(filledJson);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      const file = C.TEMPLATE_FILES[part];
+      throw new Error(`Failed to parse ${file} for flavor "${flavor}": ${message}`, {
+        cause: err,
+      });
+    }
+  };
+
+  return {
+    colors: fill("colors"),
+    tokenColors: fill("tokenColors"),
+    semanticTokenColors: fill("semanticTokenColors"),
+  } as IFilledTemplate;
+}
+
+async function readTemplate(): Promise<TemplateSources> {
+  const read = (part: TemplatePart) =>
+    fs.readFile(path.join(TEMPLATE_PATH, C.TEMPLATE_FILES[part]), "utf-8");
+  const [colors, tokenColors, semanticTokenColors] = await Promise.all([
+    read("colors"),
+    read("tokenColors"),
+    read("semanticTokenColors"),
+  ]);
+  return { colors, tokenColors, semanticTokenColors };
 }
 
 export async function buildAllFlavors(options: IBuildOptions): Promise<ThemeBuilds> {
   await fs.mkdir(THEME_DIR, { recursive: true });
-  const templateStr = await fs.readFile(TEMPLATE_PATH, "utf-8");
+  const template = await readTemplate();
 
   // Each flavor writes its own file, so they can build concurrently.
   const builds = await Promise.all(
-    FLAVORS.map(
-      async (flavor) => [flavor, await buildFlavor(flavor, templateStr, options)] as const,
-    ),
+    FLAVORS.map(async (flavor) => [flavor, await buildFlavor(flavor, template, options)] as const),
   );
 
   console.log(`All Calmppuccin themes built with the "${options.accentIdentifier}" accent.`);
