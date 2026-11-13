@@ -6,6 +6,7 @@
 import * as vscode from "vscode";
 import { activate, deactivate } from "../../extension";
 import * as C from "../../src/constants";
+import { createExtensionContext } from "../__fixtures__/extensionContext";
 
 const mockedVscode = vscode as jest.Mocked<typeof vscode>;
 
@@ -19,7 +20,6 @@ describe("Icon Theme Synchronization", () => {
 
   beforeEach(() => {
     jest.useFakeTimers();
-    jest.clearAllMocks();
 
     mockWorkbenchConfig = {
       get: jest.fn(),
@@ -43,39 +43,7 @@ describe("Icon Theme Synchronization", () => {
       },
     );
 
-    mockContext = {
-      subscriptions: [],
-      globalState: {
-        get: jest.fn(),
-        update: jest.fn(),
-        keys: jest.fn(),
-        setKeysForSync: jest.fn(),
-      },
-      workspaceState: { get: jest.fn(), update: jest.fn(), keys: jest.fn() },
-      secrets: {
-        get: jest.fn(),
-        store: jest.fn(),
-        onDidChange: jest.fn(),
-        delete: jest.fn(),
-        keys: jest.fn(),
-      },
-      extensionUri: vscode.Uri.parse("file:///mock/extension/path"),
-      extensionPath: "/mock/extension/path",
-      storageUri: vscode.Uri.parse("file:///mock/storage/path"),
-      storagePath: undefined,
-      globalStorageUri: vscode.Uri.parse("file:///mock/global/storage/path"),
-      globalStoragePath: "/mock/global/storage/path",
-      logUri: vscode.Uri.parse("file:///mock/log/path"),
-      logPath: "/mock/log/path",
-      extensionMode: vscode.ExtensionMode.Test,
-      environmentVariableCollection: {} as unknown as vscode.GlobalEnvironmentVariableCollection,
-      asAbsolutePath: jest.fn((relativePath) => `/mock/extension/path/${relativePath}`),
-      extension: {} as unknown as vscode.Extension<unknown>,
-      languageModelAccessInformation: {
-        onDidChange: jest.fn(),
-        canSendRequest: jest.fn(),
-      },
-    };
+    mockContext = createExtensionContext();
   });
 
   afterEach(() => {

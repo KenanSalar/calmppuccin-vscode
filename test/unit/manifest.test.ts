@@ -42,7 +42,10 @@ describe("Extension Manifest (package.json) Validation", () => {
   });
 
   describe("Remote Windows and Restricted Mode", () => {
-    /** Run locally, one copy of the themes serves local and remote windows alike. */
+    /**
+     * Run locally, one copy of the themes serves local and remote windows alike. A web workbench
+     * appends `web` after these, so Codespaces in the browser reaches `workspace` and runs `main`.
+     */
     it("should prefer running on the local machine", () => {
       expect(manifest.extensionKind).toStrictEqual(["ui", "workspace"]);
     });
