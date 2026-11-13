@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.11.0] - 2026-11-13
+
+- **Feature**: Calmppuccin can be installed in vscode.dev and github.dev. All six flavors work there with their default colors. Customizing needs VS Code desktop, and a note tells you so when you run Customize Theme, or when your synced settings hold customizations.
+- **Feature**: The Source Control graph uses Calmppuccin colors for its lanes, the base branch label and the added and removed counts in its hover, instead of VS Code's built-in colors.
+- **Improvement**: Added and renamed files use the same color as untracked files, instead of the Git extension's greens.
+- **Improvement**: Keys in YAML, TOML, INI and `.env` files use the same color as top-level JSON keys, and follow that setting when you customize it. TOML tables and INI sections use the Markdown heading color.
+- **Improvement**: More keywords get the keyword color, such as GraphQL's `query` and `fragment`, GDScript's `extends` and Julia's `const`.
+- **Improvement**: In diff files, removed lines are red, file headers blue and hunk ranges teal.
+- **Fix**: Hovers, Markdown code blocks and files the language server hasn't colored yet match the editor far more closely. The fixes below are the ones you'll notice most.
+- **Fix**: Built-in types such as Rust's `u32` and `bool`, Python's `int`, `str` and `ValueError`, and Go's `bool` and `error` use the type color everywhere, hovers included. Types in Haskell, Julia, Groovy, VB and GraphQL use the type color too.
+- **Fix**: In Rust, lifetimes and loop labels use the type parameter color, macros such as `println!` the macro color, `Some`, `None`, `Ok` and `Err` the enum member color, and the braces in format strings the punctuation color. The `;` ending a `use` line is no longer keyword-colored.
+- **Fix**: In TypeScript and JavaScript, a parameter's type uses the same color as a return type, `namespace` and `type` names are colored as such, and an object before a `.`, as in `text.split`, uses the variable color.
+- **Fix**: Python's `cls` uses the same color as `self`.
+- **Fix**: In C#, `int`, `string`, `null` and `true` use the keyword color, as do `is`, `not`, `and` and `or`. Directives such as `#nullable enable` use the macro color, and XML doc comments match the editor.
+- **Fix**: Struck-through Markdown text (`~~like this~~`) is shown struck through.
+- **Chore**: The theme template is split into separate files for UI, syntax and semantic colors, and a test now catches a UI color name VS Code doesn't know.
+
 ## [1.10.1] - 2026-11-12
 
 - **Improvement**: More keywords get the keyword color across languages.
