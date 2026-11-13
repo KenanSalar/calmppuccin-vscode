@@ -23,6 +23,10 @@
     "foreground": "{{keyword}}",
     "fontStyle": "{{keywordFontStyle}}"
   },
+  "clsParameter": {
+    "foreground": "{{keyword}}",
+    "fontStyle": "{{keywordFontStyle}}"
+  },
   "newOperator": {
     "foreground": "{{keyword}}",
     "fontStyle": "{{keywordFontStyle}}"
@@ -60,6 +64,10 @@
     "fontStyle": "{{typeFontStyle}}"
   },
   "class.typeHint": {
+    "foreground": "{{type}}",
+    "fontStyle": "{{typeFontStyle}}"
+  },
+  "class.builtin:python": {
     "foreground": "{{type}}",
     "fontStyle": "{{typeFontStyle}}"
   },
@@ -268,6 +276,14 @@
     "fontStyle": "{{parameterFontStyle}}"
   },
   "typeParameter": {
+    "foreground": "{{typeParameter}}",
+    "fontStyle": "{{typeParameterFontStyle}}"
+  },
+  "lifetime": {
+    "foreground": "{{typeParameter}}",
+    "fontStyle": "{{typeParameterFontStyle}}"
+  },
+  "label:rust": {
     "foreground": "{{typeParameter}}",
     "fontStyle": "{{typeParameterFontStyle}}"
   },

@@ -13,7 +13,10 @@
       "punctuation.definition.bold.markdown",
       "punctuation.definition.italic.markdown",
       "punctuation.definition.strikethrough.markdown",
-      "comment.line.dotenv"
+      "comment.line.dotenv",
+      "keyword.codetag",
+      "source.cs comment.block.documentation punctuation.definition.tag",
+      "source.cs comment.block.documentation punctuation.separator.equals"
     ],
     "settings": {
       "foreground": "{{comment}}",
@@ -29,6 +32,7 @@
       "markup.code",
       "markup.fenced_code.block",
       "meta.function-call.arguments.python",
+      "meta.interpolation.rust",
       "meta.template.expression.kotlin",
       "meta.toc-list.id.html",
       "meta.var.clojure",
@@ -66,7 +70,6 @@
       "support",
       "support.variable",
       "variable",
-      "variable.key.dotenv",
       "variable.argument",
       "variable.css",
       "variable.global",
@@ -126,6 +129,7 @@
       "source.cs entity.other.attribute-name",
       "constant.character.format.placeholder",
       "constant.other.placeholder",
+      "keyword.format.specifier",
       "string constant.other.placeholder",
       "source.vue entity.other.attribute-name",
       "entity.other.attribute-name.mjml",
@@ -160,6 +164,7 @@
     "scope": [
       "entity.name.namespace",
       "entity.name.type.namespace",
+      "entity.name.type.module",
       "entity.name.function.namespace-prefix",
       "entity.name.type.package",
       "support.other.namespace",
@@ -182,7 +187,6 @@
   {
     "name": "class",
     "scope": [
-      "variable.other.object",
       "variable.other.class",
       "entity.name.type",
       "entity.name.type.class",
@@ -230,7 +234,9 @@
       "entity.name.enumMember",
       "entity.name.enummember",
       "constant.enum",
-      "meta.enum.body"
+      "meta.enum.body",
+      "entity.name.type.option.rust",
+      "entity.name.type.result.rust"
     ],
     "settings": {
       "foreground": "{{enumMember}}",
@@ -287,15 +293,28 @@
     }
   },
   {
+    "name": "macro",
+    "scope": [
+      "entity.name.function.macro",
+      "entity.name.type.macro.rust",
+      "source.cs keyword.preprocessor",
+      "source.cs punctuation.separator.hash",
+      "source.cs meta.preprocessor"
+    ],
+    "settings": {
+      "foreground": "{{macro}}",
+      "fontStyle": "{{macroFontStyle}}"
+    }
+  },
+  {
     "name": "keyword, storage, control",
     "scope": [
       "constant.other.color",
       "constant.string.documentation.powershell",
-      "entity.name.lifetime.rust",
       "entity.name.section",
       "entity.name.section.group-title.editorconfig",
-      "entity.name.type.primitive",
       "entity.name.type.any",
+      "keyword",
       "keyword.type.go",
       "keyword.channel",
       "keyword.function",
@@ -305,7 +324,6 @@
       "keyword.operator.expression",
       "keyword.operator.expression.new",
       "keyword.operator.expression.typeof",
-      "keyword.operator.expression.pattern.if",
       "keyword.operator.new",
       "keyword.package",
       "markup.heading",
@@ -313,8 +331,6 @@
       "meta.expression.clojure",
       "meta.structure.razor",
       "meta.tag.sgml",
-      "meta.type.annotation entity.name.type",
-      "meta.use",
       "punctuation.definition.keyword",
       "punctuation.definition.parameters.varargs",
       "punctuation.definition.preprocessor",
@@ -328,6 +344,9 @@
       "source.apex storage.type",
       "source.clojure storage.control",
       "source.cpp storage.type.cpp",
+      "source.cs constant.language.boolean",
+      "source.cs constant.language.null",
+      "source.cs keyword.type",
       "source.css entity.name.tag.custom",
       "source.elm storage.type",
       "source.hlsl storage.type.basic",
@@ -364,7 +383,6 @@
       "storage.type.type",
       "storage.type.user-defined",
       "storage.type.var",
-      "storage.type.error",
       "support.other.namespace.use",
       "support.type",
       "support.type.builtin",
@@ -395,12 +413,28 @@
     "scope": [
       "keyword.type",
       "keyword.other.type",
+      "entity.name.type.alias.ts",
+      "entity.name.type.alias.tsx",
+      "entity.name.type.alias.js",
+      "entity.name.type.numeric",
+      "entity.name.type.primitive",
       "storage.type.built-in.primitive",
       "storage.type.primitive",
       "storage.type.string.go",
       "storage.type.numeric.go",
       "storage.type.string.python",
       "support.type.primitive",
+      "support.type.python",
+      "support.type.builtin.python",
+      "support.type.exception.python",
+      "support.type.metaclass.python",
+      "support.type.builtin.graphql",
+      "support.type.julia",
+      "support.type.vb",
+      "source.go storage.type",
+      "source.groovy storage.type",
+      "source.haskell storage.type",
+      "source.graphql support.type",
       "storage.type.sql"
     ],
     "settings": {
@@ -409,11 +443,21 @@
     }
   },
   {
+    "name": "type alias",
+    "scope": ["entity.name.type.declaration.rust"],
+    "settings": {
+      "foreground": "{{typeAlias}}",
+      "fontStyle": "{{typeAliasFontStyle}}"
+    }
+  },
+  {
     "name": "type parameter",
     "scope": [
       "entity.name.type.type-parameter",
       "variable.type.type-parameter",
-      "meta.type.parameters entity.name.type"
+      "meta.type.parameters entity.name.type",
+      "entity.name.type.lifetime.rust",
+      "punctuation.definition.lifetime.rust"
     ],
     "settings": {
       "foreground": "{{typeParameter}}",
@@ -546,9 +590,9 @@
       "punctuation.separator.decimal.period",
       "constant.integer.apacheconf",
       "string.quoted.double.skinparam.value",
-      "entity.name.type.numeric",
       "entity.other.keyframe-offset.percentage",
-      "constant.numeric"
+      "constant.numeric",
+      "constant.numeric entity.name.type.numeric"
     ],
     "settings": {
       "foreground": "{{number}}",
@@ -660,7 +704,6 @@
       "keyword.operator.arrow",
       "keyword.operator.null-conditional",
       "keyword.operator.nullable-type",
-      "keyword.operator.expression.pattern",
       "keyword.operator.ternary",
       "punctuation.accessor",
       "punctuation.definition.colon",
@@ -675,7 +718,11 @@
       "storage.modifier.reference",
       "keyword.operator.heredoc",
       "keyword.operator.redirect",
-      "punctuation.definition.assignment"
+      "punctuation.definition.assignment",
+      "keyword.symbol",
+      "keyword.accessor",
+      "punctuation.separator.question-mark",
+      "punctuation.separator.asterisk"
     ],
     "settings": {
       "foreground": "{{operator}}",
@@ -694,7 +741,6 @@
     "name": "punctuation",
     "scope": [
       "punctuation.terminator",
-      "punctuation.separator.question-mark",
       "punctuation.definition.typeparameters",
       "punctuation.separator.comma",
       "punctuation.curlybrace",
@@ -716,7 +762,10 @@
       "punctuation.brackets.curly",
       "punctuation.brackets.angle",
       "punctuation.brackets.square",
-      "punctuation.definition.bracket.named-array"
+      "punctuation.definition.bracket.named-array",
+      "punctuation.definition.interpolation.rust",
+      "punctuation.definition.interpolation.begin.cs",
+      "punctuation.definition.interpolation.end.cs"
     ],
     "settings": {
       "foreground": "{{punctuation}}",
@@ -741,16 +790,10 @@
       "markup punctuation.definition",
       "comment.block.documentation entity.name.type",
       "entity.name.type.instance.jsdoc",
-      "source.groovy storage.type",
       "storage.type.annotation",
       "punctuation.definition.annotation",
-      "source.haskell storage.type",
       "punctuation.separator.clause-head-body",
-      "source.go storage.type",
-      "support.type.vb",
-      "support.type.julia",
       "constant.other.reference",
-      "source.graphql support.type",
       "source.reason support.type string",
       "support.class.crystal",
       "storage.type.integral",
@@ -799,7 +842,6 @@
       "entity.name.tag",
       "entity.name.tag.css",
       "variable.language punctuation.definition.variable",
-      "support.type.exception.python",
       "storage.modifier.super",
       "source.go keyword",
       "meta.separator",
@@ -825,7 +867,6 @@
       "source.wsd keyword.other.linebegin",
       "keyword.other.skinparam.keyword",
       "keyword.other.nim",
-      "markup.deleted.diff",
       "source.tf support.class.variable",
       "meta.function.lua keyword.control.lua",
       "markup.block entity.name.tag",
@@ -879,7 +920,8 @@
       "meta.attribute",
       "support.attribute",
       "punctuation.brackets.attribute",
-      "punctuation.definition.attribute"
+      "punctuation.definition.attribute",
+      "source.cs comment.block.documentation entity.other.attribute-name"
     ],
     "settings": {
       "foreground": "{{fieldAndAttribute}}",
@@ -935,6 +977,20 @@
     }
   },
   {
+    "name": "Diff header",
+    "scope": ["meta.diff.header"],
+    "settings": {
+      "foreground": "{{info}}"
+    }
+  },
+  {
+    "name": "Diff range",
+    "scope": ["meta.diff.range"],
+    "settings": {
+      "foreground": "{{annotation}}"
+    }
+  },
+  {
     "name": "Regular Expressions",
     "scope": ["string.regexp", "string.regexp keyword.control", "string.regexp keyword.other"],
     "settings": {
@@ -957,7 +1013,8 @@
       "punctuation.decorator",
       "entity.name.function.decorator",
       "punctuation.definition.decorator",
-      "meta.function.decorator"
+      "meta.function.decorator",
+      "meta.function.decorator.python support.type.python"
     ],
     "settings": {
       "foreground": "{{decorator}}",
@@ -1061,6 +1118,32 @@
     }
   },
   {
+    "name": "Data file key",
+    "scope": [
+      "entity.name.tag.yaml",
+      "support.type.property-name.toml",
+      "keyword.other.definition.ini",
+      "variable.key.dotenv"
+    ],
+    "settings": {
+      "foreground": "{{jsonLvl0}}",
+      "fontStyle": "{{jsonLvl0FontStyle}}"
+    }
+  },
+  {
+    "name": "Data file section",
+    "scope": [
+      "support.type.property-name.table.toml",
+      "support.type.property-name.array.toml",
+      "punctuation.definition.table.toml",
+      "punctuation.definition.array.table.toml",
+      "entity.name.section.group-title.ini"
+    ],
+    "settings": {
+      "foreground": "{{markdownSection}}"
+    }
+  },
+  {
     "name": "Markdown - Plain",
     "scope": [
       "text.html.markdown",
@@ -1147,6 +1230,13 @@
     "settings": {
       "foreground": "{{markupUnderline}}",
       "fontStyle": "underline"
+    }
+  },
+  {
+    "name": "Markup - Strikethrough",
+    "scope": ["markup.strikethrough"],
+    "settings": {
+      "fontStyle": "strikethrough"
     }
   },
   {
