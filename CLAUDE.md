@@ -2,17 +2,21 @@
 
 Calmppuccin, a VS Code color theme extension (`kenan-salar.calmppuccin-vscode` on the Marketplace
 and Open VSX): six softened Catppuccin flavors and a webview for customizing them. TypeScript 6
-(strict), bundled by webpack 5, tested by Jest 30 on jsdom, linted by oxlint and formatted by
-oxfmt, on Node 24.
+(strict), bundled by webpack 5, tested by Jest 30 on Node (the webview's test on jsdom), linted
+by oxlint and formatted by oxfmt, on Node 24.
 
 - **Themes are generated, never edited.** `build.ts` fills the `{{key}}` placeholders in
   `src/template/` from a flavor's palette in `src/palettes/`, adds the third-party colors from
   `src/extensions/`, and writes `themes/calmppuccin-<flavor>-color-theme.json`.
-- **It runs twice**: at package time (`buildDefaultThemes`, default settings), and inside the
+- **It runs twice**: at package time (`buildDefaultThemes`, default settings), and inside a Node
   extension host whenever a Calmppuccin theme becomes active or a setting in
   `THEME_AFFECTING_KEYS` changes, rewriting the installed extension's own `themes/` and offering
   a window reload when the files differ from what that window loaded (`regenerateThemes` says
   why both).
+- **VS Code for the Web runs `browser.ts` instead**: the packaged default themes, and a note
+  where `extension.ts` customizes. Nothing it imports may reach `build.ts`,
+  `ConfigurationService`, `SettingsPanel` or Node: the `webworker` build fails on a Node module,
+  but not on a stray `process` or `Buffer`.
 - **The customization UI** (`webview/`) reaches the host only through the message unions in
   `types/webview.ts`. `src/SettingsPanel.ts` hands each message to `ConfigurationService`, which
   writes the active profile in `calmppuccin.profiles`; the settings listener in `extension.ts`
@@ -21,8 +25,9 @@ oxfmt, on Node 24.
   theme-change listener then waits; the settings listener and the rebuild start only once a
   Calmppuccin theme is active or the UI has opened.
 
-`webpack.config.js` builds three bundles: `extension.ts` → `dist/extension.js` (`vscode`
-external), `build.ts` → `dist/build.js`, `webview/main.ts` → `dist/webview.js`.
+`webpack.config.js` builds four bundles: `extension.ts` → `dist/extension.js` and `browser.ts` →
+`dist/browser.js` (`vscode` external in both), `build.ts` → `dist/build.js`, `webview/main.ts` →
+`dist/webview.js`.
 
 ## Where things go
 
@@ -51,7 +56,7 @@ failing test, so this table finds them.
 
 ```bash
 npm ci
-npm run compile          # webpack production build of all three bundles
+npm run compile          # webpack production build of all four bundles
 npm run build-themes     # compile, then write themes/ with default settings
 npm run watch            # webpack in watch mode; it doesn't regenerate themes/
 npm run format           # oxfmt; CI runs format:check

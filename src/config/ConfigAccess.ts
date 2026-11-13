@@ -81,6 +81,13 @@ export function getConfig() {
   return vscode.workspace.getConfiguration(C.EXTENSION_NAMESPACE);
 }
 
+/** Whether `event` changes a setting in `THEME_AFFECTING_KEYS`. */
+export function affectsThemeSettings(event: vscode.ConfigurationChangeEvent): boolean {
+  return C.THEME_AFFECTING_KEYS.some((key) =>
+    event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${key}`),
+  );
+}
+
 export function getProfiles(config = getConfig()): { [name: string]: IProfile } {
   return toProfiles(config.get(C.CONFIG_KEY_PROFILES));
 }

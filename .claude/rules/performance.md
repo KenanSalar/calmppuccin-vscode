@@ -1,6 +1,7 @@
 ---
 paths:
   - extension.ts
+  - browser.ts
   - build.ts
   - package.json
   - webpack.config.js
@@ -40,9 +41,10 @@ correctness, `webview.md` the message protocol and CSP, `ci-packaging.md` what t
 - **`activate` registers and returns.** No awaited I/O, theme build or webview work on that path;
   `migrateGlobalSettingsToDefault` runs un-awaited and writes only when there's something to
   migrate. Anything else waits behind `ensureListenersAreActive` or a command.
-- **A new listener joins the heavy tier.** The tripwire is the one always-on listener and checks
-  one key; anything else registers in `ensureListenersAreActive` and filters with
-  `affectsConfiguration` before it reads a setting.
+- **A new listener joins the heavy tier.** The tripwire is `extension.ts`'s one always-on listener
+  and checks one key; anything else registers in `ensureListenersAreActive` and filters with
+  `affectsConfiguration` before it reads a setting. `browser.ts` has one listener, filtered the
+  same way.
 - **No synchronous `fs` in host code.** `readFileSync` and its kin block the extension host's one
   thread for every extension in the window; `build.ts` and `WebviewManager.ts` use
   `fs/promises`, which runs on libuv's threadpool.

@@ -54,7 +54,8 @@ message on each change of their namespace. Not to copy:
 |---|---|
 | `src/selectedTheme.ts` (new) | reading `workbench.colorTheme`: `COLOR_THEME_SETTING`, `isCalmppuccinThemeSelected`, `syncIconFlavor` and its private `ICON_FLAVORS`, moved verbatim from `extension.ts`. Imports `vscode`, `src/constants.ts` and `isFlavor` only |
 | `extension.ts` | the Node entry, importing those three names |
-| `browser.ts` (new, beside `extension.ts`) | the web entry: the Customize command, one settings listener, the startup check, the note. Imports `vscode`, `src/constants.ts`, `src/selectedTheme.ts` and `getConfig` (`src/config/ConfigAccess.ts`), never `build.ts`, `ConfigurationService` or `SettingsPanel` |
+| `browser.ts` (new, beside `extension.ts`) | the web entry: the Customize command, one settings listener, the startup check, the note. Imports `vscode`, `src/constants.ts`, `src/selectedTheme.ts`, and `getConfig` and `affectsThemeSettings` (`src/config/ConfigAccess.ts`), never `build.ts`, `ConfigurationService` or `SettingsPanel` |
+| `src/config/ConfigAccess.ts` | `affectsThemeSettings(event)`, the `THEME_AFFECTING_KEYS` filter both entries' listeners run; `extension.ts` reaches it through the `ConfigurationService` facade |
 | `src/constants.ts` | the note's text, its Don't Show Again action, the `globalState` key |
 | `webpack.config.js` | a fourth config, `browser.ts` → `dist/browser.js`, `target: "webworker"` |
 | `package.json` | `"browser": "./dist/browser.js"` |
@@ -68,6 +69,8 @@ Duplication collapsed before the second entry lands:
 - **`.vscodeignore`.** It names every `.ts` source, so each new module is one more line or it
   ships. One `**/*.ts` replaces them; `src/template/*.json`, `webview/index.html` and
   `webview/style.css` still ship.
+- **The settings filter** (Phase 2). `extension.ts` spelled the `THEME_AFFECTING_KEYS` walk
+  inline; it moves to `affectsThemeSettings` rather than being copied into `browser.ts`.
 
 ## Behaviour of `browser.ts`
 
@@ -90,7 +93,7 @@ Duplication collapsed before the second entry lands:
 
 ## Phases
 
-### Phase 1: Share before the second entry (done, uncommitted)
+### Phase 1: Share before the second entry (done, a1be79f)
 
 A pure refactor; desktop behaviour unchanged.
 
@@ -106,7 +109,7 @@ A pure refactor; desktop behaviour unchanged.
 Evidence: `npx vsce ls --no-dependencies` before step 3 and after, identical; the `npm run compile`
 module lists unchanged; format, lint, type-check and `npm test` green with no test edits.
 
-### Phase 2: The web entry (pending)
+### Phase 2: The web entry (done, uncommitted)
 
 1. `browser.ts`, its constants, the fourth webpack config and the `browser` field. No
    `resolve.fallback`: webpack 5 polyfills no Node core module, so anything in the web graph that
@@ -119,11 +122,32 @@ module lists unchanged; format, lint, type-check and `npm test` green with no te
    `CHANGELOG.md` entry lands with the version bump.
 
 Evidence: the module list for `browser.js` names only `browser.ts`, `src/selectedTheme.ts`,
-`src/constants.ts`, `src/config/ConfigAccess.ts`, `types/webview.ts` and the palettes; no
-`process`, `Buffer`, `__dirname` or `require(` in those files; format, lint, type-check and tests
-green; `npm run package` ships `dist/browser.js`; the `/doc-style` audit.
+`src/constants.ts`, `src/config/ConfigAccess.ts` and the palettes (`types/webview.ts` is a
+type-only import, erased); no `process`, `Buffer`, `__dirname` or `require(` in those files, and
+`require("vscode")` the bundle's only `require`; format, lint, type-check and tests green (825, no
+test edits); `npm run package` ships `dist/browser.js`; the `/doc-style` audit.
 
-### Phase 3: Hand test (pending)
+Also updated: the `paths:` of `.claude/rules/vscode-api.md` and `performance.md` (now loading for
+`browser.ts`), the listener bullet in `performance.md`, and the facade bullet in
+`configuration.md` (why `browser.ts` imports `ConfigAccess` directly).
+
+### Phase 3: Hand test (done but Codespaces and Settings Sync, uncommitted)
+
+Results, 2026-11-13, VS Code 1.146.0 (`69047191`) in test-web, on vscode.dev and on desktop:
+
+- **Local browser VS Code**: all checks pass. Web worker host; the six flavors' 552 registered
+  workbench colors equal the packaged JSON; Customize answers three presses; after one note, edits
+  stay silent with the notification center cleared; note at start with a user value; after Don't
+  Show Again none at start or on an edit, Customize still answers; icons follow all six flavors.
+- **vscode.dev**: the same checks pass from the packaged VSIX served over plain
+  `http://localhost:5000`. Chromium allows a local-network request from an https page, so no
+  certificate is needed. github.dev redirects a signed-out browser to
+  `vscode.dev/github/<repo>`; in that virtual workspace, in Restricted Mode, it runs on the web
+  worker with Latte applied and Customize answers. Settings Sync needs an account sign-in, not
+  done; the startup check ran through a reload with a user value instead.
+- **Codespaces in the browser**: not done. It needs a codespace on the owner's account.
+- **Desktop** (`code --extensionDevelopmentPath`, as Ctrl+F5): an accent edit rebuilt the themes
+  and offered Reload Window, the reload showed the rebuilt colors, and Customize opened the UI.
 
 - **Local browser VS Code.** `npm run build-themes`, then
   `npx @vscode/test-web@0.0.81 --browser=chromium --quality=stable --extensionDevelopmentPath=.`
@@ -133,10 +157,9 @@ green; `npm run package` ships `dist/browser.js`; the `/doc-style` audit.
   Again a reload shows none and Customize still answers; Catppuccin Icons follow a flavor switch.
 - **vscode.dev and github.dev**, from the packaged VSIX. `npm run package`, unzip its `extension/`
   folder into a scratch directory, add a `serve.json` setting `Cross-Origin-Resource-Policy:
-  cross-origin`, `mkcert localhost`, then
-  `npx serve@14.2.7 --cors -l 5000 --ssl-cert <cert> --ssl-key <key>` from that folder, and
-  Developer: Install Extension From Location… with `https://localhost:5000`. The same checks, with
-  and without customized settings arriving through Settings Sync.
+  cross-origin`, then `npx serve@14.2.7 --cors -l 5000` from that folder, and Developer: Install
+  Extension from Location… with `http://localhost:5000`. The same checks, with and without
+  customized settings arriving through Settings Sync.
 - **Codespaces in the browser.** With the VSIX installed in a codespace, Show Running Extensions
   says Remote and Customize Theme opens the UI.
 - **Desktop under Ctrl+F5.** Customizing still rebuilds and offers a reload.

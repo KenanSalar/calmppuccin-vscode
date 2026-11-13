@@ -1,7 +1,7 @@
 /**
- * @file The extension's entry point. It activates once startup finishes, since VS Code has no
- * activation event for selecting a color theme, and stays behind one theme-change listener until
- * a Calmppuccin theme is selected or the customizer opens.
+ * @file The entry point on a Node extension host. It activates once startup finishes, since
+ * VS Code has no activation event for selecting a color theme, and stays behind one theme-change
+ * listener until a Calmppuccin theme is selected or the customizer opens.
  */
 
 import * as vscode from "vscode";
@@ -123,11 +123,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     settingsChangeListener = vscode.workspace.onDidChangeConfiguration(
       (event: vscode.ConfigurationChangeEvent) => {
-        if (
-          C.THEME_AFFECTING_KEYS.some((key) =>
-            event.affectsConfiguration(`${C.EXTENSION_NAMESPACE}.${key}`),
-          )
-        ) {
+        if (ConfigurationService.affectsThemeSettings(event)) {
           if (regenerateTimer) {
             clearTimeout(regenerateTimer);
           }

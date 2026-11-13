@@ -3,6 +3,7 @@
  * these statics, which a test can replace one by one with `jest.spyOn`.
  */
 
+import { affectsThemeSettings } from "./config/ConfigAccess";
 import {
   updateActiveProfile,
   saveProfile,
@@ -59,4 +60,5 @@ export class ConfigurationService {
   static resetAll = resetAll;
   static migrateGlobalSettingsToDefault = migrateGlobalSettingsToDefault;
   static getWebViewSettings = getWebViewSettings;
+  static affectsThemeSettings = affectsThemeSettings;
 }

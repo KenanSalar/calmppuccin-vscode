@@ -36,6 +36,19 @@ Run this once per clone, so the tree-wide formatting commit stays out of `git bl
 git config blame.ignoreRevsFile .git-blame-ignore-revs
 ```
 
+### Trying the web build
+
+vscode.dev and github.dev run `browser.ts`, which shows the packaged themes and can't customize
+them. To try it in VS Code for the Web on your machine:
+
+```bash
+npm run build-themes
+npx @vscode/test-web@0.0.81 --browser=chromium --quality=stable --extensionDevelopmentPath=.
+```
+
+A Chromium window opens with your build installed. After a change, run `npm run compile` and
+reload the page.
+
 ### The dev container
 
 `.devcontainer/` packages the same toolchain: with the Dev Containers extension installed, run
