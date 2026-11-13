@@ -1,12 +1,15 @@
 /** @file The typed read of each setting, through the active profile. */
 
 import * as vscode from "vscode";
+import { IProfile } from "../../types/webview";
 import * as C from "../constants";
 import { IPalettes, isFlavor } from "../palettes";
 import {
+  customizedFontStyles,
   getConfig,
   getProfileSetting,
   getProfileObjectSetting,
+  FlavorOverrides,
   IFontStyles,
   ISyntaxOverrides,
   IUiOverrides,
@@ -44,6 +47,35 @@ export function getFontStyleOverrides(config = getConfig()): IFontStyleOverrides
     {},
     config,
   );
+}
+
+/** The settings the active profile resolves to that differ from their defaults. */
+export function getActiveCustomizations(): IProfile {
+  const customizations: IProfile = {};
+
+  const accent = getProfileSetting(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
+  if (accent !== C.DEFAULT_ACCENT) {
+    customizations[C.CONFIG_KEY_ACCENT] = accent;
+  }
+
+  const customAccent = getProfileSetting(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
+  if (customAccent !== C.DEFAULT_CUSTOM_ACCENT) {
+    customizations[C.CONFIG_KEY_CUSTOM_ACCENT] = customAccent;
+  }
+
+  const fontStyles = customizedFontStyles(getFontStyles());
+  if (Object.keys(fontStyles).length > 0) {
+    customizations[C.CONFIG_KEY_FONT_STYLES] = fontStyles;
+  }
+
+  for (const key of C.OVERRIDE_SETTING_KEYS) {
+    const overrides = getProfileObjectSetting<FlavorOverrides>(key, {});
+    if (Object.keys(overrides).length > 0) {
+      customizations[key] = overrides;
+    }
+  }
+
+  return customizations;
 }
 
 /** The selected color theme's flavor, or Mocha when it isn't a Calmppuccin theme. */

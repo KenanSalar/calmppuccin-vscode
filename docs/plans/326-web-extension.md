@@ -54,8 +54,9 @@ message on each change of their namespace. Not to copy:
 |---|---|
 | `src/selectedTheme.ts` (new) | reading `workbench.colorTheme`: `COLOR_THEME_SETTING`, `isCalmppuccinThemeSelected`, `syncIconFlavor` and its private `ICON_FLAVORS`, moved verbatim from `extension.ts`. Imports `vscode`, `src/constants.ts` and `isFlavor` only |
 | `extension.ts` | the Node entry, importing those three names |
-| `browser.ts` (new, beside `extension.ts`) | the web entry: the Customize command, one settings listener, the startup check, the note. Imports `vscode`, `src/constants.ts`, `src/selectedTheme.ts`, and `getConfig` and `affectsThemeSettings` (`src/config/ConfigAccess.ts`), never `build.ts`, `ConfigurationService` or `SettingsPanel` |
-| `src/config/ConfigAccess.ts` | `affectsThemeSettings(event)`, the `THEME_AFFECTING_KEYS` filter both entries' listeners run; `extension.ts` reaches it through the `ConfigurationService` facade |
+| `browser.ts` (new, beside `extension.ts`) | the web entry: the Customize command, one settings listener, the startup check, the note. Imports `vscode`, `src/constants.ts`, `src/selectedTheme.ts`, `affectsThemeSettings` (`src/config/ConfigAccess.ts`) and `getActiveCustomizations` (`src/config/SettingsReader.ts`), never `build.ts`, `ConfigurationService` or `SettingsPanel` |
+| `src/config/ConfigAccess.ts` | `affectsThemeSettings(event)`, the `THEME_AFFECTING_KEYS` filter both entries' listeners run; `extension.ts` reaches it through the `ConfigurationService` facade. `customizedFontStyles`, moved from `ProfileManager.ts` |
+| `src/config/SettingsReader.ts` | `getActiveCustomizations()`, what the active profile resolves to minus defaults: `saveProfile` saves it, `browser.ts` notes it |
 | `src/constants.ts` | the note's text, its Don't Show Again action, the `globalState` key |
 | `webpack.config.js` | a fourth config, `browser.ts` → `dist/browser.js`, `target: "webworker"` |
 | `package.json` | `"browser": "./dist/browser.js"` |
@@ -71,18 +72,21 @@ Duplication collapsed before the second entry lands:
   `webview/style.css` still ship.
 - **The settings filter** (Phase 2). `extension.ts` spelled the `THEME_AFFECTING_KEYS` walk
   inline; it moves to `affectsThemeSettings` rather than being copied into `browser.ts`.
+- **What counts as customized** (Phase 2). `saveProfile` computed it inline; it moves to
+  `getActiveCustomizations` rather than `browser.ts` growing a second, weaker test. Reset, delete
+  and profile switches leave user values that customize nothing.
 
 ## Behaviour of `browser.ts`
 
 - **Activation** registers `calmppuccin.customize` and one `onDidChangeConfiguration` listener,
   pushes both to `context.subscriptions`, and calls `syncIconFlavor()` when a Calmppuccin theme is
   selected. No `calmppuccin.regenerateThemes`, no migration.
-- **Listener.** A `workbench.colorTheme` change runs `syncIconFlavor()`; a `THEME_AFFECTING_KEYS`
-  change shows the note once per window.
-- **Startup.** A Calmppuccin theme selected and any `THEME_AFFECTING_KEYS` key holding a user value
-  (`inspect(key)?.globalValue`, the keys being `application` scoped) shows the note once per
-  window. Settings Sync can apply settings before this extension activates, so the listener alone
-  misses a synced user.
+- **Listener.** A `workbench.colorTheme` change runs `syncIconFlavor()` and, once a Calmppuccin
+  theme is selected, the startup check; a `THEME_AFFECTING_KEYS` change shows the note once per
+  window.
+- **Startup.** A Calmppuccin theme selected and a non-empty `getActiveCustomizations()` show the
+  note once per window. Settings Sync can apply settings before this extension activates, or while
+  another theme is selected, so the listener alone misses a synced user.
 - **The note** is `showInformationMessage`. Its automatic showings share one per-window flag and
   offer Don't Show Again, kept in `context.globalState` and passed to `setKeysForSync` so Settings
   Sync carries a dismissal to the other web origin.
@@ -93,7 +97,7 @@ Duplication collapsed before the second entry lands:
 
 ## Phases
 
-### Phase 1: Share before the second entry (done, a1be79f)
+### Phase 1: Share before the second entry (done)
 
 A pure refactor; desktop behaviour unchanged.
 
@@ -109,7 +113,7 @@ A pure refactor; desktop behaviour unchanged.
 Evidence: `npx vsce ls --no-dependencies` before step 3 and after, identical; the `npm run compile`
 module lists unchanged; format, lint, type-check and `npm test` green with no test edits.
 
-### Phase 2: The web entry (done, uncommitted)
+### Phase 2: The web entry (done)
 
 1. `browser.ts`, its constants, the fourth webpack config and the `browser` field. No
    `resolve.fallback`: webpack 5 polyfills no Node core module, so anything in the web graph that
@@ -118,20 +122,20 @@ module lists unchanged; format, lint, type-check and `npm test` green with no te
    paragraph is the Node entry's, plus a bullet for the web entry; Jest runs on `node`, with only
    the webview test on jsdom), the `extensionKind` bullet in `.claude/rules/vscode-api.md` (the
    picker facts above), `README.md` Installation and Customization (the web gets the default themes,
-   customization needs the desktop app), and `CONTRIBUTING.md` (trying the web build). The
+   and customizing isn't available there), and `CONTRIBUTING.md` (trying the web build). The
    `CHANGELOG.md` entry lands with the version bump.
 
 Evidence: the module list for `browser.js` names only `browser.ts`, `src/selectedTheme.ts`,
-`src/constants.ts`, `src/config/ConfigAccess.ts` and the palettes (`types/webview.ts` is a
+`src/constants.ts`, `src/config/ConfigAccess.ts`, `src/config/SettingsReader.ts` and the palettes (`types/webview.ts` is a
 type-only import, erased); no `process`, `Buffer`, `__dirname` or `require(` in those files, and
 `require("vscode")` the bundle's only `require`; format, lint, type-check and tests green (825, no
 test edits); `npm run package` ships `dist/browser.js`; the `/doc-style` audit.
 
 Also updated: the `paths:` of `.claude/rules/vscode-api.md` and `performance.md` (now loading for
 `browser.ts`), the listener bullet in `performance.md`, and the facade bullet in
-`configuration.md` (why `browser.ts` imports `ConfigAccess` directly).
+`configuration.md` (why `browser.ts` imports `ConfigAccess` and `SettingsReader` directly).
 
-### Phase 3: Hand test (done but Codespaces and Settings Sync, uncommitted)
+### Phase 3: Hand test (pending: Codespaces, Settings Sync, the customization check)
 
 Results, 2026-11-13, VS Code 1.146.0 (`69047191`) in test-web, on vscode.dev and on desktop:
 
@@ -155,6 +159,10 @@ Results, 2026-11-13, VS Code 1.146.0 (`69047191`) in test-web, on vscode.dev and
   Extensions puts it on the Web Worker host; Customize answers each time; two `calmppuccin.accent`
   edits give one note; a reload with that user value set gives the note at start; after Don't Show
   Again a reload shows none and Customize still answers; Catppuccin Icons follow a flavor switch.
+  With Don't Show Again cleared: under Mocha, user settings holding only
+  `"calmppuccin.profiles": {"Default": {}}` and `"calmppuccin.activeProfile": "Default"` give no
+  note on reload; with `{"Default": {"accent": "mauve"}}` under Dark Modern, a reload gives none
+  and picking Calmppuccin Mocha gives one.
 - **vscode.dev and github.dev**, from the packaged VSIX. `npm run package`, unzip its `extension/`
   folder into a scratch directory, add a `serve.json` setting `Cross-Origin-Resource-Policy:
   cross-origin`, then `npx serve@14.2.7 --cors -l 5000` from that folder, and Developer: Install

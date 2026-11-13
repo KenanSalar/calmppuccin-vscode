@@ -17,8 +17,8 @@ paths:
   `removeOverrideKey`, which hands back `undefined` so the whole setting is cleared.
 - **`ConfigurationService` is a facade.** A `src/config/` function that a caller outside
   `src/config/` needs is re-exported there as a static, until callers import the modules
-  directly. `browser.ts` already does, taking `ConfigAccess` alone, as the facade would bundle
-  every reader and writer into a build that writes no Calmppuccin setting.
+  directly. `browser.ts` already does, taking `ConfigAccess` and `SettingsReader` alone, as the
+  facade would bundle every writer into a build that writes no Calmppuccin setting.
 - **A new setting that changes theme output joins `THEME_AFFECTING_KEYS`** (`src/constants.ts`),
   or changing it won't regenerate the themes, **and takes `"scope": "application"`**: one set of
   theme files serves every window, so no workspace may differ, and `get` would otherwise merge a

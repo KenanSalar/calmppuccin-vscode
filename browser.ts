@@ -4,7 +4,8 @@
  */
 
 import * as vscode from "vscode";
-import { affectsThemeSettings, getConfig } from "./src/config/ConfigAccess";
+import { affectsThemeSettings } from "./src/config/ConfigAccess";
+import { getActiveCustomizations } from "./src/config/SettingsReader";
 import * as C from "./src/constants";
 import {
   COLOR_THEME_SETTING,
@@ -12,7 +13,7 @@ import {
   syncIconFlavor,
 } from "./src/selectedTheme";
 
-// The note's automatic showings share it, so a window shows the note at most once.
+// At most one automatic showing per window; Customize Theme shows the note regardless.
 let noteShownThisWindow = false;
 
 export function activate(context: vscode.ExtensionContext) {
@@ -23,6 +24,10 @@ export function activate(context: vscode.ExtensionContext) {
   const settingsListener = vscode.workspace.onDidChangeConfiguration((event) => {
     if (event.affectsConfiguration(COLOR_THEME_SETTING)) {
       syncIconFlavor();
+      // The startup check runs only under a Calmppuccin theme, so a switch to one runs it here.
+      if (isCalmppuccinThemeSelected()) {
+        showNoteIfCustomized(context.globalState);
+      }
     }
     if (affectsThemeSettings(event)) {
       showNoteOncePerWindow(context.globalState);
@@ -35,9 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
   }
   syncIconFlavor();
   // Settings Sync can apply customized settings before activation, which fires no change event.
-  if (hasCustomizedSettings()) {
-    showNoteOncePerWindow(context.globalState);
-  }
+  showNoteIfCustomized(context.globalState);
 }
 
 export function deactivate() {
@@ -47,6 +50,12 @@ export function deactivate() {
 /** Answers every press of Customize Theme, as a press met with silence reads as broken. */
 function showNote() {
   void vscode.window.showInformationMessage(C.WEB_CUSTOMIZATION_NOTE);
+}
+
+function showNoteIfCustomized(globalState: vscode.Memento) {
+  if (Object.keys(getActiveCustomizations()).length > 0) {
+    showNoteOncePerWindow(globalState);
+  }
 }
 
 function showNoteOncePerWindow(globalState: vscode.Memento) {
@@ -67,10 +76,4 @@ async function showDismissibleNote(globalState: vscode.Memento) {
   if (selection === C.DONT_SHOW_AGAIN_ACTION) {
     await globalState.update(C.WEB_NOTE_DISMISSED_KEY, true);
   }
-}
-
-// The theme settings are `application` scoped, so a customization can only be a user value.
-function hasCustomizedSettings(): boolean {
-  const config = getConfig();
-  return C.THEME_AFFECTING_KEYS.some((key) => config.inspect(key)?.globalValue !== undefined);
 }

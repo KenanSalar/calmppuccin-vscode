@@ -170,6 +170,14 @@ export function getDefaultFontStyles(): IFontStyles {
   return getContributedSetting(C.CONFIG_KEY_FONT_STYLES)?.default ?? {};
 }
 
+/** The styles in `fontStyles` that differ from the contributed defaults. */
+export function customizedFontStyles(fontStyles: IFontStyles): IFontStyles {
+  const defaults = getDefaultFontStyles();
+  return Object.fromEntries(
+    Object.entries(fontStyles).filter(([key, value]) => defaults[key] !== value),
+  );
+}
+
 /**
  * Gets the accent names `calmppuccin.accent` accepts, `custom` included.
  */

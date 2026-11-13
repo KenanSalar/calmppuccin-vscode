@@ -10,13 +10,11 @@ import {
   getConfig,
   getProfiles,
   getActiveProfile,
-  getProfileSetting,
-  getProfileObjectSetting,
-  getDefaultFontStyles,
+  customizedFontStyles,
   FlavorOverrides,
   IFontStyles,
 } from "./ConfigAccess";
-import { getFontStyles } from "./SettingsReader";
+import { getActiveCustomizations } from "./SettingsReader";
 
 export async function updateActiveProfile(profileName: string) {
   await getConfig().update(
@@ -26,33 +24,9 @@ export async function updateActiveProfile(profileName: string) {
   );
 }
 
-/** Saves what the active profile resolves to as `profileName`, minus values left at default. */
+/** Saves {@link getActiveCustomizations} as `profileName`. */
 export async function saveProfile(profileName: string) {
-  const savedProfile: IProfile = {};
-
-  const accent = getProfileSetting(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
-  if (accent !== C.DEFAULT_ACCENT) {
-    savedProfile[C.CONFIG_KEY_ACCENT] = accent;
-  }
-
-  const customAccent = getProfileSetting(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
-  if (customAccent !== C.DEFAULT_CUSTOM_ACCENT) {
-    savedProfile[C.CONFIG_KEY_CUSTOM_ACCENT] = customAccent;
-  }
-
-  const fontStyles = customizedFontStyles(getFontStyles());
-  if (Object.keys(fontStyles).length > 0) {
-    savedProfile[C.CONFIG_KEY_FONT_STYLES] = fontStyles;
-  }
-
-  for (const key of C.OVERRIDE_SETTING_KEYS) {
-    const overrides = getProfileObjectSetting<FlavorOverrides>(key, {});
-    if (Object.keys(overrides).length > 0) {
-      savedProfile[key] = overrides;
-    }
-  }
-
-  const updatedProfiles = { ...getProfiles(), [profileName]: savedProfile };
+  const updatedProfiles = { ...getProfiles(), [profileName]: getActiveCustomizations() };
   await getConfig().update(
     C.CONFIG_KEY_PROFILES,
     updatedProfiles,
@@ -161,14 +135,6 @@ export async function migrateGlobalSettingsToDefault() {
     await config.update(C.CONFIG_KEY_PROFILES, profiles, vscode.ConfigurationTarget.Global);
     await clearLegacySettings();
   }
-}
-
-/** The styles in `fontStyles` that differ from the contributed defaults. */
-function customizedFontStyles(fontStyles: IFontStyles): IFontStyles {
-  const defaults = getDefaultFontStyles();
-  return Object.fromEntries(
-    Object.entries(fontStyles).filter(([key, value]) => defaults[key] !== value),
-  );
 }
 
 /** The top-level settings that predate profiles, which every read still falls back to. */
