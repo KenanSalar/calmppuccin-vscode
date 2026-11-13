@@ -17,6 +17,7 @@ interface ITestThemeJson {
     scope?: string[];
     settings: { foreground?: string; fontStyle?: string };
   }>;
+  semanticHighlighting?: boolean;
   semanticTokenColors?: Record<string, string>;
 }
 
@@ -275,7 +276,23 @@ describe("Build Script Unit Tests", () => {
         "comment",
         "punctuation.definition.comment",
       ]);
-      expect(writtenJson?.semanticTokenColors).toBeDefined();
+      const mochaVariableHex = "#bbc4df";
+      expect(writtenJson?.semanticTokenColors).toStrictEqual({ variable: mochaVariableHex });
+    });
+
+    /** VS Code leaves semantic highlighting to the theme by default, and a theme's default is off. */
+    it("should turn on semantic highlighting", async () => {
+      mockFileSystem({});
+
+      await buildAllFlavors({
+        accentIdentifier: "sapphire",
+        fontStyles: {},
+        syntaxOverrides: {},
+        uiOverrides: {},
+        fontStyleOverrides: {},
+      });
+
+      expect(findThemeCall("mocha")?.[1].semanticHighlighting).toBe(true);
     });
 
     it("should handle malformed accent recipes gracefully", async () => {
