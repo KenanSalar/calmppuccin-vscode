@@ -151,17 +151,6 @@ function fillTemplate(
   } as IFilledTemplate;
 }
 
-async function readTemplate(): Promise<TemplateSources> {
-  const read = (part: TemplatePart) =>
-    fs.readFile(path.join(TEMPLATE_PATH, C.TEMPLATE_FILES[part]), "utf-8");
-  const [colors, tokenColors, semanticTokenColors] = await Promise.all([
-    read("colors"),
-    read("tokenColors"),
-    read("semanticTokenColors"),
-  ]);
-  return { colors, tokenColors, semanticTokenColors };
-}
-
 export async function buildAllFlavors(options: IBuildOptions): Promise<ThemeBuilds> {
   await fs.mkdir(THEME_DIR, { recursive: true });
   const template = await readTemplate();
@@ -177,7 +166,7 @@ export async function buildAllFlavors(options: IBuildOptions): Promise<ThemeBuil
 
 /**
  * Builds the themes packaging ships, every setting at its default. `npm run build-themes` calls it
- * because webpack makes a `require.main === module` guard true however the bundle is loaded.
+ * because webpack makes a `require.main === module` guard true however `dist/build.js` is loaded.
  */
 export async function buildDefaultThemes(): Promise<ThemeBuilds> {
   return buildAllFlavors({
@@ -187,6 +176,17 @@ export async function buildDefaultThemes(): Promise<ThemeBuilds> {
     uiOverrides: {},
     fontStyleOverrides: {},
   });
+}
+
+async function readTemplate(): Promise<TemplateSources> {
+  const read = (part: TemplatePart) =>
+    fs.readFile(path.join(TEMPLATE_PATH, C.TEMPLATE_FILES[part]), "utf-8");
+  const [colors, tokenColors, semanticTokenColors] = await Promise.all([
+    read("colors"),
+    read("tokenColors"),
+    read("semanticTokenColors"),
+  ]);
+  return { colors, tokenColors, semanticTokenColors };
 }
 
 /**
