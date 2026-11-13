@@ -48,7 +48,6 @@ export const mockPalette: IPalette = {
   uiButtonBorder0: "#00000000",
   uiButtonSecondaryHoverBackground: "#89b4fa33",
   chartsLines: "#bac2de",
-  chartsRed: "#f38ba8",
   chartsBlue: "#89b4fa",
   chartsYellow: "#f9e2af",
   chartsOrange: "#fab387",

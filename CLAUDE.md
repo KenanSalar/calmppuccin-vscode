@@ -59,6 +59,7 @@ npm run lint             # oxlint, type-aware; a warning fails it
 npm run type-check       # tsc --noEmit: the only type check, as Jest and webpack transpile only
 npm test                 # Jest; `npm test -- <pattern>` runs matching files
 npm run test:coverage    # report in coverage/
+npm run update-vscode-colors  # refetch VS Code's color keys into test/__fixtures__/
 npm run package          # .vsix; vscode:prepublish runs build-themes first
 ```
 
@@ -75,6 +76,8 @@ change. Suggest F5 only for breakpoints; Known gaps says why.
   Open VSX lose the extension.
 - **`@types/vscode` is pinned to exactly the `engines.vscode` minimum**, so an API newer than the
   floor fails to type-check. 1.125 is the newest with published typings at or below 1.128.
+- **Moving `engines.vscode` comes with `npm run update-vscode-colors`**, which refreshes the
+  newest VS Code release's color keys and deprecations in `test/__fixtures__/workbenchColors.json`.
 - **`@types/node` stays on `~24.13`**, the newest typings line not past the Node 24.15 in that
   minimum's extension host.
 - **TypeScript stays on 6.x**: ts-jest requires `typescript <7`, and ts-loader needs the classic
@@ -114,11 +117,10 @@ change. Suggest F5 only for breakpoints; Known gaps says why.
 
 ## Known gaps
 
-- **Nothing checks that the six palettes share their keys.** `IPalette` is an index signature,
-  and `build.ts` builds its placeholder pattern only from keys it has values for, so a key one
-  palette lacks ships as a literal `{{key}}` in that flavor's theme without a warning. After
-  touching a palette or the template, `npm run build-themes && grep -l '{{' themes/` should print
-  nothing.
+- **Nothing checks that every template placeholder has a value.** `build.ts` builds its
+  placeholder pattern only from keys it has values for, so a `{{key}}` that no palette, accent or
+  font style defines ships literally in every theme without a warning. After touching the
+  template, `npm run build-themes && grep -l '{{' themes/` should print nothing.
 - **Reloading a Development Host started with F5 can kill its extension host** (exit code 134)
   before any extension loads: the debugger's `Network.enable` trips an assertion in Node's
   network inspection ([nodejs/node#64308](https://github.com/nodejs/node/issues/64308)). It is

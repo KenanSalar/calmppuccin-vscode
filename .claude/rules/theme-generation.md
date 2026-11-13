@@ -23,7 +23,10 @@ this file holds what reaches across the template, the palettes and the manifest.
 - **The accent arrives as a palette key or a `#rrggbb`.** An unknown key falls back to
   `FALLBACK_ACCENT`; a custom hex is validated in `SettingsReader.getAccent` before it gets here.
 - **Font style `"none"` becomes `""`** in the theme.
-- **A new color key goes into all six palettes** (see Known gaps in `CLAUDE.md`), and into
+- **A key in the template's `colors` is one VS Code knows and hasn't deprecated**:
+  `template.test.ts` checks it against `test/__fixtures__/workbenchColors.json`, which
+  `npm run update-vscode-colors` refreshes.
+- **A new color key goes into all six palettes** (`palettes.test.ts` fails otherwise), and into
   `test/__fixtures__/mockPalette.ts` when a generator reads it. To make it customizable it also
   joins a `CUSTOMIZABLE_*_KEYS` list in `src/constants.ts` and needs a `data-token` span in a
   preview snippet (`webview.md`).

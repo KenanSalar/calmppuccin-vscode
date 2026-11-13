@@ -44,7 +44,6 @@ export default {
   uiButtonBorder0: "#1b1b2400",
   uiButtonSecondaryHoverBackground: "{{accent}}33",
   chartsLines: "#bac1db",
-  chartsRed: "#bd7087",
   chartsBlue: "#86a4d4",
   chartsYellow: "#dfc386",
   chartsOrange: "#dda07a",
