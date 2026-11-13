@@ -1149,7 +1149,7 @@
     "vscode:prepublish": "npm run build-themes",
     "compile": "webpack --config-node-env production",
     "watch": "webpack --watch",
-    "build-themes": "npm run compile && node ./dist/build.js",
+    "build-themes": "npm run compile && node -e \"require('./dist/build.js').buildDefaultThemes()\"",
     "package": "vsce package --no-dependencies",
     "test": "jest --config jest.config.ts",
     "test:coverage": "jest --config jest.config.ts --coverage",

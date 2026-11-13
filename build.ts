@@ -176,6 +176,20 @@ export async function buildAllFlavors(options: IBuildOptions): Promise<ThemeBuil
 }
 
 /**
+ * Builds the themes packaging ships, every setting at its default. `npm run build-themes` calls it
+ * because webpack makes a `require.main === module` guard true however the bundle is loaded.
+ */
+export async function buildDefaultThemes(): Promise<ThemeBuilds> {
+  return buildAllFlavors({
+    accentIdentifier: C.DEFAULT_ACCENT,
+    fontStyles: await getDefaultFontStyles(),
+    syntaxOverrides: {},
+    uiOverrides: {},
+    fontStyleOverrides: {},
+  });
+}
+
+/**
  * Replaces `filePath` with `content` through a rename.
  *
  * Every open window rebuilds the same files after a settings change, and VS Code may load a theme
@@ -217,18 +231,4 @@ async function getDefaultFontStyles(): Promise<IFontStyles> {
     packageJson.contributes?.configuration?.properties?.[`${C.EXTENSION_NAMESPACE}.fontStyles`]
       ?.default ?? {}
   );
-}
-
-// `node dist/build.js`, as packaging runs it: the themes with default settings.
-if (require.main === module) {
-  void (async () => {
-    const defaultFontStyles = await getDefaultFontStyles();
-    await buildAllFlavors({
-      accentIdentifier: C.DEFAULT_ACCENT,
-      fontStyles: defaultFontStyles,
-      syntaxOverrides: {},
-      uiOverrides: {},
-      fontStyleOverrides: {},
-    });
-  })();
 }
