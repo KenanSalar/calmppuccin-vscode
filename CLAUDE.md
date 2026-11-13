@@ -6,9 +6,9 @@ and Open VSX): six softened Catppuccin flavors and a webview for customizing the
 oxfmt, on Node 24.
 
 - **Themes are generated, never edited.** `build.ts` fills the `{{key}}` placeholders in
-  `src/template.json` from a flavor's palette in `src/palettes/`, adds the third-party colors from
+  `src/template/` from a flavor's palette in `src/palettes/`, adds the third-party colors from
   `src/extensions/`, and writes `themes/calmppuccin-<flavor>-color-theme.json`.
-- **It runs twice**: at package time (`node dist/build.js`, default settings), and inside the
+- **It runs twice**: at package time (`buildDefaultThemes`, default settings), and inside the
   extension host whenever a Calmppuccin theme becomes active or a setting in
   `THEME_AFFECTING_KEYS` changes, rewriting the installed extension's own `themes/` and offering
   a window reload when the files differ from what that window loaded (`regenerateThemes` says

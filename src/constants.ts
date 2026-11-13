@@ -41,7 +41,13 @@ export const DEFAULT_PROFILE_NAME = "Default";
 
 export const THEMES_DIR = "themes";
 export const SRC_DIR = "src";
-export const TEMPLATE_FILE = "template.json";
+export const TEMPLATE_DIR = "template";
+/** The file under `TEMPLATE_DIR` holding each theme key's value. */
+export const TEMPLATE_FILES = {
+  colors: "colors.json",
+  tokenColors: "tokenColors.json",
+  semanticTokenColors: "semanticTokenColors.json",
+} as const;
 export const LIGHT_FLAVOR_NAME = "latte";
 export const FALLBACK_ACCENT = "mauve";
 export const DEFAULT_ACCENT = "sapphire";

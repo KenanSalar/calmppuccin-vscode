@@ -1,0 +1,458 @@
+{
+  "selfKeyword": {
+    "foreground": "{{keyword}}",
+    "fontStyle": "{{keywordFontStyle}}"
+  },
+  "controlKeyword": {
+    "foreground": "{{keyword}}",
+    "fontStyle": "{{keywordFontStyle}}"
+  },
+  "keyword.control": {
+    "foreground": "{{keyword}}",
+    "fontStyle": "{{keywordFontStyle}}"
+  },
+  "keyword.controlFlow": {
+    "foreground": "{{keyword}}",
+    "fontStyle": "{{keywordFontStyle}}"
+  },
+  "keyword.async": {
+    "foreground": "{{keyword}}",
+    "fontStyle": "{{keywordFontStyle}}"
+  },
+  "selfParameter": {
+    "foreground": "{{keyword}}",
+    "fontStyle": "{{keywordFontStyle}}"
+  },
+  "newOperator": {
+    "foreground": "{{keyword}}",
+    "fontStyle": "{{keywordFontStyle}}"
+  },
+  "type.defaultLibrary.interface": {
+    "foreground": "{{keyword}}",
+    "fontStyle": "{{keywordFontStyle}}"
+  },
+  "type": {
+    "foreground": "{{type}}",
+    "fontStyle": "{{typeFontStyle}}"
+  },
+  "builtinType": {
+    "foreground": "{{type}}",
+    "fontStyle": "{{typeFontStyle}}"
+  },
+  "selfTypeKeyword": {
+    "foreground": "{{type}}",
+    "fontStyle": "{{typeFontStyle}}"
+  },
+  "type.defaultLibrary.number": {
+    "foreground": "{{type}}",
+    "fontStyle": "{{typeFontStyle}}"
+  },
+  "type.defaultLibrary.string": {
+    "foreground": "{{type}}",
+    "fontStyle": "{{typeFontStyle}}"
+  },
+  "typeAlias": {
+    "foreground": "{{typeAlias}}",
+    "fontStyle": "{{typeAliasFontStyle}}"
+  },
+  "templateType": {
+    "foreground": "{{type}}",
+    "fontStyle": "{{typeFontStyle}}"
+  },
+  "class.typeHint": {
+    "foreground": "{{type}}",
+    "fontStyle": "{{typeFontStyle}}"
+  },
+  "namespace": {
+    "foreground": "{{namespace}}",
+    "fontStyle": "{{namespaceFontStyle}}"
+  },
+  "namespace.attribute": {
+    "foreground": "{{namespaceAttribute}}",
+    "fontStyle": "{{namespaceAttributeFontStyle}}"
+  },
+  "module": {
+    "foreground": "{{module}}",
+    "fontStyle": "{{moduleFontStyle}}"
+  },
+  "annotation": {
+    "foreground": "{{annotation}}",
+    "fontStyle": "{{annotationFontStyle}}"
+  },
+  "property.annotation:dart": {
+    "foreground": "{{annotation}}",
+    "fontStyle": "{{annotationFontStyle}}"
+  },
+  "decorator": {
+    "foreground": "{{decorator}}",
+    "fontStyle": "{{decoratorFontStyle}}"
+  },
+  "function.decorator": {
+    "foreground": "{{decorator}}",
+    "fontStyle": "{{decoratorFontStyle}}"
+  },
+  "class.decorator": {
+    "foreground": "{{decorator}}",
+    "fontStyle": "{{decoratorFontStyle}}"
+  },
+  "macro": {
+    "foreground": "{{macro}}",
+    "fontStyle": "{{macroFontStyle}}"
+  },
+  "variable.macro": {
+    "foreground": "{{variable}}",
+    "fontStyle": "{{variableFontStyle}}"
+  },
+  "class": {
+    "foreground": "{{class}}",
+    "fontStyle": "{{classFontStyle}}"
+  },
+  "class.defaultLibrary": {
+    "foreground": "{{class}}",
+    "fontStyle": "{{classFontStyle}}"
+  },
+  "recordClass": {
+    "foreground": "{{class}}",
+    "fontStyle": "{{classFontStyle}}"
+  },
+  "record": {
+    "foreground": "{{class}}",
+    "fontStyle": "{{classFontStyle}}"
+  },
+  "struct": {
+    "foreground": "{{struct}}",
+    "fontStyle": "{{structFontStyle}}"
+  },
+  "recordStruct": {
+    "foreground": "{{struct}}",
+    "fontStyle": "{{structFontStyle}}"
+  },
+  "type.definition.struct": {
+    "foreground": "{{struct}}",
+    "fontStyle": "{{structFontStyle}}"
+  },
+  "type.struct": {
+    "foreground": "{{struct}}",
+    "fontStyle": "{{structFontStyle}}"
+  },
+  "interface": {
+    "foreground": "{{interface}}",
+    "fontStyle": "{{interfaceFontStyle}}"
+  },
+  "type.definition.interface": {
+    "foreground": "{{interface}}",
+    "fontStyle": "{{interfaceFontStyle}}"
+  },
+  "type.interface": {
+    "foreground": "{{interface}}",
+    "fontStyle": "{{interfaceFontStyle}}"
+  },
+  "enum": {
+    "foreground": "{{enum}}",
+    "fontStyle": "{{enumFontStyle}}"
+  },
+  "type.definition.number": {
+    "foreground": "{{enum}}",
+    "fontStyle": "{{enumFontStyle}}"
+  },
+  "type.definition.string": {
+    "foreground": "{{enum}}",
+    "fontStyle": "{{enumFontStyle}}"
+  },
+  "enumMember": {
+    "foreground": "{{enumMember}}",
+    "fontStyle": "{{enumMemberFontStyle}}"
+  },
+  "field": {
+    "foreground": "{{fieldAndAttribute}}",
+    "fontStyle": "{{fieldAndAttributeFontStyle}}"
+  },
+  "attribute": {
+    "foreground": "{{fieldAndAttribute}}",
+    "fontStyle": "{{fieldAndAttributeFontStyle}}"
+  },
+  "attributeBracket": {
+    "foreground": "{{fieldAndAttribute}}",
+    "fontStyle": "{{fieldAndAttributeFontStyle}}"
+  },
+  "attributeBracket.attribute": {
+    "foreground": "{{fieldAndAttribute}}",
+    "fontStyle": "{{fieldAndAttributeFontStyle}}"
+  },
+  "derive.defaultLibrary.attribute": {
+    "foreground": "{{fieldAndAttribute}}",
+    "fontStyle": "{{fieldAndAttributeFontStyle}}"
+  },
+  "variable.instance:dart": {
+    "foreground": "{{fieldAndAttribute}}",
+    "fontStyle": "{{fieldAndAttributeFontStyle}}"
+  },
+  "variable.declaration.instance:dart": {
+    "foreground": "{{fieldAndAttribute}}",
+    "fontStyle": "{{fieldAndAttributeFontStyle}}"
+  },
+  "property.instance:dart": {
+    "foreground": "{{fieldAndAttribute}}",
+    "fontStyle": "{{fieldAndAttributeFontStyle}}"
+  },
+  "property": {
+    "foreground": "{{property}}",
+    "fontStyle": "{{propertyFontStyle}}"
+  },
+  "property.readonly": {
+    "foreground": "{{propertyReadOnly}}",
+    "fontStyle": "{{propertyReadOnlyFontStyle}}"
+  },
+  "recordComponent": {
+    "foreground": "{{property}}",
+    "fontStyle": "{{propertyFontStyle}}"
+  },
+  "property.declaration.instance:dart": {
+    "foreground": "{{property}}",
+    "fontStyle": "{{propertyFontStyle}}"
+  },
+  "function": {
+    "foreground": "{{functionAndMethod}}",
+    "fontStyle": "{{functionAndMethodFontStyle}}"
+  },
+  "magicFunction": {
+    "foreground": "{{functionAndMethod}}",
+    "fontStyle": "{{functionAndMethodFontStyle}}"
+  },
+  "function.defaultLibrary": {
+    "foreground": "{{functionAndMethod}}",
+    "fontStyle": "{{functionAndMethodFontStyle}}"
+  },
+  "method": {
+    "foreground": "{{functionAndMethod}}",
+    "fontStyle": "{{functionAndMethodFontStyle}}"
+  },
+  "*.async": {
+    "foreground": "{{functionAndMethod}}",
+    "fontStyle": "{{functionAndMethodFontStyle}}"
+  },
+  "extensionMethod": {
+    "foreground": "{{extensionMethod}}",
+    "fontStyle": "{{extensionMethodFontStyle}}"
+  },
+  "delegate": {
+    "foreground": "{{delegate}}",
+    "fontStyle": "{{delegateFontStyle}}"
+  },
+  "type.definition.signature": {
+    "foreground": "{{delegate}}",
+    "fontStyle": "{{delegateFontStyle}}"
+  },
+  "event": {
+    "foreground": "{{event}}",
+    "fontStyle": "{{eventFontStyle}}"
+  },
+  "variable.definition.chan": {
+    "foreground": "{{event}}",
+    "fontStyle": "{{eventFontStyle}}"
+  },
+  "variable.chan": {
+    "foreground": "{{event}}",
+    "fontStyle": "{{eventFontStyle}}"
+  },
+  "variable.declaration.mutable": {
+    "foreground": "{{variableMutable}}",
+    "fontStyle": "{{variableMutableFontStyle}}"
+  },
+  "variable.mutable": {
+    "foreground": "{{variableMutable}}",
+    "fontStyle": "{{variableMutableFontStyle}}"
+  },
+  "parameter": {
+    "foreground": "{{parameter}}",
+    "fontStyle": "{{parameterFontStyle}}"
+  },
+  "typeParameter": {
+    "foreground": "{{typeParameter}}",
+    "fontStyle": "{{typeParameterFontStyle}}"
+  },
+  "number": {
+    "foreground": "{{number}}",
+    "fontStyle": "{{numberFontStyle}}"
+  },
+  "operator": {
+    "foreground": "{{operator}}",
+    "fontStyle": "{{operatorFontStyle}}"
+  },
+  "operator.overridden": {
+    "foreground": "{{operatorOverload}}",
+    "fontStyle": "{{operatorOverloadFontStyle}}"
+  },
+  "operatorOverload": {
+    "foreground": "{{operatorOverload}}",
+    "fontStyle": "{{operatorOverloadFontStyle}}"
+  },
+  "memberOperatorOverload": {
+    "foreground": "{{operatorOverload}}",
+    "fontStyle": "{{operatorOverloadFontStyle}}"
+  },
+  "punctuation": {
+    "foreground": "{{punctuation}}",
+    "fontStyle": "{{punctuationFontStyle}}"
+  },
+  "formatSpecifier": {
+    "foreground": "{{punctuation}}",
+    "fontStyle": "{{punctuationFontStyle}}"
+  },
+  "constant": {
+    "foreground": "{{constant}}",
+    "fontStyle": "{{constantFontStyle}}"
+  },
+  "const": {
+    "foreground": "{{constant}}",
+    "fontStyle": "{{constantFontStyle}}"
+  },
+  "const.constant": {
+    "foreground": "{{constant}}",
+    "fontStyle": "{{constantFontStyle}}"
+  },
+  "string.format": {
+    "foreground": "{{constant}}",
+    "fontStyle": "{{constantFontStyle}}"
+  },
+  "builtinConstant": {
+    "foreground": "{{constant}}",
+    "fontStyle": "{{constantFontStyle}}"
+  },
+  "variable.declaration.static:dart": {
+    "foreground": "{{constant}}",
+    "fontStyle": "{{constantFontStyle}}"
+  },
+  "property.static:dart": {
+    "foreground": "{{constant}}",
+    "fontStyle": "{{constantFontStyle}}"
+  },
+  "string": {
+    "foreground": "{{string}}",
+    "fontStyle": "{{stringFontStyle}}"
+  },
+  "stringVerbatim": {
+    "foreground": "{{stringVerbatim}}",
+    "fontStyle": "{{stringVerbatimFontStyle}}"
+  },
+  "stringEscapeCharacter": {
+    "foreground": "{{constant}}",
+    "fontStyle": "{{constantFontStyle}}"
+  },
+  "comment": {
+    "foreground": "{{comment}}",
+    "fontStyle": "{{commentFontStyle}}"
+  },
+  "text": {
+    "foreground": "{{text}}",
+    "fontStyle": "{{textFontStyle}}"
+  },
+  "regexCharacterClass": {
+    "foreground": "{{class}}",
+    "fontStyle": "{{classFontStyle}}"
+  },
+  "markupComment": {
+    "foreground": "{{comment}}",
+    "fontStyle": "{{commentFontStyle}}"
+  },
+  "markupCommentPunctuation": {
+    "foreground": "{{punctuation}}",
+    "fontStyle": "{{punctuationFontStyle}}"
+  },
+  "markupOperator": {
+    "foreground": "{{operator}}",
+    "fontStyle": "{{operatorFontStyle}}"
+  },
+  "markupTagDelimiter": {
+    "foreground": "{{punctuation}}",
+    "fontStyle": "{{punctuationFontStyle}}"
+  },
+  "markupElement": {
+    "foreground": "{{keyword}}",
+    "fontStyle": "{{keywordFontStyle}}"
+  },
+  "markupAttribute": {
+    "foreground": "{{fieldAndAttribute}}",
+    "fontStyle": "{{fieldAndAttributeFontStyle}}"
+  },
+  "markupAttributeValue": {
+    "foreground": "{{string}}",
+    "fontStyle": "{{stringFontStyle}}"
+  },
+  "markupAttributeQuote": {
+    "foreground": "{{string}}",
+    "fontStyle": "{{stringFontStyle}}"
+  },
+  "razorComment": {
+    "foreground": "{{comment}}",
+    "fontStyle": "{{commentFontStyle}}"
+  },
+  "razorCommentTransition": {
+    "foreground": "{{comment}}",
+    "fontStyle": "{{commentFontStyle}}"
+  },
+  "razorCommentStar": {
+    "foreground": "{{comment}}",
+    "fontStyle": "{{commentFontStyle}}"
+  },
+  "razorTransition": {
+    "foreground": "{{transition}}",
+    "fontStyle": ""
+  },
+  "razorDirective": {
+    "foreground": "{{directive}}",
+    "fontStyle": "{{directiveFontStyle}}"
+  },
+  "razorDirectiveAttribute": {
+    "foreground": "{{fieldAndAttribute}}",
+    "fontStyle": "{{fieldAndAttributeFontStyle}}"
+  },
+  "razorComponentElement": {
+    "foreground": "{{keyword}}",
+    "fontStyle": "{{keywordFontStyle}}"
+  },
+  "razorComponentAttribute": {
+    "foreground": "{{fieldAndAttribute}}",
+    "fontStyle": "{{fieldAndAttributeFontStyle}}"
+  },
+  "razorTagHelperElement": {
+    "foreground": "{{keyword}}",
+    "fontStyle": "{{keywordFontStyle}}"
+  },
+  "razorTagHelperAttribute": {
+    "foreground": "{{fieldAndAttribute}}",
+    "fontStyle": "{{fieldAndAttributeFontStyle}}"
+  },
+  "markdownHeading": {
+    "foreground": "{{keyword}}",
+    "fontStyle": "bold"
+  },
+  "xmlDocCommentName": {
+    "foreground": "{{keyword}}",
+    "fontStyle": "{{keywordFontStyle}}"
+  },
+  "xmlDocCommentText": {
+    "foreground": "{{comment}}",
+    "fontStyle": "{{commentFontStyle}}"
+  },
+  "xmlDocCommentComment": {
+    "foreground": "{{comment}}",
+    "fontStyle": "{{commentFontStyle}}"
+  },
+  "xmlDocCommentDelimiter": {
+    "foreground": "{{comment}}",
+    "fontStyle": "{{commentFontStyle}}"
+  },
+  "xmlDocCommentAttributeName": {
+    "foreground": "{{fieldAndAttribute}}",
+    "fontStyle": "{{fieldAndAttributeFontStyle}}"
+  },
+  "xmlDocCommentAttributeValue": {
+    "foreground": "{{string}}",
+    "fontStyle": "italic"
+  },
+  "xmlDocCommentAttributeQuotes": {
+    "foreground": "{{string}}",
+    "fontStyle": "italic"
+  }
+}
