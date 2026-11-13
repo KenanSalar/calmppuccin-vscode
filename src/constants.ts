@@ -179,21 +179,3 @@ export const BACKGROUND_UI_KEYS: ReadonlySet<string> = new Set(["base", "mantle"
 
 /** The font style values the customization UI offers, matching `calmppuccin.fontStyleOverrides`. */
 export const FONT_STYLE_OPTIONS = ["none", "italic", "bold", "italic bold", "underline"] as const;
-
-/**
- * Turns a theme label such as "Calmppuccin Nitro Cold Brew" into its flavor key, or `null` for
- * any other theme.
- */
-export function parseFlavorFromThemeName(themeName: string): string | null {
-  const prefix = "calmppuccin ";
-  const lowerName = themeName.toLowerCase();
-  if (!lowerName.startsWith(prefix)) {
-    return null;
-  }
-  // Decomposing and dropping the combining marks turns "Frappé" into "frappe".
-  return lowerName
-    .slice(prefix.length)
-    .replace(/ /g, "-")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}

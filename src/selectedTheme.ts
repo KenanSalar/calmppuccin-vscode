@@ -10,10 +10,14 @@ import { IPalettes, isFlavor } from "./palettes";
 export const COLOR_THEME_SETTING = `${C.WORKBENCH_SECTION}.${C.COLOR_THEME_KEY}`;
 
 export function isCalmppuccinThemeSelected(): boolean {
+  return getSelectedFlavor() !== undefined;
+}
+
+export function getSelectedFlavor(): keyof IPalettes | undefined {
   const themeName = vscode.workspace
     .getConfiguration(C.WORKBENCH_SECTION)
     .get<string>(C.COLOR_THEME_KEY, "");
-  return C.parseFlavorFromThemeName(themeName) !== null;
+  return parseFlavorFromThemeName(themeName);
 }
 
 // Catppuccin Icons has only the four Catppuccin flavors.
@@ -37,19 +41,16 @@ export function syncIconFlavor(retryCount = 0) {
 
   setTimeout(() => {
     const workbenchConfig = vscode.workspace.getConfiguration(C.WORKBENCH_SECTION);
-    const currentTheme = workbenchConfig.get<string>(C.COLOR_THEME_KEY, "");
     const currentIconTheme = workbenchConfig.get<string>(C.ICON_THEME_KEY);
 
     if (!currentIconTheme || !currentIconTheme.startsWith(C.CATPPUCCIN_ICON_PACK_ID)) {
       return;
     }
-    const flavor = C.parseFlavorFromThemeName(currentTheme);
-    if (!flavor && retryCount < C.ICON_SYNC_MAX_RETRIES) {
-      syncIconFlavor(retryCount + 1);
-      return;
-    }
-
-    if (!flavor || !isFlavor(flavor)) {
+    const flavor = getSelectedFlavor();
+    if (!flavor) {
+      if (retryCount < C.ICON_SYNC_MAX_RETRIES) {
+        syncIconFlavor(retryCount + 1);
+      }
       return;
     }
     const targetIconThemeId = `${C.CATPPUCCIN_ICON_PACK_ID}${ICON_FLAVORS[flavor]}`;
@@ -61,4 +62,23 @@ export function syncIconFlavor(retryCount = 0) {
         });
     }
   }, delay);
+}
+
+/**
+ * Turns a theme label such as "Calmppuccin Nitro Cold Brew" into its flavor key, or `undefined`
+ * for any other theme.
+ */
+function parseFlavorFromThemeName(themeName: string): keyof IPalettes | undefined {
+  const prefix = "calmppuccin ";
+  const lowerName = themeName.toLowerCase();
+  if (!lowerName.startsWith(prefix)) {
+    return undefined;
+  }
+  // Decomposing and dropping the combining marks turns "Frappé" into "frappe".
+  const flavor = lowerName
+    .slice(prefix.length)
+    .replace(/ /g, "-")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  return isFlavor(flavor) ? flavor : undefined;
 }

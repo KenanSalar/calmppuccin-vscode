@@ -38,6 +38,6 @@ this file holds what reaches across the template, the palettes and the manifest.
 - **A new flavor** is a palette file, its `IPalettes` entry (`src/palettes.ts`), a
   `contributes.themes` entry in `package.json`, and an `ICON_FLAVORS` entry in
   `src/selectedTheme.ts`. The theme label must reduce to the flavor key through
-  `parseFlavorFromThemeName` (`src/constants.ts`), and every flavor but `LIGHT_FLAVOR_NAME` is dark.
+  `parseFlavorFromThemeName` there, and every flavor but `LIGHT_FLAVOR_NAME` is dark.
 - **The third-party generators see the base palette**, not the user's overrides, and what they
   return is merged over the template's `colors`.
