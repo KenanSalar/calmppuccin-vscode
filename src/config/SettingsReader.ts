@@ -9,6 +9,7 @@ import {
   getConfig,
   getProfileSetting,
   getProfileObjectSetting,
+  isPlainObject,
   FlavorOverrides,
   IFontStyles,
   ISyntaxOverrides,
@@ -76,6 +77,31 @@ export function getActiveCustomizations(): IProfile {
   }
 
   return customizations;
+}
+
+/**
+ * Whether the inputs the theme build reads differ from their defaults. Unlike
+ * {@link getActiveCustomizations}, it ignores a custom accent color the accent doesn't select.
+ */
+export function isThemeCustomized(): boolean {
+  const config = getConfig();
+  const overrides = [
+    getSyntaxOverrides(config),
+    getUiOverrides(config),
+    getFontStyleOverrides(config),
+  ];
+  return (
+    getAccent() !== C.DEFAULT_ACCENT ||
+    Object.keys(customizedFontStyles(getFontStyles(config))).length > 0 ||
+    overrides.some(hasFlavorOverride)
+  );
+}
+
+// User JSON can hold `{}` or `null` for a flavor, which overrides nothing.
+function hasFlavorOverride(overrides: Record<string, unknown>): boolean {
+  return Object.values(overrides).some(
+    (flavorOverrides) => isPlainObject(flavorOverrides) && Object.keys(flavorOverrides).length > 0,
+  );
 }
 
 /** The selected color theme's flavor, or Mocha when it isn't a Calmppuccin theme. */

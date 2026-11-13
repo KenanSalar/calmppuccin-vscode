@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import { affectsThemeSettings } from "./src/config/ConfigAccess";
-import { getActiveCustomizations } from "./src/config/SettingsReader";
+import { isThemeCustomized } from "./src/config/SettingsReader";
 import * as C from "./src/constants";
 import {
   COLOR_THEME_SETTING,
@@ -22,15 +22,13 @@ export function activate(context: vscode.ExtensionContext) {
 
   const customizeCommand = vscode.commands.registerCommand(C.CUSTOMIZE_COMMAND_ID, showNote);
   const settingsListener = vscode.workspace.onDidChangeConfiguration((event) => {
-    if (event.affectsConfiguration(COLOR_THEME_SETTING)) {
+    const themeChanged = event.affectsConfiguration(COLOR_THEME_SETTING);
+    if (themeChanged) {
       syncIconFlavor();
-      // The startup check runs only under a Calmppuccin theme, so a switch to one runs it here.
-      if (isCalmppuccinThemeSelected()) {
-        showNoteIfCustomized(context.globalState);
-      }
     }
-    if (affectsThemeSettings(event)) {
-      showNoteOncePerWindow(context.globalState);
+    // The startup check again, as either of its inputs can change after activation.
+    if ((themeChanged || affectsThemeSettings(event)) && isCalmppuccinThemeSelected()) {
+      showNoteIfCustomized(context.globalState);
     }
   });
   context.subscriptions.push(customizeCommand, settingsListener);
@@ -53,7 +51,7 @@ function showNote() {
 }
 
 function showNoteIfCustomized(globalState: vscode.Memento) {
-  if (Object.keys(getActiveCustomizations()).length > 0) {
+  if (isThemeCustomized()) {
     showNoteOncePerWindow(globalState);
   }
 }

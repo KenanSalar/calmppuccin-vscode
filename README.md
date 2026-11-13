@@ -68,8 +68,9 @@ where all six flavors keep their default colors.
 You can easily tailor Calmppuccin to fit your personal preferences using the\
 built-in graphical interface or by editing your `settings.json` directly.
 
-Customizing isn't available in vscode.dev and github.dev. There, Customize Theme explains this,\
-and settings synced from your desktop don't change the colors.
+Calmppuccin can't apply customizations in VS Code for the Web (vscode.dev and github.dev), so\
+the themes keep their default colors there, even with settings synced from your desktop.\
+Customize it in VS Code desktop.
 
 ### 1. Using the Customization UI (Recommended)
 

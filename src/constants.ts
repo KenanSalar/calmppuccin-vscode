@@ -86,7 +86,7 @@ export const ERROR_MESSAGE_PREFIX = "Failed to update Calmppuccin themes. Error:
 export const SETTINGS_ERROR_MESSAGE_PREFIX = "Failed to save Calmppuccin settings. Error: ";
 export const REPO_ISSUES_URL = "https://github.com/KenanSalar/calmppuccin-vscode/issues";
 export const WEB_CUSTOMIZATION_NOTE =
-  "Customizing Calmppuccin needs VS Code desktop. In the browser, its themes keep their default colors.";
+  "Calmppuccin can't apply customizations in VS Code for the Web. Customize it in VS Code desktop.";
 export const DONT_SHOW_AGAIN_ACTION = "Don't Show Again";
 /** The `globalState` key set once the web note is dismissed for good. */
 export const WEB_NOTE_DISMISSED_KEY = "webCustomizationNoteDismissed";
