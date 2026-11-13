@@ -8,7 +8,12 @@ import * as vscode from "vscode";
 import { buildAllFlavors, ThemeBuilds } from "./build";
 import { ConfigurationService } from "./src/ConfigurationService";
 import * as C from "./src/constants";
-import { IPalettes, isFlavor } from "./src/palettes";
+import { IPalettes } from "./src/palettes";
+import {
+  COLOR_THEME_SETTING,
+  isCalmppuccinThemeSelected,
+  syncIconFlavor,
+} from "./src/selectedTheme";
 import { SettingsPanel } from "./src/SettingsPanel";
 
 let settingsChangeListener: vscode.Disposable | undefined;
@@ -21,55 +26,6 @@ let latestBuild: Promise<unknown> = Promise.resolve();
 // whether they differ from these, not whether it wrote. A first build that follows another
 // window's write, as when windows restart after an update, takes the new files as loaded.
 let loadedThemes: ReadonlyMap<keyof IPalettes, string | undefined> | undefined;
-
-const COLOR_THEME_SETTING = `${C.WORKBENCH_SECTION}.${C.COLOR_THEME_KEY}`;
-
-// Catppuccin Icons has only the four Catppuccin flavors.
-const ICON_FLAVORS = {
-  latte: "latte",
-  frappe: "frappe",
-  macchiato: "macchiato",
-  mocha: "mocha",
-  "nitro-cold-brew": "mocha",
-  oledppuccin: "mocha",
-} as const satisfies Record<keyof IPalettes, string>;
-
-/**
- * Switches a Catppuccin icon theme to the flavor matching the selected color theme.
- *
- * Waits, and retries, because the workbench may not have applied a theme change yet, and reading
- * too early returns the previous theme.
- */
-function syncIconFlavor(retryCount = 0) {
-  const delay = retryCount === 0 ? C.ICON_SYNC_INITIAL_DELAY_MS : C.ICON_SYNC_RETRY_DELAY_MS;
-
-  setTimeout(() => {
-    const workbenchConfig = vscode.workspace.getConfiguration(C.WORKBENCH_SECTION);
-    const currentTheme = workbenchConfig.get<string>(C.COLOR_THEME_KEY, "");
-    const currentIconTheme = workbenchConfig.get<string>(C.ICON_THEME_KEY);
-
-    if (!currentIconTheme || !currentIconTheme.startsWith(C.CATPPUCCIN_ICON_PACK_ID)) {
-      return;
-    }
-    const flavor = C.parseFlavorFromThemeName(currentTheme);
-    if (!flavor && retryCount < C.ICON_SYNC_MAX_RETRIES) {
-      syncIconFlavor(retryCount + 1);
-      return;
-    }
-
-    if (!flavor || !isFlavor(flavor)) {
-      return;
-    }
-    const targetIconThemeId = `${C.CATPPUCCIN_ICON_PACK_ID}${ICON_FLAVORS[flavor]}`;
-    if (currentIconTheme !== targetIconThemeId) {
-      workbenchConfig
-        .update(C.ICON_THEME_KEY, targetIconThemeId, vscode.ConfigurationTarget.Global)
-        .then(undefined, (err: unknown) => {
-          console.error("Failed to sync icon theme:", err);
-        });
-    }
-  }, delay);
-}
 
 /**
  * Rebuilds the themes from the current settings and offers a reload when they no longer match
@@ -131,13 +87,6 @@ function differsFromLoaded(
   loaded: ReadonlyMap<keyof IPalettes, string | undefined>,
 ): boolean {
   return themes.entries().some(([flavor, theme]) => theme.generated !== loaded.get(flavor));
-}
-
-function isCalmppuccinThemeSelected(): boolean {
-  const themeName = vscode.workspace
-    .getConfiguration(C.WORKBENCH_SECTION)
-    .get<string>(C.COLOR_THEME_KEY, "");
-  return C.parseFlavorFromThemeName(themeName) !== null;
 }
 
 export function activate(context: vscode.ExtensionContext) {

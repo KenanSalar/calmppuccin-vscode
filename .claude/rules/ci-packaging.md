@@ -9,10 +9,10 @@ paths:
 
 Each workflow argues its own steps; this file holds what reaches across them.
 
-- **The VSIX ships whatever `.vscodeignore` leaves in.** It lists `src/` files one by one because
-  `src/template/` has to ship, `buildAllFlavors` reading it at runtime, as do
-  `webview/index.html` and `webview/style.css`, which `WebviewManager` reads. A new `src/` module
-  goes into `.vscodeignore`; `npx vsce ls` prints what would ship.
+- **The VSIX ships whatever `.vscodeignore` leaves in.** It drops TypeScript by extension, not by
+  folder, because `src/template/` has to ship, `buildAllFlavors` reading it at runtime, as do
+  `webview/index.html` and `webview/style.css`, which `WebviewManager` reads. Any other new file
+  ships unless `.vscodeignore` lists it; `npx vsce ls` prints what would ship.
 - **Every action is SHA-pinned with a trailing `# vX.Y.Z`.** Re-pin with
   `gh api repos/OWNER/REPO/commits/TAG -q .sha`.
 - **Every job installs through `.github/actions/setup-node`** (Node 24 and `npm ci`).

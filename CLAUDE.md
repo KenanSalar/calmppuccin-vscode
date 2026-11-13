@@ -92,7 +92,7 @@ change. Suggest F5 only for breakpoints; Known gaps says why.
 - **Code that runs on import and must not run under Jest sits behind
   `process.env.JEST_WORKER_ID === undefined`**, as the webview start-up in `webview/main.ts` and
   the migration in `extension.ts` do.
-- **A new file under `src/` ships in the VSIX unless `.vscodeignore` lists it**
+- **A new file that isn't TypeScript ships in the VSIX unless `.vscodeignore` lists it**
   (`.claude/rules/ci-packaging.md`).
 - **Never edit `themes/` or `dist/`**: both are build output.
 - **Suppress a lint only with `// oxlint-disable-next-line <plugin>/<rule>`** on the line, and

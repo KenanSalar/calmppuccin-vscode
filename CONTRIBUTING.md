@@ -90,7 +90,7 @@ A few changes reach further than they look:
   `npm run update-vscode-colors` refreshes the list.
 - **A new font-style key** needs both a default and a property under `calmppuccin.fontStyles` in
   `package.json`; the tests fail on one without the other.
-- **A new file under `src/`** ships in the extension unless `.vscodeignore` lists it.
+- **A new file that isn't TypeScript** ships in the extension unless `.vscodeignore` lists it.
 - **`themes/` and `dist/` are generated**, so an edit there is overwritten by the next build.
 
 ## What CI runs

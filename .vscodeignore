@@ -20,23 +20,9 @@ assets/images/screenshots/**
 node_modules/**
 scripts/**
 test/**
-types/**
 coverage/**
 out/
-build.ts
-extension.ts
-jest.config.ts
 package-lock.json
-src/ConfigurationService.ts
-src/config/**
-src/constants.ts
-src/palettes/**
-src/palettes.ts
-src/extensions/**
-src/SettingsPanel.ts
-src/WebviewManager.ts
-src/webviewMessages.ts
-src/utils/**
 tsconfig.json
 webpack.config.js
 .oxlintrc.json
@@ -49,5 +35,5 @@ dist/*.map
 # Build script - only needed for CLI theme generation, not extension runtime
 dist/build.js
 
-# Webview TypeScript sources - already compiled to dist/webview.js
-webview/**/*.ts
+# TypeScript sources, which webpack bundles into dist/
+**/*.ts
