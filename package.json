@@ -627,7 +627,7 @@
             "jsonLvl0FontStyle": {
               "type": "string",
               "default": "none",
-              "description": "Set the font style for json lvl 0.",
+              "description": "Set the font style for the top-level JSON keys and the keys in YAML, TOML, INI and .env files.",
               "enum": [
                 "none",
                 "italic",
@@ -987,7 +987,7 @@
                   "type": "string",
                   "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
                   "patternErrorMessage": "Please enter a valid 6 or 8-digit hex color code (e.g., #RRGGBB or #RRGGBBAA).",
-                  "description": "Overrides the color for the top-level JSON keys."
+                  "description": "Overrides the color for the top-level JSON keys and the keys in YAML, TOML, INI and .env files."
                 },
                 "jsonLvl1": {
                   "type": "string",
