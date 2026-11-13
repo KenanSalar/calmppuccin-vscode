@@ -1153,6 +1153,7 @@
     "package": "vsce package --no-dependencies",
     "test": "jest --config jest.config.ts",
     "test:coverage": "jest --config jest.config.ts --coverage",
+    "update-vscode-colors": "node scripts/update-vscode-colors.mts",
     "type-check": "tsc --noEmit",
     "lint": "oxlint",
     "format": "oxfmt",

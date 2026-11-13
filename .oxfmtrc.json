@@ -8,5 +8,7 @@
   "sortImports": { "partitionByNewline": true, "newlinesBetween": false },
   // The sorter doesn't know VS Code manifest fields and moves `engines` below `contributes`.
   "sortPackageJson": false,
-  "ignorePatterns": ["**/*.md"]
+  // `npm run update-vscode-colors` writes workbenchColors.json expanded, which this would collapse
+  // wherever an array fits on one line.
+  "ignorePatterns": ["**/*.md", "test/__fixtures__/workbenchColors.json"]
 }

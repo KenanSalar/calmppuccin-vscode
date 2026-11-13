@@ -83,8 +83,11 @@ configuration is strict on purpose: no `any`, no non-null assertions, and a warn
 
 A few changes reach further than they look:
 
-- **A new color key** goes into all six palettes under `src/palettes/`. Nothing checks that they
-  match, and a flavor missing the key shows a raw `{{key}}` in its theme.
+- **A new color key** goes into all six palettes under `src/palettes/`; the tests fail on a flavor
+  without it.
+- **A VS Code color the template starts naming** fails the tests unless
+  `test/__fixtures__/workbenchColors.json` lists it; for one newer than that snapshot,
+  `npm run update-vscode-colors` refreshes the list.
 - **A new font-style key** needs both a default and a property under `calmppuccin.fontStyles` in
   `package.json`; the tests fail on one without the other.
 - **A new file under `src/`** ships in the extension unless `.vscodeignore` lists it.

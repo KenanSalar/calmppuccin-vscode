@@ -13,10 +13,12 @@ CLAUDE.md
 GEMINI.md
 AGENTS.md
 instructions.md
+docs/**
 assets/images/customUI/**
 assets/images/preview/**
 assets/images/screenshots/**
 node_modules/**
+scripts/**
 test/**
 types/**
 coverage/**
