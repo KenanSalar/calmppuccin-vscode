@@ -52,7 +52,7 @@ repeated here.
 
 - **An index signature is for an open map only.** With `noUncheckedIndexedAccess` off, a read
   through one is typed `string`, never `undefined`, and any name compiles: `palette.rde` passes,
-  and a key one palette lacks shows up only as a literal `{{key}}` in that flavor's theme.
+  and a key one palette lacks compiles too, left to `palettes.test.ts` to catch.
   User-keyed maps (overrides by flavor, then token) take one; a fixed key set is a union of
   literals or a declared shape.
 - **Reading through an index signature, write the `undefined` case yourself**: `?? fallback`, or
