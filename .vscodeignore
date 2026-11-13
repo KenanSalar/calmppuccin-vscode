@@ -35,5 +35,5 @@ dist/*.map
 # Build script - only needed for CLI theme generation, not extension runtime
 dist/build.js
 
-# TypeScript sources, which webpack bundles into dist/
+# TypeScript ships only as webpack's bundles in dist/
 **/*.ts

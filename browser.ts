@@ -13,7 +13,7 @@ import {
   syncIconFlavor,
 } from "./src/selectedTheme";
 
-// At most one automatic showing per window; Customize Theme shows the note regardless.
+// At most one automatic showing per window.
 let noteShownThisWindow = false;
 
 export function activate(context: vscode.ExtensionContext) {

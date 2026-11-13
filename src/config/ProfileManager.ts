@@ -10,11 +10,13 @@ import {
   getConfig,
   getProfiles,
   getActiveProfile,
+  getProfileSetting,
+  getProfileObjectSetting,
   customizedFontStyles,
   FlavorOverrides,
   IFontStyles,
 } from "./ConfigAccess";
-import { getActiveCustomizations } from "./SettingsReader";
+import { getFontStyles } from "./SettingsReader";
 
 export async function updateActiveProfile(profileName: string) {
   await getConfig().update(
@@ -24,9 +26,33 @@ export async function updateActiveProfile(profileName: string) {
   );
 }
 
-/** Saves {@link getActiveCustomizations} as `profileName`. */
+/** Saves what the active profile resolves to as `profileName`, minus values left at default. */
 export async function saveProfile(profileName: string) {
-  const updatedProfiles = { ...getProfiles(), [profileName]: getActiveCustomizations() };
+  const savedProfile: IProfile = {};
+
+  const accent = getProfileSetting(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
+  if (accent !== C.DEFAULT_ACCENT) {
+    savedProfile[C.CONFIG_KEY_ACCENT] = accent;
+  }
+
+  const customAccent = getProfileSetting(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
+  if (customAccent !== C.DEFAULT_CUSTOM_ACCENT) {
+    savedProfile[C.CONFIG_KEY_CUSTOM_ACCENT] = customAccent;
+  }
+
+  const fontStyles = customizedFontStyles(getFontStyles());
+  if (Object.keys(fontStyles).length > 0) {
+    savedProfile[C.CONFIG_KEY_FONT_STYLES] = fontStyles;
+  }
+
+  for (const key of C.OVERRIDE_SETTING_KEYS) {
+    const overrides = getProfileObjectSetting<FlavorOverrides>(key, {});
+    if (Object.keys(overrides).length > 0) {
+      savedProfile[key] = overrides;
+    }
+  }
+
+  const updatedProfiles = { ...getProfiles(), [profileName]: savedProfile };
   await getConfig().update(
     C.CONFIG_KEY_PROFILES,
     updatedProfiles,

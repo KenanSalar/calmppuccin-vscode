@@ -103,7 +103,7 @@ correctness, `webview.md` the message protocol and CSP, `ci-packaging.md` what t
 - **`"sideEffects": false` in `package.json` covers this repo's own modules.** A module imported
   only for what it does on load is dropped from the production bundle without a warning, and
   Jest, running the sources, won't notice. Start-up side effects live in entry modules:
-  `extension.ts` and the guarded start at the foot of `webview/main.ts`.
+  `extension.ts`, `browser.ts` and the guarded start at the foot of `webview/main.ts`.
 - **Don't count on tree shaking to remove a new import.** ts-loader emits CommonJS
   (`"module": "commonjs"` in `tsconfig.json`, which Jest needs), so webpack prunes exports only
   partly and each module carries TypeScript's interop helpers. Read the cost in the module list.

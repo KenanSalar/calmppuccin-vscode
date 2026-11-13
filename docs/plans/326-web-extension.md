@@ -57,7 +57,7 @@ message on each change of their namespace. Not to copy:
 | `extension.ts` | the Node entry, importing those three names |
 | `browser.ts` (new, beside `extension.ts`) | the web entry: the Customize command, one settings listener, the startup check, the note. Imports `vscode`, `src/constants.ts`, `src/selectedTheme.ts`, `affectsThemeSettings` (`src/config/ConfigAccess.ts`) and `isThemeCustomized` (`src/config/SettingsReader.ts`), never `build.ts`, `ConfigurationService` or `SettingsPanel` |
 | `src/config/ConfigAccess.ts` | `affectsThemeSettings(event)`, the `THEME_AFFECTING_KEYS` filter both entries' listeners run; `extension.ts` reaches it through the `ConfigurationService` facade. `customizedFontStyles`, moved from `ProfileManager.ts`, and `isPlainObject`, now exported |
-| `src/config/SettingsReader.ts` | `getActiveCustomizations()`, what the active profile resolves to minus defaults, which `saveProfile` saves; `isThemeCustomized()`, whether the inputs the build reads differ from their defaults, which the note asks |
+| `src/config/SettingsReader.ts` | `isThemeCustomized()`, whether the inputs the build reads differ from their defaults, which the note asks |
 | `src/constants.ts` | the note's text, its Don't Show Again action, the `globalState` key |
 | `webpack.config.js` | a fourth config, `browser.ts` → `dist/browser.js`, `target: "webworker"` |
 | `package.json` | `"browser": "./dist/browser.js"` |
@@ -73,11 +73,12 @@ Duplication collapsed before the second entry lands:
   `webview/style.css` still ship.
 - **The settings filter** (Phase 2). `extension.ts` spelled the `THEME_AFFECTING_KEYS` walk
   inline; it moves to `affectsThemeSettings` rather than being copied into `browser.ts`.
-- **What counts as customized** (Phase 2). `saveProfile` computed it inline; it moves to
-  `getActiveCustomizations`. The note asks a different question, whether the themes look
-  different, so `isThemeCustomized` reads it through the getters the build takes: a custom accent
-  color the accent doesn't select keeps its place in a saved profile and shows no note. Reset,
-  delete and profile switches leave user values that customize nothing.
+- **Font styles left at default** (Phase 2). `customizedFontStyles` moves from
+  `ProfileManager.ts` to `ConfigAccess.ts` rather than being copied, as `isThemeCustomized` needs
+  it too. The note asks whether the themes look different, not what `saveProfile` keeps, so
+  `isThemeCustomized` reads it through the getters the build takes: a custom accent color the
+  accent doesn't select keeps its place in a saved profile and shows no note. Reset, delete and
+  profile switches leave user values that customize nothing.
 
 ## Behaviour of `browser.ts`
 
@@ -174,7 +175,7 @@ Results, 2026-11-13, VS Code 1.146.0 (`69047191`) in test-web, on vscode.dev and
   none, and picking Calmppuccin Mocha gives one.
 - **vscode.dev and github.dev**, from the packaged VSIX. `npm run package`, unzip its `extension/`
   folder into a scratch directory, add a `serve.json` setting `Cross-Origin-Resource-Policy:
-  cross-origin`, then `npx serve@14.2.7 --cors -l 5000` from that folder, and Developer: Install
+  cross-origin`, then `npx serve@14.2.8 --cors -l 5000` from that folder, and Developer: Install
   Extension from Location… with `http://localhost:5000`. The same checks, with and without
   customized settings arriving through Settings Sync.
 - **Codespaces in the browser.** With the VSIX installed in a codespace, Show Running Extensions

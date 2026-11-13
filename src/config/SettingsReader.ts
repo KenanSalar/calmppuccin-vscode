@@ -1,7 +1,6 @@
 /** @file The typed read of each setting, through the active profile. */
 
 import * as vscode from "vscode";
-import { IProfile } from "../../types/webview";
 import * as C from "../constants";
 import { IPalettes, isFlavor } from "../palettes";
 import {
@@ -10,7 +9,6 @@ import {
   getProfileSetting,
   getProfileObjectSetting,
   isPlainObject,
-  FlavorOverrides,
   IFontStyles,
   ISyntaxOverrides,
   IUiOverrides,
@@ -50,38 +48,9 @@ export function getFontStyleOverrides(config = getConfig()): IFontStyleOverrides
   );
 }
 
-/** The settings the active profile resolves to that differ from their defaults. */
-export function getActiveCustomizations(): IProfile {
-  const customizations: IProfile = {};
-
-  const accent = getProfileSetting(C.CONFIG_KEY_ACCENT, C.DEFAULT_ACCENT);
-  if (accent !== C.DEFAULT_ACCENT) {
-    customizations[C.CONFIG_KEY_ACCENT] = accent;
-  }
-
-  const customAccent = getProfileSetting(C.CONFIG_KEY_CUSTOM_ACCENT, C.DEFAULT_CUSTOM_ACCENT);
-  if (customAccent !== C.DEFAULT_CUSTOM_ACCENT) {
-    customizations[C.CONFIG_KEY_CUSTOM_ACCENT] = customAccent;
-  }
-
-  const fontStyles = customizedFontStyles(getFontStyles());
-  if (Object.keys(fontStyles).length > 0) {
-    customizations[C.CONFIG_KEY_FONT_STYLES] = fontStyles;
-  }
-
-  for (const key of C.OVERRIDE_SETTING_KEYS) {
-    const overrides = getProfileObjectSetting<FlavorOverrides>(key, {});
-    if (Object.keys(overrides).length > 0) {
-      customizations[key] = overrides;
-    }
-  }
-
-  return customizations;
-}
-
 /**
- * Whether the inputs the theme build reads differ from their defaults. Unlike
- * {@link getActiveCustomizations}, it ignores a custom accent color the accent doesn't select.
+ * Whether the inputs the theme build reads differ from their defaults, so a custom accent color
+ * counts only while the accent is `custom`.
  */
 export function isThemeCustomized(): boolean {
   const config = getConfig();
