@@ -280,10 +280,12 @@
   "focusBorder": "{{uiFocusBorder}}",
   "foreground": "{{uiText}}",
 
+  "gitDecoration.addedResourceForeground": "{{uiSuccessAndAdded}}",
   "gitDecoration.conflictingResourceForeground": "{{accent}}",
   "gitDecoration.deletedResourceForeground": "{{uiRedErrorDeleted}}",
   "gitDecoration.ignoredResourceForeground": "{{uiInactiveForeground0}}",
   "gitDecoration.modifiedResourceForeground": "{{uiModified}}",
+  "gitDecoration.renamedResourceForeground": "{{uiSuccessAndAdded}}",
   "gitDecoration.stageDeletedResourceForeground": "{{uiRedErrorDeleted}}",
   "gitDecoration.stageModifiedResourceForeground": "{{uiModified}}",
   "gitDecoration.submoduleResourceForeground": "{{uiInfo}}",
@@ -416,6 +418,15 @@
   "quickInput.foreground": "{{uiText}}",
   "quickInputList.focusBackground": "{{uiQuickInputListFocusBackground}}",
   "quickInput.background": "{{mantle}}",
+
+  "scmGraph.foreground1": "{{yellow}}",
+  "scmGraph.foreground2": "{{red}}",
+  "scmGraph.foreground3": "{{pink}}",
+  "scmGraph.foreground4": "{{green}}",
+  "scmGraph.foreground5": "{{teal}}",
+  "scmGraph.historyItemBaseRefColor": "{{peach}}",
+  "scmGraph.historyItemHoverAdditionsForeground": "{{uiSuccessAndAdded}}",
+  "scmGraph.historyItemHoverDeletionsForeground": "{{uiRedErrorDeleted}}",
 
   "scrollbar.shadow": "{{base}}",
   "scrollbarSlider.background": "{{uiScrollbarSliderBackground}}",
