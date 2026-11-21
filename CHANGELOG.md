@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.11.1] - 2026-11-21
+
+- **Improvement**: The terminal background matches the panel around it, to fit the new modern UI layout. It uses the mantle color instead of crust.
+
 ## [1.11.0] - 2026-11-13
 
 - **Feature**: Calmppuccin can be installed in vscode.dev and github.dev. All six flavors work there with their default colors. Customizing needs VS Code desktop, and a note tells you so when you run Customize Theme, or when your synced settings hold customizations.

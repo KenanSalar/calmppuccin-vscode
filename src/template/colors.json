@@ -551,7 +551,7 @@
   "tab.unfocusedInactiveForeground": "{{uiTabUnfocusedInactiveForeground}}",
   "tab.unfocusedInactiveBackground": "{{mantle}}",
 
-  "terminal.background": "{{crust}}",
+  "terminal.background": "{{mantle}}",
   "terminal.foreground": "{{uiText}}",
   "terminal.ansiBlack": "{{uiTerminalAnsiBlack}}",
   "terminal.ansiRed": "{{uiTerminalAnsiRed}}",
