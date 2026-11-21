@@ -130,6 +130,7 @@ export default {
   uiSidebarSectionHeaderBorder: "#585b7048",
   uiStatusbarFocusBorder: "#9bcadf15",
   uiSymboliconPackageAndSnippetForeground: "#f2cdcd",
+  uiTabBorder: "#36394b", // uiText at 15% over mantle; opaque, since the tab outline overlaps itself
   uiTabInactiveForeground: "#c2cae991",
   uiTabInactiveModifiedBorder: "#d6c08f4d",
   uiTabUnfocusedActiveBorderTop: "{{accent}}4d",

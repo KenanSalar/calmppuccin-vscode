@@ -176,7 +176,7 @@
 
   "editorGroupHeader.noTabsBackground": "{{crust}}",
   "editorGroupHeader.tabsBackground": "{{mantle}}",
-  "editorGroupHeader.tabsBorder": "{{uiBorder0}}",
+  "editorGroupHeader.tabsBorder": "{{uiTabBorder}}",
   "editorGroupHeader.border": "{{uiTransparent}}",
 
   "editorGutter.background": "{{crust}}",
@@ -533,7 +533,8 @@
   "tab.activeBorderTop": "{{accent}}",
   "tab.activeForeground": "{{accent}}",
   "tab.activeModifiedBorder": "{{uiModified}}",
-  "tab.border": "{{mantle}}",
+  "tab.border": "{{uiTabBorder}}",
+  "tab.divider": "{{mantle}}",
   "tab.hoverBackground": "{{crust}}",
   "tab.hoverBorder": "{{uiTransparent}}",
   "tab.hoverForeground": "{{accent}}",
